@@ -1,0 +1,180 @@
+[
+    {
+        "apiVersion": "apps/v1",
+        "kind": "StatefulSet",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "kubectl.kubernetes.io/last-applied-configuration": "",
+                "sas.com/component-name": "sas-cacheserver",
+                "sas.com/component-version": "1.20.14-20200421.1587502639695",
+                "sas.com/kustomize-base": "spring",
+                "sas.com/version": "1.20.14"
+            },
+            "creationTimestamp": "2020-05-08T13:36:30Z",
+            "generation": 1,
+            "labels": {
+                "app.kubernetes.io/name": "sas-cacheserver",
+                "sas.com/admin": "namespace",
+                "sas.com/deployment": "sas-viya",
+                "sas.com/statefulset-base": "spring"
+            },
+            "name": "sas-cacheserver",
+            "namespace": "test",
+            "resourceVersion": "3427579",
+            "selfLink": "/apis/apps/v1/namespaces/test/statefulsets/sas-cacheserver",
+            "uid": "b491d74c-7e49-4958-80e4-50047fc9ee1f"
+        },
+        "spec": {
+            "podManagementPolicy": "OrderedReady",
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+                "matchLabels": {
+                    "app.kubernetes.io/name": "sas-cacheserver",
+                    "sas.com/deployment": "sas-viya"
+                }
+            },
+            "serviceName": "sas-cacheserver",
+            "template": {
+                "metadata": {
+                    "annotations": {
+                        "cadence.sas.com/display-name": "Fast R/TR",
+                        "cadence.sas.com/name": "fast",
+                        "cadence.sas.com/release": "20200508.1588944122646",
+                        "cadence.sas.com/version": "2020",
+                        "sas.com/component-name": "sas-cacheserver",
+                        "sas.com/component-version": "1.20.14-20200421.1587502639695",
+                        "sas.com/version": "1.20.14"
+                    },
+                    "creationTimestamp": null,
+                    "labels": {
+                        "app": "sas-cacheserver",
+                        "app.kubernetes.io/name": "sas-cacheserver",
+                        "sas.com/deployment": "sas-viya"
+                    }
+                },
+                "spec": {
+                    "containers": [
+                        {
+                            "env": [],
+                            "envFrom": [
+                                {
+                                    "configMapRef": {
+                                        "name": "sas-java-config-8bc8mbd5mk"
+                                    }
+                                },
+                                {
+                                    "configMapRef": {
+                                        "name": "sas-shared-config-dh4f2c4mk9"
+                                    }
+                                }
+                            ],
+                            "image": "test.sas.com/test/sas-cacheserver:1.20.14-20200421.1587502639695",
+                            "imagePullPolicy": "IfNotPresent",
+                            "name": "sas-cacheserver",
+                            "ports": [
+                                {
+                                    "containerPort": 8080,
+                                    "name": "http",
+                                    "protocol": "TCP"
+                                },
+                                {
+                                    "containerPort": 14443,
+                                    "name": "cacheserver",
+                                    "protocol": "TCP"
+                                }
+                            ],
+                            "resources": {
+                                "limits": {
+                                    "cpu": "2",
+                                    "memory": "1Gi"
+                                },
+                                "requests": {
+                                    "cpu": "50m",
+                                    "memory": "750M"
+                                }
+                            },
+                            "terminationMessagePath": "/dev/termination-log",
+                            "terminationMessagePolicy": "File",
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "/opt/sas/viya/config/tmp",
+                                    "name": "tmp"
+                                },
+                                {
+                                    "mountPath": "/tmp",
+                                    "name": "tmp"
+                                },
+                                {
+                                    "mountPath": "/opt/sas/viya/config/data/cacheserver",
+                                    "name": "cacheserver"
+                                }
+                            ]
+                        }
+                    ],
+                    "dnsPolicy": "ClusterFirst",
+                    "imagePullSecrets": [
+                        {
+                            "name": "sas-image-pull-secrets-c56m7f4858"
+                        }
+                    ],
+                    "restartPolicy": "Always",
+                    "schedulerName": "default-scheduler",
+                    "securityContext": {},
+                    "terminationGracePeriodSeconds": 30,
+                    "volumes": [
+                        {
+                            "emptyDir": {},
+                            "name": "tmp"
+                        }
+                    ]
+                }
+            },
+            "updateStrategy": {
+                "rollingUpdate": {
+                    "partition": 0
+                },
+                "type": "RollingUpdate"
+            },
+            "volumeClaimTemplates": [
+                {
+                    "metadata": {
+                        "creationTimestamp": null,
+                        "labels": {
+                            "sas.com/deployment": "sas-viya"
+                        },
+                        "name": "cacheserver"
+                    },
+                    "spec": {
+                        "accessModes": [
+                            "ReadWriteOnce"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "storage": "2Gi"
+                            }
+                        },
+                        "volumeMode": "Filesystem"
+                    },
+                    "status": {
+                        "phase": "Pending"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "collisionCount": 0,
+            "currentReplicas": 1,
+            "currentRevision": "sas-cacheserver-5d8b6cd5c5",
+            "observedGeneration": 1,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "updateRevision": "sas-cacheserver-5d8b6cd5c5",
+            "updatedReplicas": 1
+        }
+    }
+]

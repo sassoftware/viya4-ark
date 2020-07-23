@@ -1,0 +1,18 @@
+{
+    "APIService": {
+        "apiGroup": "apiregistration.k8s.io",
+        "name": "apiservices",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    }
+}

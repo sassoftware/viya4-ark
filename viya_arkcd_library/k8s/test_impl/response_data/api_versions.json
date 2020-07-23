@@ -1,0 +1,14 @@
+[
+    "apps/v1",
+    "authentication.istio.io/v1alpha1",
+    "config.istio.io/v1alpha2",
+    "crunchydata.com/v1",
+    "metrics.k8s.io/v1beta1",
+    "networking.istio.io/v1alpha3",
+    "networking.k8s.io/v1",
+    "networking.k8s.io/v1beta1",
+    "node.k8s.io/v1beta1",
+    "security.istio.io/v1beta1",
+    "v1",
+    "viya.sas.com/v1alpha1"
+]

@@ -1,0 +1,300 @@
+[
+    {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+            "creationTimestamp": "2020-05-08T13:35:18Z",
+            "labels": {
+                "app": "prometheus-pushgateway",
+                "chart": "prometheus-pushgateway-1.4.0",
+                "heritage": "Tiller",
+                "release": "pushgateway-test"
+            },
+            "name": "pushgateway-test-prometheus-pushgateway",
+            "namespace": "test",
+            "resourceVersion": "3424502",
+            "selfLink": "/api/v1/namespaces/test/services/pushgateway-test-prometheus-pushgateway",
+            "uid": "3772a8cc-a9a5-4fad-abfa-663de46f14d5"
+        },
+        "spec": {
+            "clusterIP": "0.0.0.0",
+            "ports": [
+                {
+                    "name": "http",
+                    "port": 9091,
+                    "protocol": "TCP",
+                    "targetPort": 9091
+                }
+            ],
+            "selector": {
+                "app": "prometheus-pushgateway",
+                "release": "pushgateway-test"
+            },
+            "sessionAffinity": "None",
+            "type": "ClusterIP"
+        },
+        "status": {
+            "loadBalancer": {}
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "kubectl.kubernetes.io/last-applied-configuration": "",
+                "sas.com/component-name": "sas-annotations",
+                "sas.com/component-version": "2.2.25-20200506.1588775452057",
+                "sas.com/kustomize-base": "base",
+                "sas.com/version": "2.2.25"
+            },
+            "creationTimestamp": "2020-05-08T13:36:24Z",
+            "labels": {
+                "app.kubernetes.io/name": "sas-annotations",
+                "sas.com/admin": "namespace",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-annotations",
+            "namespace": "test",
+            "resourceVersion": "3424968",
+            "selfLink": "/api/v1/namespaces/test/services/sas-annotations",
+            "uid": "d1dcc061-104a-4c9f-90a8-24e88fa9fb22"
+        },
+        "spec": {
+            "clusterIP": "0.0.0.0",
+            "ports": [
+                {
+                    "name": "http",
+                    "port": 80,
+                    "protocol": "TCP",
+                    "targetPort": "http"
+                }
+            ],
+            "selector": {
+                "app.kubernetes.io/name": "sas-annotations",
+                "sas.com/deployment": "sas-viya"
+            },
+            "sessionAffinity": "None",
+            "type": "ClusterIP"
+        },
+        "status": {
+            "loadBalancer": {}
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "kubectl.kubernetes.io/last-applied-configuration": "",
+                "sas.com/component-name": "sas-cacheserver",
+                "sas.com/component-version": "1.20.14-20200421.1587502639695",
+                "sas.com/kustomize-base": "base",
+                "sas.com/version": "1.20.14"
+            },
+            "creationTimestamp": "2020-05-08T13:36:24Z",
+            "labels": {
+                "app.kubernetes.io/name": "sas-cacheserver",
+                "sas.com/admin": "namespace",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-cacheserver",
+            "namespace": "test",
+            "resourceVersion": "3424987",
+            "selfLink": "/api/v1/namespaces/test/services/sas-cacheserver",
+            "uid": "8c0de667-5a9e-4c9a-a518-54238688de33"
+        },
+        "spec": {
+            "clusterIP": "0.0.0.0",
+            "ports": [
+                {
+                    "name": "http",
+                    "port": 80,
+                    "protocol": "TCP",
+                    "targetPort": "http"
+                },
+                {
+                    "name": "cacheserver",
+                    "port": 14443,
+                    "protocol": "TCP",
+                    "targetPort": "cacheserver"
+                },
+                {
+                    "name": "healthcheck",
+                    "port": 8080,
+                    "protocol": "TCP",
+                    "targetPort": "http"
+                }
+            ],
+            "selector": {
+                "app.kubernetes.io/name": "sas-cacheserver",
+                "sas.com/deployment": "sas-viya"
+            },
+            "sessionAffinity": "None",
+            "type": "ClusterIP"
+        },
+        "status": {
+            "loadBalancer": {}
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+            "creationTimestamp": "2020-05-08T13:37:36Z",
+            "labels": {
+                "name": "sas-cas-operator"
+            },
+            "name": "sas-cas-operator",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "apps/v1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "Deployment",
+                    "name": "sas-cas-operator",
+                    "uid": "be604b87-0dc9-405c-992e-02255f5e13bf"
+                }
+            ],
+            "resourceVersion": "3426969",
+            "selfLink": "/api/v1/namespaces/test/services/sas-cas-operator",
+            "uid": "bc147286-7dcd-455f-9e08-ddca87e1f6c6"
+        },
+        "spec": {
+            "clusterIP": "0.0.0.0",
+            "ports": [
+                {
+                    "name": "metrics",
+                    "port": 8383,
+                    "protocol": "TCP",
+                    "targetPort": 8383
+                }
+            ],
+            "selector": {
+                "name": "sas-cas-operator"
+            },
+            "sessionAffinity": "None",
+            "type": "ClusterIP"
+        },
+        "status": {
+            "loadBalancer": {}
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+            "creationTimestamp": "2020-05-08T13:37:38Z",
+            "labels": {
+                "app.kubernetes.io/instance": "default",
+                "app.kubernetes.io/managed-by": "sas-cas-operator",
+                "app.kubernetes.io/name": "sas-cas-server"
+            },
+            "name": "sas-cas-server-default",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "viya.sas.com/v1alpha1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "CASDeployment",
+                    "name": "default",
+                    "uid": "757211ab-7345-4260-ae1a-5489550325fd"
+                }
+            ],
+            "resourceVersion": "3426989",
+            "selfLink": "/api/v1/namespaces/test/services/sas-cas-server-default",
+            "uid": "ebd5f594-4f1b-4707-b8a3-91518274f0c1"
+        },
+        "spec": {
+            "clusterIP": "0.0.0.0",
+            "ports": [
+                {
+                    "name": "cal",
+                    "port": 5570,
+                    "protocol": "TCP",
+                    "targetPort": 5570
+                },
+                {
+                    "name": "gc",
+                    "port": 5571,
+                    "protocol": "TCP",
+                    "targetPort": 5571
+                },
+                {
+                    "name": "http",
+                    "port": 8777,
+                    "protocol": "TCP",
+                    "targetPort": 8777
+                }
+            ],
+            "selector": {
+                "casoperator.sas.com/server": "default"
+            },
+            "sessionAffinity": "None",
+            "type": "ClusterIP"
+        },
+        "status": {
+            "loadBalancer": {}
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+            "creationTimestamp": "2020-05-08T13:37:38Z",
+            "labels": {
+                "app.kubernetes.io/instance": "default",
+                "app.kubernetes.io/managed-by": "sas-cas-operator",
+                "app.kubernetes.io/name": "sas-cas-server"
+            },
+            "name": "sas-cas-server-default-extnp",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "viya.sas.com/v1alpha1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "CASDeployment",
+                    "name": "default",
+                    "uid": "757211ab-7345-4260-ae1a-5489550325fd"
+                }
+            ],
+            "resourceVersion": "3426993",
+            "selfLink": "/api/v1/namespaces/test/services/sas-cas-server-default-extnp",
+            "uid": "d67f0a3a-7011-4a19-acc8-6bcf06254d86"
+        },
+        "spec": {
+            "clusterIP": "0.0.0.0",
+            "externalTrafficPolicy": "Cluster",
+            "ports": [
+                {
+                    "name": "cal",
+                    "nodePort": 18220,
+                    "port": 5570,
+                    "protocol": "TCP",
+                    "targetPort": 5570
+                }
+            ],
+            "selector": {
+                "casoperator.sas.com/controller-active": "1",
+                "casoperator.sas.com/node-type": "controller",
+                "casoperator.sas.com/server": "default"
+            },
+            "sessionAffinity": "None",
+            "type": "NodePort"
+        },
+        "status": {
+            "loadBalancer": {}
+        }
+    }
+]

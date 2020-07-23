@@ -1,0 +1,14 @@
+{
+    "node": {
+        "cpuCores": "398m",
+        "cpuUsed": "3%",
+        "memoryBytes": "2255Mi",
+        "memoryUsed": "14%"
+    },
+    "pod": {
+        "cpuCores": "13m",
+        "cpuUsed": null,
+        "memoryBytes": "50Mi",
+        "memoryUsed": null
+    }
+}

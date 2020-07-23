@@ -1,0 +1,560 @@
+[
+    {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "metadata": {
+            "annotations": {
+                "deployment.kubernetes.io/revision": "1"
+            },
+            "creationTimestamp": "2020-05-08T13:35:18Z",
+            "generation": 1,
+            "labels": {
+                "app": "prometheus-pushgateway",
+                "chart": "prometheus-pushgateway-1.4.0",
+                "heritage": "Tiller",
+                "release": "pushgateway-test"
+            },
+            "name": "pushgateway-test-prometheus-pushgateway",
+            "namespace": "test",
+            "resourceVersion": "3424632",
+            "selfLink": "/apis/apps/v1/namespaces/test/deployments/pushgateway-test-prometheus-pushgateway",
+            "uid": "e69f173b-8f1b-4b56-bd63-da9020cf6700"
+        },
+        "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+                "matchLabels": {
+                    "app": "prometheus-pushgateway",
+                    "release": "pushgateway-test"
+                }
+            },
+            "strategy": {
+                "type": "Recreate"
+            },
+            "template": {
+                "metadata": {
+                    "creationTimestamp": null,
+                    "labels": {
+                        "app": "prometheus-pushgateway",
+                        "release": "pushgateway-test"
+                    }
+                },
+                "spec": {
+                    "containers": [
+                        {
+                            "image": "prom/pushgateway:v1.2.0",
+                            "imagePullPolicy": "IfNotPresent",
+                            "livenessProbe": {
+                                "failureThreshold": 3,
+                                "httpGet": {
+                                    "path": "/-/healthy",
+                                    "port": 9091,
+                                    "scheme": "HTTP"
+                                },
+                                "initialDelaySeconds": 10,
+                                "periodSeconds": 10,
+                                "successThreshold": 1,
+                                "timeoutSeconds": 10
+                            },
+                            "name": "pushgateway",
+                            "ports": [
+                                {
+                                    "containerPort": 9091,
+                                    "name": "metrics",
+                                    "protocol": "TCP"
+                                }
+                            ],
+                            "readinessProbe": {
+                                "failureThreshold": 3,
+                                "httpGet": {
+                                    "path": "/-/ready",
+                                    "port": 9091,
+                                    "scheme": "HTTP"
+                                },
+                                "initialDelaySeconds": 10,
+                                "periodSeconds": 10,
+                                "successThreshold": 1,
+                                "timeoutSeconds": 10
+                            },
+                            "resources": {
+                            },
+                            "terminationMessagePath": "/dev/termination-log",
+                            "terminationMessagePolicy": "File",
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "/data",
+                                    "name": "storage-volume"
+                                }
+                            ]
+                        }
+                    ],
+                    "dnsPolicy": "ClusterFirst",
+                    "restartPolicy": "Always",
+                    "schedulerName": "default-scheduler",
+                    "securityContext": {
+                        "fsGroup": 65534,
+                        "runAsNonRoot": true,
+                        "runAsUser": 65534
+                    },
+                    "serviceAccount": "sas-pushgateway",
+                    "serviceAccountName": "sas-pushgateway",
+                    "terminationGracePeriodSeconds": 30,
+                    "volumes": [
+                        {
+                            "name": "storage-volume",
+                            "persistentVolumeClaim": {
+                                "claimName": "pushgateway-test-prometheus-pushgateway"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "status": {
+            "availableReplicas": 1,
+            "conditions": [
+                {
+                    "lastTransitionTime": "2020-05-08T13:35:41Z",
+                    "lastUpdateTime": "2020-05-08T13:35:41Z",
+                    "message": "Deployment has minimum availability.",
+                    "reason": "MinimumReplicasAvailable",
+                    "status": "True",
+                    "type": "Available"
+                },
+                {
+                    "lastTransitionTime": "2020-05-08T13:35:18Z",
+                    "lastUpdateTime": "2020-05-08T13:35:41Z",
+                    "message": "ReplicaSet \"pushgateway-test-prometheus-pushgateway-df9d7c96c\" has successfully progressed.",
+                    "reason": "NewReplicaSetAvailable",
+                    "status": "True",
+                    "type": "Progressing"
+                }
+            ],
+            "observedGeneration": 1,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "updatedReplicas": 1
+        }
+    },
+    {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "deployment.kubernetes.io/revision": "5",
+                "kubectl.kubernetes.io/last-applied-configuration": "",
+                "sas.com/component-name": "sas-annotations",
+                "sas.com/component-version": "2.2.25-20200506.1588775452057",
+                "sas.com/kustomize-base": "golang",
+                "sas.com/pod-uses-db-migrator": "true",
+                "sas.com/version": "2.2.25"
+            },
+            "creationTimestamp": "2020-05-08T13:36:27Z",
+            "generation": 5,
+            "labels": {
+                "app.kubernetes.io/name": "sas-annotations",
+                "sas.com/admin": "namespace",
+                "sas.com/deployment": "sas-viya",
+                "sas.com/deployment-base": "golang"
+            },
+            "name": "sas-annotations",
+            "namespace": "test",
+            "resourceVersion": "6626721",
+            "selfLink": "/apis/apps/v1/namespaces/test/deployments/sas-annotations",
+            "uid": "faa63c3c-e40a-4d9c-92a5-b7f41a0a7e49"
+        },
+        "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+                "matchLabels": {
+                    "app.kubernetes.io/name": "sas-annotations",
+                    "sas.com/deployment": "sas-viya"
+                }
+            },
+            "strategy": {
+                "rollingUpdate": {
+                    "maxSurge": "25%",
+                    "maxUnavailable": "25%"
+                },
+                "type": "RollingUpdate"
+            },
+            "template": {
+                "metadata": {
+                    "annotations": {
+                        "cadence.sas.com/display-name": "Fast R/TR",
+                        "cadence.sas.com/name": "fast",
+                        "cadence.sas.com/release": "20200508.1588944122646",
+                        "cadence.sas.com/version": "2020",
+                        "sas.com/certificate-file-format": "pem",
+                        "sas.com/component-name": "sas-annotations",
+                        "sas.com/component-version": "2.2.25-20200506.1588775452057",
+                        "sas.com/kustomize-base": "golang",
+                        "sas.com/restartedAt": "2020-05-09 00:16:42.88092779 +0000 UTC m=+35.511671540",
+                        "sas.com/version": "2.2.25"
+                    },
+                    "creationTimestamp": null,
+                    "labels": {
+                        "app": "sas-annotations",
+                        "app.kubernetes.io/name": "sas-annotations",
+                        "sas.com/deployment": "sas-viya"
+                    }
+                },
+                "spec": {
+                    "containers": [
+                        {
+                            "env": [
+                                {
+                                    "name": "SAS_K8S_DEPLOYMENT_NAME",
+                                    "value": "sas-annotations"
+                                }
+                            ],
+                            "envFrom": [
+                                {
+                                    "configMapRef": {
+                                        "name": "sas-go-config-256bgc697g"
+                                    }
+                                },
+                                {
+                                    "configMapRef": {
+                                        "name": "sas-shared-config-dh4f2c4mk9"
+                                    }
+                                }
+                            ],
+                            "image": "test.sas.com/test/sas-annotations:2.2.25-20200506.1588775452057",
+                            "imagePullPolicy": "IfNotPresent",
+                            "livenessProbe": {
+                                "exec": {
+                                    "command": [
+                                        "/opt/sas/viya/home/bin/sas-liveness-tool",
+                                        "-manifest-file",
+                                        "/opt/sas/viya/home/share/sas-annotations/run-manifest.json"
+                                    ]
+                                },
+                                "failureThreshold": 3,
+                                "periodSeconds": 10,
+                                "successThreshold": 1,
+                                "timeoutSeconds": 1
+                            },
+                            "name": "sas-annotations",
+                            "ports": [
+                                {
+                                    "containerPort": 8080,
+                                    "name": "http",
+                                    "protocol": "TCP"
+                                }
+                            ],
+                            "readinessProbe": {
+                                "failureThreshold": 3,
+                                "httpGet": {
+                                    "path": "/internal/ready",
+                                    "port": "http",
+                                    "scheme": "HTTP"
+                                },
+                                "periodSeconds": 10,
+                                "successThreshold": 1,
+                                "timeoutSeconds": 1
+                            },
+                            "resources": {
+                                "limits": {
+                                    "cpu": "500m",
+                                    "memory": "500Mi"
+                                },
+                                "requests": {
+                                    "cpu": "50m",
+                                    "memory": "50Mi"
+                                }
+                            },
+                            "terminationMessagePath": "/dev/termination-log",
+                            "terminationMessagePolicy": "File"
+                        }
+                    ],
+                    "dnsPolicy": "ClusterFirst",
+                    "imagePullSecrets": [
+                        {
+                            "name": "sas-image-pull-secrets-c56m7f4858"
+                        }
+                    ],
+                    "initContainers": [
+                        {
+                            "args": [
+                                "cp -rf meta /data"
+                            ],
+                            "command": [
+                                "/bin/sh",
+                                "-c"
+                            ],
+                            "image": "test.sas.com/test/sas-annotations:2.2.25-20200506.1588775452057",
+                            "imagePullPolicy": "IfNotPresent",
+                            "name": "hydrator",
+                            "resources": {
+                                "limits": {
+                                    "cpu": "500m",
+                                    "memory": "128Mi"
+                                },
+                                "requests": {
+                                    "cpu": "75m",
+                                    "memory": "64Mi"
+                                }
+                            },
+                            "terminationMessagePath": "/dev/termination-log",
+                            "terminationMessagePolicy": "File",
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "/data",
+                                    "name": "shared-vol"
+                                }
+                            ]
+                        },
+                        {
+                            "env": [
+                                {
+                                    "name": "SAS_SERVICE_NAME",
+                                    "value": "sas-annotations"
+                                }
+                            ],
+                            "envFrom": [
+                                {
+                                    "configMapRef": {
+                                        "name": "sas-go-config-256bgc697g"
+                                    }
+                                },
+                                {
+                                    "configMapRef": {
+                                        "name": "sas-shared-config-dh4f2c4mk9"
+                                    }
+                                },
+                                {
+                                    "configMapRef": {
+                                        "name": "sas-java-config-8bc8mbd5mk"
+                                    }
+                                }
+                            ],
+                            "image": "test.sas.com/test/sas-db-migrator:0.0.5-20200419.1587347883547",
+                            "imagePullPolicy": "IfNotPresent",
+                            "name": "sas-db-migrator",
+                            "resources": {
+                                "limits": {
+                                    "cpu": "500m",
+                                    "memory": "500Mi"
+                                },
+                                "requests": {
+                                    "cpu": "100m",
+                                    "memory": "90Mi"
+                                }
+                            },
+                            "terminationMessagePath": "/dev/termination-log",
+                            "terminationMessagePolicy": "File",
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "/data",
+                                    "name": "shared-vol"
+                                }
+                            ]
+                        }
+                    ],
+                    "restartPolicy": "Always",
+                    "schedulerName": "default-scheduler",
+                    "securityContext": {},
+                    "terminationGracePeriodSeconds": 30,
+                    "volumes": [
+                        {
+                            "emptyDir": {},
+                            "name": "shared-vol"
+                        }
+                    ]
+                }
+            }
+        },
+        "status": {
+            "conditions": [
+                {
+                    "lastTransitionTime": "2020-05-08T14:02:44Z",
+                    "lastUpdateTime": "2020-05-09T00:17:44Z",
+                    "message": "ReplicaSet \"sas-annotations-58db55fd65\" has successfully progressed.",
+                    "reason": "NewReplicaSetAvailable",
+                    "status": "True",
+                    "type": "Progressing"
+                },
+                {
+                    "lastTransitionTime": "2020-05-18T21:26:36Z",
+                    "lastUpdateTime": "2020-05-18T21:26:36Z",
+                    "message": "Deployment does not have minimum availability.",
+                    "reason": "MinimumReplicasUnavailable",
+                    "status": "False",
+                    "type": "Available"
+                }
+            ],
+            "observedGeneration": 5,
+            "replicas": 1,
+            "unavailableReplicas": 1,
+            "updatedReplicas": 1
+        }
+    },
+    {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "deployment.kubernetes.io/revision": "1",
+                "kubectl.kubernetes.io/last-applied-configuration": "",
+                "sas.com/component-name": "sas-cas-operator",
+                "sas.com/component-version": "2.0.3-20200506.1588795588272",
+                "sas.com/version": "2.0.3"
+            },
+            "creationTimestamp": "2020-05-08T13:36:28Z",
+            "generation": 1,
+            "labels": {
+                "sas.com/admin": "namespace",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-cas-operator",
+            "namespace": "test",
+            "resourceVersion": "3426956",
+            "selfLink": "/apis/apps/v1/namespaces/test/deployments/sas-cas-operator",
+            "uid": "be604b87-0dc9-405c-992e-02255f5e13bf"
+        },
+        "spec": {
+            "progressDeadlineSeconds": 600,
+            "replicas": 1,
+            "revisionHistoryLimit": 10,
+            "selector": {
+                "matchLabels": {
+                    "name": "sas-cas-operator",
+                    "sas.com/deployment": "sas-viya"
+                }
+            },
+            "strategy": {
+                "rollingUpdate": {
+                    "maxSurge": "25%",
+                    "maxUnavailable": "25%"
+                },
+                "type": "RollingUpdate"
+            },
+            "template": {
+                "metadata": {
+                    "annotations": {
+                        "cadence.sas.com/display-name": "Fast R/TR",
+                        "cadence.sas.com/name": "fast",
+                        "cadence.sas.com/release": "20200508.1588944122646",
+                        "cadence.sas.com/version": "2020",
+                        "sas.com/component-name": "sas-cas-operator",
+                        "sas.com/component-version": "2.0.3-20200506.1588795588272",
+                        "sas.com/version": "2.0.3",
+                        "sidecar.istio.io/inject": "false"
+                    },
+                    "creationTimestamp": null,
+                    "labels": {
+                        "name": "sas-cas-operator",
+                        "sas.com/deployment": "sas-viya"
+                    }
+                },
+                "spec": {
+                    "containers": [
+                        {
+                            "command": [
+                                "/opt/sas/viya/home/bin/cas"
+                            ],
+                            "env": [
+                                {
+                                    "name": "SAS_LICENSE",
+                                    "valueFrom": {
+                                        "secretKeyRef": {
+                                            "key": "SAS_LICENSE",
+                                            "name": "sas-license-fk2t597tbh"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "WATCH_NAMESPACE",
+                                    "valueFrom": {
+                                        "fieldRef": {
+                                            "apiVersion": "v1",
+                                            "fieldPath": "metadata.namespace"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "POD_NAME",
+                                    "valueFrom": {
+                                        "fieldRef": {
+                                            "apiVersion": "v1",
+                                            "fieldPath": "metadata.name"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "OPERATOR_NAME",
+                                    "value": "sas-cas-operator"
+                                }
+                            ],
+                            "image": "test.sas.com/test/sas-cas-operator:2.0.3-20200506.1588795588272",
+                            "imagePullPolicy": "Always",
+                            "name": "cas",
+                            "resources": {
+                                "limits": {
+                                    "cpu": "100m",
+                                    "memory": "100Mi"
+                                },
+                                "requests": {
+                                    "cpu": "5m",
+                                    "memory": "25Mi"
+                                }
+                            },
+                            "terminationMessagePath": "/dev/termination-log",
+                            "terminationMessagePolicy": "File"
+                        }
+                    ],
+                    "dnsPolicy": "ClusterFirst",
+                    "imagePullSecrets": [
+                        {
+                            "name": "sas-image-pull-secrets-c56m7f4858"
+                        }
+                    ],
+                    "restartPolicy": "Always",
+                    "schedulerName": "default-scheduler",
+                    "securityContext": {},
+                    "serviceAccount": "sas-cas-operator",
+                    "serviceAccountName": "sas-cas-operator",
+                    "terminationGracePeriodSeconds": 30
+                }
+            }
+        },
+        "status": {
+            "availableReplicas": 1,
+            "conditions": [
+                {
+                    "lastTransitionTime": "2020-05-08T13:37:34Z",
+                    "lastUpdateTime": "2020-05-08T13:37:34Z",
+                    "message": "Deployment has minimum availability.",
+                    "reason": "MinimumReplicasAvailable",
+                    "status": "True",
+                    "type": "Available"
+                },
+                {
+                    "lastTransitionTime": "2020-05-08T13:36:28Z",
+                    "lastUpdateTime": "2020-05-08T13:37:34Z",
+                    "message": "ReplicaSet \"sas-cas-operator-7f8b77dc78\" has successfully progressed.",
+                    "reason": "NewReplicaSetAvailable",
+                    "status": "True",
+                    "type": "Progressing"
+                }
+            ],
+            "observedGeneration": 1,
+            "readyReplicas": 1,
+            "replicas": 1,
+            "updatedReplicas": 1
+        }
+    }
+]

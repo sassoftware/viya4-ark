@@ -1,0 +1,167 @@
+{# ----------------------------------------------------------- #}
+{# pod.html.j2                                                 #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Pod Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_status_rows %}
+{% if resource_details.resourceDefinition.spec.nodeName is defined %}
+<tr>
+  <th title="The Node where this Pod has been scheduled">Node Assignment</th>
+{% if report_data.kubernetes.nodes["items"][resource_details.resourceDefinition.spec.nodeName] is defined %}
+  <td>
+    <a class="nested-accordions-rel-link"
+       href="#node-{{ resource_details.resourceDefinition.spec.nodeName | replace('.','-') }}">
+      {{ resource_details.resourceDefinition.spec.nodeName }}
+    </a>
+  </td>
+{% else %}
+  <td>{{ resource_details.resourceDefinition.spec.nodeName }}</td>
+{% endif %}
+</tr>
+{% endif %}
+{{ add_vert_header_table_row(label="Phase",
+                             desc="The current phase of this Pod in its lifecycle",
+                             value=resource_details.resourceDefinition.status.phase) }}
+{{ add_vert_header_table_row(label="Reason",
+                             desc="A brief message indicating why this Pod is in its current state",
+                             value=resource_details.resourceDefinition.status.reason) }}
+{{ add_vert_header_table_row(label="Message",
+                             desc="Expanded message indicating why this Pod is in its current state",
+                             value=resource_details.resourceDefinition.status.message) }}
+{{ add_vert_header_table_row(label="Start Time",
+                             desc="The time when this Pod was acknowledged by the Kubelet",
+                             value=resource_details.resourceDefinition.status.startTime) }}
+{{ add_vert_header_table_row(label="Pod IP Address",
+                             desc="The IP address allocated to this Pod",
+                             value=resource_details.resourceDefinition.status.podIP) }}
+{% endblock %}
+
+{% macro container_status_accordion(container) %}
+<div class="jq-accordion">
+  <h8>{{ container.name }}</h8>
+  <div>
+    <table>
+      {{ add_vert_header_table_row(label="Image",
+                                   desc="The image this container is running",
+                                   value=container.image) }}
+    {# STATE: Running #}
+    {% if container.state.running is defined %}
+      {{ add_vert_header_table_row(label="State",
+                                   desc="The current state of this container",
+                                   value="Running") }}
+      {{ add_vert_header_table_row(label="Started At",
+                                   desc="The time at which this container was last (re-)started",
+                                   value=container.state.running.startedAt) }}
+    {# STATE: Terminated #}
+    {% elif container.state.terminated is defined %}
+      {{ add_vert_header_table_row(label="State",
+                                   desc="The current state of this container",
+                                   value="Terminated") }}
+      {{ add_vert_header_table_row(label="Reason",
+                                   desc="The reason for the last termination of this container",
+                                   value=container.state.terminated.reason) }}
+      {{ add_vert_header_table_row(label="Message",
+                                   desc="A message regarding the last termination of this container",
+                                   value=container.state.terminated.message) }}
+      {{ add_vert_header_table_row(label="Started",
+                                   desc="The time at which the previous execution of this container started",
+                                   value=container.state.terminated.startedAt) }}
+      {{ add_vert_header_table_row(label="Finished",
+                                   desc="The time at which this container last terminated",
+                                   value=container.state.terminated.finishedAt) }}
+      {{ add_vert_header_table_row(label="Exit Code",
+                                   desc="The exit status from the last termination of this container",
+                                   value=container.state.terminated.exitCode) }}
+    {# STATE: Waiting #}
+    {% elif container.state.waiting is defined %}
+      {{ add_vert_header_table_row(label="State",
+                                   desc="The current state of this container",
+                                   value="Waiting") }}
+      {{ add_vert_header_table_row(label="Reason",
+                                   desc="The reason this container is not yet running",
+                                   value=container.state.waiting.reason) }}
+      {{ add_vert_header_table_row(label="Message",
+                                   desc="A message regarding why this container is not yet running",
+                                   value=container.state.waiting.message) }}
+    {% endif %}
+      {{ add_vert_header_table_row(label="Ready",
+                                   desc="Has this container passed its readiness probe?",
+                                   value=container.ready) }}
+      {{ add_vert_header_table_row(label="Restart Count",
+                                   desc="The number of times this container has restarted",
+                                   value=container.restartCount) }}
+    </table>
+  </div>
+</div>
+{% endmacro %}
+
+{% block additional_resource_details %}
+<h7>Specifications</h7>
+<table>
+  {{ add_vert_header_table_row(label="Restart Policy",
+                               desc="The restart policy for all containers in this Pod",
+                               value=resource_details.resourceDefinition.spec.restartPolicy) }}
+  {{ add_vert_header_table_row(label="Service Account Name",
+                               desc="The name of the ServiceAccount used to run this Pod",
+                               value=resource_details.resourceDefinition.spec.serviceAccountName) }}
+</table>
+
+{% if resource_details.resourceDefinition.status.containerStatuses is defined %}
+<h7>Containers</h7>
+{% for container_status in resource_details.resourceDefinition.status.containerStatuses %}
+  {{ container_status_accordion(container_status) }}
+{% endfor %}
+{% endif %}
+
+{% if resource_details.resourceDefinition.status.initContainerStatuses is defined %}
+</br>
+<h7>Init Containers</h7>
+{% for container_status in resource_details.resourceDefinition.status.initContainerStatuses %}
+  {{ container_status_accordion(container_status) }}
+{% endfor %}
+{% endif %}
+
+{% if resource_details.resourceDefinition.status.ephemeralContainerStatuses is defined %}
+</br>
+<h7>Ephemeral Containers</h7>
+{% for container_status in resource_details.resourceDefinition.status.ephemeralContainerStatuses %}
+  {{ container_status_accordion(container_status) }}
+{% endfor %}
+{% endif %}
+</br>
+
+{% if resource_details.ext.metrics is defined %}
+<div class="jq-accordion">
+  <h7>Metrics</h7>
+  <div>
+    <table>
+      {{ add_vert_header_table_row(label="CPU (cores)",
+                                   desc="The total CPU core usage for this Pod",
+                                   value=resource_details.ext.metrics.cpuCores) }}
+      {{ add_vert_header_table_row(label="Memory (bytes)",
+                                   desc="The total memory usage in bytes for this Pod",
+                                   value=resource_details.ext.metrics.memoryBytes) }}
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if resource_details.ext.logSnip is defined %}
+<div class="jq-accordion">
+  <h7>Log Snippet</h7>
+  <div>
+    <div class="log-like-display">
+      {{ resource_details.ext.logSnip | join("</br></br>") }}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,47 @@
+{# ----------------------------------------------------------- #}
+{# resource.html.j2                                            #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Generic Resource Template #}
+
+{# Resource Status #}
+<h7>Status</h7>
+<table>
+{% if resource_details.resourceDefinition.metadata.annotations is defined %}
+  {{ add_vert_header_table_row(label="Version",
+                               desc="The version of this " + kind_name,
+                               value=resource_details.resourceDefinition.metadata.annotations["sas.com/component-version"]) }}
+{% endif %}
+  {{ add_vert_header_table_row(label="Cluster Name",
+                               desc="The name of the cluster this " + kind_name + " belongs to",
+                               value=resource_details.resourceDefinition.metadata.clusterName) }}
+  {{ add_vert_header_table_row(label="Created",
+                               desc="The server time when this " + kind_name + " was created",
+                               value=resource_details.resourceDefinition.metadata.creationTimestamp) }}
+  {{ add_vert_header_table_row(label="Deleted",
+                               desc="The date and time at which this " + kind_name + " will be deleted",
+                               value=resource_details.resourceDefinition.metadata.deletionTimestamp) }}
+  {% block additional_status_rows %}{% endblock %}
+</table>
+{# Resource Status #}
+
+{# Additional Resource Details #}
+{% block additional_resource_details %}{% endblock %}
+{# Additional Resource Details #}
+
+{# Resource Definition #}
+{% if include_definitions %}
+<div class="jq-accordion">
+  <h7 title="The complete resource definition for this {{ kind_name }}">Resource Definition</h7>
+  <div>
+    <pre>{{ resource_details.resourceDefinition | tojson(indent=2) }}</pre>
+  </div>
+</div>
+{% endif %}
+{# Resource Definition #}

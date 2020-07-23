@@ -1,0 +1,39 @@
+{# ----------------------------------------------------------- #}
+{# replicaset.html.j2                                          #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# ReplicaSet Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_status_rows %}
+{{ add_vert_header_table_row(label="Current Replicas",
+                             desc="The total number of replicas targeted by this ReplicaSet",
+                             value=resource_details.resourceDefinition.status.replicas) }}
+{{ add_vert_header_table_row(label="Available Replicas",
+                             desc="The total number of replicas that are available (i.e. have met the &quot;Minimum Readiness&quot;)",
+                             value=resource_details.resourceDefinition.status.availableReplicas) }}
+{{ add_vert_header_table_row(label="Ready Replicas",
+                             desc="Total number of replicas in a &quot;Ready&quot; state (may not have yet met the &quot;Minimum Readiness&quot;)",
+                             value=resource_details.resourceDefinition.status.readyReplicas) }}
+{{ add_vert_header_table_row(label="Fully Labeled Replicas",
+                             desc="The number of Pods that have labels matching the labels of the ReplicaSet's Pod template",
+                             value=resource_details.resourceDefinition.status.fullyLabeledReplicas) }}
+{% endblock %}
+
+{% block additional_resource_details %}
+<h7>Specifications</h7>
+<table>
+  {{ add_vert_header_table_row(label="Replicas",
+                               desc="The desired number of Replicas",
+                               value=resource_details.resourceDefinition.spec.replicas) }}
+  {{ add_vert_header_table_row(label="Minimum Readiness (seconds)",
+                               desc="The minimum time a Pod should be ready without any containers crashing to be considered available",
+                               value=resource_details.resourceDefinition.spec.minReadySeconds) }}
+</table>
+{% endblock %}

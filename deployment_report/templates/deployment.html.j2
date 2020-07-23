@@ -1,0 +1,62 @@
+{# ----------------------------------------------------------- #}
+{# deployment.html.j2                                          #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Deployment Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_status_rows %}
+{{ add_vert_header_table_row(label="Paused",
+                             desc="Is this Deployment currently paused?",
+                             value=resource_details.resourceDefinition.spec.paused) }}
+{{ add_vert_header_table_row(label="Current Pods",
+                             desc="The total number of non-terminated Pods targeted by this Deployment",
+                             value=resource_details.resourceDefinition.status.replicas) }}
+{{ add_vert_header_table_row(label="Available Pods",
+                             desc="The total number of Pods that are available (i.e. have met the &quot;Minimum Readiness&quot;)",
+                             value=resource_details.resourceDefinition.status.availableReplicas) }}
+{{ add_vert_header_table_row(label="Ready Pods",
+                             desc="The total number of Pods in a &quot;Ready&quot; state (may not have yet met the &quot;Minimum Readiness&quot;)",
+                             value=resource_details.resourceDefinition.status.readyReplicas) }}
+{{ add_vert_header_table_row(label="Updated Pods",
+                             desc="The total number of non-terminated Pods with desired template spec",
+                             value=resource_details.resourceDefinition.status.updatedReplicas) }}
+{{ add_vert_header_table_row(label="Unavailable Pods",
+                             desc="The total number of unavailable Pods",
+                             value=resource_details.resourceDefinition.status.unavailableReplicas) }}
+{% endblock %}
+
+{% block additional_resource_details %}
+<h7>Specifications</h7>
+<table>
+  {{ add_vert_header_table_row(label="Desired Pods",
+                               desc="The desired number of Pods",
+                               value=resource_details.resourceDefinition.spec.replicas) }}
+  {{ add_vert_header_table_row(label="Minimum Readiness (seconds)",
+                               desc="The minimum time a Pod should be ready without any containers crashing to be considered available",
+                               value=resource_details.resourceDefinition.spec.minReadySeconds) }}
+  {{ add_vert_header_table_row(label="Progress Deadline (seconds)",
+                               desc="The maximum time for this Deployment to make progress before it is considered failed",
+                               value=resource_details.resourceDefinition.spec.progressDeadlineSeconds) }}
+  {{ add_vert_header_table_row(label="Revision History Limit",
+                               desc="The number of old ReplicaSets to retain to allow rollback",
+                               value=resource_details.resourceDefinition.spec.revisionHistoryLimit) }}
+  {{ add_vert_header_table_row(label="Update Strategy",
+                               desc="The strategy to use when replacing existing Pods with new ones",
+                               value=resource_details.resourceDefinition.spec.strategy.type) }}
+{% if resource_details.resourceDefinition.spec.strategy.type == "RollingUpdate" %}
+  {{ add_vert_header_table_row(label="Maximum Update Surge",
+                               desc="The maximum number of Pods that can be scheduled above the desired amount during an update",
+                               value=resource_details.resourceDefinition.spec.strategy.rollingUpdate.maxSurge) }}
+  {{ add_vert_header_table_row(label="Maximum Update Unavailability",
+                               desc="The maximum number of Pods than can be unavailable during an update",
+                               value=resource_details.resourceDefinition.spec.strategy.rollingUpdate.maxUnavailable) }}
+{% endif %}
+</table>
+{% endblock %}

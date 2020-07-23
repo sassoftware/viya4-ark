@@ -1,0 +1,1578 @@
+[
+    {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+            "creationTimestamp": "2020-05-08T13:35:18Z",
+            "generateName": "pushgateway-test-prometheus-pushgateway-df9d7c96c-",
+            "labels": {
+                "app": "prometheus-pushgateway",
+                "pod-template-hash": "df9d7c96c",
+                "release": "pushgateway-test"
+            },
+            "name": "pushgateway-test-prometheus-pushgateway-df9d7c96c-4n66t",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "apps/v1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "ReplicaSet",
+                    "name": "pushgateway-test-prometheus-pushgateway-df9d7c96c",
+                    "uid": "023cb67b-cea7-491d-a77f-a7b3bbc62cbb"
+                }
+            ],
+            "resourceVersion": "3424629",
+            "selfLink": "/api/v1/namespaces/test/pods/pushgateway-test-prometheus-pushgateway-df9d7c96c-4n66t",
+            "uid": "c8f72d2b-129d-4327-a302-47eca56502fb"
+        },
+        "spec": {
+            "containers": [
+                {
+                    "image": "prom/pushgateway:v1.2.0",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                        "failureThreshold": 3,
+                        "httpGet": {
+                            "path": "/-/healthy",
+                            "port": 9091,
+                            "scheme": "HTTP"
+                        },
+                        "initialDelaySeconds": 10,
+                        "periodSeconds": 10,
+                        "successThreshold": 1,
+                        "timeoutSeconds": 10
+                    },
+                    "name": "pushgateway",
+                    "ports": [
+                        {
+                            "containerPort": 9091,
+                            "name": "metrics",
+                            "protocol": "TCP"
+                        }
+                    ],
+                    "readinessProbe": {
+                        "failureThreshold": 3,
+                        "httpGet": {
+                            "path": "/-/ready",
+                            "port": 9091,
+                            "scheme": "HTTP"
+                        },
+                        "initialDelaySeconds": 10,
+                        "periodSeconds": 10,
+                        "successThreshold": 1,
+                        "timeoutSeconds": 10
+                    },
+                    "resources": {
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/data",
+                            "name": "storage-volume"
+                        },
+                        {
+                            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                            "name": "sas-pushgateway-token-k6f5p",
+                            "readOnly": true
+                        }
+                    ]
+                }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "k8s-master-node.test.sas.com",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {
+                "fsGroup": 65534,
+                "runAsNonRoot": true,
+                "runAsUser": 65534
+            },
+            "serviceAccount": "sas-pushgateway",
+            "serviceAccountName": "sas-pushgateway",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/not-ready",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                },
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/unreachable",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                }
+            ],
+            "volumes": [
+                {
+                    "name": "storage-volume",
+                    "persistentVolumeClaim": {
+                        "claimName": "pushgateway-test-prometheus-pushgateway"
+                    }
+                },
+                {
+                    "name": "sas-pushgateway-token-k6f5p",
+                    "secret": {
+                        "defaultMode": 420,
+                        "secretName": "sas-pushgateway-token-k6f5p"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "conditions": [
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:35:18Z",
+                    "status": "True",
+                    "type": "Initialized"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:35:41Z",
+                    "status": "True",
+                    "type": "Ready"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:35:41Z",
+                    "status": "True",
+                    "type": "ContainersReady"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:35:18Z",
+                    "status": "True",
+                    "type": "PodScheduled"
+                }
+            ],
+            "containerStatuses": [
+                {
+                    "containerID": "docker://50fdd72657c4be39505ade0160d09b2b33e077be1d4871b975ea9acee9e0d76d",
+                    "image": "prom/pushgateway:v1.2.0",
+                    "imageID": "docker-pullable://prom/pushgateway@sha256:0a9031142481adfb964fe7f65e698d01a6260de982f0322bc44496c3dcc866f1",
+                    "lastState": {
+                    },
+                    "name": "pushgateway",
+                    "ready": true,
+                    "restartCount": 0,
+                    "started": true,
+                    "state": {
+                        "running": {
+                            "startedAt": "2020-05-08T13:35:22Z"
+                        }
+                    }
+                }
+            ],
+            "hostIP": "0.0.0.0",
+            "phase": "Running",
+            "podIP": "0.0.0.0",
+            "podIPs": [
+                {
+                    "ip": "0.0.0.0"
+                }
+            ],
+            "qosClass": "BestEffort",
+            "startTime": "2020-05-08T13:35:18Z"
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "sas.com/component-name": "sas-annotations",
+                "sas.com/component-version": "2.2.25-20200506.1588775452057",
+                "sas.com/kustomize-base": "golang",
+                "sas.com/restartedAt": "2020-05-09 00:16:42.88092779 +0000 UTC m=+35.511671540",
+                "sas.com/version": "2.2.25"
+            },
+            "creationTimestamp": "2020-05-09T00:16:45Z",
+            "generateName": "sas-annotations-58db55fd65-",
+            "labels": {
+                "app": "sas-annotations",
+                "app.kubernetes.io/name": "sas-annotations",
+                "pod-template-hash": "58db55fd65",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-annotations-58db55fd65-l2jrw",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "apps/v1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "ReplicaSet",
+                    "name": "sas-annotations-58db55fd65",
+                    "uid": "3dff122a-a103-4d19-b2b3-d0a07e2b5ba8"
+                }
+            ],
+            "resourceVersion": "11419232",
+            "selfLink": "/api/v1/namespaces/test/pods/sas-annotations-58db55fd65-l2jrw",
+            "uid": "b0e2b9c6-58f9-4c81-94b9-8ea2be06a7c1"
+        },
+        "spec": {
+            "containers": [
+                {
+                    "env": [
+                        {
+                            "name": "SAS_K8S_DEPLOYMENT_NAME",
+                            "value": "sas-annotations"
+                        }
+                    ],
+                    "envFrom": [
+                        {
+                            "configMapRef": {
+                                "name": "sas-go-config-256bgc697g"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-shared-config-dh4f2c4mk9"
+                            }
+                        }
+                    ],
+                    "image": "test.sas.com/test/sas-annotations:2.2.25-20200506.1588775452057",
+                    "imagePullPolicy": "IfNotPresent",
+                    "livenessProbe": {
+                        "exec": {
+                            "command": [
+                                "/opt/sas/viya/home/bin/sas-liveness-tool",
+                                "-manifest-file",
+                                "/opt/sas/viya/home/share/sas-annotations/run-manifest.json"
+                            ]
+                        },
+                        "failureThreshold": 3,
+                        "periodSeconds": 10,
+                        "successThreshold": 1,
+                        "timeoutSeconds": 1
+                    },
+                    "name": "sas-annotations",
+                    "ports": [
+                        {
+                            "containerPort": 8080,
+                            "name": "http",
+                            "protocol": "TCP"
+                        }
+                    ],
+                    "readinessProbe": {
+                        "failureThreshold": 3,
+                        "httpGet": {
+                            "path": "/internal/ready",
+                            "port": "http",
+                            "scheme": "HTTP"
+                        },
+                        "periodSeconds": 10,
+                        "successThreshold": 1,
+                        "timeoutSeconds": 1
+                    },
+                    "resources": {
+                        "limits": {
+                            "cpu": "500m",
+                            "memory": "500Mi"
+                        },
+                        "requests": {
+                            "cpu": "50m",
+                            "memory": "50Mi"
+                        }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                            "name": "default-token-68cvs",
+                            "readOnly": true
+                        }
+                    ]
+                }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "imagePullSecrets": [
+                {
+                    "name": "sas-image-pull-secrets-c56m7f4858"
+                }
+            ],
+            "initContainers": [
+                {
+                    "args": [
+                        "cp -rf meta /data"
+                    ],
+                    "command": [
+                        "/bin/sh",
+                        "-c"
+                    ],
+                    "image": "test.sas.com/test/sas-annotations:2.2.25-20200506.1588775452057",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "hydrator",
+                    "resources": {
+                        "limits": {
+                            "cpu": "500m",
+                            "memory": "128Mi"
+                        },
+                        "requests": {
+                            "cpu": "75m",
+                            "memory": "64Mi"
+                        }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/data",
+                            "name": "shared-vol"
+                        },
+                        {
+                            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                            "name": "default-token-68cvs",
+                            "readOnly": true
+                        }
+                    ]
+                },
+                {
+                    "env": [
+                        {
+                            "name": "SAS_SERVICE_NAME",
+                            "value": "sas-annotations"
+                        }
+                    ],
+                    "envFrom": [
+                        {
+                            "configMapRef": {
+                                "name": "sas-go-config-256bgc697g"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-shared-config-dh4f2c4mk9"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-java-config-8bc8mbd5mk"
+                            }
+                        }
+                    ],
+                    "image": "test.sas.com/test/sas-db-migrator:0.0.5-20200419.1587347883547",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "sas-db-migrator",
+                    "resources": {
+                        "limits": {
+                            "cpu": "500m",
+                            "memory": "500Mi"
+                        },
+                        "requests": {
+                            "cpu": "100m",
+                            "memory": "90Mi"
+                        }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/data",
+                            "name": "shared-vol"
+                        },
+                        {
+                            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                            "name": "default-token-68cvs",
+                            "readOnly": true
+                        }
+                    ]
+                }
+            ],
+            "nodeName": "k8s-master-node.test.sas.com",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/not-ready",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                },
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/unreachable",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                }
+            ],
+            "volumes": [
+                {
+                    "emptyDir": {},
+                    "name": "shared-vol"
+                },
+                {
+                    "name": "default-token-68cvs",
+                    "secret": {
+                        "defaultMode": 420,
+                        "secretName": "default-token-68cvs"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "conditions": [
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-09T00:17:32Z",
+                    "status": "True",
+                    "type": "Initialized"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-18T21:26:36Z",
+                    "message": "containers with unready status: [sas-annotations]",
+                    "reason": "ContainersNotReady",
+                    "status": "False",
+                    "type": "Ready"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-18T21:26:36Z",
+                    "message": "containers with unready status: [sas-annotations]",
+                    "reason": "ContainersNotReady",
+                    "status": "False",
+                    "type": "ContainersReady"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-09T00:16:45Z",
+                    "status": "True",
+                    "type": "PodScheduled"
+                }
+            ],
+            "containerStatuses": [
+                {
+                    "containerID": "docker://59c6c4fc36529bf4ffd434eb30e0b8e726cd6bbec9fdb53262ba5b75f6d0235c",
+                    "image": "test.sas.com/test/sas-annotations:2.2.25-20200506.1588775452057",
+                    "imageID": "docker-pullable://test.sas.com/test/sas-annotations@sha256:755f7bb150854c5e4b490d732a1cfae73d7a3ade7a9d8c696040db13bcd0fe7e",
+                    "lastState": {
+                        "terminated": {
+                            "containerID": "docker://481bb52d37dcf41b5259d825c90ad97088b2ecbdd052b873c0ba2ab70ea2971c",
+                            "exitCode": 1,
+                            "finishedAt": "2020-06-02T18:01:35Z",
+                            "reason": "Error",
+                            "startedAt": "2020-06-02T16:54:36Z"
+                        }
+                    },
+                    "name": "sas-annotations",
+                    "ready": false,
+                    "restartCount": 369,
+                    "started": true,
+                    "state": {
+                        "running": {
+                            "startedAt": "2020-06-02T18:01:39Z"
+                        }
+                    }
+                }
+            ],
+            "hostIP": "10.104.215.7",
+            "initContainerStatuses": [
+                {
+                    "containerID": "docker://7dc0cc468d552c989345a9fe48213efd2ee0957f2f59dd121f9aebe8f574974d",
+                    "image": "test.sas.com/test/sas-annotations:2.2.25-20200506.1588775452057",
+                    "imageID": "docker-pullable://test.sas.com/test/sas-annotations@sha256:755f7bb150854c5e4b490d732a1cfae73d7a3ade7a9d8c696040db13bcd0fe7e",
+                    "lastState": {},
+                    "name": "hydrator",
+                    "ready": true,
+                    "restartCount": 0,
+                    "state": {
+                        "terminated": {
+                            "containerID": "docker://7dc0cc468d552c989345a9fe48213efd2ee0957f2f59dd121f9aebe8f574974d",
+                            "exitCode": 0,
+                            "finishedAt": "2020-05-09T00:16:55Z",
+                            "reason": "Completed",
+                            "startedAt": "2020-05-09T00:16:54Z"
+                        }
+                    }
+                },
+                {
+                    "containerID": "docker://94770ee083d4811a61e777ba321daf40f0d8237b6e496c161c0baa9d5eb15507",
+                    "image": "test.sas.com/test/sas-db-migrator:0.0.5-20200419.1587347883547",
+                    "imageID": "docker-pullable://test.sas.com/test/sas-db-migrator@sha256:b98306d8a2808ad1ed86f6d7fab9926136bc33ab7b16f9d46a290bc7ab25eba4",
+                    "lastState": {},
+                    "name": "sas-db-migrator",
+                    "ready": true,
+                    "restartCount": 0,
+                    "state": {
+                        "terminated": {
+                            "containerID": "docker://94770ee083d4811a61e777ba321daf40f0d8237b6e496c161c0baa9d5eb15507",
+                            "exitCode": 0,
+                            "finishedAt": "2020-05-09T00:17:30Z",
+                            "reason": "Completed",
+                            "startedAt": "2020-05-09T00:17:08Z"
+                        }
+                    }
+                }
+            ],
+            "phase": "Running",
+            "podIP": "0.0.0.0",
+            "podIPs": [
+                {
+                    "ip": "0.0.0.0"
+                }
+            ],
+            "qosClass": "Burstable",
+            "startTime": "2020-05-09T00:16:45Z"
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "sas.com/component-name": "sas-cacheserver",
+                "sas.com/component-version": "1.20.14-20200421.1587502639695",
+                "sas.com/version": "1.20.14"
+            },
+            "creationTimestamp": "2020-05-08T13:36:30Z",
+            "generateName": "sas-cacheserver-",
+            "labels": {
+                "app": "sas-cacheserver",
+                "app.kubernetes.io/name": "sas-cacheserver",
+                "controller-revision-hash": "sas-cacheserver-5d8b6cd5c5",
+                "sas.com/deployment": "sas-viya",
+                "statefulset.kubernetes.io/pod-name": "sas-cacheserver-0"
+            },
+            "name": "sas-cacheserver-0",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "apps/v1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "StatefulSet",
+                    "name": "sas-cacheserver",
+                    "uid": "b491d74c-7e49-4958-80e4-50047fc9ee1f"
+                }
+            ],
+            "resourceVersion": "3427577",
+            "selfLink": "/api/v1/namespaces/test/pods/sas-cacheserver-0",
+            "uid": "2c697276-02fa-447c-a88d-5ff20a7ed43b"
+        },
+        "spec": {
+            "containers": [
+                {
+                    "env": [],
+                    "envFrom": [
+                        {
+                            "configMapRef": {
+                                "name": "sas-java-config-8bc8mbd5mk"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-shared-config-dh4f2c4mk9"
+                            }
+                        }
+                    ],
+                    "image": "test.sas.com/test/sas-cacheserver:1.20.14-20200421.1587502639695",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "sas-cacheserver",
+                    "ports": [
+                        {
+                            "containerPort": 8080,
+                            "name": "http",
+                            "protocol": "TCP"
+                        },
+                        {
+                            "containerPort": 14443,
+                            "name": "cacheserver",
+                            "protocol": "TCP"
+                        }
+                    ],
+                    "resources": {
+                        "limits": {
+                            "cpu": "2",
+                            "memory": "1Gi"
+                        },
+                        "requests": {
+                            "cpu": "50m",
+                            "memory": "750M"
+                        }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/opt/sas/viya/config/tmp",
+                            "name": "tmp"
+                        },
+                        {
+                            "mountPath": "/tmp",
+                            "name": "tmp"
+                        },
+                        {
+                            "mountPath": "/opt/sas/viya/config/data/cacheserver",
+                            "name": "cacheserver"
+                        },
+                        {
+                            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                            "name": "default-token-68cvs",
+                            "readOnly": true
+                        }
+                    ]
+                }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "hostname": "sas-cacheserver-0",
+            "imagePullSecrets": [
+                {
+                    "name": "sas-image-pull-secrets-c56m7f4858"
+                }
+            ],
+            "nodeName": "k8s-master-node.test.sas.com",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "subdomain": "sas-cacheserver",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/not-ready",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                },
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/unreachable",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                }
+            ],
+            "volumes": [
+                {
+                    "name": "cacheserver",
+                    "persistentVolumeClaim": {
+                        "claimName": "cacheserver-sas-cacheserver-0"
+                    }
+                },
+                {
+                    "emptyDir": {},
+                    "name": "tmp"
+                },
+                {
+                    "name": "default-token-68cvs",
+                    "secret": {
+                        "defaultMode": 420,
+                        "secretName": "default-token-68cvs"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "conditions": [
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:36:31Z",
+                    "status": "True",
+                    "type": "Initialized"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:38:59Z",
+                    "status": "True",
+                    "type": "Ready"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:38:59Z",
+                    "status": "True",
+                    "type": "ContainersReady"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:36:31Z",
+                    "status": "True",
+                    "type": "PodScheduled"
+                }
+            ],
+            "containerStatuses": [
+                {
+                    "containerID": "docker://c6ee9f20b9f2931d814546a9a7903de2af2b74e5256fa34e10a97dde229dfd03",
+                    "image": "test.sas.com/test/sas-cacheserver:1.20.14-20200421.1587502639695",
+                    "imageID": "docker-pullable://test.sas.com/test/sas-cacheserver@sha256:4ece41c8139184c4264fceacdd4f05f86ec3275328e551fc970a546402f04fca",
+                    "lastState": {},
+                    "name": "sas-cacheserver",
+                    "ready": true,
+                    "restartCount": 0,
+                    "started": true,
+                    "state": {
+                        "running": {
+                            "startedAt": "2020-05-08T13:38:58Z"
+                        }
+                    }
+                }
+            ],
+            "hostIP": "0.0.0.0",
+            "phase": "Running",
+            "podIP": "0.0.0.0",
+            "podIPs": [
+                {
+                    "ip": "0.0.0.0"
+                }
+            ],
+            "qosClass": "Burstable",
+            "startTime": "2020-05-08T13:36:31Z"
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "sas.com/component-name": "sas-cas-operator",
+                "sas.com/component-version": "2.0.3-20200506.1588795588272",
+                "sas.com/version": "2.0.3",
+                "sidecar.istio.io/inject": "false"
+            },
+            "creationTimestamp": "2020-05-08T13:36:28Z",
+            "generateName": "sas-cas-operator-7f8b77dc78-",
+            "labels": {
+                "name": "sas-cas-operator",
+                "pod-template-hash": "7f8b77dc78",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-cas-operator-7f8b77dc78-bq7bg",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "apps/v1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "ReplicaSet",
+                    "name": "sas-cas-operator-7f8b77dc78",
+                    "uid": "c9b6d947-bbd1-4eec-b784-d5c370b96a2a"
+                }
+            ],
+            "resourceVersion": "3426954",
+            "selfLink": "/api/v1/namespaces/test/pods/sas-cas-operator-7f8b77dc78-bq7bg",
+            "uid": "f668c936-0ae7-47ad-b4e3-352dd3675917"
+        },
+        "spec": {
+            "containers": [
+                {
+                    "command": [
+                        "/opt/sas/viya/home/bin/cas"
+                    ],
+                    "env": [
+                        {
+                            "name": "SAS_LICENSE",
+                            "valueFrom": {
+                                "secretKeyRef": {
+                                    "key": "SAS_LICENSE",
+                                    "name": "sas-license-fk2t597tbh"
+                                }
+                            }
+                        },
+                        {
+                            "name": "WATCH_NAMESPACE",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.namespace"
+                                }
+                            }
+                        },
+                        {
+                            "name": "POD_NAME",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.name"
+                                }
+                            }
+                        },
+                        {
+                            "name": "OPERATOR_NAME",
+                            "value": "sas-cas-operator"
+                        }
+                    ],
+                    "image": "test.sas.com/test/sas-cas-operator:2.0.3-20200506.1588795588272",
+                    "imagePullPolicy": "Always",
+                    "name": "cas",
+                    "resources": {
+                        "limits": {
+                            "cpu": "100m",
+                            "memory": "100Mi"
+                        },
+                        "requests": {
+                            "cpu": "5m",
+                            "memory": "25Mi"
+                        }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                            "name": "sas-cas-operator-token-7d5qf",
+                            "readOnly": true
+                        }
+                    ]
+                }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "imagePullSecrets": [
+                {
+                    "name": "sas-image-pull-secrets-c56m7f4858"
+                }
+            ],
+            "nodeName": "k8s-master-node.test.sas.com",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "sas-cas-operator",
+            "serviceAccountName": "sas-cas-operator",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/not-ready",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                },
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/unreachable",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                }
+            ],
+            "volumes": [
+                {
+                    "name": "sas-cas-operator-token-7d5qf",
+                    "secret": {
+                        "defaultMode": 420,
+                        "secretName": "sas-cas-operator-token-7d5qf"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "conditions": [
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:36:28Z",
+                    "status": "True",
+                    "type": "Initialized"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:37:34Z",
+                    "status": "True",
+                    "type": "Ready"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:37:34Z",
+                    "status": "True",
+                    "type": "ContainersReady"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:36:28Z",
+                    "status": "True",
+                    "type": "PodScheduled"
+                }
+            ],
+            "containerStatuses": [
+                {
+                    "containerID": "docker://8322ac53c4313c44babe550cf70c32e5899b07eb0d729f33e8c35479ee46fe87",
+                    "image": "test.sas.com/test/sas-cas-operator:2.0.3-20200506.1588795588272",
+                    "imageID": "docker-pullable://test.sas.com/test/sas-cas-operator@sha256:df7279cd12856b2d28c693cb6983333f45aa972d4f48c43eb90f46afc63efd7f",
+                    "lastState": {},
+                    "name": "cas",
+                    "ready": true,
+                    "restartCount": 0,
+                    "started": true,
+                    "state": {
+                        "running": {
+                            "startedAt": "2020-05-08T13:37:33Z"
+                        }
+                    }
+                }
+            ],
+            "hostIP": "0.0.0.0",
+            "phase": "Running",
+            "podIP": "0.0.0.0",
+            "podIPs": [
+                {
+                    "ip": "0.0.0.0"
+                }
+            ],
+            "qosClass": "Burstable",
+            "startTime": "2020-05-08T13:36:28Z"
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+            "annotations": {
+                "sidecar.istio.io/inject": "false"
+            },
+            "creationTimestamp": "2020-05-08T13:37:38Z",
+            "labels": {
+                "app.kubernetes.io/instance": "default",
+                "app.kubernetes.io/managed-by": "sas-cas-operator",
+                "app.kubernetes.io/name": "sas-cas-server",
+                "casoperator.sas.com/cas-cfg-mode": "smp",
+                "casoperator.sas.com/cas-env-consul-name": "cas-shared-default",
+                "casoperator.sas.com/controller-active": "1",
+                "casoperator.sas.com/controller-index": "0",
+                "casoperator.sas.com/node-type": "controller",
+                "casoperator.sas.com/server": "default",
+                "casoperator.sas.com/service-name": "primary"
+            },
+            "name": "sas-cas-server-default-controller",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "viya.sas.com/v1alpha1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "CASDeployment",
+                    "name": "default",
+                    "uid": "757211ab-7345-4260-ae1a-5489550325fd"
+                }
+            ],
+            "resourceVersion": "11419237",
+            "selfLink": "/api/v1/namespaces/test/pods/sas-cas-server-default-controller",
+            "uid": "f1d434bb-a901-49a0-b229-fb8ab91980af"
+        },
+        "spec": {
+            "affinity": {
+                "podAntiAffinity": {
+                    "preferredDuringSchedulingIgnoredDuringExecution": [
+                        {
+                            "podAffinityTerm": {
+                                "labelSelector": {
+                                    "matchExpressions": [
+                                        {
+                                            "key": "app.kubernetes.io/name",
+                                            "operator": "In",
+                                            "values": [
+                                                "sas-cas-server"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "topologyKey": "kubernetes.io/hostname"
+                            },
+                            "weight": 100
+                        }
+                    ]
+                }
+            },
+            "containers": [
+                {
+                    "env": [
+                        {
+                            "name": "CASCFG_MACHINELIST",
+                            "value": "/dev/null"
+                        },
+                        {
+                            "name": "CASCFG_DQSETUPLOC",
+                            "value": "QKB CI 31"
+                        },
+                        {
+                            "name": "CASCFG_DQLOCALE",
+                            "value": "ENUSA"
+                        },
+                        {
+                            "name": "CASENV_CAS_USE_CONSUL",
+                            "value": "true"
+                        },
+                        {
+                            "name": "CASENV_CONSUL_NAME",
+                            "value": "cas-shared-default"
+                        },
+                        {
+                            "name": "CASENV_CAS_VIRTUAL_PATH",
+                            "value": "/cas-shared-default-http"
+                        },
+                        {
+                            "name": "CASCFG_HOSTKNOWNBY",
+                            "value": "controller.sas-cas-server-default.test"
+                        },
+                        {
+                            "name": "SAS_CURRENT_HOST",
+                            "value": "controller.sas-cas-server-default.test"
+                        },
+                        {
+                            "name": "CASENV_CAS_VIRTUAL_HOST",
+                            "value": "controller.sas-cas-server-default.test"
+                        },
+                        {
+                            "name": "CASCONTROLLERHOST",
+                            "value": "controller.sas-cas-server-default.test"
+                        },
+                        {
+                            "name": "CASCFG_MODE",
+                            "value": "smp"
+                        },
+                        {
+                            "name": "SERVICE_NAME",
+                            "value": "cascontroller"
+                        }
+                    ],
+                    "envFrom": [
+                        {
+                            "configMapRef": {
+                                "name": "sas-shared-config-dh4f2c4mk9"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-java-config-8bc8mbd5mk"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-restore-job-parameters-6dh8htc9fg"
+                            }
+                        }
+                    ],
+                    "image": "test.sas.com/test/sas-cas-server:1.2.0-20200507.1588863965028",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "cas",
+                    "ports": [
+                        {
+                            "containerPort": 5570,
+                            "name": "cal",
+                            "protocol": "TCP"
+                        },
+                        {
+                            "containerPort": 8777,
+                            "name": "http",
+                            "protocol": "TCP"
+                        },
+                        {
+                            "containerPort": 5571,
+                            "name": "gc",
+                            "protocol": "TCP"
+                        }
+                    ],
+                    "resources": {
+                        "requests": {
+                            "cpu": "250m",
+                            "memory": "2Gi"
+                        }
+                    },
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/sasviyabackup",
+                            "name": "backup"
+                        },
+                        {
+                            "mountPath": "/rdutil",
+                            "name": "sas-rdutil-dir"
+                        },
+                        {
+                            "mountPath": "/qkb/config",
+                            "name": "sas-qkb-cfg-dir"
+                        },
+                        {
+                            "mountPath": "/opt/sas/viya/home/share/refdata/qkb",
+                            "name": "sas-quality-knowledge-base-volume"
+                        }
+                    ]
+                },
+                {
+                    "env": [
+                        {
+                            "name": "BACKUP_MOUNT_LOCATION",
+                            "value": "/sasviyabackup"
+                        },
+                        {
+                            "name": "BACKUP_SOURCE_MOUNTS",
+                            "value": "cas-default-data-volume"
+                        },
+                        {
+                            "name": "NAME",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.labels['casoperator.sas.com/cas-env-consul-name']"
+                                }
+                            }
+                        },
+                        {
+                            "name": "CAS_NODE_TYPE",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.labels['casoperator.sas.com/node-type']"
+                                }
+                            }
+                        },
+                        {
+                            "name": "CAS_CONTROLLER_ACTIVE",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.labels['casoperator.sas.com/controller-active']"
+                                }
+                            }
+                        },
+                        {
+                            "name": "CAS_CFG_MODE",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.labels['casoperator.sas.com/cas-cfg-mode']"
+                                }
+                            }
+                        },
+                        {
+                            "name": "CAS_SERVICE_NAME",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.labels['casoperator.sas.com/service-name']"
+                                }
+                            }
+                        }
+                    ],
+                    "envFrom": [
+                        {
+                            "configMapRef": {
+                                "name": "sas-go-config-256bgc697g"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-shared-config-dh4f2c4mk9"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-java-config-8bc8mbd5mk"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-backup-agent-parameters-gdtd8hktkf"
+                            }
+                        }
+                    ],
+                    "image": "test.sas.com/test/sas-backup-agent:2.5.47-20200506.1588749101563",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "sas-backup-agent",
+                    "resources": {},
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/sasviyabackup",
+                            "name": "backup"
+                        },
+                        {
+                            "mountPath": "/cas/data",
+                            "name": "cas-default-data-volume"
+                        },
+                        {
+                            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                            "name": "sas-cas-operator-token-7d5qf",
+                            "readOnly": true
+                        }
+                    ]
+                }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "hostname": "controller",
+            "imagePullSecrets": [
+                {
+                    "name": "sas-image-pull-secrets-c56m7f4858"
+                }
+            ],
+            "nodeName": "k8s-master-node.test.sas.com",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "sas-cas-operator",
+            "serviceAccountName": "sas-cas-operator",
+            "subdomain": "sas-cas-server-default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/not-ready",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                },
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/unreachable",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                }
+            ],
+            "volumes": [
+                {
+                    "name": "cas-default-permstore-volume",
+                    "persistentVolumeClaim": {
+                        "claimName": "cas-default-permstore"
+                    }
+                },
+                {
+                    "name": "cas-default-data-volume",
+                    "persistentVolumeClaim": {
+                        "claimName": "cas-default-data"
+                    }
+                },
+                {
+                    "emptyDir": {},
+                    "name": "cas-default-cache-volume"
+                },
+                {
+                    "name": "backup",
+                    "persistentVolumeClaim": {
+                        "claimName": "sas-cas-backup-data"
+                    }
+                },
+                {
+                    "name": "sas-quality-knowledge-base-volume",
+                    "persistentVolumeClaim": {
+                        "claimName": "sas-quality-knowledge-base"
+                    }
+                },
+                {
+                    "configMap": {
+                        "defaultMode": 493,
+                        "name": "sas-reference-data-scripts"
+                    },
+                    "name": "sas-rdutil-dir"
+                },
+                {
+                    "configMap": {
+                        "defaultMode": 420,
+                        "name": "sas-quality-knowledge-base-config-6m4g242cmb"
+                    },
+                    "name": "sas-qkb-cfg-dir"
+                },
+                {
+                    "name": "sas-cas-operator-token-7d5qf",
+                    "secret": {
+                        "defaultMode": 420,
+                        "secretName": "sas-cas-operator-token-7d5qf"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "conditions": [
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:37:38Z",
+                    "status": "True",
+                    "type": "Initialized"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-06-02T18:01:41Z",
+                    "status": "True",
+                    "type": "Ready"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-06-02T18:01:41Z",
+                    "status": "True",
+                    "type": "ContainersReady"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-08T13:37:38Z",
+                    "status": "True",
+                    "type": "PodScheduled"
+                }
+            ],
+            "containerStatuses": [
+                {
+                    "containerID": "docker://93e772fd7860fdddfdb30177b5d39214a57c26a8318af818eeae418bda15639d",
+                    "image": "test.sas.com/test/sas-cas-server:1.2.0-20200507.1588863965028",
+                    "imageID": "docker-pullable://test.sas.com/test/sas-cas-server@sha256:4fc279a536e39bc8a2eeb2cc9ef8eeb4e0104d715da32309674f36148fc1729a",
+                    "lastState": {},
+                    "name": "cas",
+                    "ready": true,
+                    "restartCount": 0,
+                    "started": true,
+                    "state": {
+                        "running": {
+                            "startedAt": "2020-05-08T14:02:16Z"
+                        }
+                    }
+                },
+                {
+                    "containerID": "docker://074de83858f2f654c87f7795867ea938d2aa81ba920602ff94ab0665d952fe98",
+                    "image": "test.sas.com/test/sas-backup-agent:2.5.47-20200506.1588749101563",
+                    "imageID": "docker-pullable://test.sas.com/test/sas-backup-agent@sha256:1c74f64b9d024d81c40e23204795d2d7d373831e5be5eb9c8b34175e8263238e",
+                    "lastState": {
+                        "terminated": {
+                            "containerID": "docker://6b031ef16bf280920890e57919eb0ffb8683eb48213cbab0ada5916da4d8ec83",
+                            "exitCode": 1,
+                            "finishedAt": "2020-06-02T18:01:37Z",
+                            "reason": "Error",
+                            "startedAt": "2020-06-02T17:15:02Z"
+                        }
+                    },
+                    "name": "sas-backup-agent",
+                    "ready": true,
+                    "restartCount": 491,
+                    "started": true,
+                    "state": {
+                        "running": {
+                            "startedAt": "2020-06-02T18:01:40Z"
+                        }
+                    }
+                }
+            ],
+            "hostIP": "0.0.0.0",
+            "phase": "Running",
+            "podIP": "0.0.0.0",
+            "podIPs": [
+                {
+                    "ip": "0.0.0.0"
+                }
+            ],
+            "qosClass": "Burstable",
+            "startTime": "2020-05-08T13:37:38Z"
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "sas.com/component-name": "sas-backup-job",
+                "sas.com/component-version": "0.0.98-20200507.1588856131839",
+                "sas.com/version": "0.0.98",
+                "sidecar.istio.io/inject": "false"
+            },
+            "creationTimestamp": "2020-05-10T01:00:09Z",
+            "generateName": "sas-scheduled-backup-job-1589072400-",
+            "labels": {
+                "controller-uid": "e2de335f-0d08-4820-9cca-de17852a6cbc",
+                "job-name": "sas-scheduled-backup-job-1589072400",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-scheduled-backup-job-1589072400-5kfgj",
+            "namespace": "test",
+            "ownerReferences": [
+                {
+                    "apiVersion": "batch/v1",
+                    "blockOwnerDeletion": true,
+                    "controller": true,
+                    "kind": "Job",
+                    "name": "sas-scheduled-backup-job-1589072400",
+                    "uid": "e2de335f-0d08-4820-9cca-de17852a6cbc"
+                }
+            ],
+            "resourceVersion": "3888735",
+            "selfLink": "/api/v1/namespaces/test/pods/sas-scheduled-backup-job-1589072400-5kfgj",
+            "uid": "d6e5e9c4-01bb-4e83-9a8a-f997c093c278"
+        },
+        "spec": {
+            "containers": [
+                {
+                    "env": [
+                        {
+                            "name": "NAMESPACE",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.namespace"
+                                }
+                            }
+                        },
+                        {
+                            "name": "JOB_NAME",
+                            "valueFrom": {
+                                "fieldRef": {
+                                    "apiVersion": "v1",
+                                    "fieldPath": "metadata.labels['job-name']"
+                                }
+                            }
+                        }
+                    ],
+                    "envFrom": [
+                        {
+                            "configMapRef": {
+                                "name": "sas-go-config-256bgc697g"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-shared-config-dh4f2c4mk9"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-java-config-8bc8mbd5mk"
+                            }
+                        },
+                        {
+                            "configMapRef": {
+                                "name": "sas-backup-job-parameters-gb2b7ckggt"
+                            }
+                        }
+                    ],
+                    "image": "test.sas.com/test/sas-backup-job:0.0.98-20200507.1588856131839",
+                    "imagePullPolicy": "IfNotPresent",
+                    "name": "sas-backup-job",
+                    "resources": {},
+                    "terminationMessagePath": "/dev/termination-log",
+                    "terminationMessagePolicy": "File",
+                    "volumeMounts": [
+                        {
+                            "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                            "name": "sas-viya-backuprunner-token-mgd4r",
+                            "readOnly": true
+                        }
+                    ]
+                }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "imagePullSecrets": [
+                {
+                    "name": "sas-image-pull-secrets-c56m7f4858"
+                }
+            ],
+            "nodeName": "k8s-master-node.test.sas.com",
+            "priority": 0,
+            "restartPolicy": "Never",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "sas-viya-backuprunner",
+            "serviceAccountName": "sas-viya-backuprunner",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/not-ready",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                },
+                {
+                    "effect": "NoExecute",
+                    "key": "node.kubernetes.io/unreachable",
+                    "operator": "Exists",
+                    "tolerationSeconds": 300
+                }
+            ],
+            "volumes": [
+                {
+                    "name": "sas-viya-backuprunner-token-mgd4r",
+                    "secret": {
+                        "defaultMode": 420,
+                        "secretName": "sas-viya-backuprunner-token-mgd4r"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "conditions": [
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-10T01:00:09Z",
+                    "reason": "PodCompleted",
+                    "status": "True",
+                    "type": "Initialized"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-10T01:04:21Z",
+                    "reason": "PodCompleted",
+                    "status": "False",
+                    "type": "Ready"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-10T01:04:21Z",
+                    "reason": "PodCompleted",
+                    "status": "False",
+                    "type": "ContainersReady"
+                },
+                {
+                    "lastProbeTime": null,
+                    "lastTransitionTime": "2020-05-10T01:00:09Z",
+                    "status": "True",
+                    "type": "PodScheduled"
+                }
+            ],
+            "containerStatuses": [
+                {
+                    "containerID": "docker://4bdb7f581743c3da26946e71011aaedd4bb91d8fbabeffe91a159ac28c3a68d9",
+                    "image": "test.sas.com/test/sas-backup-job:0.0.98-20200507.1588856131839",
+                    "imageID": "docker-pullable://test.sas.com/test/sas-backup-job@sha256:5704c96a29efc80d7f6c039f500c02e9ec64f0bb36f4196f8c7766bb929d402a",
+                    "lastState": {},
+                    "name": "sas-backup-job",
+                    "ready": false,
+                    "restartCount": 0,
+                    "started": false,
+                    "state": {
+                        "terminated": {
+                            "containerID": "docker://4bdb7f581743c3da26946e71011aaedd4bb91d8fbabeffe91a159ac28c3a68d9",
+                            "exitCode": 0,
+                            "finishedAt": "2020-05-10T01:04:20Z",
+                            "reason": "Completed",
+                            "startedAt": "2020-05-10T01:00:13Z"
+                        }
+                    }
+                }
+            ],
+            "hostIP": "0.0.0.0",
+            "phase": "Succeeded",
+            "podIP": "0.0.0.0",
+            "podIPs": [
+                {
+                    "ip": "0.0.0.0"
+                }
+            ],
+            "qosClass": "BestEffort",
+            "startTime": "2020-05-10T01:00:09Z"
+        }
+    }
+]

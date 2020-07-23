@@ -1,0 +1,61 @@
+{# ----------------------------------------------------------- #}
+{# service.html.j2                                             #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Service Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_resource_details %}
+<h7>Specifications</h7>
+<table>
+  {{ add_vert_header_table_row(label="Exposed By",
+                               desc="How this Service is exposed",
+                               value=resource_details.resourceDefinition.spec.type) }}
+{# TYPE: ExternalName #}
+{% if resource_details.resourceDefinition.spec.type == "ExternalName" %}
+  {{ add_vert_header_table_row(label="External Name",
+                               desc="The value exposed for this Service",
+                               value=resource_details.resourceDefinition.spec.externalName) }}
+{# TYPE: ClusterIP & NodePort #}
+{% elif resource_details.resourceDefinition.spec.type == "ClusterIP" or resource_details.resourceDefinition.spec.type == "NodePort" %}
+  {{ add_vert_header_table_row(label="Cluster IP",
+                               desc="The value exposed for this Service",
+                               value=resource_details.resourceDefinition.spec.clusterIP) }}
+{# TYPE: LoadBalancer #}
+{% elif resource_details.resourceDefinition.spec.type == "LoadBalancer" %}
+  {{ add_vert_header_table_row(label="Load Balancer IP",
+                               desc="The value exposed for this Service",
+                               value=resource_details.resourceDefinition.spec.loadBalancerIP) }}
+{% endif %}
+</table>
+
+{% if resource_details.resourceDefinition.spec.ports|default([]) | length > 0 %}
+<h7>Ports</h7>
+<table>
+  <tr>
+    <th title="The name of this port within this Service">Name</th>
+    <th title="The port that is exposed by this Service">Port</th>
+    <th title="The number or name of the port to access on the Pods targeted by this Service">Target Port</th>
+    <th title="The port on each Node on which this Service is exposed when exposed by &quot;NodePort&quot; or &quot;LoadBalancer&quot;">Node Port</th>
+    <th title="The IP protocol for this port">Protocol</th>
+    <th title="The application protocol for this port">App Protocol</th>
+  </tr>
+{% for port in resource_details.resourceDefinition.spec.ports %}
+  <tr>
+    <td>{{ port.name | default("-") }}</td>
+    <td>{{ port.port | default("-") }}</td>
+    <td>{{ port.targetPort | default("-") }}</td>
+    <td>{{ port.nodePort | default("-") }}</td>
+    <td>{{ port.protocol | default("-") }}</td>
+    <td>{{ port.appProtocol | default("-") }}</td>
+  </tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}

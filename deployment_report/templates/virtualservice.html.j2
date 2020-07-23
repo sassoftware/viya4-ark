@@ -1,0 +1,88 @@
+{# ----------------------------------------------------------- #}
+{# virtualservice.html.j2                                      #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# VirtualService Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_resource_details %}
+{% if resource_details.resourceDefinition.spec.http|default([]) | length > 0 %}
+<h7>HTTP Routes</h7>
+<table>
+  <tr>
+    <th>Matches</th>
+    <th>Timeout</th>
+  </tr>
+{% for http_route in resource_details.resourceDefinition.spec.http %}
+  <tr>
+  {% if http_route.match|default([]) | length > 0 %}
+    <td>
+    {% for match in http_route.match %}
+      <ul>
+      {% if match.uri.exact is defined %}
+        <li>{{ match.uri.exact }} (exact)</li>
+      {% endif %}
+      {% if match.uri.prefix is defined %}
+        <li>{{ match.uri.prefix }} (prefix)</li>
+      {% endif %}
+      {% if match.uri.regex is defined %}
+        <li>{{ match.uri.regex }} (regex)</li>
+      {% endif %}
+      </ul>
+    {% endfor %}
+    </td>
+  {% else %}
+    <td>&ndash;</td>
+  {% endif %}
+    <td>{{ http_route.timeout | default("-") }}</td>
+  </tr>
+{% endfor %}
+</table>
+{% endif %}
+
+{% if resource_details.resourceDefinition.spec.tcp|default([]) | length > 0 %}
+<h7>TCP Route Ports</h7>
+<table>
+  <tr>
+    <th>Route Port(s)</th>
+    <th>Routes To Service Port(s)</th>
+  </tr>
+{% for tcp_route in resource_details.resourceDefinition.spec.tcp %}
+  <tr>
+  {% if tcp_route.match|default([]) | length > 0 %}
+    <td>
+    {% for match in tcp_route.match %}
+      <ul>
+      {% if match.port is defined %}
+        <li>{{ match.port }}</li>
+      {% endif %}
+      </ul>
+    {% endfor %}
+    </td>
+  {% else %}
+    <td>&ndash;</td>
+  {% endif %}
+  {% if tcp_route.route|default([]) | length > 0 %}
+    <td>
+    {% for route in tcp_route.route %}
+      <ul>
+      {% if route.destination.port.number is defined %}
+        <li>{{ route.destination.port.number }}</li>
+      {% endif %}
+      </ul>
+    {% endfor %}
+    </td>
+  {% else %}
+    <td>&ndash;</td>
+  {% endif %}
+  </tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}
