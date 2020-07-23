@@ -1,0 +1,34 @@
+{
+    "kind": "Config",
+    "apiVersion": "v1",
+    "preferences": {},
+    "clusters": [
+        {
+            "name": "k8s-master-node.test.sas.com",
+            "cluster": {
+                "server": "https://k8s-master-node.test.sas.com:8080",
+                "certificate-authority-data": "DATA+OMITTED"
+            }
+        }
+    ],
+    "users": [
+        {
+            "name": "test",
+            "user": {
+                "client-certificate-data": "REDACTED",
+                "client-key-data": "REDACTED"
+            }
+        }
+    ],
+    "contexts": [
+        {
+            "name": "test@k8s-master-node.test.sas.com/test",
+            "context": {
+                "cluster": "k8s-master-node.test.sas.com",
+                "user": "test-user",
+                "namespace": "test"
+            }
+        }
+    ],
+    "current-context": "test@k8s-master-node.test.sas.com/test"
+}

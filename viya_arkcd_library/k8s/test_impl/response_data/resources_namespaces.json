@@ -1,0 +1,26 @@
+[
+    {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+            "creationTimestamp": "2020-06-11T18:05:13Z",
+            "labels": {
+                "istio-injection": "",
+                "uda/id": "test",
+                "uda/owner": "test"
+            },
+            "name": "test",
+            "resourceVersion": "30021",
+            "selfLink": "/api/v1/namespaces/test",
+            "uid": "7b1eee14-9b70-46ad-ac87-ead95cf052a0"
+        },
+        "spec": {
+            "finalizers": [
+                "kubernetes"
+            ]
+        },
+        "status": {
+            "phase": "Active"
+        }
+    }
+]

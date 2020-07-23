@@ -1,0 +1,3 @@
+# CI-specific requirements file
+pytest
+flake8

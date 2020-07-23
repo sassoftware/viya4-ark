@@ -1,0 +1,38 @@
+{# ----------------------------------------------------------- #}
+{# casdeployment.html.j2                                       #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# CASDeployment Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_status_rows %}
+{{ add_vert_header_table_row(label="Workers",
+                             desc="The total number of worker Pods in this CAS cluster",
+                             value=resource_details.resourceDefinition.spec.workers | default(0)) }}
+{% endblock %}
+
+{% block additional_resource_details %}
+{% if resource_details.resourceDefinition.spec.controllerTemplate is defined %}
+<div class="jq-accordion">
+  <h7 title="Template for CAS controller Pods">Controller Template</h7>
+  <div>
+    <pre>{{ resource_details.resourceDefinition.spec.controllerTemplate | tojson(indent=2) }}</pre>
+  </div>
+</div>
+{% endif %}
+
+{% if resource_details.resourceDefinition.spec.workers | default(0) > 0 %}
+<div class="jq-accordion">
+  <h7 title="Template for CAS worker Pods">Worker Template>Worker Template</h7>
+  <div>
+    <pre>{{ resource_details.resourceDefinition.spec.workerTemplate | tojson(indent=2) }}</pre>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

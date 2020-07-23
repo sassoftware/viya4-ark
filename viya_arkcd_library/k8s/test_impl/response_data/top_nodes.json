@@ -1,0 +1,8 @@
+{
+    "k8s-master-node.test.sas.com": {
+        "cpuCores": "398m",
+        "cpuUsed": "3%",
+        "memoryBytes": "2255Mi",
+        "memoryUsed": "14%"
+    }
+}

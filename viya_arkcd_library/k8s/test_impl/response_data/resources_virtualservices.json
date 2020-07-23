@@ -1,0 +1,63 @@
+[
+    {
+        "apiVersion": "networking.istio.io/v1alpha3",
+        "kind": "VirtualService",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "",
+                "cadence.sas.com/name": "",
+                "cadence.sas.com/release": "",
+                "cadence.sas.com/version": "",
+                "kubectl.kubernetes.io/last-applied-configuration": "",
+                "sas.com/component-name": "sas-annotations",
+                "sas.com/component-version": "2.2.20-20200420.1587366873499",
+                "sas.com/kustomize-base": "base",
+                "sas.com/version": "2.2.20"
+            },
+            "creationTimestamp": "2020-04-21T12:47:06Z",
+            "generation": 1,
+            "labels": {
+                "app.kubernetes.io/name": "sas-annotations",
+                "sas.com/admin": "namespace",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-annotations",
+            "namespace": "test",
+            "resourceVersion": "17399816",
+            "selfLink": "/apis/networking.istio.io/v1alpha3/namespaces/test/virtualservices/sas-annotations",
+            "uid": "9d848690-891f-467b-88e9-ff1e5e2bfcea"
+        },
+        "spec": {
+            "gateways": [
+                "public-gateway"
+            ],
+            "hosts": [
+                "*"
+            ],
+            "http": [
+                {
+                    "match": [
+                        {
+                            "uri": {
+                                "exact": "/annotations"
+                            }
+                        },
+                        {
+                            "uri": {
+                                "prefix": "/annotations/"
+                            }
+                        }
+                    ],
+                    "route": [
+                        {
+                            "destination": {
+                                "host": "sas-annotations"
+                            }
+                        }
+                    ],
+                    "timeout": "300s"
+                }
+            ]
+        }
+    }
+]

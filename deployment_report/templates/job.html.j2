@@ -1,0 +1,51 @@
+{# ----------------------------------------------------------- #}
+{# job.html.j2                                                 #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Job Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_status_rows %}
+{{ add_vert_header_table_row(label="Active Pods",
+                             desc="The number of actively running Pods",
+                             value=resource_details.resourceDefinition.status.active) }}
+{{ add_vert_header_table_row(label="Start Time",
+                             desc="Time when this Job was acknowledged by the Job controller",
+                             value=resource_details.resourceDefinition.status.startTime) }}
+{{ add_vert_header_table_row(label="Completion Time",
+                             desc="Time when this Job was completed",
+                             value=resource_details.resourceDefinition.status.completionTime) }}
+{{ add_vert_header_table_row(label="Successful Pods",
+                             desc="The number of Pods which reached &quot;Succeeded&quot; phase",
+                             value=resource_details.resourceDefinition.status.succeeded) }}
+{{ add_vert_header_table_row(label="Failed Pods",
+                             desc="The number of Pods which reached &quot;Failed&quot; phase",
+                             value=resource_details.resourceDefinition.status.failed) }}
+{% endblock %}
+
+{% block additional_resource_details %}
+<h7>Specifications</h7>
+<table>
+  {{ add_vert_header_table_row(label="Completions",
+                               desc="The desired number of successfully finished Pods this Job should run",
+                               value=resource_details.resourceDefinition.spec.completions) }}
+  {{ add_vert_header_table_row(label="Parallelism",
+                               desc="The maximum desired number of Pods this job should run at any given time",
+                               value=resource_details.resourceDefinition.spec.parallelism) }}
+  {{ add_vert_header_table_row(label="Backoff Limit",
+                               desc="The number of retries before marking a Job failed",
+                               value=resource_details.resourceDefinition.spec.backoffLimit) }}
+  {{ add_vert_header_table_row(label="Active Deadline (seconds)",
+                               desc="The amount of time from the &quot;Start Time&quot; that the Job may be active before it's terminated",
+                               value=resource_details.resourceDefinition.spec.activeDeadlineSeconds) }}
+  {{ add_vert_header_table_row(label="Time-to-Live After Finished (seconds)",
+                               desc="Duration of time to keep terminated Jobs after finishing before deletion",
+                               value=resource_details.resourceDefinition.spec.parallelism) }}
+</table>
+{% endblock %}

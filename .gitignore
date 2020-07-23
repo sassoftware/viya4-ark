@@ -1,0 +1,46 @@
+# Compiled source #
+###################
+*.a
+*.bin
+*.class
+*.com
+*.dll
+*.exe
+*.o
+*.pyc
+*.pyo
+*.sa
+*.so
+
+# Logs and databases #
+######################
+*.log
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cruft & Swarf #
+#################
+*.bak
+*.iml
+*.swp
+*~
+.gradle
+.idea
+.metadata
+.project
+.settings
+/.settings/
+/.classpath
+/.project
+/bin/
+build
+docker
+/**/.pytest_cache/

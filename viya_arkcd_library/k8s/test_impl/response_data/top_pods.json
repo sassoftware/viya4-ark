@@ -1,0 +1,38 @@
+{
+    "pushgateway-test-prometheus-pushgateway-df9d7c96c-4n66t": {
+        "cpuCores": "13m",
+        "cpuUsed": null,
+        "memoryBytes": "50Mi",
+        "memoryUsed": null
+    },
+    "sas-annotations-58db55fd65-l2jrw": {
+        "cpuCores": "13m",
+        "cpuUsed": null,
+        "memoryBytes": "50Mi",
+        "memoryUsed": null
+    },
+    "sas-scheduled-backup-job-1589072400-5kfgj": {
+        "cpuCores": "13m",
+        "cpuUsed": null,
+        "memoryBytes": "50Mi",
+        "memoryUsed": null
+    },
+    "sas-cacheserver-0": {
+        "cpuCores": "13m",
+        "cpuUsed": null,
+        "memoryBytes": "50Mi",
+        "memoryUsed": null
+    },
+    "sas-cas-operator-7f8b77dc78-bq7bg": {
+        "cpuCores": "13m",
+        "cpuUsed": null,
+        "memoryBytes": "50Mi",
+        "memoryUsed": null
+    },
+    "sas-cas-server-default-controller": {
+        "cpuCores": "13m",
+        "cpuUsed": null,
+        "memoryBytes": "50Mi",
+        "memoryUsed": null
+    }
+}

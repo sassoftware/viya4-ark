@@ -1,0 +1,30 @@
+{# ----------------------------------------------------------- #}
+{# ingress.html.j2                                             #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Ingress Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_resource_details %}
+{% if resource_details.resourceDefinition.spec.rules|default([]) | length > 0 %}
+<h7>HTTP Paths</h7>
+<table>
+{% for rule in resource_details.resourceDefinition.spec.rules %}
+{% for path in rule.http.paths %}
+  <tr>
+    <td>{{ path.path }}</td>
+  {% if path.pathType is defined %}
+    <td>{{ path.pathType }}</td>
+  {% endif %}
+  </tr>
+{% endfor %}
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}

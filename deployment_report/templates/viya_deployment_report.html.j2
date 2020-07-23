@@ -1,0 +1,261 @@
+{# ----------------------------------------------------------- #}
+{# viya_deployment_report.html.j2                              #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Viya Deployment Report Template #}
+{% extends "viya_arkcd_report_base.html.j2" %}
+
+
+{# GLOBAL MACRO DEFINITIONS #}
+{% macro add_vert_header_table_row(label, desc, value) %}
+{% if value is defined %}
+  <tr>
+    <th title="{{ desc }}">{{ label }}</th>
+    <td>{{ value }}</td>
+  </tr>
+{% endif %}
+{% endmacro %}
+
+{% macro display_components(components_dict_items) %}
+{% for component_name, component_details in components_dict_items %}
+  <div class="jq-accordion">
+    <h4>{{ component_name }}</h4>
+    <div>
+    {% for kind_name, kind_details in component_details.items() %}
+      <div class="jq-accordion">
+        <h5 {% if kind_details|length == 1 %}id="{{ kind_name|lower }}-{{ kind_details.keys()|list|first|replace('.','-') }}"{% endif %}>{{ kind_name }}</h5>
+        <div>
+        {% for resource_name, resource_details in kind_details.items() %}
+        {% if kind_details | length > 1 %}
+          <div class="jq-accordion">
+            <h6 id="{{ kind_name|lower }}-{{ resource_name|replace('.','-') }}">{{ resource_name }}</h6>
+            <div>
+        {% endif %}
+              {% include [kind_name|lower + ".html.j2", "resource.html.j2"] %}
+        {% if kind_details | length > 1 %}
+            </div>
+          </div>
+        {% endif %}
+        {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+{% endfor %}
+{% endmacro %}
+{# GLOBAL MACRO DEFINITIONS #}
+
+
+{# BLOCK DEFINITIONS #}
+{% block file_name %}viya_deployment_report.html        {% endblock %}
+
+{% block page_title %}Viya Deployment Report - {{ report_data._gathered }}{% endblock %}
+
+{% block header_title %}Viya Deployment Report{% endblock %}
+
+{% block header_title_subtext %}Gathered: {{ report_data._gathered }}{% endblock %}
+
+{% block content %}
+{% if report_data._unavailableResources | length != 0 %}
+
+<div class="notification-box warn-box">
+  <i class="fa fa-exclamation-triangle notification-box-icon" aria-hidden="true"></i>
+  <div class="notification-box-text">
+    The following resources were not available and are not included in this report:
+    <ul>
+    {% for resource in report_data._unavailableResources %}
+      <li>{{ resource }}</li>
+    {% endfor %}
+    </ul>
+  </div>
+  <span class="notification-box-close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+</div>
+
+{% endif %}
+
+  <h1>Cluster Overview</h1>
+
+  {# Cluster Overview: Overview Table #}
+  <table>
+    <tr>
+      <th>Namespace</th>
+      <td>{{ report_data.kubernetes.namespace | default("<em>could not be determined</em>") }}</td>
+    </tr>
+    <tr>
+      <th>Ingress Controller</th>
+      <td>{{ report_data.kubernetes.ingressController | default("<em>could not be determined</em>") }}</td>
+    </tr>
+  </table>
+  {# Cluster Overview: Overview Table #}
+
+  {# Cluster Overview: Kubernetes Versions Accordion #}
+  <div class="jq-accordion">
+    <h2>Versions</h2>
+    <div>
+      <table>
+        <tr>
+          <th></th>
+          <th>Client</th>
+          <th>Server</th>
+        </tr>
+        <tr>
+          <th>Version</th>
+          <td>{{ report_data.kubernetes.versions.clientVersion.major }}.{{ report_data.kubernetes.versions.clientVersion.minor }}</td>
+          <td>{{ report_data.kubernetes.versions.serverVersion.major }}.{{ report_data.kubernetes.versions.serverVersion.minor }}</td>
+        </tr>
+        <tr>
+          <th>Build date</th>
+          <td>{{ report_data.kubernetes.versions.clientVersion.buildDate }}</td>
+          <td>{{ report_data.kubernetes.versions.serverVersion.buildDate }}</td>
+        </tr>
+        <tr>
+          <th>Platform</th>
+          <td>{{ report_data.kubernetes.versions.clientVersion.platform }}</td>
+          <td>{{ report_data.kubernetes.versions.serverVersion.platform }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  {# Cluster Overview: Kubernetes Versions Accordion #}
+
+  {# Cluster Overview: Nodes Accordion #}
+  {% if report_data.kubernetes.nodes.count > 0 %}
+
+  {% set kind_name = "Node" %}
+  <div class="jq-accordion">
+    <h2>Nodes ({{ report_data.kubernetes.nodes.count }})</h2>
+    <div>
+    {% for node_name, resource_details in report_data.kubernetes.nodes['items'].items() %}
+      <div class="jq-accordion">
+        <h3 id="node-{{ node_name | replace('.','-') }}">{{ node_name }}</h3>
+        <div>
+          {% include "node.html.j2" %}
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+
+  {% endif %}
+  {# Cluster Overview: Nodes Accordion #}
+
+  <h2>Components</h2>
+
+  {# Components: Content #}
+  <div>
+  {% if report_data.kubernetes.discoveredKinds.Pod.count == 0 %}
+
+    <div class="notification-box info-box">
+      <div>
+        <i class="fa fa-info-circle notification-box-icon" aria-hidden="true"></i>
+        <div class="notification-box-text margin-block-end-1em">
+          No pods were found in namespace [{{ report_data.kubernetes.namespace }}]. No further resources were gathered.
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+
+    {# Components: Resource Information Accordion #}
+    <div class="jq-accordion">
+      <h3>Resource Information</h3>
+      <div>
+        <table>
+          <tr>
+            <th>Kind</th>
+            <th>Count</th>
+            <th>SAS Custom Resource</th>
+          </tr>
+        {% for discovered_kind, kind_details in report_data.kubernetes.discoveredKinds.items() %}
+          <tr>
+            <td>{{ discovered_kind }}</td>
+            <td>{{ kind_details.count }}</td>
+            <td>{{ kind_details.sasCRD }}</td>
+          </tr>
+        {% endfor %}
+        </table>
+      </div>
+    </div>
+    {# Components: Resource Information Accordion #}
+
+    {# Components: SAS Components Accordion #}
+    <div class="jq-accordion">
+      <h3>SAS</h3>
+      <div>
+        {{ display_components(report_data.sasComponents.items()) }}
+      </div>
+    </div>
+    {# Components: SAS Components Accordion #}
+
+    {# Components: Other Components Accordion #}
+    {% if report_data.otherComponents | length > 0 %}
+    <div class="jq-accordion">
+      <h3>Other</h3>
+      <div>
+        {{ display_components(report_data.otherComponents.items()) }}
+      </div>
+    </div>
+    {% endif %}
+    {# Components: Other Components Accordion #}
+
+  {% endif %}
+  </div>
+  {# Components: Content #}
+
+  <h2>API</h2>
+
+  {# API: Content #}
+  <div>
+    {# API: Resources Accordion  #}
+    <div class="jq-accordion">
+      <h4>Resources</h4>
+      <div>
+        <table>
+          <tr>
+            <th>Kind</th>
+            <th>Name</th>
+            <th>Shortname</th>
+            <th>API group</th>
+            <th>Namespaced</th>
+            <th>Verbs</th>
+          </tr>
+        {% for resource_kind, resource_attributes in report_data.kubernetes.apiResources.items() | sort %}
+          <tr>
+            <td>{{ resource_kind }}</td>
+            <td>{{ resource_attributes.name }}</td>
+            <td>{{ resource_attributes.shortname }}</td>
+            <td>{{ resource_attributes.apiGroup }}</td>
+            <td>{{ resource_attributes.namespaced }}</td>
+            <td><ul>{% for verb in resource_attributes.verbs %}<li>{{ verb }}</li>{% endfor %}</ul></td>
+          </tr>
+        {% endfor %}
+        </table>
+      </div>
+    </div>
+    {# API: Resources Accordion #}
+
+    {# API: Versions Accordion #}
+    <div class="jq-accordion">
+      <h2>Versions</h2>
+      <div>
+        <table>
+        {% for api_version in report_data.kubernetes.apiVersions %}
+          <tr>
+            <td>{{ api_version }}</td>
+          </tr>
+        {% endfor %}
+        </table>
+      </div>
+    </div>
+    {# API: Versions Accordion #}
+  </div>
+{# API: Content #}
+{% endblock %}
+{# BLOCK DEFINITIONS #}

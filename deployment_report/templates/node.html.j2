@@ -1,0 +1,94 @@
+{# ----------------------------------------------------------- #}
+{# node.html.j2                                                #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Node Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_status_rows %}
+{{ add_vert_header_table_row(label="Unschedulable",
+                             desc="Has scheduling been disabled for this Node?",
+                             value=resource_details.resourceDefinition.spec.unschedulable) }}
+{{ add_vert_header_table_row(label="OS Image",
+                             desc="The OS image reported by this Node from /etc/os-release",
+                             value=resource_details.resourceDefinition.status.nodeInfo.osImage) }}
+{{ add_vert_header_table_row(label="Kernel Version",
+                             desc="The kernel version reported by this Node from 'uname -r'",
+                             value=resource_details.resourceDefinition.status.nodeInfo.kernelVersion) }}
+{{ add_vert_header_table_row(label="Architecture",
+                             desc="The architecture reported by this Node",
+                             value=resource_details.resourceDefinition.status.nodeInfo.architecture) }}
+{{ add_vert_header_table_row(label="Container Runtime Version",
+                             desc="The ContainerRuntime version reported by this Node through the runtime remote API",
+                             value=resource_details.resourceDefinition.status.nodeInfo.containerRuntimeVersion) }}
+{{ add_vert_header_table_row(label="KubeProxy Version",
+                             desc="The KubeProxy version reported by this Node",
+                             value=resource_details.resourceDefinition.status.nodeInfo.kubeProxyVersion) }}
+{{ add_vert_header_table_row(label="Kubelet Version",
+                             desc="The Kubelet version reported by this Node",
+                             value=resource_details.resourceDefinition.status.nodeInfo.kubeletVersion) }}
+{% endblock %}
+
+{% block additional_resource_details %}
+{% if resource_details.resourceDefinition.status.capacity is defined %}
+<div class="jq-accordion">
+  <h4>Capacity</h4>
+  <div>
+    <table>
+      {{ add_vert_header_table_row(label="CPU",
+                                   desc="The total CPU capacity for this Node",
+                                   value=resource_details.resourceDefinition.status.capacity.cpu) }}
+      {{ add_vert_header_table_row(label="Ephemeral Storage",
+                                   desc="The total ephemeral storage capacity for this Node",
+                                   value=resource_details.resourceDefinition.status.capacity["ephemeral-storage"]) }}
+      {{ add_vert_header_table_row(label="Memory",
+                                   desc="The total memory capacity for this Node",
+                                   value=resource_details.resourceDefinition.status.capacity.memory) }}
+      {{ add_vert_header_table_row(label="Pods",
+                                   desc="The total Pod capacity for this Node",
+                                   value=resource_details.resourceDefinition.status.capacity.pods) }}
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if resource_details.ext.metrics is defined %}
+<div class="jq-accordion">
+  <h4>Metrics</h4>
+  <div>
+    <table>
+      {{ add_vert_header_table_row(label="CPU (cores)",
+                                   desc="The total CPU core usage for this Node",
+                                   value=resource_details.ext.metrics.cpuCores + ' (' + resource_details.ext.metrics.cpuUsed + ')') }}
+      {{ add_vert_header_table_row(label="Memory (bytes)",
+                                   desc="The total memory usage in bytes for this Node",
+                                   value=resource_details.ext.metrics.memoryBytes + ' (' + resource_details.ext.metrics.memoryUsed + ')') }}
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if resource_details.ext.relationships|default([]) | length > 0 %}
+<div class="jq-accordion">
+  <h4>Pods ({{ resource_details.ext.relationships | length }})</h4>
+  <div>
+    <table>
+    {% for pod in resource_details.ext.relationships %}
+      <tr>
+        <td>
+          <a class="nested-accordions-rel-link"
+             href="#pod-{{ pod.name | replace('.','-') }}">{{ pod.name }}</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

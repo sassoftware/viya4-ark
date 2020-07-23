@@ -1,0 +1,51 @@
+{# ----------------------------------------------------------- #}
+{# statefulset.html.j2                                         #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# StatefulSet Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_status_rows %}
+{{ add_vert_header_table_row(label="Pods (total)",
+                             desc="The number of Pods created for any version of this StatefulSet",
+                             value=resource_details.resourceDefinition.status.replicas) }}
+{{ add_vert_header_table_row(label="Ready Pods",
+                             desc="The number of Pods for this StatefulSet in the 'Ready' condition",
+                             value=resource_details.resourceDefinition.status.readyReplicas) }}
+{{ add_vert_header_table_row(label="Current Revision",
+                             desc="The version of this StatefulSet used to generate Pods represented in &quot;Current Pods&quot;",
+                             value=resource_details.resourceDefinition.status.currentRevision) }}
+{{ add_vert_header_table_row(label="Current Pods",
+                             desc="The number of Pods created from the StatefulSet version indicated by &quot;Current Revision&quot;",
+                             value=resource_details.resourceDefinition.status.currentReplicas) }}
+{{ add_vert_header_table_row(label="Update Revision",
+                             desc="The version of this StatefulSet used to generate Pods represented in &quot;Updated Pods&quot;",
+                             value=resource_details.resourceDefinition.status.updateRevision) }}
+{{ add_vert_header_table_row(label="Updated Pods",
+                             desc="The number of Pods created from the StatefulSet version indicated by &quot;Update Revision&quot;",
+                             value=resource_details.resourceDefinition.status.updatedReplicas) }}
+{% endblock %}
+
+{% block additional_resource_details %}
+<h7>Specifications</h7>
+<table>
+  {{ add_vert_header_table_row(label="Pods",
+                               desc="The desired number of Pods",
+                               value=resource_details.resourceDefinition.spec.replicas) }}
+  {{ add_vert_header_table_row(label="Pod Management Policy",
+                               desc="OrderedReady: Pods are created one at a time after the previous is ready | Parallel: Pods are created and then deleted in unison",
+                               value=resource_details.resourceDefinition.spec.podManagementPolicy) }}
+  {{ add_vert_header_table_row(label="Update Strategy",
+                               desc="The strategy for updating Pods targeted by this StatefulSet",
+                               value=resource_details.resourceDefinition.spec.updateStrategy.type) }}
+  {{ add_vert_header_table_row(label="Revision History Limit",
+                               desc="The maximum number of revisions that will be maintained in the revision history",
+                               value=resource_details.resourceDefinition.spec.revisionHistoryLimit) }}
+</table>
+{% endblock %}

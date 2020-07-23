@@ -1,0 +1,143 @@
+[
+    {
+        "apiVersion": "batch/v1beta1",
+        "kind": "CronJob",
+        "metadata": {
+            "annotations": {
+                "cadence.sas.com/display-name": "Fast R/TR",
+                "cadence.sas.com/name": "fast",
+                "cadence.sas.com/release": "20200508.1588944122646",
+                "cadence.sas.com/version": "2020",
+                "kubectl.kubernetes.io/last-applied-configuration": "",
+                "sas.com/component-name": "sas-backup-job",
+                "sas.com/component-version": "0.0.98-20200507.1588856131839",
+                "sas.com/version": "0.0.98"
+            },
+            "creationTimestamp": "2020-05-08T13:36:30Z",
+            "labels": {
+                "app.kubernetes.io/name": "sas-scheduled-backup-job",
+                "sas.com/admin": "namespace",
+                "sas.com/backup-job-type": "scheduled-backup",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-scheduled-backup-job",
+            "namespace": "test",
+            "resourceVersion": "10636239",
+            "selfLink": "/apis/batch/v1beta1/namespaces/test/cronjobs/sas-scheduled-backup-job",
+            "uid": "113dd2bb-d13f-4cb2-a954-276f9bdc19c2"
+        },
+        "spec": {
+            "concurrencyPolicy": "Allow",
+            "failedJobsHistoryLimit": 100,
+            "jobTemplate": {
+                "metadata": {
+                    "annotations": {
+                        "cadence.sas.com/display-name": "Fast R/TR",
+                        "cadence.sas.com/name": "fast",
+                        "cadence.sas.com/release": "20200508.1588944122646",
+                        "cadence.sas.com/version": "2020",
+                        "sas.com/component-name": "sas-backup-job",
+                        "sas.com/component-version": "0.0.98-20200507.1588856131839",
+                        "sas.com/version": "0.0.98"
+                    },
+                    "creationTimestamp": null,
+                    "labels": {
+                        "sas.com/deployment": "sas-viya"
+                    }
+                },
+                "spec": {
+                    "template": {
+                        "metadata": {
+                            "annotations": {
+                                "cadence.sas.com/display-name": "Fast R/TR",
+                                "cadence.sas.com/name": "fast",
+                                "cadence.sas.com/release": "20200508.1588944122646",
+                                "cadence.sas.com/version": "2020",
+                                "sas.com/component-name": "sas-backup-job",
+                                "sas.com/component-version": "0.0.98-20200507.1588856131839",
+                                "sas.com/version": "0.0.98",
+                                "sidecar.istio.io/inject": "false"
+                            },
+                            "creationTimestamp": null,
+                            "labels": {
+                                "sas.com/deployment": "sas-viya"
+                            }
+                        },
+                        "spec": {
+                            "containers": [
+                                {
+                                    "env": [
+                                        {
+                                            "name": "NAMESPACE",
+                                            "valueFrom": {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.namespace"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "JOB_NAME",
+                                            "valueFrom": {
+                                                "fieldRef": {
+                                                    "apiVersion": "v1",
+                                                    "fieldPath": "metadata.labels['job-name']"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "envFrom": [
+                                        {
+                                            "configMapRef": {
+                                                "name": "sas-go-config-256bgc697g"
+                                            }
+                                        },
+                                        {
+                                            "configMapRef": {
+                                                "name": "sas-shared-config-dh4f2c4mk9"
+                                            }
+                                        },
+                                        {
+                                            "configMapRef": {
+                                                "name": "sas-java-config-8bc8mbd5mk"
+                                            }
+                                        },
+                                        {
+                                            "configMapRef": {
+                                                "name": "sas-backup-job-parameters-gb2b7ckggt"
+                                            }
+                                        }
+                                    ],
+                                    "image": "test.sas.com/test/sas-backup-job:0.0.98-20200507.1588856131839",
+                                    "imagePullPolicy": "IfNotPresent",
+                                    "name": "sas-backup-job",
+                                    "resources": {},
+                                    "terminationMessagePath": "/dev/termination-log",
+                                    "terminationMessagePolicy": "File"
+                                }
+                            ],
+                            "dnsPolicy": "ClusterFirst",
+                            "imagePullSecrets": [
+                                {
+                                    "name": "sas-image-pull-secrets-c56m7f4858"
+                                }
+                            ],
+                            "restartPolicy": "Never",
+                            "schedulerName": "default-scheduler",
+                            "securityContext": {},
+                            "serviceAccount": "sas-viya-backuprunner",
+                            "serviceAccountName": "sas-viya-backuprunner",
+                            "terminationGracePeriodSeconds": 30
+                        }
+                    }
+                }
+            },
+            "schedule": "0 1 * * 0",
+            "successfulJobsHistoryLimit": 100,
+            "suspend": false
+        },
+        "status": {
+            "lastScheduleTime": "2020-05-31T01:00:00Z"
+        }
+    }
+]
