@@ -1,0 +1,20 @@
+####################################################################
+####   deployment-role.yml                                                                   ####
+####################################################################
+####################################################################
+#### Author: SAS Institute Inc.                                                                                       ####
+####                                                                                                                                           ####
+####################################################################
+####################################################################
+#
+# Copyright (c) 2019-2020, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: viyasrole
+rules:
+- apiGroups: ["company.com"]
+  resources: ["viyas"]
+  verbs: ["get", "create"]

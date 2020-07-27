@@ -1,0 +1,14 @@
+
+Usage: download-pod-logs [<options>] [<components>]
+
+Options:
+    -n, --namespace="<namespace>"        (Optional) Namespace to target containing SAS software, if not defined by KUBECONFIG.
+    -o, --output-dir="<dir>"             (Optional) Directory where log files will be written. Defaults to "./sas-k8s-logs".
+    -p, --processes="<processes>"        (Optional) Number of simultaneous worker processes used to fetch logs. Defaults to "2".
+    -t, --tail-lines="<tail>"            (Optional) Lines of recent log file to retrieve. Defaults to "25000".
+    -w, --wait="<wait>"                  (Optional) Wait time, in seconds, before terminating a log-gathering process. Defaults to "30".
+    -h, --help                           Print usage.
+
+Optionally, a space-separated list of components can be provided to limit results:
+    download-pod-logs -n default sas-visual-analytics sas-annotations
+
