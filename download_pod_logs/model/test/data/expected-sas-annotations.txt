@@ -1,0 +1,26 @@
+##################################################
+# Container Status
+#
+# sas-component-name:       sas-annotations
+# sas-component-version:    2.2.25-20200506.1588775452057
+# container-name:           sas-annotations
+# container-image:          test.sas.com/test/sas-annotations:2.2.25-20200506.1588775452057
+# container-is-started:     True
+# container-is-ready:       False
+# container-restarts:       369
+# container-state:          running
+# container-started-at:     2020-06-02T18:01:39Z
+##################################################
+
+Beginning log...
+
+test log line 1
+test log line 2
+test log line 3
+test log line 4
+test log line 5
+test log line 6
+test log line 7
+test log line 8
+test log line 9
+test log line 10

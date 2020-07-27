@@ -1,0 +1,33 @@
+{
+    "kind": "Config",
+    "apiVersion": "v1",
+    "preferences": {},
+    "clusters": [
+        {
+            "name": "gelcluster",
+            "cluster": {
+                "server": "https://node3:6443",
+                "certificate-authority-data": "DATA+OMITTED"
+            }
+        }
+    ],
+    "users": [
+        {
+            "name": "kube-admin-gelcluster",
+            "user": {
+                "client-certificate-data": "REDACTED",
+                "client-key-data": "REDACTED"
+            }
+        }
+    ],
+    "contexts": [
+        {
+            "name": "gelcluster",
+            "context": {
+                "cluster": "gelcluster",
+                "user": "kube-admin-gelcluster"
+            }
+        }
+    ],
+    "current-context": "gelcluster"
+}

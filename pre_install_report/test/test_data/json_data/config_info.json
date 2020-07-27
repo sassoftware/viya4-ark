@@ -1,0 +1,55 @@
+{
+    "kind": "Config",
+    "apiVersion": "v1",
+    "preferences": {},
+    "clusters": [
+        {
+            "name": "kubernetes",
+            "cluster": {
+                "server": "https://0.0.0.0:6443",
+                "certificate-authority-data": "DATA+OMITTED"
+            }
+        },
+        {
+            "name": "kubernetesTest",
+            "cluster": {
+                "server": "https://0.0.0.0:6443",
+                "certificate-authority-data": "DATA+OMITTED"
+            }
+        }
+    ],
+    "users": [
+        {
+            "name": "kubernetes-admin",
+            "user": {
+                "client-certificate-data": "REDACTED",
+                "client-key-data": "REDACTED"
+            }
+        },
+        {
+            "name": "kubernetes-test",
+            "user": {
+                "client-certificate-data": "REDACTED",
+                "client-key-data": "REDACTED"
+            }
+        }
+    ],
+    "contexts": [
+        {
+            "name": "kubernetes-admin@kubernetes",
+            "context": {
+                "cluster": "kubernetes",
+                "namespace": "d12142",
+                "user": "kubernetes-admin"
+            }
+        },
+        {
+            "name": "kubernetes-test@kubernetesTest",
+            "context": {
+                "cluster": "kubernetesTest",
+                "user": "kubernetes-test"
+            }
+        }
+    ],
+    "current-context": "kubernetes-admin@kubernetes"
+}
