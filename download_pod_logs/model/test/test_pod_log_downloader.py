@@ -92,7 +92,7 @@ def test_download_logs(capfd) -> None:
     This test verifies that available pod log files are correctly downloaded and formatted.
     """
     # create the test object
-    this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest())
+    this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest(), output_dir="./test_download_logs")
 
     # run the method being tested
     logs_dir = this.download_logs()
@@ -122,7 +122,7 @@ def test_download_logs_with_valid_selected_component(capfd) -> None:
     This test verifies that a log file is correctly downloaded and formatted when a matching component is selected.
     """
     # create the test object
-    this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest())
+    this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest(), output_dir="./test_download_logs_selected")
 
     # run the method being tested
     logs_dir = this.download_logs(selected_components=["sas-annotations"])
