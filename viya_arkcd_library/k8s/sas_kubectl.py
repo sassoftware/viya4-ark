@@ -267,9 +267,9 @@ class Kubectl(KubectlInterface):
         # return the config as a Python-native dictionary
         return json.loads(config_json)
 
-    def cluster_info(self, ignore_errors: bool = False) -> Optional[AnyStr]:
+    def cluster_info(self) -> Optional[AnyStr]:
         # get the cluster-info output
-        cmd: Text = f"cluster-info"
+        cmd: Text = "cluster-info"
         # run the command #
         return self.do(cmd, False)
 

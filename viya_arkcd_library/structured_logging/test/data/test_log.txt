@@ -1,0 +1,19 @@
+This entry is unstructured and should be returned as-is
+
+{"level":"info","version":1,"source":"sas-test","messageKey":"","properties":{"logger":"sas-test","caller":"src/main.go:1"},"timeStamp":"2020-07-29T11:54:19.462Z","message":"This is a structured Go log entry (timestamp < 25, source <= 20, caller <= 30) and should be parsed"}
+
+{"level":"info","version":1,"source":"sas-test-application-1","messageKey":"","properties":{"logger":"sas-test","caller":"src/sas-test-application-1/main.go:1"},"timeStamp":"2020-07-29T12:04:17.652950+00:00","message":"This is a structured Go log entry (timestamp >= 25, source > 20, caller > 30) and should be parsed"}
+
+{"version":1,"timeStamp":"2020-07-29T11:54:19.462Z","level":"info","source":"sas-test","message":"This is a structured Java log entry (timestamp < 25, source <= 20, thread <= 15, logger <= 30) and should be parsed","properties":{"logger":"com.sas.test.Application","thread":"main","traceId":"fb43368cb32a9fc8","spanId":"fb43368cb32a9fc8","spanExportable":"false"}}
+
+{"version":1,"timeStamp":"2020-07-29T12:04:17.652950+00:00","level":"info","source":"sas-test-application-1","message":"This is a structured Java log entry (timestamp >= 25, source > 20, thread > 15, logger > 30) and should be parsed","properties":{"logger":"com.sas.test.ApplicationDefaultLogger","thread":"sas-test-application-1","traceId":"fb43368cb32a9fc8","spanId":"fb43368cb32a9fc8","spanExportable":"false"}}
+
+{"version":1,"source":"sas-test","messageKey":"","properties":{"logger":"sas-test","caller":"src/main.go:1"},"timeStamp":"2020-07-29T12:04:17.652950+00:00","message":"This looks like a structured entry but it's missing 'level' (required by spec) so it should be returned as-is"}
+
+{"level":"info","version":1,"messageKey":"","properties":{"logger":"sas-test","caller":"src/main.go:1"},"timeStamp":"2020-07-29T12:04:17.652950+00:00","message":"This looks like a structured entry but it's missing 'source' (required by spec) so it should be returned as-is"}
+
+{"level":"info","version":1,"source":"sas-test","messageKey":"","properties":{"logger":"sas-test","caller":"src/main.go:1"},"message":"This looks like a structured entry by it's missing 'timeStamp' (required by spec) so it should be returned as-is"}
+
+{"level":"info","source":"sas-test","messageKey":"","properties":{"logger":"sas-test","caller":"src/main.go:1"},"timeStamp":"2020-07-29T12:04:17.652950+00:00","message":"This looks like a structured entry but it's missing 'version' (required by spec) so it should be returned as-is"}
+
+{"level":"info","version":1,"source":"sas-test","messageKey":"","properties":{"logger":"sas-test","caller":"src/main.go:1"},"timeStamp":"2020-07-29T12:04:17.652950+00:00"}

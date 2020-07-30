@@ -21,6 +21,7 @@ from typing import Any, AnyStr, Dict, List, Optional, Text
 from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
 from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
 from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesResource
+from viya_arkcd_library.structured_logging.parser import SASStructuredLoggingParser
 
 
 ####################################################################
@@ -217,16 +218,19 @@ class PodLogDownloader(object):
 
                 # call kubectl to get the log for this container
                 try:
-                    log_contents = kubectl.logs(pod_name=f"{pod.get_name()} {container_status.get_name()}",
-                                                all_containers=False, prefix=False, tail=tail)
+                    log = kubectl.logs(pod_name=f"{pod.get_name()} {container_status.get_name()}",
+                                       all_containers=False, prefix=False, tail=tail)
                 except CalledProcessError:
                     # print a message to stderr if the log file could not be retrieved for this container
                     print(f"ERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
                           f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]", file=sys.stderr)
 
+                # parse any structured logging
+                file_content = SASStructuredLoggingParser.parse_log(log)
+
                 # write the retrieved log to the file
                 output_file.write("Beginning log...\n\n")
-                output_file.write("\n".join(log_contents))
+                output_file.write("\n".join(file_content))
 
 
 ####################################################################
