@@ -16,7 +16,7 @@ import sys
 from multiprocessing import Pool, TimeoutError
 from multiprocessing.pool import ApplyResult
 from subprocess import CalledProcessError
-from typing import Any, AnyStr, Dict, List, Optional, Text
+from typing import Any, Dict, List, Optional, Text, Tuple
 
 from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
 from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
@@ -34,46 +34,50 @@ class PodLogDownloader(object):
     """
     # parameter default values
     DEFAULT_OUTPUT_DIR: Text = "sas-k8s-logs"
-    DEFAULT_CONCURRENT_PROCESSES: int = 2
-    DEFAULT_PROCESS_WAIT_TIME = 30
+    DEFAULT_PROCESSES: int = 2
     DEFAULT_TAIL: int = 25000
+    DEFAULT_WAIT = 30
 
     def __init__(self, kubectl: KubectlInterface, output_dir: Text = DEFAULT_OUTPUT_DIR,
-                 concurrent_processes: int = DEFAULT_CONCURRENT_PROCESSES,
-                 process_wait_time: int = DEFAULT_PROCESS_WAIT_TIME) -> None:
+                 processes: int = DEFAULT_PROCESSES, wait: int = DEFAULT_WAIT) -> None:
         """
         PodLogDownloader is responsible for configuring and executing asynchronous log gathering for all or a select
         number of pods in a given namespace.
 
         :param kubectl: KubectlInterface object used for requesting information from the Kubernetes server.
         :param output_dir: Location where resulting log files will be written.
-        :param concurrent_processes: Number of concurrent, asynchronous processes to execute for retrieving pod logs.
-        :param process_wait_time: Time, in seconds, to wait before a log retrieval process is terminated.
+        :param processes: Number of concurrent, asynchronous processes to execute for retrieving pod logs.
+        :param wait: Time, in seconds, to wait before a log retrieval process is terminated.
         :raises AttributeError: If the number of concurrent processes is less than 1 or the process wait time is less
                                 than 0.
         """
-        if concurrent_processes < 1:
+        if processes < 1:
             raise AttributeError("The processes value must be greater than 0")
 
-        if process_wait_time < 0:
+        if wait < 0:
             raise AttributeError("The wait value must be 0 or greater")
 
         self.kubectl = kubectl
         self.output_dir = output_dir
-        self.concurrent_processes = concurrent_processes
-        self.pool = Pool(processes=concurrent_processes)
-        self.process_wait_time = process_wait_time
+        self.processes = processes
+        self.pool = Pool(processes=processes)
+        self.wait = wait
 
-    def download_logs(self, selected_components: Optional[List[Text]] = None, tail: int = DEFAULT_TAIL) -> AnyStr:
+    def download_logs(self, selected_components: Optional[List[Text]] = None, tail: int = DEFAULT_TAIL) \
+            -> Tuple[Text, List[Text]]:
         """
         Downloads the log files for all or a select group of pods and their containers. A status summary is prepended
         to the downloaded log file.
 
         :param selected_components: List of component names for which logs should be retrieved.
         :param tail: Lines of recent log file to retrieve.
+
         :raises KubectlRequestForbiddenError: If list pods is forbidden in the given namespace.
         :raises NoPodsError: If pods can be listed but no pods are found in the given namespace.
         :raises NoMatchingPodsError: If no available pods match a component in the selected_components
+
+        :returns: A tuple containing the absolute output directory and a list of any pods for which the timeout was
+                  reached when gathering the log.
         """
         # get the current namespace
         namespace = self.kubectl.get_namespace()
@@ -140,30 +144,11 @@ class PodLogDownloader(object):
         timeout_pods: List[Text] = list()
         for process in write_log_processes:
             try:
-                process.get_process().get(timeout=self.process_wait_time)
+                process.get_process().get(timeout=self.wait)
             except TimeoutError:
                 timeout_pods.append(process.get_pod_name())
 
-        # print any pods that timed out, if present
-        if len(timeout_pods) > 0:
-            print()
-            print("WARNING: Logs for the following pods were not downloaded because they exceeded the configured wait "
-                  f"time ({self.process_wait_time}s):")
-            print()
-
-            # print the pods that timed out
-            for pod_name in timeout_pods:
-                print(f"    {pod_name}")
-
-            print()
-            print("The wait time can be increased using the \"--wait=\" option.")
-
-        # print output directory
-        print()
-        print(f"Log files created in: {os.path.abspath(self.output_dir)}")
-        print()
-
-        return os.path.abspath(self.output_dir)
+        return os.path.abspath(self.output_dir), timeout_pods
 
     @staticmethod
     def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text) -> None:
@@ -222,7 +207,7 @@ class PodLogDownloader(object):
                                        all_containers=False, prefix=False, tail=tail)
                 except CalledProcessError:
                     # print a message to stderr if the log file could not be retrieved for this container
-                    print(f"ERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
+                    print(f"\nERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
                           f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]", file=sys.stderr)
 
                 # parse any structured logging

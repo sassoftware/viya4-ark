@@ -38,8 +38,8 @@ def test_init_default() -> None:
     # check for expected default values
     assert actual.kubectl == expected_kubectl
     assert actual.output_dir == PodLogDownloader.DEFAULT_OUTPUT_DIR
-    assert actual.concurrent_processes == PodLogDownloader.DEFAULT_CONCURRENT_PROCESSES
-    assert actual.process_wait_time == PodLogDownloader.DEFAULT_PROCESS_WAIT_TIME
+    assert actual.processes == PodLogDownloader.DEFAULT_PROCESSES
+    assert actual.wait == PodLogDownloader.DEFAULT_WAIT
 
 
 def test_init_custom() -> None:
@@ -55,14 +55,14 @@ def test_init_custom() -> None:
     expected_kubectl: KubectlInterface = KubectlTest()
     actual: PodLogDownloader = PodLogDownloader(kubectl=expected_kubectl,
                                                 output_dir=expected_output_dir,
-                                                concurrent_processes=expected_concurrent_processes,
-                                                process_wait_time=expected_process_wait_time)
+                                                processes=expected_concurrent_processes,
+                                                wait=expected_process_wait_time)
 
     # check for expected custom values
     assert actual.kubectl == expected_kubectl
     assert actual.output_dir == expected_output_dir
-    assert actual.concurrent_processes == expected_concurrent_processes
-    assert actual.process_wait_time == expected_process_wait_time
+    assert actual.processes == expected_concurrent_processes
+    assert actual.wait == expected_process_wait_time
 
 
 def test_init_invalid_concurrent_processes() -> None:
@@ -71,7 +71,7 @@ def test_init_invalid_concurrent_processes() -> None:
     """
     with pytest.raises(AttributeError) as except_info:
         PodLogDownloader(kubectl=KubectlTest(),
-                         concurrent_processes=0)
+                         processes=0)
 
     assert "The processes value must be greater than 0" in str(except_info.value)
 
@@ -82,12 +82,12 @@ def test_init_invalid_process_wait_time() -> None:
     """
     with pytest.raises(AttributeError) as except_info:
         PodLogDownloader(kubectl=KubectlTest(),
-                         process_wait_time=-5)
+                         wait=-5)
 
     assert "The wait value must be 0 or greater" in str(except_info.value)
 
 
-def test_download_logs(capfd) -> None:
+def test_download_logs() -> None:
     """
     This test verifies that available pod log files are correctly downloaded and formatted.
     """
@@ -95,13 +95,7 @@ def test_download_logs(capfd) -> None:
     this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest(), output_dir="./test_download_logs")
 
     # run the method being tested
-    logs_dir = this.download_logs()
-
-    # get stdout and stderr
-    stdout, stderr = capfd.readouterr()
-
-    # make sure the stdout is correct
-    assert f"Log files created in: {logs_dir}" in stdout
+    logs_dir, timeout_pods = this.download_logs()
 
     # verify the expected number of logs were written to disk
     assert len([name for name in os.listdir(logs_dir) if os.path.isfile(os.path.join(logs_dir, name))]) == 6
@@ -117,7 +111,7 @@ def test_download_logs(capfd) -> None:
     shutil.rmtree(os.path.abspath(os.path.join(logs_dir, "..")))
 
 
-def test_download_logs_with_valid_selected_component(capfd) -> None:
+def test_download_logs_with_valid_selected_component() -> None:
     """
     This test verifies that a log file is correctly downloaded and formatted when a matching component is selected.
     """
@@ -125,13 +119,7 @@ def test_download_logs_with_valid_selected_component(capfd) -> None:
     this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest(), output_dir="./test_download_logs_selected")
 
     # run the method being tested
-    logs_dir = this.download_logs(selected_components=["sas-annotations"])
-
-    # get stdout and stderr
-    stdout, stderr = capfd.readouterr()
-
-    # make sure the stdout is correct
-    assert f"Log files created in: {logs_dir}" in stdout
+    logs_dir, timeout_pods = this.download_logs(selected_components=["sas-annotations"])
 
     # verify the expected number of logs were written to disk
     assert len([name for name in os.listdir(logs_dir) if os.path.isfile(os.path.join(logs_dir, name))]) == 1
