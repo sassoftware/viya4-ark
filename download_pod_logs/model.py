@@ -1,5 +1,5 @@
 ####################################################################
-# ### pod_log_downloader.py                                      ###
+# ### model.py                                                   ###
 ####################################################################
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
@@ -25,7 +25,7 @@ from viya_arkcd_library.structured_logging.parser import SASStructuredLoggingPar
 
 
 ####################################################################
-# Class: PodLogDownloader                                          #
+# Class: PodLogDownloader                                        ###
 ####################################################################
 class PodLogDownloader(object):
     """
@@ -57,11 +57,11 @@ class PodLogDownloader(object):
         if wait < 0:
             raise AttributeError("The wait value must be 0 or greater")
 
-        self.kubectl = kubectl
-        self.output_dir = output_dir
-        self.processes = processes
-        self.pool = Pool(processes=processes)
-        self.wait = wait
+        self._kubectl = kubectl
+        self._output_dir = output_dir
+        self._processes = processes
+        self._pool = Pool(processes=processes)
+        self._wait = wait
 
     def download_logs(self, selected_components: Optional[List[Text]] = None, tail: int = DEFAULT_TAIL) \
             -> Tuple[Text, List[Text]]:
@@ -76,15 +76,15 @@ class PodLogDownloader(object):
         :raises NoPodsError: If pods can be listed but no pods are found in the given namespace.
         :raises NoMatchingPodsError: If no available pods match a component in the selected_components
 
-        :returns: A tuple containing the absolute output directory and a list of any pods for which the timeout was
-                  reached when gathering the log.
+        :returns: A tuple containing the absolute output directory and a list of names for any pods for which the
+                  timeout was reached when gathering the log.
         """
         # get the current namespace
-        namespace = self.kubectl.get_namespace()
+        namespace = self._kubectl.get_namespace()
 
         # get all available pods
         try:
-            available_pods: List[KubernetesResource] = self.kubectl.get_resources("pods")
+            available_pods: List[KubernetesResource] = self._kubectl.get_resources("pods")
         except CalledProcessError:
             # if a CalledProcessError is raised when gathering pods, surface an error up to stop the program #
             raise KubectlRequestForbiddenError(f"Listing pods is forbidden in namespace [{namespace}]. "
@@ -130,13 +130,13 @@ class PodLogDownloader(object):
         # at this point, pods are available for gathering logs
 
         # create the output dir, if needed
-        self.output_dir = os.path.join(self.output_dir, datetime.datetime.now().strftime("%Y-%m-%dT%H_%M_%S"))
-        os.makedirs(self.output_dir, exist_ok=True)
+        self._output_dir = os.path.join(self._output_dir, datetime.datetime.now().strftime("%Y-%m-%dT%H_%M_%S"))
+        os.makedirs(self._output_dir, exist_ok=True)
 
         # create the list of pooled asynchronous processes
         write_log_processes: List[_LogDownloadProcess] = list()
         for pod in selected_pods:
-            process = self.pool.apply_async(self._write_log, args=(self.kubectl, pod, tail, self.output_dir))
+            process = self._pool.apply_async(self._write_log, args=(self._kubectl, pod, tail, self._output_dir))
             download_process = _LogDownloadProcess(pod.get_name(), process)
             write_log_processes.append(download_process)
 
@@ -144,11 +144,11 @@ class PodLogDownloader(object):
         timeout_pods: List[Text] = list()
         for process in write_log_processes:
             try:
-                process.get_process().get(timeout=self.wait)
+                process.get_process().get(timeout=self._wait)
             except TimeoutError:
                 timeout_pods.append(process.get_pod_name())
 
-        return os.path.abspath(self.output_dir), timeout_pods
+        return os.path.abspath(self._output_dir), timeout_pods
 
     @staticmethod
     def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text) -> None:
@@ -219,7 +219,7 @@ class PodLogDownloader(object):
 
 
 ####################################################################
-# Class: NoMatchingPodsError                                       #
+# Class: NoMatchingPodsError                                     ###
 ####################################################################
 class NoMatchingPodsError(RuntimeError):
     """
@@ -230,7 +230,7 @@ class NoMatchingPodsError(RuntimeError):
 
 
 ####################################################################
-# Class: NoPodsError                                               #
+# Class: NoPodsError                                             ###
 ####################################################################
 class NoPodsError(RuntimeError):
     """
@@ -241,7 +241,7 @@ class NoPodsError(RuntimeError):
 
 
 ####################################################################
-# Class: _ContainerStatus                                          #
+# Class: _ContainerStatus                                        ###
 ####################################################################
 class _ContainerStatus(object):
     """
@@ -374,7 +374,7 @@ class _ContainerStatus(object):
 
 
 ####################################################################
-# Class: _LogDownloadProcess                                       #
+# Class: _LogDownloadProcess                                     ###
 ####################################################################
 class _LogDownloadProcess(object):
 
@@ -385,8 +385,8 @@ class _LogDownloadProcess(object):
         :param pod_name: The name of pod targeted by this process.
         :param process: The reference to the Asynchronous download process.
         """
-        self.pod_name: Text = pod_name
-        self.process: ApplyResult = process
+        self._pod_name: Text = pod_name
+        self._process: ApplyResult = process
 
     def get_pod_name(self) -> Text:
         """
@@ -394,7 +394,7 @@ class _LogDownloadProcess(object):
 
         :return: The name of the pod whose logs are being targeted.
         """
-        return self.pod_name
+        return self._pod_name
 
     def get_process(self) -> ApplyResult:
         """
@@ -402,4 +402,4 @@ class _LogDownloadProcess(object):
 
         :return: The reference to the process for downloading the pod logs.
         """
-        return self.process
+        return self._process

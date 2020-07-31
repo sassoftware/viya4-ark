@@ -16,10 +16,10 @@ from download_pod_logs.download_pod_logs import DownloadPodLogsCommand, main
 
 
 ####################################################################
-# There is no unit test defined for:
-#    DownloadPodLogsCommand.run()
-# This method requires a Kubernetes environment for full
-# functionality.
+# There is no unit test defined for:                             ###
+#    DownloadPodLogsCommand.run()                                ###
+# This method requires a Kubernetes environment for full         ###
+# functionality.                                                 ###
 ####################################################################
 
 def test_download_pod_logs_command_command_name():
@@ -39,10 +39,10 @@ def test_download_pod_logs_command_command_desc():
 
 
 ####################################################################
-# There are no complete units test defined for:
-#    main()
-# This method requires a Kubernetes environment for full
-# functionality.
+# There are no complete units test defined for:                  ###
+#    main()                                                      ###
+# This method requires a Kubernetes environment for full         ###
+# functionality.                                                 ###
 ####################################################################
 
 def test_usage(capfd) -> None:

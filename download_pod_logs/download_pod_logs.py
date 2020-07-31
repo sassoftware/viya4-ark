@@ -20,7 +20,7 @@ from viya_arkcd_library.lrp_indicator import LRPIndicator
 from viya_arkcd_library.k8s.sas_kubectl import Kubectl
 from viya_arkcd_library.k8s.sas_k8s_errors import NamespaceNotFoundError
 
-from download_pod_logs.model.pod_log_downloader import NoMatchingPodsError, NoPodsError, PodLogDownloader
+from download_pod_logs.model import NoMatchingPodsError, NoPodsError, PodLogDownloader
 
 # command line return codes #
 _SUCCESS_RC_ = 0
@@ -30,9 +30,9 @@ _NAMESPACE_NOT_FOUND_RC_ = 4
 _LOGS_UNAVAILABLE_ERROR_RC_ = 5
 
 
-##############################################
-#       CLASS: DownloadPodLogsCommand        #
-##############################################
+####################################################################
+# CLASS: DownloadPodLogsCommand                                  ###
+####################################################################
 class DownloadPodLogsCommand(Command):
     """
     Command implementation for the download-pod-logs command to registered the module as an executable task with the
@@ -61,9 +61,9 @@ class DownloadPodLogsCommand(Command):
         return "Download log files for all or a select list of pods."
 
 
-##################
-#     main()     #
-##################
+####################################################################
+# main()                                                         ###
+####################################################################
 def main(argv: List):
     """
     Implementation of the main script execution for the download-pod-logs command.
@@ -169,8 +169,8 @@ def main(argv: List):
     sys.exit(_SUCCESS_RC_)
 
 
-####################
-#     __main__     #
-####################
+####################################################################
+# __main__                                                       ###
+####################################################################
 if __name__ == "__main__":
     main(sys.argv[1:])
