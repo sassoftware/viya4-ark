@@ -33,10 +33,11 @@ _CONNECTION_ERROR_RC_ = 5
 _NAMESPACE_NOT_FOUND_RC_ = 6
 _RUNTIME_ERROR_RC_ = 7
 
-## setup sys.path for import of viya_constants
+# setup sys.path for import of viya_constants
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
-## turn off logging
+# turn off logging
 sas_logger = ViyaARKCDLogger("test_report.log", logging_level=logging.NOTSET, logger_name="my_logger")
+
 
 def test_get_storage_classes_json():
     vpc = createViyaPreInstallCheck()
@@ -366,6 +367,7 @@ def register_pint():
     ureg = UnitRegistry(datafile)
     quantity_ = ureg.Quantity
     return quantity_
+
 
 def createViyaPreInstallCheck():
     sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck(sas_logger)
