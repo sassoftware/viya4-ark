@@ -55,6 +55,28 @@ def test_get_storage_classes_json():
     template_render(global_data, configs_data, storage_data, 'storage_classes_info.html')
 
 
+def test_read_cluster_info_output():
+    vpc = createViyaPreInstallCheck()
+    cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n" + \
+                   "KubeDNS is running at " + \
+                   "https://0.0.0.0:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy\n"
+    data = vpc._read_cluster_info_output(cluster_info)
+    assert(not os.path.exists("temp_cluster_info.txt"))
+    assert(len(str(data)) > 0)
+
+
+def test_delete_temp_file():
+    vpc = createViyaPreInstallCheck()
+    file_name = "temp_cluster_info_test.txt"
+    data = "Some data"
+    file = open(file_name, "w+")
+    file.writelines(str(data))
+    file.close()
+    assert(os.path.exists(file_name))
+    vpc._delete_temp_file(file_name)
+    assert (not os.path.exists("temp_cluster_info.txt"))
+
+
 def test_get_master_nodes_json():
     vpc = createViyaPreInstallCheck()
     cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n" + \
