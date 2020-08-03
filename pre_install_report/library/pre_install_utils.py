@@ -13,10 +13,10 @@
 
 from subprocess import CalledProcessError
 import os
-import logging
 
 from pre_install_report.library.utils import viya_constants
 from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface, KubernetesApiResources
+from viya_arkcd_library.logging import ViyaARKCDLogger
 
 
 class PreCheckUtils(object):
@@ -31,12 +31,13 @@ class PreCheckUtils(object):
         """
         self.data = None
         self._kubectl: KubectlInterface = params.get(viya_constants.KUBECTL)
+        self.sas_logger: ViyaARKCDLogger = params.get("logger")
+        self.logger = self.sas_logger.get_logger()
+        self.logger.info("PreCheckUtils ")
 
-    def deploy_manifest_file(self, action, file_name, debug):
+    def deploy_manifest_file(self, action, file_name):
         """
         Apply/delete specified manifest in a namespace and return the return code.
-
-
         action: indicate apply or delete of file
         file_name: yaml file to apply/delete with kubectl
         return:  kubectl rc
@@ -50,15 +51,15 @@ class PreCheckUtils(object):
         except CalledProcessError as cpe:
             rc = cpe.returncode
             error_msg = str(cpe.output)
-            logging.info("deploy_manifest_file " + ' rc = ' + str(rc) + action + ' ' + file_path +
-                         ' error_msg =' + error_msg)
+            self.logger.error("deploy_manifest_file rc {} action {} filepath error_msg {}".format(str(rc), action,
+                              file_path, error_msg))
             return rc
 
-        logging.info("deploy_manifest_file " + ' rc = ' + str(rc) + action + ' ' + file_path +
-                     ' data = ' + str(data))
+        self.logger.info("deploy_manifest_file {} rc {} action {} filepath {} data{}".format(rc, str(rc), action,
+                         file_path, str(data)))
         return rc
 
-    def do_cmd(self, test_cmd, debug):
+    def do_cmd(self, test_cmd):
         """
         Run the specified kubectl command and return the output. Used to execute commands such as
         rollout status <deployment.v1.apps/hello-world
@@ -71,17 +72,16 @@ class PreCheckUtils(object):
         try:
             data = self._kubectl.do(test_cmd, False)
 
-            logging.info("do_cmd " + ' rc = 0' + test_cmd +
-                         ' data = ' + str(data))
+            self.logger.info("do_cmd " + ' rc = 0' + test_cmd +
+                             ' data = ' + str(data))
             return 0
         except CalledProcessError as e:
-            # raise the error if errors are not being ignored, otherwise print the error to stdout #
             data = e.output
-            logging.info("do_cmd " + ' rc = ' + str(e.returncode) + test_cmd +
-                         ' data = ' + str(data))
+            self.logger.error("do_cmd " + ' rc = ' + str(e.returncode) + test_cmd +
+                              ' data = ' + str(data))
             return e.returncode
 
-    def get_rbac_group_cmd(self, debug):
+    def get_rbac_group_cmd(self):
         """
         Check if for Role and Rolebinding api groups.
 
@@ -95,17 +95,18 @@ class PreCheckUtils(object):
             role = data.get_api_group("Role")
             rolebinding = data.get_api_group("RoleBinding")
         except CalledProcessError as e:
-            logging.info("get_rbac_group_cmd  rc =  " + e.returncode)
+            self.logger.exception("get_rbac_group_cmd  rc {}" + e.returncode)
             return False
-
         if role is None:
             return False
         if rolebinding is None:
             return False
-        logging.info("get_rbac_group_cmd   group role = " + role + " group rolebinding = " + rolebinding)
+
+        self.logger.info("found Role and RoleBinding api groups")
+
         return True
 
-    def can_i(self, test_cmd, debug):
+    def can_i(self, test_cmd):
         """
         Run the specified can-i command in designated namespace
 
@@ -114,11 +115,11 @@ class PreCheckUtils(object):
         """
         try:
             allowed = self._kubectl.can_i(test_cmd, False, False)
-            logging.info('can -i ' + str(allowed) + "  can-i " + test_cmd)
+            self.logger.info('can -i ' + str(allowed) + "  can-i " + test_cmd)
             return allowed
         except CalledProcessError as cpe:
-            logging.info('can -i return False' + "  can-i " + 'return code = ' +
-                         cpe.returncode + " " + test_cmd)
+            self.logger.info('can -i return False' + "  can-i " + 'return code = ' +
+                             cpe.returncode + " " + test_cmd)
             return False
 
     def _get_filepath(self, file_name):

@@ -13,9 +13,9 @@
 
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-import logging
 from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.pre_install_utils import PreCheckUtils
+from viya_arkcd_library.logging import ViyaARKCDLogger
 
 
 class PreCheckPermissions(object):
@@ -36,6 +36,9 @@ class PreCheckPermissions(object):
         self.ingress_host = params.get(viya_constants.INGRESS_HOST)
         self.ingress_port = params.get(viya_constants.INGRESS_PORT)
         self.utils: PreCheckUtils = params.get(viya_constants.PERM_CLASS)
+        self.sas_logger: ViyaARKCDLogger = params.get("logger")
+        self.logger = self.sas_logger.get_logger()
+
         self.namespace_admin_permission_data = {}
         self.cluster_admin_permission_data = {}
         self.namespace_admin_permission_aggregate = {}
@@ -87,30 +90,30 @@ class PreCheckPermissions(object):
         else:
             self.namespace_admin_permission_data[resource_key] = viya_constants.ADEQUATE_PERMS
 
-    def check_sample_application(self, debug):
+    def check_sample_application(self):
         """
         Deploy hello-world in specified namespace and set the permissiions status in the
 
         """
 
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                             'hello-application.yaml', debug)
+                                             'hello-application.yaml')
         #    self._set_results_namespace_admin(viya_constants.PERM_DEPLOYMENT, rc)
         #    self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
         if rc == 0:
-            rc = self.utils.do_cmd(" rollout status deployment.v1.apps/hello-world ", debug)
+            rc = self.utils.do_cmd(" rollout status deployment.v1.apps/hello-world ")
 
             self._set_results_namespace_admin(viya_constants.PERM_DEPLOYMENT, rc)
             self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
             if rc == 0:
-                rc = self.utils.do_cmd(" scale --replicas=2 deployment/hello-world ", debug)
+                rc = self.utils.do_cmd(" scale --replicas=2 deployment/hello-world ")
 
                 if rc == 0:
                     self._set_results_namespace_admin(viya_constants.PERM_REPLICASET, rc)
 
-    def check_sample_service(self, debug):
+    def check_sample_service(self):
         """
         Deploy Kubernetes Service for hello-world appliction in specified namespace and set the
         permissions status in the namespace_admin_permission_data dict object
@@ -119,10 +122,10 @@ class PreCheckPermissions(object):
         """
 
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                             'helloworld-svc.yaml', debug)
+                                             'helloworld-svc.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
-    def check_sample_ingress(self, debug):
+    def check_sample_ingress(self):
         """
         Deploy Kubernetes Ingress or Gateway and Virtual Service for hello-world appliction in specified
         namespace and set the permissions status in the namespace_admin_permission_data dict object.
@@ -131,10 +134,10 @@ class PreCheckPermissions(object):
 
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                             self.ingress_file, debug)
+                                             self.ingress_file)
         self._set_results_namespace_admin(viya_constants.PERM_INGRESS, rc)
 
-    def check_sample_response(self, debug):
+    def check_sample_response(self):
         """
         Test Assemble URL to access hello-world appliction with user supplied host and port. If the response indicates
         failure retest with ooption to diable verification.
@@ -146,24 +149,24 @@ class PreCheckPermissions(object):
             port = ":" + self.ingress_port
         host_port_app = str(self.ingress_host) + str(port) + "/hello-world"
         url_string = "http://" + host_port_app
-        logging.info("url {}".format(url_string))
-        response = self._request_url(url_string, debug, True)
+        self.logger.info("url {}".format(url_string))
+        response = self._request_url(url_string, True)
         if response is not None:
             response.encoding = 'utf-8'
             if response.status_code == 200:
                 self.namespace_admin_permission_data[viya_constants.PERM_SAMPLE_STATUS] = str(response.status_code) + \
                                                                         "  " + str(response.text)
-                logging.info("url {} response status code {}".format(url_string, str(response.status_code)))
+                self.logger.info("url {} response status code {}".format(url_string, str(response.status_code)))
             else:
                 # attempt the request again with https and verify=False option, suppress InsecureRequestWarning
                 url_string = "https://" + host_port_app
-                response = self._request_url(url_string, debug, False)
+                response = self._request_url(url_string, False)
                 if response is not None:
                     response.encoding = 'utf-8'
                     if response.status_code == 200:
                         self.namespace_admin_permission_data[viya_constants.PERM_SAMPLE_STATUS] = \
                             str(response.status_code) + "  " + str(response.text)
-                        logging.info("url {} response status code {}".format(url_string, str(response.status_code)))
+                        self.logger.info("url {} response status code {}".format(url_string, str(response.status_code)))
                     else:
                         self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
                             viya_constants.INSUFFICIENT_PERMS
@@ -171,11 +174,12 @@ class PreCheckPermissions(object):
                         self.namespace_admin_permission_data['Sample HTTP Failed'] = "Status Code " + \
                                                                                      str(response.status_code) + \
                                                                                      ": " + str(url_string)
-                        logging.info("url {} status {} text {}".format(url_string, response.status_code, response.text))
+                        self.logger.info("url {} status {} text {}".format(url_string,
+                                                                           response.status_code, response.text))
                 else:
-                    logging.info("Retry as https failed url ".format(url_string))
+                    self.logger.error("Retry as https failed url ".format(url_string))
 
-    def _request_url(self, url_string,  debug, verify_cert=True):
+    def _request_url(self, url_string, verify_cert=True):
         """
         test the assembled URL to access hello-world appliction. Test url and record the response
         in the namespace_admin_permission_data dict object. Suppresses InsecureRequestWarning if
@@ -187,96 +191,96 @@ class PreCheckPermissions(object):
             else:
                 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
                 response = requests.get(url_string, verify=False)
-                logging.info("_request_url() Retry. {} {}.".format("VerifySSL = False", url_string))
+                self.logger.debug("_request_url() Retry. {} {}.".format("VerifySSL = False", url_string))
         except requests.exceptions.RequestException as rexp:
             self.namespace_admin_permission_data['Sample requests Error occured'] = \
                 str(rexp)
             self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
                 viya_constants.INSUFFICIENT_PERMS
-            logging.info("url {}  error{}".format(url_string, str(rexp)))
+            self.logger.error("url {}  error{}".format(url_string, str(rexp)))
             return None
 
         return response
 
-    def check_delete_sample_application(self, debug):
+    def check_delete_sample_application(self):
         """
         Delete hello-world application in specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
         Wait for pods to be deleted.
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             'hello-application.yaml', debug)
+                                             'hello-application.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_DEPLOYMENT, rc)
 
-        rc = self.utils.do_cmd(" wait --for=delete pod -l app=hello-world-pod --timeout=12s ", debug)
+        rc = self.utils.do_cmd(" wait --for=delete pod -l app=hello-world-pod --timeout=12s ")
 
-    def check_delete_sample_service(self, debug):
+    def check_delete_sample_service(self):
         """
         Delete hello-world Kubernetes Service in specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
 
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             'helloworld-svc.yaml', debug)
+                                             'helloworld-svc.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_SERVICE, rc)
 
-    def check_delete_sample_ingress(self, debug):
+    def check_delete_sample_ingress(self):
         """
         Delete Kubernetes Ingress/Gateway in specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
 
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             self.ingress_file, debug)
+                                             self.ingress_file)
         self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_INGRESS, rc)
 
-    def check_create_custom_resource(self, debug):
+    def check_create_custom_resource(self):
         """
         Create the  custome resource in specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
 
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                             'crviya.yaml', debug)
+                                             'crviya.yaml')
         self._set_results_namespace_admin_crd(viya_constants.PERM_CREATE + viya_constants.PERM_CR, rc)
 
     #    TBD test_cmd = "kubectl get customresourcedefinition viyas.company.com -o name"
 
-    def check_deploy_crd(self, debug):
+    def check_deploy_crd(self):
         """
             Deploy the namespaced Custom Resource definition. Set the
             permissions status in the namespace_admin_permission_data dict object.
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                             'crdviya.yaml', debug)
+                                             'crdviya.yaml')
         self._set_results_cluster_admin(viya_constants.PERM_CREATE + viya_constants.PERM_CRD, rc)
 
-    def check_rbac_role(self, debug):
+    def check_rbac_role(self):
         """
         Check if RBAC is enabled in specified namespace
         Create the Role and Rolebinding for the custome resource access with specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
 
         """
-        found = self.utils.get_rbac_group_cmd(debug)
+        found = self.utils.get_rbac_group_cmd()
 
         if found:
             rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                                 'viya-role.yaml', debug)
+                                                 'viya-role.yaml')
 
             self._set_results_cluster_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLE, rc)
 
             rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                                 'crservice_acct.yaml', debug)
+                                                 'crservice_acct.yaml')
             self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_SA, rc)
 
             rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                                 'viya-rolebinding.yaml', debug)
+                                                 'viya-rolebinding.yaml')
             self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLEBINDING, rc)
         else:
             self.namespace_admin_permission_aggregate["RBAC Checking"] = viya_constants.PERM_SKIPPING
 
-    def check_rbac_delete_role(self, debug):
+    def check_rbac_delete_role(self):
         """
         Delete the Kubernetes Role, Rolebinding and Service Account deployed for the custom resource access
         with specified namespace. Set the permissions status in the namespace_admin_permission_data dict object.
@@ -284,16 +288,16 @@ class PreCheckPermissions(object):
         """
 
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             'viya-role.yaml', debug)
+                                             'viya-role.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_ROLE, rc)
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             'viya-rolebinding.yaml', debug)
+                                             'viya-rolebinding.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_ROLEBINDING, rc)
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             'crservice_acct.yaml', debug)
+                                             'crservice_acct.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_SA, rc)
 
-    def check_get_custom_resource(self, namespace, debug):
+    def check_get_custom_resource(self, namespace):
         """
         Create the Role and Rolebinding for the custom resource access with specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
@@ -302,20 +306,20 @@ class PreCheckPermissions(object):
         rc1 = 0
         rc2 = 0
         allowed: bool = self.utils.can_i(' create viyas.company.com --as=system:serviceaccount:'
-                                         + namespace + ':crreader ', debug)
+                                         + namespace + ':crreader ')
         if not allowed:
             rc1 = 1
 
         self._set_results_namespace_admin_crd(viya_constants.PERM_CREATE + viya_constants.PERM_CR + " with RBAC "
                                               + viya_constants.PERM_SA + " resp: = " + str(allowed), rc1)
         allowed: bool = self.utils.can_i(' delete viyas.company.com --as=system:serviceaccount:'
-                                         + namespace + ':crreader ', debug)
+                                         + namespace + ':crreader ')
         if allowed:
             rc2 = 1
         self._set_results_namespace_admin_crd(viya_constants.PERM_DELETE + viya_constants.PERM_CR + " with RBAC "
                                               + viya_constants.PERM_SA + " resp: = " + str(allowed), rc2)
 
-    def check_delete_custom_resource(self, debug):
+    def check_delete_custom_resource(self):
         """
         Delete the Custom resource with specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
@@ -323,18 +327,18 @@ class PreCheckPermissions(object):
         """
 
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             'crviya.yaml', debug)
+                                             'crviya.yaml')
         self._set_results_namespace_admin_crd(viya_constants.PERM_DELETE + viya_constants.PERM_CR, rc)
         return rc
 
-    def check_delete_crd(self, debug):
+    def check_delete_crd(self):
         """
         Delete the namespaced Custom resource definition. Set the
         permissions status in the namespace_admin_permission_data dict object.
 
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             'crdviya.yaml', debug)
+                                             'crdviya.yaml')
         self._set_results_cluster_admin(viya_constants.PERM_DELETE + viya_constants.PERM_CRD, rc)
 
     def get_cluster_admin_permission_data(self):

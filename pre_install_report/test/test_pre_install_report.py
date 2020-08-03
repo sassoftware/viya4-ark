@@ -1,3 +1,4 @@
+
 ####################################################################
 # ### test_pre_install_nodescheck.py                             ###
 ####################################################################
@@ -14,12 +15,14 @@ import sys
 
 import pprint
 import json
+import logging
 
 from pint import UnitRegistry
 from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.pre_install_check import ViyaPreInstallCheck
 from pre_install_report.library.pre_install_check_permissions import PreCheckPermissions
 from viya_arkcd_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
+from viya_arkcd_library.logging import ViyaARKCDLogger
 
 _SUCCESS_RC_ = 0
 _BAD_OPT_RC_ = 1
@@ -30,9 +33,10 @@ _CONNECTION_ERROR_RC_ = 5
 _NAMESPACE_NOT_FOUND_RC_ = 6
 _RUNTIME_ERROR_RC_ = 7
 
-# setup sys.path for import of viya_constants
+## setup sys.path for import of viya_constants
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
-
+## turn off logging
+sas_logger = ViyaARKCDLogger("test_report.log", logging_level=logging.NOTSET, logger_name="my_logger")
 
 def test_get_storage_classes_json():
     vpc = createViyaPreInstallCheck()
@@ -42,7 +46,7 @@ def test_get_storage_classes_json():
         data = json.load(f)
     global_data = []
     configs_data = []
-    storage_data = vpc._get_storage_classes(data, False)
+    storage_data = vpc._get_storage_classes(data)
     print('\r', (storage_data[0]))
     print('\r', (storage_data[1]))
     assert len(storage_data) == 2
@@ -55,7 +59,7 @@ def test_get_master_nodes_json():
     cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n" + \
                    "KubeDNS is running at " + \
                    "https://0.0.0.0:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy\n"
-    master_data = vpc._check_master(cluster_info, False)
+    master_data = vpc._check_master(cluster_info)
     assert master_data[0]['totalMasters'] == '1'
     assert master_data[0]['status'] == 0
     assert "Kubernetes master is running at https://0.0.0.0:6443" in master_data[0]['firstFailure']
@@ -71,7 +75,7 @@ def test_ranchersingle_get_master_nodes_json():
         "                                                                                                  " + \
         "To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.\n"
 
-    master_data = vpc._check_master(cluster_info, False)
+    master_data = vpc._check_master(cluster_info)
     assert master_data[0]['totalMasters'] == '1'
     assert master_data[0]['status'] == 0
     assert "Kubernetes master is running at https://127.0.0.1:6443" in master_data[0]['firstFailure']
@@ -83,8 +87,7 @@ def test_ranchermulti_get_master_nodes_json():
         "CoreDNS is running at https://node3:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy\n" + \
         "                                                                                                  " + \
         "To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.\n"
-
-    master_data = vpc._check_master(cluster_info, False)
+    master_data = vpc._check_master(cluster_info)
     assert master_data[0]['totalMasters'] == '1'
     assert master_data[0]['status'] == 0
     assert "Kubernetes master is running at https://node3:6443" in master_data[0]['firstFailure']
@@ -101,7 +104,7 @@ def test_get_nested_nodes_info():
     datafile = os.path.join(current_dir, 'test_data/json_data/nodes_info.json')
     with open(datafile) as f:
         data = json.load(f)
-    nodes_data = vpc.get_nested_nodes_info(data, False)
+    nodes_data = vpc.get_nested_nodes_info(data)
 
     storage_data = []
     configs_data = []
@@ -110,7 +113,7 @@ def test_get_nested_nodes_info():
     # Register Python Package Pint definitions
     quantity_ = register_pint()
     cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n"
-    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_, False)
+    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_)
     pprint.pprint(global_data)
     for nodes in global_data:
         assert global_data[0]['totalWorkers'] in '3: Current: 3, Expected: Minimum 1'
@@ -136,7 +139,7 @@ def test_ranchersingle_get_nested_nodes_info():
     datafile = os.path.join(current_dir, 'test_data/json_data/ranchersingle_nodes_info.json')
     with open(datafile) as f:
         data = json.load(f)
-    nodes_data = vpc.get_nested_nodes_info(data, False)
+    nodes_data = vpc.get_nested_nodes_info(data)
 
     storage_data = []
     configs_data = []
@@ -144,7 +147,7 @@ def test_ranchersingle_get_nested_nodes_info():
     global_data = []
     cluster_info = "Kubernetes master is running at https://127.0.0.1:6443\n"
     quantity_ = register_pint()
-    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_, False)
+    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_)
     pprint.pprint(global_data)
     for nodes in global_data:
         assert global_data[2]['aggregate_cpu_failures'] in 'Current: 8, Expected: 12, Issues Found: 1'
@@ -167,7 +170,7 @@ def test_ranchermulti_get_nested_nodes_info():
     datafile = os.path.join(current_dir, 'test_data/json_data/ranchermulti_nodes_info.json')
     with open(datafile) as f:
         data = json.load(f)
-    nodes_data = vpc.get_nested_nodes_info(data, False)
+    nodes_data = vpc.get_nested_nodes_info(data)
 
     storage_data = []
     configs_data = []
@@ -175,7 +178,7 @@ def test_ranchermulti_get_nested_nodes_info():
     global_data = []
     cluster_info = "Kubernetes master is running at https://node3:6443\n"
     quantity_ = register_pint()
-    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_, False)
+    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_)
     pprint.pprint(global_data)
     for nodes in global_data:
 
@@ -194,7 +197,7 @@ def test_get_no_config_info():
     with open(datafile) as f:
         data = json.load(f)
     configs_data = []
-    configs_data = vpc._get_config_current_context(data, configs_data, True)
+    configs_data = vpc._get_config_current_context(data, configs_data)
     pprint.pprint(configs_data)
     assert configs_data == [[]]
 
@@ -209,10 +212,10 @@ def test_get_config_info():
     storage_data = []
     global_data = []
 
-    configs_data = vpc._get_config_current_context(data, configs_data, False)
-    configs_data = vpc._get_config_contexts(data, configs_data, False)
-    configs_data = vpc._get_config_clusters(data, configs_data, False)
-    configs_data = vpc._get_config_users(data, configs_data, False)
+    configs_data = vpc._get_config_current_context(data, configs_data)
+    configs_data = vpc._get_config_contexts(data, configs_data)
+    configs_data = vpc._get_config_clusters(data, configs_data)
+    configs_data = vpc._get_config_users(data, configs_data)
     pprint.pprint(configs_data)
     assert (configs_data[0][0]['currentcontext']) == 'kubernetes-admin@kubernetes'
     assert(configs_data[1][0]['cluster']) == 'kubernetes'
@@ -240,10 +243,10 @@ def test_ranchersingle_test_get_config_info():
     storage_data = []
     global_data = []
 
-    configs_data = vpc._get_config_current_context(data, configs_data, False)
-    configs_data = vpc._get_config_contexts(data, configs_data, False)
-    configs_data = vpc._get_config_clusters(data, configs_data, False)
-    configs_data = vpc._get_config_users(data, configs_data, False)
+    configs_data = vpc._get_config_current_context(data, configs_data)
+    configs_data = vpc._get_config_contexts(data, configs_data)
+    configs_data = vpc._get_config_clusters(data, configs_data)
+    configs_data = vpc._get_config_users(data, configs_data)
     pprint.pprint(configs_data)
     assert(configs_data[0][0]['currentcontext']) == 'default'
     assert(configs_data[2][0]['server']) == "https://127.0.0.1:6443"
@@ -262,10 +265,10 @@ def test_ranchermulti_test_get_config_info():
     storage_data = []
     global_data = []
 
-    configs_data = vpc._get_config_current_context(data, configs_data, False)
-    configs_data = vpc._get_config_contexts(data, configs_data, False)
-    configs_data = vpc._get_config_clusters(data, configs_data, False)
-    configs_data = vpc._get_config_users(data, configs_data, False)
+    configs_data = vpc._get_config_current_context(data, configs_data)
+    configs_data = vpc._get_config_contexts(data, configs_data)
+    configs_data = vpc._get_config_clusters(data, configs_data)
+    configs_data = vpc._get_config_users(data, configs_data)
     pprint.pprint(configs_data)
     assert(configs_data[0][0]['currentcontext']) == 'gelcluster'
     assert(configs_data[1][0]['cluster']) == 'gelcluster'
@@ -289,7 +292,7 @@ def test_azure_terrform_multi_nodes_info():
     datafile = os.path.join(current_dir, 'test_data/json_data/azure_terrform_multi_nodes_info.json')
     with open(datafile) as f:
         data = json.load(f)
-    nodes_data = vpc.get_nested_nodes_info(data, False)
+    nodes_data = vpc.get_nested_nodes_info(data)
 
     storage_data = []
     configs_data = []
@@ -297,7 +300,7 @@ def test_azure_terrform_multi_nodes_info():
     global_data = []
     cluster_info = "Kubernetes master is running at https://node3:6443\n"
     quantity_ = register_pint()
-    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_, False)
+    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_)
     pprint.pprint(global_data)
     for nodes in global_data:
 
@@ -321,7 +324,7 @@ def test_azure_multi_get_nested_nodes_info():
     datafile = os.path.join(current_dir, 'test_data/json_data/azure_multi_nodes_info.json')
     with open(datafile) as f:
         data = json.load(f)
-    nodes_data = vpc.get_nested_nodes_info(data, False)
+    nodes_data = vpc.get_nested_nodes_info(data)
 
     storage_data = []
     configs_data = []
@@ -329,7 +332,7 @@ def test_azure_multi_get_nested_nodes_info():
     global_data = []
     cluster_info = "Kubernetes master is running at https://node3:6443\n"
     quantity_ = register_pint()
-    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_, False)
+    global_data = vpc.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_)
     pprint.pprint(global_data)
     for nodes in global_data:
 
@@ -364,9 +367,8 @@ def register_pint():
     quantity_ = ureg.Quantity
     return quantity_
 
-
 def createViyaPreInstallCheck():
-    sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck()
+    sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck(sas_logger)
     return sas_pre_check_report
 
 
@@ -376,6 +378,7 @@ def test_check_permissions():
     params[viya_constants.INGRESS_CONTROLLER] = 'nginx'
     params[viya_constants.INGRESS_HOST] = '10.240.9.8'
     params[viya_constants.INGRESS_PORT] = '80'
+    params['logger'] = sas_logger
 
     # initialize the PreCheckPermissions object
     perms = PreCheckPermissions(params)
