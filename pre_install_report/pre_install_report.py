@@ -24,6 +24,7 @@ from pre_install_report.library.pre_install_check import ViyaPreInstallCheck
 from viya_arkcd_library.command import Command
 from viya_arkcd_library.k8s.sas_k8s_errors import NamespaceNotFoundError
 from viya_arkcd_library.k8s.sas_kubectl import Kubectl
+from viya_arkcd_library.logging import ViyaARKCDLogger
 
 PRP = pprint.PrettyPrinter(indent=4)
 # Error Messages
@@ -128,8 +129,8 @@ def usage(exit_code: int):
     print(f"    -p  --port=xxxxx or \"\"        (Required)Ingress port used for Viya deployment")
     print(f"    -h  --help                    (Optional)Show this usage message")
     print(f"    -n  --namespace               (Optional)Kubernetes namespace used for Viya deployment")
-    print(f"    -o, --output-dir=\"<dir>\"      (Optional)Write the report files to the provided directory")
-    print(f"    -d, --debug                   (Optional)Turns on debugging output")
+    print(f"    -o, --output-dir=\"<dir>\"      (Optional)Write the report and log files to the provided directory")
+    print(f"    -d, --debug                   (Optional)Enables logging at DEBUG level. Default is INFO level")
     print()
     sys.exit(exit_code)
 
@@ -155,16 +156,16 @@ def main(argv):
     found_ingress_controller: bool = False
     found_ingress_host: bool = False
     found_ingress_port: bool = False
-    debug: bool = False
     output_dir: Optional[Text] = ""
     ingress_port: Optional[Text] = ""
     name_space: Optional[Text] = None
+    logging_level: int = logging.INFO
 
     for opt, arg in opts:
         if opt in ('-h', '--help'):
             usage(_SUCCESS_RC_)
         elif opt in ('-d', '--debug'):
-            debug = True
+            logging_level = logging.DEBUG
         elif opt in ('-n', '--namespace'):
             name_space = arg
         elif opt in ('-i', '--ingress'):
@@ -200,14 +201,8 @@ def main(argv):
             print(f"ERROR: The report output path is not valid. Check value on option -o ")
             usage(_BAD_OPT_RC_)
     report_log_path = output_dir + _REPORT_LOG_NAME_TMPL_.format(file_timestamp)
-    try:
-        logging.basicConfig(filename=report_log_path, filemode='w',
-                            format='%(asctime)s - %(message)s',
-                            datefmt='%d-%b-%y %H:%M:%S', level=logging.INFO)
-    except Exception as error:
-        print(f"ERROR: The report output path is not valid. {repr(error)}. Check value on option -o ")
-        usage(_BAD_OPT_RC_)
 
+    sas_logger = ViyaARKCDLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
     _read_environment_var('KUBECONFIG')
 
     try:
@@ -226,12 +221,12 @@ def main(argv):
     # create the Pre-Install Check Report object
     params = {}
     params[viya_constants.KUBECTL] = kubectl
-    sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck()
+    sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck(sas_logger)
 
     # gather the details for the report
     try:
         sas_pre_check_report.check_details(kubectl, ingress_port, ingress_host,
-                                           ingress_controller, output_dir, debug)
+                                           ingress_controller, output_dir)
     except RuntimeError as e:
         print()
         print(f"ERROR: {e}", file=sys.stderr)

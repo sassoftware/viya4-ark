@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 ####################################################################
-# ### pre_install_report.py                                  ###
+# ### pre_install_check.py                                       ###
 ####################################################################
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
@@ -17,8 +17,10 @@ import datetime
 import pprint
 import sys
 import os
-import logging
+import platform
+import subprocess
 from subprocess import CalledProcessError
+
 
 # import pint to add, compare memory
 from pint import UnitRegistry
@@ -28,6 +30,7 @@ from pre_install_report.library.pre_install_check_permissions import PreCheckPer
 from pre_install_report.library.pre_install_utils import PreCheckUtils
 from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
 from viya_arkcd_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
+from viya_arkcd_library.logging import ViyaARKCDLogger
 
 
 PRP = pprint.PrettyPrinter(indent=4)
@@ -64,7 +67,7 @@ releases = (viya_constants.KUBELET_VERSION_14,
             viya_constants.KUBELET_VERSION_17)
 
 
-class ViyaPreInstallCheck(object):
+class ViyaPreInstallCheck():
     """
     A ViyaPreInstallCheck object represents a summary of resources currently detected on the target Kubernetes
     environment.
@@ -73,44 +76,46 @@ class ViyaPreInstallCheck(object):
 
     The gathered data can be written to disk as an HTML report and a JSON file containing the gathered data.
     """
-    def __init__(self) -> None:
+    def __init__(self, sas_logger: ViyaARKCDLogger):
         """
         Constructor for ViyaPreInstallCheck object.
         """
         self._report_data = None
         self._kubectl: KubectlInterface = None
+        self.sas_logger = sas_logger
+        self.logger = self.sas_logger.get_logger()
 
-    def check_details(self, kubectl, ingress_port, ingress_host, ingress_controller, output_dir, debug):
+    def check_details(self, kubectl, ingress_port, ingress_host, ingress_controller, output_dir):
         # Register Python Package Pint definitions
 
         self._kubectl = kubectl
         name_space = kubectl.get_namespace()
-        logging.info('names_space = ' + name_space)
+        self.logger.info("names_space: {} ".format(name_space))
 
         current_dir = os.path.dirname(os.path.abspath(__file__))
         datafile = os.path.join(current_dir, "utils" + os.sep + 'kdefinitions.txt')
 
         ureg = UnitRegistry(datafile)
         quantity_ = ureg.Quantity
-        configs_data = self.get_config_info(debug)
-        cluster_info = self._get_master_json(debug)
-        master_data = self._check_master(cluster_info, debug)
+        configs_data = self.get_config_info()
+        cluster_info = self._get_master_json()
+        master_data = self._check_master(cluster_info)
         namespace_data = []
-        namespace_data = self._check_available_namespaces(self._get_namespaces_json(debug), namespace_data)
+        namespace_data = self._check_available_namespaces(self._get_namespaces_json(), namespace_data)
 
-        storage_json = self._get_storage_json(debug)
-        storage_data = self._get_storage_classes(storage_json, debug)
+        storage_json = self._get_storage_json()
+        storage_data = self._get_storage_classes(storage_json)
 
-        nodes_json = self._get_nodes_json(debug)
-        nodes_data = self.get_nested_nodes_info(nodes_json, debug)
+        nodes_json = self._get_nodes_json()
+        nodes_data = self.get_nested_nodes_info(nodes_json)
 
         global_data = []
-        global_data = self.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_, debug)
+        global_data = self.evaluate_nodes(nodes_data, global_data, releases, cluster_info, quantity_)
 
         cluster_admin_permission_data, namespace_admin_permission_data, \
             ingress_data, ns_admin_permission_aggregate, \
             cluster_admin_permission_aggregate = self._check_permissions(ingress_controller, str(ingress_host),
-                                                                         str(ingress_port), debug)
+                                                                         str(ingress_port))
 
         self.generate_report(global_data, master_data, configs_data,
                              storage_data,
@@ -119,8 +124,7 @@ class ViyaPreInstallCheck(object):
                              ingress_data,
                              ns_admin_permission_aggregate,
                              cluster_admin_permission_aggregate,
-                             output_dir,
-                             debug)
+                             output_dir)
         return
 
     def _read_environment_var(self, env_var):
@@ -132,11 +136,13 @@ class ViyaPreInstallCheck(object):
         try:
             value_env_var = os.environ[env_var]
         except Exception:
+            self.logger.exception("CalledProcessorError")
             print(KUBECONF_ERROR)
             sys.exit(_BAD_ENV_RC_)
+
         return value_env_var
 
-    def _get_nested_info(self, nested_nodes, extracted_nodes, search_key, debug):
+    def _get_nested_info(self, nested_nodes, extracted_nodes, search_key):
 
         try:
             for adtnode in nested_nodes:
@@ -145,13 +151,12 @@ class ViyaPreInstallCheck(object):
                     if key in search_key:
                         addrnode = [adtnode[key]]
                         extracted_nodes.append(addrnode)
-            if debug:
-                pprint.pprint(extracted_nodes)
+            self.logger.debug("extracted nodes: {}".format(pprint.pformat(extracted_nodes)))
             return extracted_nodes
         except KeyError:
             return extracted_nodes
 
-    def _get_config_current_context(self, config_json, configs_data, debug):
+    def _get_config_current_context(self, config_json, configs_data):
         """
         Retrieve the current context from kubeconfig file.
 
@@ -173,13 +178,13 @@ class ViyaPreInstallCheck(object):
                 sys.exit(_BAD_CONFIG_JSON_RC_)
 
             current_context_data.append(config_data)
-        if debug:
-            PRP.pprint(current_context_data)
+
+        self.logger.debug("current_context_data: " + pprint.pformat(current_context_data))
 
         configs_data.append(current_context_data)
         return configs_data
 
-    def _get_config_contexts(self, config_json, configs_data, debug):
+    def _get_config_contexts(self, config_json, configs_data):
         """
         Retrieve the available context name , cluster name, and cluster user from the kubectl command config view.
 
@@ -207,17 +212,16 @@ class ViyaPreInstallCheck(object):
                         config_data['clusteruser'] = viya_constants.KEY_NOT_FOUND
                     context_data.append(config_data)
             except TypeError as error:
-                if debug:
-                    print(error)
+                self.logger.exception("TypeError {}".format(str(error)))
                 print(CONFIG_ERROR)
                 sys.exit(_BAD_CONFIG_JSON_RC_)
-        if debug:
-            PRP.pprint(context_data)
+
+        self.logger.debug("context_data: {}".format(pprint.pformat(context_data)))
 
         configs_data.append(context_data)
         return configs_data
 
-    def _get_config_clusters(self, config_json, configs_data, debug):
+    def _get_config_clusters(self, config_json, configs_data):
         """
         Retrieve the available cluster and associated server names kubectl command config view.
 
@@ -241,18 +245,16 @@ class ViyaPreInstallCheck(object):
                         config_data['server'] = viya_constants.KEY_NOT_FOUND
 
                     cluster_data.append(config_data)
-            except TypeError as e:
-                if debug:
-                    print(e)
+            except TypeError as error:
+                self.logger.exception("TypeError".format(str(error)))
                 print(CONFIG_ERROR)
                 sys.exit(_BAD_CONFIG_JSON_RC_)
-        if debug:
-            PRP.pprint(cluster_data)
 
+        self.logger.debug("cluster data: {}".format(pprint.pformat(cluster_data)))
         configs_data.append(cluster_data)
         return configs_data
 
-    def _get_config_users(self, config_json, configs_data, debug):
+    def _get_config_users(self, config_json, configs_data):
         """
         Retrieve any usernames from the from the kubectl command config view.
 
@@ -271,17 +273,16 @@ class ViyaPreInstallCheck(object):
                         config = {'username': viya_constants.KEY_NOT_FOUND}
                     cluster_data.append(config)
             except TypeError as e:
-                if debug:
-                    print(e)
+                self.logger.exception("TypeError {}: ".format(str(e)))
                 print(CONFIG_ERROR)
                 sys.exit(_BAD_CONFIG_JSON_RC_)
-        if debug:
-            PRP.pprint(cluster_data)
+
+        self.logger.debug("cluster_data: {}".format(pprint.pformat(cluster_data)))
 
         configs_data.append(cluster_data)
         return configs_data
 
-    def _get_nodes_json(self, debug):
+    def _get_nodes_json(self):
         """
         Retrieve the nodes information from the Kubernetes cluster in json format.
 
@@ -291,7 +292,7 @@ class ViyaPreInstallCheck(object):
 
         return nodes_json
 
-    def _get_namespaces_json(self, debug):
+    def _get_namespaces_json(self):
         """
         Retrieve the namespaces information from Kubernetes in json format.
 
@@ -301,7 +302,7 @@ class ViyaPreInstallCheck(object):
 
         return namespace_json
 
-    def _get_storage_json(self, debug):
+    def _get_storage_json(self):
         """
         Retrieve the storage class information from Kubernetes in json format
 
@@ -310,7 +311,7 @@ class ViyaPreInstallCheck(object):
         storage_json = self._get_raw_json("storageclass")
         return storage_json
 
-    def _get_storage_classes(self, storage_json, debug):
+    def _get_storage_classes(self, storage_json):
         """
         Parse the storage class information into dictionary objects in a list
 
@@ -334,22 +335,18 @@ class ViyaPreInstallCheck(object):
                             default_cnt += 1
                         else:
                             node_data['default'] = "false"
-                except KeyError:
-                    if debug:
-                        print("error", KeyError)
-                storage_nodes.append(node_data)
+                    storage_nodes.append(node_data)
+                except KeyError as e:
+                    self.logger.exception("KeyError {}".format(str(e)))
 
-        if debug:
-            PRP.pprint(storage_nodes)
+        self.logger.debug("storage nodes: {}".format(pprint.pformat(storage_nodes)))
         storage_items = int(len(storage_nodes))
-        if debug:
-            print("Num of storage classes: ", storage_items)
+        self.logger.debug("Num of storage classes: {}".format(storage_items))
 
-        storage_nodes = self._check_storage_classes(default_cnt, storage_nodes, debug)
-
+        storage_nodes = self._check_storage_classes(default_cnt, storage_nodes)
         return storage_nodes
 
-    def _get_master_json(self, debug):
+    def _get_master_json(self):
         """
         Retrieve  the cluster info from Kubernetes
 
@@ -360,14 +357,40 @@ class ViyaPreInstallCheck(object):
         try:
             data = kubectl.cluster_info()
         except CalledProcessError as proc_error:
+            self.logger.exception('cluster-info return_code = {}'.format(str(proc_error.returncode)))
             if proc_error.returncode != 1:
                 data = proc_error.output
-
-        logging.info('cluster-info return_code = ' + ' output = '
-                     + str(data) + '###################')
+            return str(data)
+        self._read_cluster_info_output(data)
         return str(data)
 
-    def _check_permissions(self, ingress_controller, ingress_host, ingress_port, debug):
+    def _read_cluster_info_output(self, data):
+        command = "cat "
+        data = None
+        file_name = "temp_cluste_info.txt"
+        try:
+            file = open(file_name, "w+")
+            file.writelines(str(data))
+            file.close()
+        except Exception:
+            self.logger.exception("Unable to save to {}".format(file_name))
+            return data
+
+        if platform.system() == "Windows":
+            command = "type "
+        try:
+            data = subprocess.check_output(command + file_name, shell=True, universal_newlines=True)
+        except CalledProcessError:
+            self.logger.exception("Windows file_name failed {}".format(file_name))
+            return data
+        self._delete_temp_file(file_name)
+        return str(data)
+
+    def _delete_temp_file(self, file_name):
+        if os.path.exists(file_name):
+            os.remove(file_name)
+
+    def _check_permissions(self, ingress_controller, ingress_host, ingress_port):
         """
         Check if permissions are adequate to complete Viya deployment with cluster admin
         and namespace admin lveles of access to cluster resources
@@ -379,6 +402,7 @@ class ViyaPreInstallCheck(object):
         """
         pre_check_utils_params = {}
         pre_check_utils_params[viya_constants.KUBECTL] = self._kubectl
+        pre_check_utils_params["logger"] = self.sas_logger
         utils = PreCheckUtils(pre_check_utils_params)
 
         params = {}
@@ -386,23 +410,24 @@ class ViyaPreInstallCheck(object):
         params[viya_constants.INGRESS_HOST] = ingress_host
         params[viya_constants.INGRESS_PORT] = ingress_port
         params[viya_constants.PERM_CLASS] = utils
+        params['logger'] = self.sas_logger
 
         # initialize the PreCheckPermissions object
         perms = PreCheckPermissions(params)
         namespace = self._kubectl.get_namespace()
 
-        perms.check_sample_application(debug)
-        perms.check_sample_ingress(debug)
-        perms.check_deploy_crd(debug)
-        perms.check_rbac_role(debug)
-        perms.check_create_custom_resource(debug)
-        perms.check_get_custom_resource(namespace, debug)
-        perms.check_delete_custom_resource(debug)
-        perms.check_rbac_delete_role(debug)
-        perms.check_sample_response(debug)
-        perms.check_delete_crd(debug)
-        perms.check_delete_sample_application(debug)
-        perms.check_delete_sample_ingress(debug)
+        perms.check_sample_application()
+        perms.check_sample_ingress()
+        perms.check_deploy_crd()
+        perms.check_rbac_role()
+        perms.check_create_custom_resource()
+        perms.check_get_custom_resource(namespace, )
+        perms.check_delete_custom_resource()
+        perms.check_rbac_delete_role()
+        perms.check_sample_response()
+        perms.check_delete_crd()
+        perms.check_delete_sample_application()
+        perms.check_delete_sample_ingress()
 
         return perms.get_cluster_admin_permission_data(), perms.get_namespace_admin_permission_data(),\
             perms.get_ingress_data(), perms.get_namespace_admin_permission_aggregate(), \
@@ -417,7 +442,7 @@ class ViyaPreInstallCheck(object):
         """
         return re.sub('[^.,:/A-Za-z0-9]+', ' ', line).strip()
 
-    def _check_master(self, cluster_info, debug):
+    def _check_master(self, cluster_info):
         """
         Parse the output from cluster info and return master info
 
@@ -450,11 +475,10 @@ class ViyaPreInstallCheck(object):
             master_nodes.update({'firstFailure': 'Cluster information not available. Check permissions.'})
 
         master_data.append(master_nodes)
-        if debug:
-            pprint.pprint(master_data)
+        self.logger.debug("master_data {}".format(pprint.pformat(master_data)))
         return master_data
 
-    def _calculate_potential_workers(self, nodes_data, debug):
+    def _calculate_potential_workers(self, nodes_data):
         """
         Identify worker nodes in the cluster
 
@@ -467,7 +491,7 @@ class ViyaPreInstallCheck(object):
                 workers += 1
         return workers
 
-    def _check_workers(self, global_data, nodes_data, debug):
+    def _check_workers(self, global_data, nodes_data):
         """
         Check list of worker nodes information and calculate the total number of worker nodes
         and update it in the global data list.
@@ -477,7 +501,7 @@ class ViyaPreInstallCheck(object):
         return: updated global_data list with total number of worker nodes.
         """
         global_nodes = {}
-        workers = self._calculate_potential_workers(nodes_data, debug)
+        workers = self._calculate_potential_workers(nodes_data)
 
         global_nodes.update({'totalWorkers': str(workers) + ': ' +
                              str(viya_constants.SET + ': ' +
@@ -507,11 +531,10 @@ class ViyaPreInstallCheck(object):
                                      + ': ' +
                                      str(viya_constants.NUMBER_OF_WORKER_NODES))})
         global_data.append(global_nodes)
-        if debug:
-            pprint.pprint(global_nodes)
+        self.logger.debug("global_nodes: {}".format(pprint.pformat(global_nodes)))
         return global_data
 
-    def _set_time(self, global_data, debug):
+    def _set_time(self, global_data):
         """Set the current timestamp for the report in the global data list
 
         global_data: List to be updated
@@ -524,9 +547,7 @@ class ViyaPreInstallCheck(object):
         global_nodes.update({'timestamp': str(time_string)})
         global_data.append(global_nodes)
 
-        if debug:
-            pprint.pprint(global_data)
-            print(time_string)
+        self.logger.debug("global data{} time{}".format(pprint.pformat(global_data), time_string))
         return global_data
 
     def _check_cpu_errors(self, global_data, total_alloc_cpu_cores, aggregate_cpu_failures):
@@ -626,10 +647,10 @@ class ViyaPreInstallCheck(object):
             raw_json = kubectl.get_resources(k8s_resource, True)
         except CalledProcessError as cpe:
             return_code = str(cpe.returncode)
-            logging.info(str(k8s_resource) + ' return code  ' + str(return_code))
+            self.logger.exception("resource {} return code".format(str(k8s_resource), str(return_code)))
+            return raw_json
 
-        logging.info(str(k8s_resource) + ' JSON, return_code = ' + str(return_code)
-                     + ' data = ' + str(raw_json) + '###################')
+        self.logger.info("resource {} raw JSON {}".format(str(k8s_resource), str(raw_json)))
         assert isinstance(raw_json, object)
         return raw_json
 
@@ -651,7 +672,7 @@ class ViyaPreInstallCheck(object):
         namespace_data.append(node_data)
         return namespace_data
 
-    def _check_storage_classes(self, default_cnt, storage_nodes, debug):
+    def _check_storage_classes(self, default_cnt, storage_nodes):
         """
         Check Storage classes for not more than a single default storage class. Make sure there is at least one
         storge classs is present
@@ -690,12 +711,10 @@ class ViyaPreInstallCheck(object):
         storage_global.append(storage_issue_data)
         storage_global.append(storage_nodes)
 
-        if debug:
-            pprint.pprint(storage_global)
-
+        self.logger.debug("storage global {}".format(pprint.pformat(storage_global)))
         return storage_global
 
-    def evaluate_nodes(self, nodes_data, global_data, releases, cluster_info, quantity_, debug):
+    def evaluate_nodes(self, nodes_data, global_data, releases, cluster_info, quantity_):
         """
         Parse the nodes information in list of dict objects and verify against SAS Specifications
 
@@ -765,22 +784,17 @@ class ViyaPreInstallCheck(object):
                     + ' to ' + viya_constants.KUBELET_VERSION_17
 
                 aggregate_kubelet_failures += 1
-
-                if debug:
-                    PRP.pprint(node)
-
-        global_data = self._check_workers(global_data, nodes_data, debug)
-        global_data = self._set_time(global_data, debug)
+                self.logger.debug("node {} ".format(pprint.pformat(node)))
+        global_data = self._check_workers(global_data, nodes_data)
+        global_data = self._set_time(global_data)
         global_data = self._check_cpu_errors(global_data, total_cpu_cores, aggregate_cpu_failures)
         global_data = self._check_memory_errors(global_data, total_allocatable_memory, quantity_,
                                                 aggregate_memory_failures)
-        self._calculate_potential_workers(nodes_data, debug)
+        self._calculate_potential_workers(nodes_data)
         global_data = self._check_kubelet_errors(global_data, aggregate_kubelet_failures)
 
         global_data.append(nodes_data)
-
-        if debug:
-            PRP.pprint(nodes_data)
+        self.logger.debug("nodes_data {}".format(pprint.pformat(nodes_data)))
         return global_data
 
     def _set_status(self, status, node, key):
@@ -797,7 +811,7 @@ class ViyaPreInstallCheck(object):
 
         return node
 
-    def get_nested_nodes_info(self, nodes_json, debug):
+    def get_nested_nodes_info(self, nodes_json):
         """
         Parse the json to load node information into a list of dictionary objects
 
@@ -827,8 +841,8 @@ class ViyaPreInstallCheck(object):
                 addresses = (node['status']['addresses'])
                 address_type = []
                 address_addr = []
-                address_type = self._get_nested_info(addresses, address_type, 'type', debug)
-                address_addr = self._get_nested_info(addresses, address_addr, 'address', debug)
+                address_type = self._get_nested_info(addresses, address_type, 'type')
+                address_addr = self._get_nested_info(addresses, address_addr, 'address')
 
                 try:
                     taint_types = node['spec']['taints']
@@ -848,24 +862,22 @@ class ViyaPreInstallCheck(object):
                 conditions = (node['status']['conditions'])
                 conditions_type = []
                 conditions_status = []
-                conditions_type = self._get_nested_info(conditions, conditions_type, 'type', debug)
-                conditions_status = self._get_nested_info(conditions, conditions_status, 'status', debug)
+                conditions_type = self._get_nested_info(conditions, conditions_type, 'type')
+                conditions_status = self._get_nested_info(conditions, conditions_status, 'status')
                 type_length = len(conditions_type)
                 for i in range(type_length):
                     var1 = str(conditions_type[i][0])
                     var2 = str(conditions_status[i][0])
                     node_data[var1] = var2
-                if debug:
-                    PRP.pprint(node_data)
+
+                self.logger.debug("node data {}".format(pprint.pformat(node_data)))
                 if node_data['taint'] not in "NoSchedule":
                     nodes_data.append(node_data)
 
-        if debug:
-            print("nodes_data")
-            PRP.pprint(nodes_data)
+        self.logger.debug("nodes_data {}".format(pprint.pformat(nodes_data)))
         return nodes_data
 
-    def _get_config_json(self, debug):
+    def _get_config_json(self):
         """
         Retrieve  configuration information in json format
 
@@ -878,10 +890,10 @@ class ViyaPreInstallCheck(object):
             config_json = kubectl.config_view(False)
         except CalledProcessError as cpe:
             return_code = cpe.returncode
+            self.logger.exception("CalledProcessorError rc {}".format(str(return_code)))
             config_json = None
 
-        logging.info('config view  JSON return_code = ' + str(return_code) + ' json = ' +
-                     str(config_json) + '###################')
+        self.logger.debug("config view JSON{} return_code{}".format(str(config_json), str(return_code)))
         return config_json, return_code
 
     def split_release(self, strng, sep, pos):
@@ -889,26 +901,25 @@ class ViyaPreInstallCheck(object):
         strng = strng.split(sep)
         return sep.join(strng[:pos])
 
-    def get_config_info(self, debug):
+    def get_config_info(self):
         """
         Parse the output all the information retrieved by kubectl config view command.
 
         return: A list of dictionary objects with config information
         """
         configs_data = []
-        config_json, return_code = self._get_config_json(debug)
+        config_json, return_code = self._get_config_json()
 
         if return_code != 0:
             print(CONFIG_ERROR)
             sys.exit(_BAD_CONFIG_RC_)
         else:
-            configs_data = self._get_config_current_context(config_json, configs_data, debug)
-            configs_data = self._get_config_contexts(config_json, configs_data, debug)
-            configs_data = self._get_config_clusters(config_json, configs_data, debug)
-            configs_data = self._get_config_users(config_json, configs_data, debug)
+            configs_data = self._get_config_current_context(config_json, configs_data)
+            configs_data = self._get_config_contexts(config_json, configs_data)
+            configs_data = self._get_config_clusters(config_json, configs_data)
+            configs_data = self._get_config_users(config_json, configs_data)
 
-        if debug:
-            pprint.pprint(configs_data)
+        self.logger.debug("configs_data {}".format(configs_data))
         return configs_data
 
     def generate_report(self,
@@ -922,8 +933,7 @@ class ViyaPreInstallCheck(object):
                         ingress_data,
                         ns_admin_permission_aggregate,
                         cluster_admin_permission_aggregate,
-                        output_directory="",
-                        debug=False):
+                        output_directory=""):
         """
         Generate an HTML report with all the node and storage class details gathered in multiple lists.
 
@@ -953,7 +963,7 @@ class ViyaPreInstallCheck(object):
                                    cluster_admin_permission_aggregate=cluster_admin_permission_aggregate['Permissions'])
 
         print("Created: {}".format(report_file_path))
-
+        print("Created: {}".format(output_directory + _REPORT_LOG_NAME_TMPL_.format(file_timestamp)))
         print()
 
         return os.path.abspath(report_file_path)
