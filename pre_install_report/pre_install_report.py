@@ -119,8 +119,6 @@ def usage(exit_code: int):
     :param exit_code: The exit code to return when exiting the program.
     """
     print()
-    print(f"Requires: Python 3.6 or higher")
-    print(KUBECONF_ERROR)
     print(f"Usage: viya-arkcd.py pre_install_report <--ingress> <--host> <--port> [<options>]")
     print()
     print("Options:")
