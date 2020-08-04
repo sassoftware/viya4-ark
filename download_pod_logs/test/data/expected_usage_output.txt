@@ -1,14 +1,27 @@
+usage: viya-arkcd.py download-pod-logs [-h] [-n NAMESPACE] [-o OUTPUT_DIR]
+                                       [-p PROCESSES] [-t TAIL] [-w WAIT]
+                                       [selected_components [selected_components ...]]
 
-Usage: download-pod-logs [<options>] [<components>]
+Download log files for all or a select list of pods.
 
-Options:
-    -n, --namespace="<namespace>"        (Optional) Namespace to target containing SAS software, if not defined by KUBECONFIG.
-    -o, --output-dir="<dir>"             (Optional) Directory where log files will be written. Defaults to "./sas-k8s-logs".
-    -p, --processes="<processes>"        (Optional) Number of simultaneous worker processes used to fetch logs. Defaults to "2".
-    -t, --tail-lines="<tail>"            (Optional) Lines of recent log file to retrieve. Defaults to "25000".
-    -w, --wait="<wait>"                  (Optional) Wait time, in seconds, before terminating a log-gathering process. Defaults to "30".
-    -h, --help                           Print usage.
+positional arguments:
+  selected_components   A space-separated list of SAS component names used to
+                        limit the logs downloaded. If no component names are
+                        provided, logs for all SAS components will be
+                        downloaded.
 
-Optionally, a space-separated list of components can be provided to limit results:
-    download-pod-logs -n default sas-visual-analytics sas-annotations
-
+optional arguments:
+  -h, --help            show this help message and exit
+  -n NAMESPACE, --namespace NAMESPACE
+                        Namespace to target containing SAS software, if not
+                        defined by KUBECONFIG.
+  -o OUTPUT_DIR, --output-dir OUTPUT_DIR
+                        Directory where log files will be written. Defaults to
+                        "sas-k8s-logs".
+  -p PROCESSES, --processes PROCESSES
+                        Number of simultaneous worker processes used to fetch
+                        logs. Defaults to "2".
+  -t TAIL, --tail TAIL  Lines of recent log file to retrieve. Defaults to
+                        "25000".
+  -w WAIT, --wait WAIT  Wait time, in seconds, before terminating a log-
+                        gathering process. Defaults to "30".

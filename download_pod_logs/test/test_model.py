@@ -1,5 +1,5 @@
 ####################################################################
-# ### test_pod_log_downloader.py                                 ###
+# ### test_model.py                                              ###
 ####################################################################
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
@@ -11,13 +11,14 @@
 ####################################################################
 import filecmp
 import os
+import multiprocessing
 import pytest
 import shutil
 
 from typing import Dict, Text
 
-from download_pod_logs.model.pod_log_downloader import PodLogDownloader, NoPodsError, NoMatchingPodsError, \
-    _ContainerStatus
+from download_pod_logs.model import PodLogDownloader, NoPodsError, NoMatchingPodsError, _ContainerStatus, \
+    _LogDownloadProcess
 
 from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
 from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
@@ -25,7 +26,7 @@ from viya_arkcd_library.k8s.test_impl.sas_kubectl_test import KubectlTest
 
 
 ####################################################################
-# PodLogDownloader Tests                                           #
+# PodLogDownloader Tests                                         ###
 ####################################################################
 def test_init_default() -> None:
     """
@@ -36,10 +37,10 @@ def test_init_default() -> None:
     actual: PodLogDownloader = PodLogDownloader(kubectl=expected_kubectl)
 
     # check for expected default values
-    assert actual.kubectl == expected_kubectl
-    assert actual.output_dir == PodLogDownloader.DEFAULT_OUTPUT_DIR
-    assert actual.concurrent_processes == PodLogDownloader.DEFAULT_CONCURRENT_PROCESSES
-    assert actual.process_wait_time == PodLogDownloader.DEFAULT_PROCESS_WAIT_TIME
+    assert actual._kubectl == expected_kubectl
+    assert actual._output_dir == PodLogDownloader.DEFAULT_OUTPUT_DIR
+    assert actual._processes == PodLogDownloader.DEFAULT_PROCESSES
+    assert actual._wait == PodLogDownloader.DEFAULT_WAIT
 
 
 def test_init_custom() -> None:
@@ -48,21 +49,21 @@ def test_init_custom() -> None:
     """
     # define expected values
     expected_output_dir: Text = "./custom"
-    expected_concurrent_processes: int = 7
-    expected_process_wait_time: int = 45
+    expected_processes: int = 7
+    expected_wait: int = 45
 
     # create test object
     expected_kubectl: KubectlInterface = KubectlTest()
     actual: PodLogDownloader = PodLogDownloader(kubectl=expected_kubectl,
                                                 output_dir=expected_output_dir,
-                                                concurrent_processes=expected_concurrent_processes,
-                                                process_wait_time=expected_process_wait_time)
+                                                processes=expected_processes,
+                                                wait=expected_wait)
 
     # check for expected custom values
-    assert actual.kubectl == expected_kubectl
-    assert actual.output_dir == expected_output_dir
-    assert actual.concurrent_processes == expected_concurrent_processes
-    assert actual.process_wait_time == expected_process_wait_time
+    assert actual._kubectl == expected_kubectl
+    assert actual._output_dir == expected_output_dir
+    assert actual._processes == expected_processes
+    assert actual._wait == expected_wait
 
 
 def test_init_invalid_concurrent_processes() -> None:
@@ -71,7 +72,7 @@ def test_init_invalid_concurrent_processes() -> None:
     """
     with pytest.raises(AttributeError) as except_info:
         PodLogDownloader(kubectl=KubectlTest(),
-                         concurrent_processes=0)
+                         processes=0)
 
     assert "The processes value must be greater than 0" in str(except_info.value)
 
@@ -82,12 +83,12 @@ def test_init_invalid_process_wait_time() -> None:
     """
     with pytest.raises(AttributeError) as except_info:
         PodLogDownloader(kubectl=KubectlTest(),
-                         process_wait_time=-5)
+                         wait=-5)
 
     assert "The wait value must be 0 or greater" in str(except_info.value)
 
 
-def test_download_logs(capfd) -> None:
+def test_download_logs() -> None:
     """
     This test verifies that available pod log files are correctly downloaded and formatted.
     """
@@ -95,13 +96,7 @@ def test_download_logs(capfd) -> None:
     this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest(), output_dir="./test_download_logs")
 
     # run the method being tested
-    logs_dir = this.download_logs()
-
-    # get stdout and stderr
-    stdout, stderr = capfd.readouterr()
-
-    # make sure the stdout is correct
-    assert f"Log files created in: {logs_dir}" in stdout
+    logs_dir, timeout_pods = this.download_logs()
 
     # verify the expected number of logs were written to disk
     assert len([name for name in os.listdir(logs_dir) if os.path.isfile(os.path.join(logs_dir, name))]) == 6
@@ -117,7 +112,7 @@ def test_download_logs(capfd) -> None:
     shutil.rmtree(os.path.abspath(os.path.join(logs_dir, "..")))
 
 
-def test_download_logs_with_valid_selected_component(capfd) -> None:
+def test_download_logs_with_valid_selected_component() -> None:
     """
     This test verifies that a log file is correctly downloaded and formatted when a matching component is selected.
     """
@@ -125,13 +120,7 @@ def test_download_logs_with_valid_selected_component(capfd) -> None:
     this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest(), output_dir="./test_download_logs_selected")
 
     # run the method being tested
-    logs_dir = this.download_logs(selected_components=["sas-annotations"])
-
-    # get stdout and stderr
-    stdout, stderr = capfd.readouterr()
-
-    # make sure the stdout is correct
-    assert f"Log files created in: {logs_dir}" in stdout
+    logs_dir, timeout_pods = this.download_logs(selected_components=["sas-annotations"])
 
     # verify the expected number of logs were written to disk
     assert len([name for name in os.listdir(logs_dir) if os.path.isfile(os.path.join(logs_dir, name))]) == 1
@@ -199,7 +188,7 @@ def test_download_logs_with_empty_deployment() -> None:
 
 
 ####################################################################
-# NoMatchingPodsError Tests                                        #
+# NoMatchingPodsError Tests                                      ###
 ####################################################################
 def test_no_matching_pods_error() -> None:
     """
@@ -216,7 +205,7 @@ def test_no_matching_pods_error() -> None:
 
 
 ####################################################################
-# NoPodsError Tests                                                #
+# NoPodsError Tests                                              ###
 ####################################################################
 def test_no_pods_error() -> None:
     """
@@ -233,7 +222,7 @@ def test_no_pods_error() -> None:
 
 
 ####################################################################
-# _ContainerStatus Tests                                           #
+# _ContainerStatus Tests                                         ###
 ####################################################################
 # test dictionary representing a "running" container status
 expected_running_dict = \
@@ -509,3 +498,23 @@ def test_get_headers_dict_missing() -> None:
     assert actual_headers_dict["container-is-started"] == ""
     assert actual_headers_dict["container-is-ready"] == ""
     assert actual_headers_dict["container-restarts"] == ""
+
+
+####################################################################
+# _LogDownloadProcess Tests                                      ###
+####################################################################
+def test_log_download_process() -> None:
+    """
+    _LogDownloadProcess is a very simple object which just associates the pooled process and name of pod for which the
+    process is being run. This is a simple test to make sure values stored in the object are correctly retrieved.
+    """
+    pool: multiprocessing.Pool = multiprocessing.Pool(processes=1)
+    process: multiprocessing.pool.ApplyResult = pool.apply_async(_pool_test_dummy)
+    this: _LogDownloadProcess = _LogDownloadProcess(pod_name="test", process=process)
+
+    assert this.get_pod_name() == "test"
+    assert this.get_process() == process
+
+
+def _pool_test_dummy():
+    pass
