@@ -1,5 +1,5 @@
 ####################################################################
-# ### sas_logger.py                                              ###
+# ### logging.py                                                 ###
 ####################################################################
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
@@ -20,9 +20,9 @@ _LOGGER_TIMESTAMP_TMPL_ = "%Y-%m-%dT%H_%M_%S"
 class ViyaARKCDLogger():
 
     """
-    The SASLogger class represents a custom Logger, which can be instantiated my multiple tools.\
+    The ViyaARKCDLogger class represents a custom Logger, which can be instantiated my multiple tools.\
     Example Usage:
-        sas_logger = SASLogger(report_log_path)
+        sas_logger = ViyaARKCDLogger(report_log_path)
         my_logger  = sas_logger.get_logger()
         my_logger.info("This is an infomational message")
     """
