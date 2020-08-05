@@ -121,11 +121,11 @@ def usage(exit_code: int):
     print()
     print(f"Requires: Python 3.6 or higher")
     print(KUBECONF_ERROR)
-    print(f"Usage: viya-arkcd.py pre_install_report <--ingress> <--host> <--port> [<options>]")
+    print(f"Usage: viya-arkcd.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
     print()
     print("Options:")
     print(f"    -i  --ingress=nginx or istio  (Required)Kubernetes ingress controller used for Viya deployment")
-    print(f"    -s  --host                    (Required)Ingress host used for Viya deployment")
+    print(f"    -H  --host                    (Required)Ingress host used for Viya deployment")
     print(f"    -p  --port=xxxxx or \"\"        (Required)Ingress port used for Viya deployment")
     print(f"    -h  --help                    (Optional)Show this usage message")
     print(f"    -n  --namespace               (Optional)Kubernetes namespace used for Viya deployment")
@@ -147,7 +147,7 @@ def main(argv):
     :param argv: The parameters passed to the script at execution.
     """
     try:
-        opts, args = getopt.getopt(argv, "i:s:p:hn:o:d",
+        opts, args = getopt.getopt(argv, "i:H:p:hn:o:d",
                                    ["ingress=", "host=", "port=", "help", "namespace=", "output-dir=", "debug"])
     except getopt.GetoptError as opt_error:
         print(f"ERROR: {opt_error}")
@@ -171,7 +171,7 @@ def main(argv):
         elif opt in ('-i', '--ingress'):
             ingress_controller = arg
             found_ingress_controller = True
-        elif opt in ('-s', '--host'):
+        elif opt in ('-H', '--host'):
             ingress_host = arg
             found_ingress_host = True
         elif opt in ('-p', '--port'):
