@@ -413,7 +413,7 @@ def test_check_permissions():
     ingress_data = perms.get_ingress_data()
     assert ingress_data[viya_constants.INGRESS_CONTROLLER] in 'nginx'
     namespace_admin_permission_aggregate = perms.get_namespace_admin_permission_aggregate()
-    assert namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS]in viya_constants.ADEQUATE_PERMS
+    assert namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] in viya_constants.ADEQUATE_PERMS
     cluster_admin_permission_aggregate = perms.get_cluster_admin_permission_aggregate()
     assert cluster_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] in viya_constants.ADEQUATE_PERMS
 

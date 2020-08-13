@@ -177,7 +177,7 @@ class PreCheckPermissions(object):
                         self.logger.info("url {} status {} text {}".format(url_string,
                                                                            response.status_code, response.text))
                 else:
-                    self.logger.error("Retry as https failed url ".format(url_string))
+                    self.logger.error("Retry as https failed url {}".format(url_string))
 
     def _request_url(self, url_string, verify_cert=True):
         """

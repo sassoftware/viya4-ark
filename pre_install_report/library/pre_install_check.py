@@ -246,7 +246,7 @@ class ViyaPreInstallCheck():
 
                     cluster_data.append(config_data)
             except TypeError as error:
-                self.logger.exception("TypeError".format(str(error)))
+                self.logger.exception("TypeError: {}".format(str(error)))
                 print(CONFIG_ERROR)
                 sys.exit(_BAD_CONFIG_JSON_RC_)
 
@@ -647,7 +647,7 @@ class ViyaPreInstallCheck():
             raw_json = kubectl.get_resources(k8s_resource, True)
         except CalledProcessError as cpe:
             return_code = str(cpe.returncode)
-            self.logger.exception("resource {} return code".format(str(k8s_resource), str(return_code)))
+            self.logger.exception("resource {} return code {}".format(str(k8s_resource), str(return_code)))
             return raw_json
 
         self.logger.info("resource {} raw JSON {}".format(str(k8s_resource), str(raw_json)))
