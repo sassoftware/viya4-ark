@@ -51,7 +51,7 @@ class PreCheckUtils(object):
         except CalledProcessError as cpe:
             rc = cpe.returncode
             error_msg = str(cpe.output)
-            self.logger.error("deploy_manifest_file rc {} action {} filepath error_msg {}".format(str(rc), action,
+            self.logger.error("deploy_manifest_file rc {} action {} filepath {} error_msg {}".format(str(rc), action,
                               file_path, error_msg))
             return rc
 

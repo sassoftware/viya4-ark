@@ -119,16 +119,16 @@ def usage(exit_code: int):
     :param exit_code: The exit code to return when exiting the program.
     """
     print()
-    print(f"Usage: viya-arkcd.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
+    print("Usage: viya-arkcd.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
     print()
     print("Options:")
-    print(f"    -i  --ingress=nginx or istio  (Required)Kubernetes ingress controller used for Viya deployment")
-    print(f"    -H  --host                    (Required)Ingress host used for Viya deployment")
-    print(f"    -p  --port=xxxxx or \"\"        (Required)Ingress port used for Viya deployment")
-    print(f"    -h  --help                    (Optional)Show this usage message")
-    print(f"    -n  --namespace               (Optional)Kubernetes namespace used for Viya deployment")
-    print(f"    -o, --output-dir=\"<dir>\"      (Optional)Write the report and log files to the provided directory")
-    print(f"    -d, --debug                   (Optional)Enables logging at DEBUG level. Default is INFO level")
+    print("    -i  --ingress=nginx or istio  (Required)Kubernetes ingress controller used for Viya deployment")
+    print("    -H  --host                    (Required)Ingress host used for Viya deployment")
+    print("    -p  --port=xxxxx or \"\"        (Required)Ingress port used for Viya deployment")
+    print("    -h  --help                    (Optional)Show this usage message")
+    print("    -n  --namespace               (Optional)Kubernetes namespace used for Viya deployment")
+    print("    -o, --output-dir=\"<dir>\"      (Optional)Write the report and log files to the provided directory")
+    print("    -d, --debug                   (Optional)Enables logging at DEBUG level. Default is INFO level")
     print()
     sys.exit(exit_code)
 
@@ -183,12 +183,12 @@ def main(argv):
             usage(_BAD_OPT_RC_)
 
     if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
-        print(f"ERROR: Provide valid values for all required options. Check options -i, -p and -s.")
+        print("ERROR: Provide valid values for all required options. Check options -i, -p and -s.")
         usage(_BAD_OPT_RC_)
 
     if not(str(ingress_controller) == viya_constants.INGRESS_NGINX
            or str(ingress_controller) == viya_constants.INGRESS_ISTIO):
-        print(f"ERROR: Ingress controller specified must be nginx or istio. Check value on option -i ")
+        print("ERROR: Ingress controller specified must be nginx or istio. Check value on option -i ")
         usage(_BAD_OPT_RC_)
 
     # make sure path is valid #
@@ -196,7 +196,7 @@ def main(argv):
         if not output_dir.endswith(os.sep):
             output_dir = output_dir + os.sep
         else:
-            print(f"ERROR: The report output path is not valid. Check value on option -o ")
+            print("ERROR: The report output path is not valid. Check value on option -o ")
             usage(_BAD_OPT_RC_)
     report_log_path = output_dir + _REPORT_LOG_NAME_TMPL_.format(file_timestamp)
 
