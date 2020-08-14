@@ -20,6 +20,7 @@ import logging
 import getopt
 
 from pre_install_report.library.utils import viya_constants
+from pre_install_report.library.utils import viya_messages
 from pre_install_report.library.pre_install_check import ViyaPreInstallCheck
 from viya_arkcd_library.command import Command
 from viya_arkcd_library.k8s.sas_k8s_errors import NamespaceNotFoundError
@@ -27,24 +28,6 @@ from viya_arkcd_library.k8s.sas_kubectl import Kubectl
 from viya_arkcd_library.logging import ViyaARKCDLogger
 
 PRP = pprint.PrettyPrinter(indent=4)
-# Error Messages
-CONFIG_ERROR = "Unable to read configuration file. Make " \
-               "sure that kubectl" \
-               " is properly configured and the KUBECONFIG " \
-               "environment variable has a valid value"
-KUBECONF_ERROR = "KUBECONFIG environment var must be set for the script " \
-                "to access the Kubernetes cluster."
-
-CHECK_NAMESPACE = ' Check available permissions in namespace and if it is valid: '
-# command line return codes #
-_SUCCESS_RC_ = 0
-_BAD_OPT_RC_ = 1
-_BAD_ENV_RC_ = 2
-_BAD_CONFIG_RC_ = 3
-_BAD_CONFIG_JSON_RC_ = 4
-_CONNECTION_ERROR_RC_ = 5
-_NAMESPACE_NOT_FOUND_RC_ = 6
-_RUNTIME_ERROR_RC_ = 7
 
 # templates for output file names #
 _REPORT_FILE_NAME_TMPL_ = "viya_pre_install_report_{}.html"
@@ -54,16 +37,32 @@ _FILE_TIMESTAMP_TMPL_ = "%Y-%m-%dT%H_%M_%S"
 # set timestamp for report file
 file_timestamp = datetime.datetime.now().strftime(_FILE_TIMESTAMP_TMPL_)
 
-# templates for osuppported releases of Kubelet Versions #
-releases = (viya_constants.KUBELET_VERSION_14,
-            viya_constants.KUBELET_VERSION_15,
-            viya_constants.KUBELET_VERSION_16,
-            viya_constants.KUBELET_VERSION_17)
-
 ##############################################
 #     CLASS: PreInstallReportCommand     #
 ##############################################
 
+def _read_properties_file():
+    """
+    This method reads the externalized properties file viya_cluster_settings.properties
+
+    :returns dict object with key/value pairs read.
+    """
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    datafile = os.path.join(current_dir, 'viya_cluster_settings.properties')
+    print("path", datafile)
+    if os.path.exists(datafile):
+        try:
+            check_limits: dict = dict(line.strip().split('=') for line in open(datafile)
+                             if not line.strip().startswith('#'))
+            return check_limits
+        except OSError as e:
+            print(viya_messages.EXCEPTION_MESSAGE.format(e))
+            print()
+            sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
+        except ValueError as e:
+            print(viya_messages.EXCEPTION_MESSAGE.format(e))
+            print()
+            sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
 
 def _read_environment_var(env_var):
     """
@@ -74,8 +73,8 @@ def _read_environment_var(env_var):
     try:
         value_env_var = os.environ[env_var]
     except Exception:
-        print(KUBECONF_ERROR)
-        sys.exit(_BAD_ENV_RC_)
+        print(viya_messages.KUBECONF_ERROR)
+        sys.exit(viya_messages.BAD_ENV_RC_)
     return value_env_var
 
 
@@ -148,8 +147,8 @@ def main(argv):
         opts, args = getopt.getopt(argv, "i:H:p:hn:o:d",
                                    ["ingress=", "host=", "port=", "help", "namespace=", "output-dir=", "debug"])
     except getopt.GetoptError as opt_error:
-        print(f"ERROR: {opt_error}")
-        usage(_BAD_OPT_RC_)
+        print(viya_messages.EXCEPTION_MESSAGE.format(opt_error))
+        usage(viya_messages.BAD_OPT_RC_)
 
     found_ingress_controller: bool = False
     found_ingress_host: bool = False
@@ -161,7 +160,7 @@ def main(argv):
 
     for opt, arg in opts:
         if opt in ('-h', '--help'):
-            usage(_SUCCESS_RC_)
+            usage(viya_messages.SUCCESS_RC_)
         elif opt in ('-d', '--debug'):
             logging_level = logging.DEBUG
         elif opt in ('-n', '--namespace'):
@@ -179,26 +178,34 @@ def main(argv):
             output_dir = arg
         else:
             print()
-            print(f"ERROR: option {opt} not recognized")
-            usage(_BAD_OPT_RC_)
+            print(viya_messages.OPTION_ERROR.format(str(opt)))
+            usage(viya_messages.BAD_OPT_RC_)
+
 
     if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
-        print("ERROR: Provide valid values for all required options. Check options -i, -p and -s.")
-        usage(_BAD_OPT_RC_)
+        print(viya_messages.OPTION_VALUES_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
 
     if not(str(ingress_controller) == viya_constants.INGRESS_NGINX
            or str(ingress_controller) == viya_constants.INGRESS_ISTIO):
-        print("ERROR: Ingress controller specified must be nginx or istio. Check value on option -i ")
-        usage(_BAD_OPT_RC_)
+        print(viya_messages.INGRESS_CONTROLLER_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
 
     # make sure path is valid #
     if output_dir != "":
         if not output_dir.endswith(os.sep):
             output_dir = output_dir + os.sep
         else:
-            print("ERROR: The report output path is not valid. Check value on option -o ")
-            usage(_BAD_OPT_RC_)
+            print(viya_messages.OUPUT_PATH_ERROR)
+            usage(viya_messages.BAD_OPT_RC_)
+
     report_log_path = output_dir + _REPORT_LOG_NAME_TMPL_.format(file_timestamp)
+
+    try:
+        logging.FileHandler(report_log_path)
+    except OSError as e:
+        print(viya_messages.OUPUT_PATH_ERROR, format(e))
+        usage(viya_messages.BAD_OPT_RC_)
 
     sas_logger = ViyaARKCDLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
     _read_environment_var('KUBECONFIG')
@@ -207,29 +214,30 @@ def main(argv):
         kubectl = Kubectl(namespace=name_space)
     except ConnectionError as e:
         print()
-        print(f"ERROR: {e}", file=sys.stderr)
+        print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
-        sys.exit(_CONNECTION_ERROR_RC_)
+        sys.exit(viya_messages.CONNECTION_ERROR_RC_)
     except NamespaceNotFoundError as e:
         print()
-        print(f"ERROR: {e}", file=sys.stderr)
+        print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
-        sys.exit(_NAMESPACE_NOT_FOUND_RC_)
+        sys.exit(viya_messages.NAMESPACE_NOT_FOUND_RC_)
 
-    # create the Pre-Install Check Report object
-    params = {}
-    params[viya_constants.KUBECTL] = kubectl
-    sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck(sas_logger)
-
+    check_limits = _read_properties_file()
+    sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck(sas_logger,
+                                                                    check_limits["VIYA_KUBELET_VERSION_MIN"],
+                                                                    check_limits["VIYA_MIN_WORKER_ALLOCATABLE_CPU"],
+                                                                    check_limits["VIYA_MIN_AGGREGATE_WORKER_CPU_CORES"],
+                                                                    check_limits["VIYA_MIN_ALLOCATABLE_WORKER_MEMORY"],
+                                                                    check_limits["VIYA_MIN_AGGREGATE_WORKER_MEMORY"])
     # gather the details for the report
     try:
-        sas_pre_check_report.check_details(kubectl, ingress_port, ingress_host,
-                                           ingress_controller, output_dir)
+        sas_pre_check_report.check_details(kubectl, ingress_port, ingress_host, ingress_controller, output_dir)
     except RuntimeError as e:
         print()
-        print(f"ERROR: {e}", file=sys.stderr)
+        print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
-        sys.exit(_RUNTIME_ERROR_RC_)
+        sys.exit(viya_messages.RUNTIME_ERROR_RC_)
 
     sys.exit(0)
 
