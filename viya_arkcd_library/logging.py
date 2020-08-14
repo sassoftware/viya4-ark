@@ -32,7 +32,7 @@ class ViyaARKCDLogger():
         Constructor the  SAS custom Logger class.
         :params - specify the following
         :param logging_level: One of the predefined levels - DEBUG, INFO, WARN, ERROR, CRITICAL
-        :param log_file: The log file name with full path. Path must be valid
+        :param log_file: The log file name with full path.
         """
         # Create a custom logger with unique name.
         logger_timestamp = datetime.datetime.now().strftime(_LOGGER_TIMESTAMP_TMPL_)
