@@ -33,4 +33,6 @@ python viya-arkcd.py pre-install-report -h
 
 The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html`. The report is in a web-viewable, HTML format.
 
+## Modify CPU, Memory Settings, Version Settings
 
+You can modify the <tool-download-dir>/viya-arkcd/pre_install_report/viya_check_limit.properties file to alter the minimum and aggregate settings for CPU and Memory on nodes.  See details in the file.
