@@ -1,6 +1,6 @@
 # SAS Viya Pod Log Download Tool
 
-The SAS Viya pod log download tool collects recent log activity for all or a select list of SAS component pods deployed
+The SAS Viya pod log download tool collects recent log activity for some or all SAS component pods deployed
 in a Kubernetes cluster. The collected logs are written to disk for easy access. Log files are prepended with the status
 information available for the pod when the tool is executed.
 
@@ -11,13 +11,13 @@ information available for the pod when the tool is executed.
 
 ### Required Python Packages
 
-SAS Viya ARKcd tools require third-party packages be installed before use. All required packages can be installed using the provided `requirements.txt`:
+SAS Viya ARKcd tools require that third-party packages be installed before use. You can install all the required packages by using the provided requirements.txt file in the following command:
 
 ```commandline
 $ python3 -m pip install -r requirements.txt
 ```
 
-Download the latest version of this tool and update required packages with every new software order.
+Download the latest version of this tool and update the required packages with every new software order.
 
 ## Usage
 
@@ -26,10 +26,10 @@ connection information and credentials to use during execution.
 
 ### Basic Example
 
-The following example downloads logs for all SAS component pods in the targeted cluster. The namespace containing your SAS
-deployment can be specified by including the `-n` or `--namespace` option.
+The following example downloads logs for all SAS Viya component pods in the targeted cluster. The namespace containing your SAS
+Viya deployment should be specified by including the `-n` or `--namespace` option.
 
-**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS
+**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS Viya
 deployment.
 
 ```commandline
@@ -38,8 +38,8 @@ $ python3 viya-arkcd.py download-pod-logs --namespace sas
 
 ### Controlling Log Size
 
-Including the `-t` or `--tail` option limits the recent log lines returned to the provided number if the log line count
-exceeds the requested limit. By default, `25,000` log lines are returned.
+The `-t` or `--tail` option limits the recent log lines returned to the provided number. By default, 25,000 log lines are returned.
+The following example limits the returned log lines to 1000.
 
 **Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS
 deployment.
@@ -48,11 +48,13 @@ deployment.
 $ python3 viya-arkcd.py download-pod-logs --namespace sas --tail 1000
 ```
 
-### Selecting SAS Components
+### Selecting SAS Component Pods
 
-Downloaded logs can be limited to one or a select list of SAS components by including a space-separated list of SAS component
-names after all desired options have been included. By default, logs are downloaded for all SAS components. The
-[SAS Viya Deployment Report](../deployment_report) tool can be used to generate a list of SAS component names.
+By default, logs are downloaded for all SAS Viya pods. Downloaded logs can be limited to one or a list of SAS Viya pods 
+by including a space-separated list of SAS Viya pod names after all desired options have been included. The
+[SAS Viya Deployment Report](../deployment_report) tool can be used to generate a list of SAS pod names.
+
+The following example returns logs from the sas-visual-analytics-app and sas-consul-server pods only.
 
 **Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS
 deployment.
