@@ -9,7 +9,7 @@ SAS recommends running the tool and resolving any reported issues before beginni
 - The tool requires Python 3.6 or higher.  
 
 ### Required Python Packages
-SAS Viya ARKcd tools require third-party packages be installed before use. All required packages can be installed using the provided `requirements.txt`:
+SAS Viya ARKcd tools require third-party packages be installed before use. You can install all the required packages by using the provided requirements.txt file in the following command:
 
 ```commandline
 $ python3 -m pip install -r requirements.txt
@@ -33,6 +33,6 @@ python viya-arkcd.py pre-install-report -h
 
 The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html`. The report is in a web-viewable, HTML format.
 
-## Modify CPU, Memory Settings, Version Settings
+## Modify CPU, Memory, and Version Settings
 
-You can modify the <tool-download-dir>/viya-arkcd/pre_install_report/viya_check_limit.properties file to alter the minimum and aggregate settings for CPU and Memory on nodes.  See details in the file.
+You can modify the <tool-download-dir>/viya-arkcd/pre_install_report/viya_check_limit.properties file to alter the minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
