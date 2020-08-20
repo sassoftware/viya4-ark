@@ -50,7 +50,6 @@ def _read_properties_file():
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'viya_cluster_settings.properties')
-    print("path", datafile)
     if os.path.exists(datafile):
         try:
             check_limits: dict = dict(line.strip().split('=')

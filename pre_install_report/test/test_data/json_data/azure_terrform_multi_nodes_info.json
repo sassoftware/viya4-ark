@@ -116,162 +116,162 @@
                 "images": [
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:153d229d9103770a8bc70d1c401ecc98cdd0234264316983eb012c5bb2b9289a",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a153d229d9103770a8bc70d1c401ecc98cdd0234264316983eb012c5bb2b9289a",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.7_v0.0.5"
                         ],
                         "sizeBytes": 719958263
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.10_f0.0.1"
                         ],
                         "sizeBytes": 643020934
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha256:2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
+                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha396a2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
                             "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:0.19.0"
                         ],
                         "sizeBytes": 414090450
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a1ab6e373673465765b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod03022020"
                         ],
                         "sizeBytes": 396692153
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a6a00d818e129b956a22b723e5543a6cdad1431666c099875e3676001a921mnh",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod01072020"
                         ],
                         "sizeBytes": 396298129
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:d237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
+                            "deis/hcp-tunnel-front@sha396ad237ae461a2f3f7d3f32c33b4d7b2f5fb1681c096540e8515882c29267bc1c9b",
                             "deis/hcp-tunnel-front:v1.9.2-v4.0.11"
                         ],
                         "sizeBytes": 357377808
                     },
                     {
                         "names": [
-                            "deis/kube-svc-redirect@sha256:af50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
+                            "deis/kube-svc-redirect@sha396aaf50cfa03a6b02a4173f3adb4767653efde16193f91d02e2ae8123f57ee21765",
                             "deis/kube-svc-redirect:v1.0.7"
                         ],
                         "sizeBytes": 353963611
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:cbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
+                            "deis/hcp-tunnel-front@sha396acbd52a7489524e0389688fa976546e5c870500d3e5da33583b75bdcb75d41256",
                             "deis/hcp-tunnel-front:v1.9.2-v3.0.11"
                         ],
                         "sizeBytes": 353663014
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:dc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396adc8426f14b518d91272b62d18203475cfd50796d071c48925a662564361a885c",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0_v0.0.5"
                         ],
                         "sizeBytes": 250775999
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha256:3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
+                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha396a3f48233e04580a4344d69921be1a3540bb1616d0bf86ac3920e9d3c8cc805093",
                             "mcr.microsoft.com/k8s/csi/azurefile-csi:v0.3.0"
                         ],
                         "sizeBytes": 245146481
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha256:9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
+                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha396a9a8b2aa432be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
                             "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress:1.0.1-rc3"
                         ],
                         "sizeBytes": 224310054
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha256:b3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
+                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha396ab3379ebfc891c17312ecaf299347144af6f6ed5180f0eaf79110add8d7381f75",
                             "mcr.microsoft.com/k8s/csi/azuredisk-csi:v0.4.0"
                         ],
                         "sizeBytes": 206475565
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a41b64e87fef35ebde21eb984f22e0bde335cb2ff828406c2d0667713158cc022",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.13"
                         ],
                         "sizeBytes": 175936978
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a0755a2743617712a62ad3e03529a4ad4de807122642ca9a9e5b409a406429809",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.33"
                         ],
                         "sizeBytes": 152850571
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a2bcb232b4d8d21b4e5f90dbc089766968edef7daf6073c2ae6818848cc01450d",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.32"
                         ],
                         "sizeBytes": 133157858
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a0572ee453918f23f7950169f1aa563a354d65d12bee207a100de64ea172ecd5e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v2.0.1"
                         ],
                         "sizeBytes": 129068206
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a266aef2236e0144078dcddb908ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.30"
                         ],
                         "sizeBytes": 125356074
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:d875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396ad875511410502c3937804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.6"
                         ],
                         "sizeBytes": 123663837
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha256:dca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
+                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha396adca7e06339b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
                             "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard:v1.10.1"
                         ],
                         "sizeBytes": 121711221
                     },
                     {
                         "names": [
-                            "k8s.gcr.io/node-problem-detector@sha256:276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
+                            "k8s.gcr.io/node-problem-detector@sha396a276335fa25a703615cc2f2cdc51ba693fac4b88760baa63f9cbf228291defd776",
                             "k8s.gcr.io/node-problem-detector:v0.8.0"
                         ],
                         "sizeBytes": 108715243
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:1ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396a1ab5ce423894918c4f23455533837e943dc0fb4c762c3f751486359348d4f8c9",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.7"
                         ],
                         "sizeBytes": 104673601
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha256:85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha396a85fbaa5c8fd7ffc57239656nhgt9467a89e2148206019d1a8979cec1f2d25faef",
                             "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.0-beta8"
                         ],
                         "sizeBytes": 90835430
                     },
                     {
                         "names": [
-                            "microsoft/virtual-kubelet@sha256:efc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
-                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha256:88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
+                            "microsoft/virtual-kubelet@sha396aefc397d741d7e590c892c0e54dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
+                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha396a88974b99c1c54085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
                             "microsoft/virtual-kubelet:latest",
                             "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet:latest"
                         ],
@@ -279,189 +279,189 @@
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:c1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ac1c11d18f662f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.4"
                         ],
                         "sizeBytes": 86980681
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha256:e9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha396ae9a6a4b30f278765486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
                             "mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v2.0.0_v0.0.5"
                         ],
                         "sizeBytes": 86934309
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/cni@sha256:2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
+                            "mcr.microsoft.com/oss/calico/cni@sha396a2eced7afb276895062ca2b68f0c45c2544d4621f19f2c72455b3335117db3d9c",
                             "mcr.microsoft.com/oss/calico/cni:v3.5.0"
                         ],
                         "sizeBytes": 83633850
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:d52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
+                            "gcr.io/kubernetes-helm/tiller@sha396ad52b34a9f9aeec1cf74155ca55fcbb5d872a705914565c782be4531790a4ee0e",
                             "gcr.io/kubernetes-helm/tiller:v2.13.1"
                         ],
                         "sizeBytes": 82105090
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha256:427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
+                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha396a427589864fb6553866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
                             "mcr.microsoft.com/containernetworking/azure-vnet-telemetry:v1.0.30"
                         ],
                         "sizeBytes": 78949814
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha256:47660e5a9967a32e688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha396a47660e5a9967a390688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny:1.15.4"
                         ],
                         "sizeBytes": 77756591
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396a675d882ed4d2e68af7f55637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.1"
                         ],
                         "sizeBytes": 75318380
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:badda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396abadda1239d6d3de35580812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.3"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:b25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396ab25c594dd0a058515577537e0dd9056707056b585471e4da77710d911f8c83c0",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.4"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:be0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396abe0ca4d2e7958abb155fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.3.1"
                         ],
                         "sizeBytes": 74659350
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:f6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
+                            "gcr.io/kubernetes-helm/tiller@sha396af6d8f4ab9ba993b5f5b60a6edafe86352e55e474ffeb84cb6c79b8866dce45d1",
                             "gcr.io/kubernetes-helm/tiller:v2.11.0"
                         ],
                         "sizeBytes": 71821984
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/node@sha256:3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
+                            "mcr.microsoft.com/oss/calico/node@sha396a3101acc2162dff79457ddc1c2b904f578d55aa27e2bc033e0531992592757570",
                             "mcr.microsoft.com/oss/calico/node:v3.5.0"
                         ],
                         "sizeBytes": 71710195
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
+                            "gcr.io/kubernetes-helm/tiller@sha396a394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
                             "gcr.io/kubernetes-helm/tiller:v2.8.1"
                         ],
                         "sizeBytes": 71509364
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha256:c535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
+                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha396ac535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
                             "mcr.microsoft.com/oss/kubernetes/external-dns:v0.6.0-hotfix-20200228"
                         ],
                         "sizeBytes": 64446420
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
+                            "nvidia/k8s-device-plugin@sha396a41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
                             "nvidia/k8s-device-plugin:1.11"
                         ],
                         "sizeBytes": 63138633
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
+                            "nvidia/k8s-device-plugin@sha396a327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
                             "nvidia/k8s-device-plugin:1.10"
                         ],
                         "sizeBytes": 63130377
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v3.1.0-beta.7"
                         ],
                         "sizeBytes": 53650918
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.13"
                         ],
                         "sizeBytes": 51157394
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-attacher@sha256:6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
+                            "quay.io/k8scsi/csi-attacher@sha396a6425af42299ba211de685a99453a5c4c6fcbfd2944e445437dd9ebd70b28bf8a",
                             "quay.io/k8scsi/csi-attacher:v1.0.1"
                         ],
                         "sizeBytes": 50168619
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a8601f2ab41558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.5"
                         ],
                         "sizeBytes": 49387411
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/typha@sha256:268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
+                            "mcr.microsoft.com/oss/calico/typha@sha396a268e0b3e3e9935edd22bd544dc10f8d823b6b2f02ae1093ee589880409012d8",
                             "mcr.microsoft.com/oss/calico/typha:v3.5.0"
                         ],
                         "sizeBytes": 49374661
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:d8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ad8129c44d08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.0"
                         ],
-                        "sizeBytes": 49052023
+                        "sizeBytes": 94052023
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396a6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.4.0"
                         ],
-                        "sizeBytes": 48973149
+                        "sizeBytes": 48973194
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-provisioner@sha256:7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
+                            "quay.io/k8scsi/csi-provisioner@sha396a7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb948cf58e8",
                             "quay.io/k8scsi/csi-provisioner:v1.0.1"
                         ],
                         "sizeBytes": 47974767
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha256:fafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
+                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha396afafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
                             "quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1"
                         ],
                         "sizeBytes": 45874691
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:ee11d97e04758e799643775b3f77ea0702a248ae128ea97a28a9d205d38c81dd",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396aee11d97e04758e799643775b3f77ea0702a248ae128ea97a28a9d205d38c81dd",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0"
                         ],
                         "sizeBytes": 45844959
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/coredns@sha256:14c8d39064e196620ee8eb9856d12646643425ede35c5c910aa798e147f44cee",
+                            "mcr.microsoft.com/oss/kubernetes/coredns@sha396a14c8d39064e196620ee8eb9856d12646643425ede35c5c910aa798e147f44cee",
                             "mcr.microsoft.com/oss/kubernetes/coredns:1.5.0"
                         ],
                         "sizeBytes": 42488424
@@ -474,7 +474,7 @@
                     "kernelVersion": "4.15.0-1071-azure",
                     "kubeProxyVersion": "v1.15.10",
                     "kubeletVersion": "v1.15.10",
-                    "machineID": "testtestb55f49d68a3e34b9c25e3b14",
+                    "machineID": "testtestb55f94d68a3e34b9c25e3b14",
                     "operatingSystem": "linux",
                     "osImage": "Ubuntu 16.04.6 LTS",
                     "systemUUID": "test-test-48ce-test-testtesttest"
@@ -530,7 +530,7 @@
                 "allocatable": {
                     "attachable-volumes-azure-disk": "16",
                     "cpu": "7820m",
-                    "ephemeral-storage": "93492541286",
+                    "ephemeral-storage": "93942541286",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",
                     "memory": "28418140Ki",
@@ -596,169 +596,169 @@
                 "images": [
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:153d229d9103770a8bc70d1c401ecc98cdd0234264316983eb012c5bb2b9289a",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a153d229d9103770a8bc70d1c401ecc98cdd0234264316983eb012c5bb2b9289a",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.7_v0.0.5"
                         ],
                         "sizeBytes": 719958263
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:5c930b61e3bc2855100b7646881a02ca798cac9cb6e43eebd9ffbc1769c26fcf",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a5c930b61e3bc2855100b7646881a02ca798cac9cb6e43eebd9ffbc1769c26fcf",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.6_v0.0.5"
                         ],
                         "sizeBytes": 719913207
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a9403a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.10_f0.0.1"
                         ],
                         "sizeBytes": 643020934
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha256:2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
+                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha396a2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
                             "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:0.19.0"
                         ],
                         "sizeBytes": 414090450
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod03022020"
                         ],
                         "sizeBytes": 396692153
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod01072020"
                         ],
                         "sizeBytes": 396298129
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:d237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
+                            "deis/hcp-tunnel-front@sha396ad237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
                             "deis/hcp-tunnel-front:v1.9.2-v4.0.11"
                         ],
                         "sizeBytes": 357377808
                     },
                     {
                         "names": [
-                            "deis/kube-svc-redirect@sha256:af50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
+                            "deis/kube-svc-redirect@sha396aaf50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
                             "deis/kube-svc-redirect:v1.0.7"
                         ],
                         "sizeBytes": 353963611
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:cbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
+                            "deis/hcp-tunnel-front@sha396acbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
                             "deis/hcp-tunnel-front:v1.9.2-v3.0.11"
                         ],
                         "sizeBytes": 353663014
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:dc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396adc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0_v0.0.5"
                         ],
                         "sizeBytes": 250775999
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha256:3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
+                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha396a3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
                             "mcr.microsoft.com/k8s/csi/azurefile-csi:v0.3.0"
                         ],
                         "sizeBytes": 245146481
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha256:9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
+                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha396a9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
                             "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress:1.0.1-rc3"
                         ],
                         "sizeBytes": 224310054
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha256:b3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
+                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha396ab3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
                             "mcr.microsoft.com/k8s/csi/azuredisk-csi:v0.4.0"
                         ],
                         "sizeBytes": 206475565
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.13"
                         ],
                         "sizeBytes": 175936978
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.33"
                         ],
                         "sizeBytes": 152850571
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.32"
                         ],
                         "sizeBytes": 133157858
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v2.0.1"
                         ],
                         "sizeBytes": 129068206
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.30"
                         ],
                         "sizeBytes": 125356074
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:d875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396ad875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.6"
                         ],
                         "sizeBytes": 123663837
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha256:dca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
+                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha396adca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
                             "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard:v1.10.1"
                         ],
                         "sizeBytes": 121711221
                     },
                     {
                         "names": [
-                            "k8s.gcr.io/node-problem-detector@sha256:276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
+                            "k8s.gcr.io/node-problem-detector@sha396a276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
                             "k8s.gcr.io/node-problem-detector:v0.8.0"
                         ],
                         "sizeBytes": 108715243
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:1ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396a1ab5ce423899418c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.7"
                         ],
                         "sizeBytes": 104673601
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha256:85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha396a85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
                             "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.0-beta8"
                         ],
                         "sizeBytes": 90835430
                     },
                     {
                         "names": [
-                            "microsoft/virtual-kubelet@sha256:efc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
-                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha256:88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
+                            "microsoft/virtual-kubelet@sha396aefc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
+                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha396a88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
                             "microsoft/virtual-kubelet:latest",
                             "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet:latest"
                         ],
@@ -766,182 +766,182 @@
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:c1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ac1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.4"
                         ],
                         "sizeBytes": 86980681
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha256:e9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha396ae9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
                             "mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v2.0.0_v0.0.5"
                         ],
                         "sizeBytes": 86934309
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/cni@sha256:2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
+                            "mcr.microsoft.com/oss/calico/cni@sha396a2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
                             "mcr.microsoft.com/oss/calico/cni:v3.5.0"
                         ],
                         "sizeBytes": 83633850
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:d52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
+                            "gcr.io/kubernetes-helm/tiller@sha396ad52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
                             "gcr.io/kubernetes-helm/tiller:v2.13.1"
                         ],
                         "sizeBytes": 82105090
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha256:427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
+                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha396a427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
                             "mcr.microsoft.com/containernetworking/azure-vnet-telemetry:v1.0.30"
                         ],
                         "sizeBytes": 78949814
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha256:47660e5a9967a32e688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha396a47660e5a9967a32e688ec78caa4b87948f161a41b6284edd43e9058a30295a47",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny:1.15.4"
                         ],
                         "sizeBytes": 77756591
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396a675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9694c9b3d1e3e1",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.1"
                         ],
                         "sizeBytes": 75318380
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:b25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396ab25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.4"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:badda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396abadda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.3"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:be0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396abe0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.3.1"
                         ],
                         "sizeBytes": 74659350
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:f6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
+                            "gcr.io/kubernetes-helm/tiller@sha396af6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
                             "gcr.io/kubernetes-helm/tiller:v2.11.0"
                         ],
                         "sizeBytes": 71821984
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/node@sha256:3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
+                            "mcr.microsoft.com/oss/calico/node@sha396a3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
                             "mcr.microsoft.com/oss/calico/node:v3.5.0"
                         ],
                         "sizeBytes": 71710195
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
+                            "gcr.io/kubernetes-helm/tiller@sha396a394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
                             "gcr.io/kubernetes-helm/tiller:v2.8.1"
                         ],
                         "sizeBytes": 71509364
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha256:c535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
+                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha396ac535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
                             "mcr.microsoft.com/oss/kubernetes/external-dns:v0.6.0-hotfix-20200228"
                         ],
                         "sizeBytes": 64446420
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
+                            "nvidia/k8s-device-plugin@sha396a41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
                             "nvidia/k8s-device-plugin:1.11"
                         ],
                         "sizeBytes": 63138633
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
+                            "nvidia/k8s-device-plugin@sha396a327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
                             "nvidia/k8s-device-plugin:1.10"
                         ],
                         "sizeBytes": 63130377
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v3.1.0-beta.7"
                         ],
                         "sizeBytes": 53650918
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.13"
                         ],
                         "sizeBytes": 51157394
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-attacher@sha256:6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
+                            "quay.io/k8scsi/csi-attacher@sha396a6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
                             "quay.io/k8scsi/csi-attacher:v1.0.1"
                         ],
                         "sizeBytes": 50168619
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.5"
                         ],
                         "sizeBytes": 49387411
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/typha@sha256:268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
+                            "mcr.microsoft.com/oss/calico/typha@sha396a268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
                             "mcr.microsoft.com/oss/calico/typha:v3.5.0"
                         ],
                         "sizeBytes": 49374661
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:d8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ad8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.0"
                         ],
                         "sizeBytes": 49052023
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396a6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.4.0"
                         ],
                         "sizeBytes": 48973149
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-provisioner@sha256:7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
+                            "quay.io/k8scsi/csi-provisioner@sha396a7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
                             "quay.io/k8scsi/csi-provisioner:v1.0.1"
                         ],
                         "sizeBytes": 47974767
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha256:fafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
+                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha396afafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
                             "quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1"
                         ],
                         "sizeBytes": 45874691
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:ee11d97e04758e799643775b3f77ea0702a248ae128ea97a28a9d205d38c81dd",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396aee11d97e04758e799643775b3f77ea0702a248ae128ea97a28a9d205d38c81dd",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0"
                         ],
                         "sizeBytes": 45844959
@@ -1076,169 +1076,169 @@
                 "images": [
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:153d229d9103770a8bc70d1c401ecc98cdd0234264316983eb012c5bb2b9289a",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a153d229d9103770a8bc70d1c401ecc98cdd0234264316983eb012c5bb2b9289a",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.7_v0.0.5"
                         ],
                         "sizeBytes": 719958263
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:5c930b61e3bc2855100b7646881a02ca798cac9cb6e43eebd9ffbc1769c26fcf",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a5c930b61e3bc2855100b7646881a02ca798cac9cb6e43eebd9ffbc1769c26fcf",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.6_v0.0.5"
                         ],
                         "sizeBytes": 719913207
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.10_f0.0.1"
                         ],
                         "sizeBytes": 643020934
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha256:2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
+                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha396a2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
                             "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:0.19.0"
                         ],
                         "sizeBytes": 414090450
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod03022020"
                         ],
                         "sizeBytes": 396692153
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod01072020"
                         ],
                         "sizeBytes": 396298129
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:d237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
+                            "deis/hcp-tunnel-front@sha396ad237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
                             "deis/hcp-tunnel-front:v1.9.2-v4.0.11"
                         ],
                         "sizeBytes": 357377808
                     },
                     {
                         "names": [
-                            "deis/kube-svc-redirect@sha256:af50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
+                            "deis/kube-svc-redirect@sha396aaf50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
                             "deis/kube-svc-redirect:v1.0.7"
                         ],
                         "sizeBytes": 353963611
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:cbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
+                            "deis/hcp-tunnel-front@sha396acbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
                             "deis/hcp-tunnel-front:v1.9.2-v3.0.11"
                         ],
                         "sizeBytes": 353663014
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:dc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396adc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0_v0.0.5"
                         ],
                         "sizeBytes": 250775999
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha256:3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
+                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha396a3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
                             "mcr.microsoft.com/k8s/csi/azurefile-csi:v0.3.0"
                         ],
                         "sizeBytes": 245146481
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha256:9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
+                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha396a9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
                             "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress:1.0.1-rc3"
                         ],
                         "sizeBytes": 224310054
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha256:b3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
+                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha396ab3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
                             "mcr.microsoft.com/k8s/csi/azuredisk-csi:v0.4.0"
                         ],
                         "sizeBytes": 206475565
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.13"
                         ],
                         "sizeBytes": 175936978
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.33"
                         ],
                         "sizeBytes": 152850571
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.32"
                         ],
                         "sizeBytes": 133157858
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v2.0.1"
                         ],
                         "sizeBytes": 129068206
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.30"
                         ],
                         "sizeBytes": 125356074
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:d875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396ad875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.6"
                         ],
                         "sizeBytes": 123663837
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha256:dca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
+                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha396adca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
                             "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard:v1.10.1"
                         ],
                         "sizeBytes": 121711221
                     },
                     {
                         "names": [
-                            "k8s.gcr.io/node-problem-detector@sha256:276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
+                            "k8s.gcr.io/node-problem-detector@sha396a276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
                             "k8s.gcr.io/node-problem-detector:v0.8.0"
                         ],
                         "sizeBytes": 108715243
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:1ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396a1ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.7"
                         ],
                         "sizeBytes": 104673601
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha256:85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha396a85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
                             "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.0-beta8"
                         ],
                         "sizeBytes": 90835430
                     },
                     {
                         "names": [
-                            "microsoft/virtual-kubelet@sha256:efc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
-                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha256:88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
+                            "microsoft/virtual-kubelet@sha396aefc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
+                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha396a88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
                             "microsoft/virtual-kubelet:latest",
                             "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet:latest"
                         ],
@@ -1246,182 +1246,182 @@
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:c1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ac1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.4"
                         ],
                         "sizeBytes": 86980681
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha256:e9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha396ae9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
                             "mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v2.0.0_v0.0.5"
                         ],
                         "sizeBytes": 86934309
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/cni@sha256:2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
+                            "mcr.microsoft.com/oss/calico/cni@sha396a2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
                             "mcr.microsoft.com/oss/calico/cni:v3.5.0"
                         ],
                         "sizeBytes": 83633850
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:d52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
+                            "gcr.io/kubernetes-helm/tiller@sha396ad52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
                             "gcr.io/kubernetes-helm/tiller:v2.13.1"
                         ],
                         "sizeBytes": 82105090
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha256:427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
+                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha396a427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
                             "mcr.microsoft.com/containernetworking/azure-vnet-telemetry:v1.0.30"
                         ],
                         "sizeBytes": 78949814
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha256:47660e5a9967a32e688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha396a47660e5a9967a32e688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny:1.15.4"
                         ],
                         "sizeBytes": 77756591
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396a675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.1"
                         ],
                         "sizeBytes": 75318380
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:b25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396ab25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.4"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:badda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396abadda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.3"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:be0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396abe0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.3.1"
                         ],
                         "sizeBytes": 74659350
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:f6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
+                            "gcr.io/kubernetes-helm/tiller@sha396af6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
                             "gcr.io/kubernetes-helm/tiller:v2.11.0"
                         ],
                         "sizeBytes": 71821984
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/node@sha256:3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
+                            "mcr.microsoft.com/oss/calico/node@sha396a3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
                             "mcr.microsoft.com/oss/calico/node:v3.5.0"
                         ],
                         "sizeBytes": 71710195
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
+                            "gcr.io/kubernetes-helm/tiller@sha396a394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
                             "gcr.io/kubernetes-helm/tiller:v2.8.1"
                         ],
                         "sizeBytes": 71509364
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha256:c535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
+                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha396ac535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
                             "mcr.microsoft.com/oss/kubernetes/external-dns:v0.6.0-hotfix-20200228"
                         ],
                         "sizeBytes": 64446420
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
+                            "nvidia/k8s-device-plugin@sha396a41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
                             "nvidia/k8s-device-plugin:1.11"
                         ],
                         "sizeBytes": 63138633
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
+                            "nvidia/k8s-device-plugin@sha396a327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
                             "nvidia/k8s-device-plugin:1.10"
                         ],
                         "sizeBytes": 63130377
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v3.1.0-beta.7"
                         ],
                         "sizeBytes": 53650918
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.13"
                         ],
                         "sizeBytes": 51157394
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-attacher@sha256:6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
+                            "quay.io/k8scsi/csi-attacher@sha396a6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
                             "quay.io/k8scsi/csi-attacher:v1.0.1"
                         ],
                         "sizeBytes": 50168619
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.5"
                         ],
                         "sizeBytes": 49387411
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/typha@sha256:268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
+                            "mcr.microsoft.com/oss/calico/typha@sha396a268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
                             "mcr.microsoft.com/oss/calico/typha:v3.5.0"
                         ],
                         "sizeBytes": 49374661
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:d8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ad8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.0"
                         ],
                         "sizeBytes": 49052023
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396a6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.4.0"
                         ],
                         "sizeBytes": 48973149
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-provisioner@sha256:7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
+                            "quay.io/k8scsi/csi-provisioner@sha396a7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
                             "quay.io/k8scsi/csi-provisioner:v1.0.1"
                         ],
                         "sizeBytes": 47974767
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha256:fafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
+                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha396afafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
                             "quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1"
                         ],
                         "sizeBytes": 45874691
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:ee11d97e04758e799643775b3f77ea0702a248ae128ea97a28a9d205d38c81dd",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396aee11d97e04758e799643775b3f77ea0702a248ae128ea97a28a9d205d38c81dd",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0"
                         ],
                         "sizeBytes": 45844959
@@ -1556,176 +1556,176 @@
                 "images": [
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:a4d8e1262d47785e637cfe5d63f68245f02341bc8bbcc71c223dd6e962329d5b",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396aa4d8e1262d47785e637cfe5d63f68245f02341bc8bbcc71c223dd6e962329d5b",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.13.11_v0.0.5"
                         ],
                         "sizeBytes": 801171525
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:5c930b61e3bc2855100b7646881a02ca798cac9cb6e43eebd9ffbc1769c26fcf",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a5c930b61e3bc2855100b7646881a02ca798cac9cb6e43eebd9ffbc1769c26fcf",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.6_v0.0.5"
                         ],
                         "sizeBytes": 719913207
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.10_f0.0.1"
                         ],
                         "sizeBytes": 643020934
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha256:2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
+                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha396a2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
                             "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:0.19.0"
                         ],
                         "sizeBytes": 414090450
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod03022020"
                         ],
                         "sizeBytes": 396692153
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod01072020"
                         ],
                         "sizeBytes": 396298129
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:d237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
+                            "deis/hcp-tunnel-front@sha396ad237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
                             "deis/hcp-tunnel-front:v1.9.2-v4.0.11"
                         ],
                         "sizeBytes": 357377808
                     },
                     {
                         "names": [
-                            "deis/kube-svc-redirect@sha256:af50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
+                            "deis/kube-svc-redirect@sha396aaf50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
                             "deis/kube-svc-redirect:v1.0.7"
                         ],
                         "sizeBytes": 353963611
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:cbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
+                            "deis/hcp-tunnel-front@sha396acbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
                             "deis/hcp-tunnel-front:v1.9.2-v3.0.11"
                         ],
                         "sizeBytes": 353663014
                     },
                     {
                         "names": [
-                            "quay.io/kubernetes-ingress-controller/nginx-ingress-controller@sha256:b312c91d0de688a21075078982b5e3a48b13b46eda4df743317d3059fc3ca0d9",
+                            "quay.io/kubernetes-ingress-controller/nginx-ingress-controller@sha396ab312c91d0de688a21075078982b5e3a48b13b46eda4df743317d3059fc3ca0d9",
                             "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0"
                         ],
                         "sizeBytes": 322915865
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:dc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396adc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0_v0.0.5"
                         ],
                         "sizeBytes": 250775999
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha256:3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
+                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha396a3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
                             "mcr.microsoft.com/k8s/csi/azurefile-csi:v0.3.0"
                         ],
                         "sizeBytes": 245146481
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha256:9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
+                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha396a9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
                             "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress:1.0.1-rc3"
                         ],
                         "sizeBytes": 224310054
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha256:b3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
+                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha396ab3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
                             "mcr.microsoft.com/k8s/csi/azuredisk-csi:v0.4.0"
                         ],
                         "sizeBytes": 206475565
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.13"
                         ],
                         "sizeBytes": 175936978
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.33"
                         ],
                         "sizeBytes": 152850571
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.32"
                         ],
                         "sizeBytes": 133157858
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v2.0.1"
                         ],
                         "sizeBytes": 129068206
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.30"
                         ],
                         "sizeBytes": 125356074
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:d875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396ad875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.6"
                         ],
                         "sizeBytes": 123663837
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha256:dca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
+                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha396adca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
                             "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard:v1.10.1"
                         ],
                         "sizeBytes": 121711221
                     },
                     {
                         "names": [
-                            "k8s.gcr.io/node-problem-detector@sha256:276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
+                            "k8s.gcr.io/node-problem-detector@sha396a276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
                             "k8s.gcr.io/node-problem-detector:v0.8.0"
                         ],
                         "sizeBytes": 108715243
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:1ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396a1ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.7"
                         ],
                         "sizeBytes": 104673601
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha256:85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha396a85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
                             "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.0-beta8"
                         ],
                         "sizeBytes": 90835430
                     },
                     {
                         "names": [
-                            "microsoft/virtual-kubelet@sha256:efc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
-                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha256:88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
+                            "microsoft/virtual-kubelet@sha396aefc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
+                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha396a88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
                             "microsoft/virtual-kubelet:latest",
                             "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet:latest"
                         ],
@@ -1733,175 +1733,175 @@
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:c1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ac1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.4"
                         ],
                         "sizeBytes": 86980681
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha256:e9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha396ae9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
                             "mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v2.0.0_v0.0.5"
                         ],
                         "sizeBytes": 86934309
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/cni@sha256:2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
+                            "mcr.microsoft.com/oss/calico/cni@sha396a2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
                             "mcr.microsoft.com/oss/calico/cni:v3.5.0"
                         ],
                         "sizeBytes": 83633850
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:d52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
+                            "gcr.io/kubernetes-helm/tiller@sha396ad52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
                             "gcr.io/kubernetes-helm/tiller:v2.13.1"
                         ],
                         "sizeBytes": 82105090
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha256:427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
+                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha396a427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
                             "mcr.microsoft.com/containernetworking/azure-vnet-telemetry:v1.0.30"
                         ],
                         "sizeBytes": 78949814
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha256:47660e5a9967a32e688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha396a47660e5a9967a32e688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny:1.15.4"
                         ],
                         "sizeBytes": 77756591
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396a675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.1"
                         ],
                         "sizeBytes": 75318380
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:b25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396ab25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.4"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:badda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396abadda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.3"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:be0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396abe0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.3.1"
                         ],
                         "sizeBytes": 74659350
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:f6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
+                            "gcr.io/kubernetes-helm/tiller@sha396af6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
                             "gcr.io/kubernetes-helm/tiller:v2.11.0"
                         ],
                         "sizeBytes": 71821984
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/node@sha256:3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
+                            "mcr.microsoft.com/oss/calico/node@sha396a3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
                             "mcr.microsoft.com/oss/calico/node:v3.5.0"
                         ],
                         "sizeBytes": 71710195
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
+                            "gcr.io/kubernetes-helm/tiller@sha396a394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
                             "gcr.io/kubernetes-helm/tiller:v2.8.1"
                         ],
                         "sizeBytes": 71509364
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha256:c535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
+                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha396ac535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
                             "mcr.microsoft.com/oss/kubernetes/external-dns:v0.6.0-hotfix-20200228"
                         ],
                         "sizeBytes": 64446420
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
+                            "nvidia/k8s-device-plugin@sha396a41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
                             "nvidia/k8s-device-plugin:1.11"
                         ],
                         "sizeBytes": 63138633
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
+                            "nvidia/k8s-device-plugin@sha396a327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
                             "nvidia/k8s-device-plugin:1.10"
                         ],
                         "sizeBytes": 63130377
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v3.1.0-beta.7"
                         ],
                         "sizeBytes": 53650918
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.13"
                         ],
                         "sizeBytes": 51157394
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-attacher@sha256:6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
+                            "quay.io/k8scsi/csi-attacher@sha396a6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
                             "quay.io/k8scsi/csi-attacher:v1.0.1"
                         ],
                         "sizeBytes": 50168619
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.5"
                         ],
                         "sizeBytes": 49387411
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/typha@sha256:268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
+                            "mcr.microsoft.com/oss/calico/typha@sha396a268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
                             "mcr.microsoft.com/oss/calico/typha:v3.5.0"
                         ],
                         "sizeBytes": 49374661
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:d8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ad8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.0"
                         ],
                         "sizeBytes": 49052023
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396a6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.4.0"
                         ],
                         "sizeBytes": 48973149
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-provisioner@sha256:7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
+                            "quay.io/k8scsi/csi-provisioner@sha396a7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
                             "quay.io/k8scsi/csi-provisioner:v1.0.1"
                         ],
                         "sizeBytes": 47974767
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha256:fafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
+                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha396afafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
                             "quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1"
                         ],
                         "sizeBytes": 45874691
@@ -2036,57 +2036,57 @@
                 "images": [
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:5c930b61e3bc2855100b7646881a02ca798cac9cb6e43eebd9ffbc1769c26fcf",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a5c930b61e3bc2855100b7646881a02ca798cac9cb6e43eebd9ffbc1769c26fcf",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.14.6_v0.0.5"
                         ],
                         "sizeBytes": 719913207
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha256:4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@sha396a4903a86f5a64b8bc997b744bbcb3976f9320cc2995334c9a294e9df7ab5d16a1",
                             "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.10_f0.0.1"
                         ],
                         "sizeBytes": 643020934
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha256:2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
+                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller@sha396a2246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
                             "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:0.19.0"
                         ],
                         "sizeBytes": 414090450
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a1ab6e373673465a53b719ae3e3356b2b93b537351fe4cbf36e62327830a93585",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod03022020"
                         ],
                         "sizeBytes": 396692153
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha256:6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod@sha396a6a00d818e129b956a22b723e5543a6cdad1431666c090ea5e3676001a921c539",
                             "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod01072020"
                         ],
                         "sizeBytes": 396298129
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:d237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
+                            "deis/hcp-tunnel-front@sha396ad237ae461a2f3f7d3f32c33b4d7b2f5fb1681c00b840e8515882c29267bc1c9b",
                             "deis/hcp-tunnel-front:v1.9.2-v4.0.11"
                         ],
                         "sizeBytes": 357377808
                     },
                     {
                         "names": [
-                            "deis/kube-svc-redirect@sha256:af50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
+                            "deis/kube-svc-redirect@sha396aaf50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
                             "deis/kube-svc-redirect:v1.0.7"
                         ],
                         "sizeBytes": 353963611
                     },
                     {
                         "names": [
-                            "deis/hcp-tunnel-front@sha256:cbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
-                            "mcr.microsoft.com/test/hcp/hcp-tunnel-front@sha256:cbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
+                            "deis/hcp-tunnel-front@sha396acbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
+                            "mcr.microsoft.com/test/hcp/hcp-tunnel-front@sha396acbd52a7489524e0389688fa9969d6e5c870500d3e5da33583b75bdcb75d40bbc",
                             "deis/hcp-tunnel-front:v1.9.2-v3.0.11",
                             "mcr.microsoft.com/aks/hcp/hcp-tunnel-front:v1.9.2-v3.0.11"
                         ],
@@ -2094,106 +2094,106 @@
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:dc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396adc8426f14b517d91272b62d18203475cfd50796d071c48925a662564361a885c",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0_v0.0.5"
                         ],
                         "sizeBytes": 250775999
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha256:3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
+                            "mcr.microsoft.com/k8s/csi/azurefile-csi@sha396a3f48233e04580a4344d69921be1a38a0bb1616d0bf86ac3920e9d3c8cc805093",
                             "mcr.microsoft.com/k8s/csi/azurefile-csi:v0.3.0"
                         ],
                         "sizeBytes": 245146481
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha256:9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
+                            "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress@sha396a9a8b2aafb2be07bbee231bd6af425975746a43a1f6b1456f7257d6982c5d6969",
                             "mcr.microsoft.com/azure-application-gateway/kubernetes-ingress:1.0.1-rc3"
                         ],
                         "sizeBytes": 224310054
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha256:b3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
+                            "mcr.microsoft.com/k8s/csi/azuredisk-csi@sha396ab3379ebfc891c17312ecaf299977144af6f6ed5180f0eaf79110add8d7381f75",
                             "mcr.microsoft.com/k8s/csi/azuredisk-csi:v0.4.0"
                         ],
                         "sizeBytes": 206475565
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a41b64e87fef35ebde21eb084f22e0bde335cb2ff828406c2d0667713158cc022",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.13"
                         ],
                         "sizeBytes": 175936978
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a0755a2743617712a62ad3e0352ba4ad4de807122642ca9a9e5b409a406429809",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.33"
                         ],
                         "sizeBytes": 152850571
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a2bcb232b4d8d21b4e5f90dbc088766968edef7daf6073c2ae6818848cc01450d",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.32"
                         ],
                         "sizeBytes": 133157858
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a0572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v2.0.1"
                         ],
                         "sizeBytes": 129068206
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-npm@sha256:266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
+                            "mcr.microsoft.com/containernetworking/azure-npm@sha396a266aef2236e0144078dcddb308ab9fbed5e30412db00b2d7e1e9f6bcba6d6835",
                             "mcr.microsoft.com/containernetworking/azure-npm:v1.0.30"
                         ],
                         "sizeBytes": 125356074
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:d875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396ad875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.6"
                         ],
                         "sizeBytes": 123663837
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha256:dca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
+                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard@sha396adca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
                             "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard:v1.10.1"
                         ],
                         "sizeBytes": 121711221
                     },
                     {
                         "names": [
-                            "k8s.gcr.io/node-problem-detector@sha256:276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
+                            "k8s.gcr.io/node-problem-detector@sha396a276335fa25a703615cc2f2cdc51ba693fac4bdd70baa63f9cbf228291defd776",
                             "k8s.gcr.io/node-problem-detector:v0.8.0"
                         ],
                         "sizeBytes": 108715243
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/networkmonitor@sha256:1ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
+                            "mcr.microsoft.com/containernetworking/networkmonitor@sha396a1ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
                             "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.7"
                         ],
                         "sizeBytes": 104673601
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha256:85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard@sha396a85fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
                             "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.0-beta8"
                         ],
                         "sizeBytes": 90835430
                     },
                     {
                         "names": [
-                            "microsoft/virtual-kubelet@sha256:efc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
-                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha256:88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
+                            "microsoft/virtual-kubelet@sha396aefc397d741d7e590c892c0ea5dccc9a800656c3adb95da4dae25c1cdd5eb6d9f",
+                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet@sha396a88974b99c1c19085f200b9a69942579a1d160924cff05c9143c1390f1a8d9fb2",
                             "microsoft/virtual-kubelet:latest",
                             "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet:latest"
                         ],
@@ -2201,189 +2201,189 @@
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:c1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ac1c11d18f192f4c8616eb5481b21114c331ea8de389e433f5f141bc0e5f58a3b",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.4"
                         ],
                         "sizeBytes": 86980681
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha256:e9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent@sha396ae9a6a4b30f278713486fb9bbb5eb4d691323e95be387f5a5a84500d5318dcb6e",
                             "mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v2.0.0_v0.0.5"
                         ],
                         "sizeBytes": 86934309
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/cni@sha256:2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
+                            "mcr.microsoft.com/oss/calico/cni@sha396a2eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
                             "mcr.microsoft.com/oss/calico/cni:v3.5.0"
                         ],
                         "sizeBytes": 83633850
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:d52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
+                            "gcr.io/kubernetes-helm/tiller@sha396ad52b34a9f9aeec1cf74155ca51fcbb5d872a705914565c782be4531790a4ee0e",
                             "gcr.io/kubernetes-helm/tiller:v2.13.1"
                         ],
                         "sizeBytes": 82105090
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha256:427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
+                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry@sha396a427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
                             "mcr.microsoft.com/containernetworking/azure-vnet-telemetry:v1.0.30"
                         ],
                         "sizeBytes": 78949814
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha256:47660e5a9967a32e688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny@sha396a47660e5a9967a32e688ec78caa4b87498f161a41b6284edd43e9058a30295a47",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-dnsmasq-nanny:1.15.4"
                         ],
                         "sizeBytes": 77756591
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396a675d882ed4d2e68af7f06637a6a479bfae20d2bf0b12764d9d9649c9b3d1e3e1",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.1"
                         ],
                         "sizeBytes": 75318380
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:badda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396abadda1239d6d3de3f780812e068d76e5ecdfe993f0e64c1f290ba6f6a21a01de",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.3"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/heapster@sha256:b25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
+                            "mcr.microsoft.com/oss/kubernetes/heapster@sha396ab25c594dd0a05851a977537e0dd9056707056b585471e4da77710d911f8c83c0",
                             "mcr.microsoft.com/oss/kubernetes/heapster:v1.5.4"
                         ],
                         "sizeBytes": 75318342
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:be0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396abe0ca4d2e7958abb116fa2d114609fd3d66a9d48b7c7a51a7c8088c43065b8a6",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.3.1"
                         ],
                         "sizeBytes": 74659350
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:f6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
+                            "gcr.io/kubernetes-helm/tiller@sha396af6d8f4ab9ba993b5f5b60a6edafe86352eabe474ffeb84cb6c79b8866dce45d1",
                             "gcr.io/kubernetes-helm/tiller:v2.11.0"
                         ],
                         "sizeBytes": 71821984
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/node@sha256:3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
+                            "mcr.microsoft.com/oss/calico/node@sha396a3101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
                             "mcr.microsoft.com/oss/calico/node:v3.5.0"
                         ],
                         "sizeBytes": 71710195
                     },
                     {
                         "names": [
-                            "gcr.io/kubernetes-helm/tiller@sha256:394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
+                            "gcr.io/kubernetes-helm/tiller@sha396a394fb7d5f2fbaca54f6a0dec387cef926f6ae359786c89f7da67db173b97a322",
                             "gcr.io/kubernetes-helm/tiller:v2.8.1"
                         ],
                         "sizeBytes": 71509364
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha256:c535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
+                            "mcr.microsoft.com/oss/kubernetes/external-dns@sha396ac535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
                             "mcr.microsoft.com/oss/kubernetes/external-dns:v0.6.0-hotfix-20200228"
                         ],
                         "sizeBytes": 64446420
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
+                            "nvidia/k8s-device-plugin@sha396a41b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
                             "nvidia/k8s-device-plugin:1.11"
                         ],
                         "sizeBytes": 63138633
                     },
                     {
                         "names": [
-                            "nvidia/k8s-device-plugin@sha256:327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
+                            "nvidia/k8s-device-plugin@sha396a327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
                             "nvidia/k8s-device-plugin:1.10"
                         ],
                         "sizeBytes": 63130377
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha256:9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper@sha396a9d6a9a258270710b22f38ca3a44cb9f0604de8be96b82dd121c9c70548679e4e",
                             "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v3.1.0-beta.7"
                         ],
                         "sizeBytes": 53650918
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a1b24234b0418e280cfb08bfbd75c2461ee56296327efe481f4babff83a84b250",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.13"
                         ],
                         "sizeBytes": 51157394
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-attacher@sha256:6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
+                            "quay.io/k8scsi/csi-attacher@sha396a6425af42299ba211de685a94953a5c4c6fcbfd2494e445437dd9ebd70b28bf8a",
                             "quay.io/k8scsi/csi-attacher:v1.0.1"
                         ],
                         "sizeBytes": 50168619
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396a8601f2ab51558239fab20bd7dc1323da55e47f8ebc4ab6ca13eeea3c3fe1e363",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.14.5"
                         ],
                         "sizeBytes": 49387411
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/calico/typha@sha256:268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
+                            "mcr.microsoft.com/oss/calico/typha@sha396a268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
                             "mcr.microsoft.com/oss/calico/typha:v3.5.0"
                         ],
                         "sizeBytes": 49374661
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha256:d8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
+                            "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns@sha396ad8129c9ed08a7d6ec4bd5c80b7bf70e35779e25680fce2a6c47900a0fd6a2439",
                             "mcr.microsoft.com/oss/kubernetes/k8s-dns-kube-dns:1.15.0"
                         ],
                         "sizeBytes": 49052023
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha256:6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
+                            "mcr.microsoft.com/oss/kubernetes/rescheduler@sha396a6fae2968a89a349a6ae580f8f54d23e33117cf360bcb984d4b350f8dcbcc7877",
                             "mcr.microsoft.com/oss/kubernetes/rescheduler:v0.4.0"
                         ],
                         "sizeBytes": 48973149
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-provisioner@sha256:7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
+                            "quay.io/k8scsi/csi-provisioner@sha396a7d7d832832b536f32e899669a32d4fb75ab972da20c21a2bd6043eb498cf58e8",
                             "quay.io/k8scsi/csi-provisioner:v1.0.1"
                         ],
                         "sizeBytes": 47974767
                     },
                     {
                         "names": [
-                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha256:fafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
+                            "quay.io/k8scsi/csi-cluster-driver-registrar@sha396afafd75ae5442f192cfa8c2e792903aee30d5884b62e802e4464b0a895d21e3ef",
                             "quay.io/k8scsi/csi-cluster-driver-registrar:v1.0.1"
                         ],
                         "sizeBytes": 45874691
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha256:ee11d97e04758e799643775b3f77ea0702a248ae128ea97a28a9d205d38c81dd",
+                            "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler@sha396aee11d97e04758e799643775b3f77ea0702a248ae128ea97a28a9d205d38c81dd",
                             "mcr.microsoft.com/oss/kubernetes/autoscaler/cluster-proportional-autoscaler:1.3.0"
                         ],
                         "sizeBytes": 45844959
                     },
                     {
                         "names": [
-                            "mcr.microsoft.com/oss/kubernetes/coredns@sha256:14c8d39064e196620ee8eb9856d12646643425ede35c5c910aa798e147f44cee",
+                            "mcr.microsoft.com/oss/kubernetes/coredns@sha396a14c8d39064e196620ee8eb9856d12646643425ede35c5c910aa798e147f44cee",
                             "mcr.microsoft.com/oss/kubernetes/coredns:1.5.0"
                         ],
                         "sizeBytes": 42488424

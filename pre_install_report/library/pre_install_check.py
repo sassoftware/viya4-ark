@@ -74,19 +74,21 @@ class ViyaPreInstallCheck():
 
     def _parse_release_info(self, release_info):
         """
-        This method verifies that the KUBECONFIG environment variable is set.
+        This method checks that the format of the VIYA_KUBELET_VERSION_MIN specfied in the
+        user modifiable properies file is valid.
 
-        :param env_var: Environment variable to check
+        :param release_info: The minimum Kubelet version loaded from properties file.
+        :return tuple of major version, minor version, patch
         """
         try:
             info = tuple(release_info.split("."))
+            return info
         except ValueError:
             print(viya_messages.KUBELET_VERSION_ERROR)
             sys.exit(viya_messages.BAD_OPT_RC_)
         if (len(info) != 3):
             print(viya_messages.KUBELET_VERSION_ERROR)
             sys.exit(viya_messages.BAD_OPT_RC_)
-        return info
 
     def check_details(self, kubectl, ingress_port, ingress_host, ingress_controller,
                       output_dir):
@@ -922,6 +924,13 @@ class ViyaPreInstallCheck():
         return config_json, return_code
 
     def _release_in_range(self, kubeletversion):
+        """
+        Check if the current kublet version retrieved from the cluster nodes is equal to or greater
+        than the major/minor version specified in the viya_cluster_settings file
+
+        :param kubeletversion - current version in cluster node
+        :return True if version is within range. If not return False
+        """
 
         try:
             current = tuple(kubeletversion.split("."))
@@ -940,16 +949,33 @@ class ViyaPreInstallCheck():
         return False
 
     def _get_memory(self, limit, key, quantity_):
+        """
+        Check that the memory specified in the viya_cluster_settings file is valid. Exit if
+        pint package throws exceptions
+
+        :param:  limit - value set in viya_cluster_settings
+        :param:  key used viya_cluster_settings (VIYA_MIN_AGGREGATE_WORKER_MEMORY
+                 VIYA_MIN_ALLOCATABLE_WORKER_MEMORY)
+        :param   _quantity is the Pint quantities object
+        """
         try:
             input_memory = quantity_(limit)
             return input_memory
         except (pint.errors.UndefinedUnitError, pint.errors.DefinitionSyntaxError):
-            print(viya_messages.CPU_ERROR.format(key,
-                                                 str(limit)))
-            self.logger.exception(viya_messages.CPU_ERROR.format(key, str(limit)))
+            print(viya_messages.LIMIT_ERROR.format(key, str(limit)))
+            self.logger.exception(viya_messages.LIMIT_ERROR.format(key, str(limit)))
             sys.exit(viya_messages.BAD_OPT_RC_)
 
     def _get_cpu(self, limit, key):
+        """
+        Check that the cpu value specified in the viya_cluster_settings file is valid. Exit if
+        it does not convert to float
+
+        :param:  limit - value set in viya_cluster_settings
+        :param:  key used viya_cluster_settings (VIYA_MIN_AGGREGATE_WORKER_CPU_CORES,
+                 VIYA_MIN_WORKER_ALLOCATABLE_CPU)
+        :return   cpu value as float
+        """
         try:
             input_cpu = float(limit)
             return input_cpu
