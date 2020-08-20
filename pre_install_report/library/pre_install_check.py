@@ -956,7 +956,7 @@ class ViyaPreInstallCheck():
         :param:  limit - value set in viya_cluster_settings
         :param:  key used viya_cluster_settings (VIYA_MIN_AGGREGATE_WORKER_MEMORY
                  VIYA_MIN_ALLOCATABLE_WORKER_MEMORY)
-        :param   _quantity is the Pint quantities object
+        :param   quantity_ is the Pint quantities object
         """
         try:
             input_memory = quantity_(limit)
