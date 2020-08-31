@@ -9,8 +9,8 @@
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
-
 import os
+
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from typing import AnyStr, List, Text, Union
 
@@ -65,7 +65,7 @@ class Jinja2TemplateRenderer(object):
         contents: Text = template.render(*args, **kwargs)
 
         # write the contents into the file #
-        with open(destination, "w+") as f:
+        with open(destination, "w+", encoding="utf-8", errors="replace") as f:
             f.write(contents)
 
         # return the absolute path to the new file #
