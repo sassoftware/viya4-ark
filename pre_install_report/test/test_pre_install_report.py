@@ -169,6 +169,7 @@ def test_get_nested_nodes_info():
     configs_data = []
 
     global_data = []
+    assert vpc._workers == 3
 
     cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n"
     global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
@@ -458,6 +459,40 @@ def test_azure_multi_get_nested_nodes_info():
         assert global_data[4]['aggregate_kubelet_failures'] in '0, Check Kubelet Version on nodes.'
 
     template_render(global_data, configs_data, storage_data, 'azure_multi_nested_nodes_info.html')
+
+
+def test_azure_worker_nodes():
+
+    vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
+                                    viya_min_worker_allocatable_CPU,
+                                    viya_min_aggregate_worker_CPU_cores,
+                                    viya_min_allocatable_worker_memory,
+                                    viya_min_aggregate_worker_memory)
+
+    quantity_ = register_pint()
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    datafile = os.path.join(current_dir, 'test_data/json_data/azure_nodes_no_master.json')
+    with open(datafile) as f:
+        data = json.load(f)
+    nodes_data = vpc.get_nested_nodes_info(data, quantity_)
+    assert vpc._workers == 10
+
+    storage_data = []
+    configs_data = []
+
+    global_data = []
+    cluster_info = "Kubernetes master is running at https://node3:6443\n"
+
+    global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
+    pprint.pprint(global_data)
+    for nodes in global_data:
+        assert global_data[2]['aggregate_cpu_failures'] in \
+               'Expected: 12, Calculated: 141.55999999999997, Issues Found: 0'
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 677.8613586425781 Gi, ' \
+                                                              'Issues Found: 0'
+        assert global_data[4]['aggregate_kubelet_failures'] in '0, Check Kubelet Version on nodes.'
+
+    template_render(global_data, configs_data, storage_data, 'azure_nodes_no_master.html')
 
 
 def template_render(global_data, configs_data, storage_data, report):
