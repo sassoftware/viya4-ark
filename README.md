@@ -30,6 +30,10 @@ Tool support for the latest release of SAS Viya:
 * [Pre-installation of SAS Viya System Requirements](pre_install_report)
 * [SAS Viya Deployment Report](deployment_report)
 
+## Contributing
+
+We welcome your contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to submit contributions to these projects.
+
 ## License
 
 This project is licensed under the [Apache 2.0 License](LICENSE).
