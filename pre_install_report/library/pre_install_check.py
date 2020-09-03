@@ -71,6 +71,7 @@ class ViyaPreInstallCheck():
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
         self._viya_min_allocatable_worker_memory: Text = viya_min_allocatable_worker_memory
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
+        self._workers = 0
 
     def _parse_release_info(self, release_info):
         """
@@ -485,19 +486,6 @@ class ViyaPreInstallCheck():
         self.logger.debug("master_data {}".format(pprint.pformat(master_data)))
         return master_data
 
-    def _calculate_potential_workers(self, nodes_data):
-        """
-        Identify worker nodes in the cluster
-
-        nodes_data: list of dict objects with node details
-        return: number of sworker nodes detected.
-        """
-        workers = 0
-        for node in nodes_data:
-            if node['taint'] not in "NoSchedule":
-                workers += 1
-        return workers
-
     def _check_workers(self, global_data, nodes_data):
         """
         Check list of worker nodes information and calculate the total number of worker nodes
@@ -508,7 +496,7 @@ class ViyaPreInstallCheck():
         return: updated global_data list with total number of worker nodes.
         """
         global_nodes = {}
-        workers = self._calculate_potential_workers(nodes_data)
+        workers = self._workers
 
         global_nodes.update({'totalWorkers': str(workers) + ': ' +
                              str(viya_constants.SET + ': ' +
@@ -757,17 +745,13 @@ class ViyaPreInstallCheck():
                 # its total capacity.
                 alloc_cpu_cores = float(str(node['allocatablecpu']).rstrip('m'))/1000
                 self.logger.info("alloc_cpu_cores {}".format(str(alloc_cpu_cores)))
-            # Node tainted with NoSchedule
-            taint_effect = str(node['taint'])
-            role = "non_worker"
-            if taint_effect not in "NoSchedule":
-                role = "worker"
+            # Node is identified as worker node
             kubeletversion = str(node['kubeletversion'])
             alloc_memory = str(node['allocatableMemory'])
             total_memory = total_memory + quantity_(str(node['memory']))
             total_allocatable_memory = total_allocatable_memory + quantity_(alloc_memory)
 
-            if role == 'worker':
+            if node['worker']:
                 total_cpu_cores = total_cpu_cores + alloc_cpu_cores
                 self.logger.info("worker total_cpu_cores {}".format(str(total_cpu_cores)))
                 self.logger.info("worker alloc_cpu_cores {}".format(str(alloc_cpu_cores)))
@@ -817,7 +801,7 @@ class ViyaPreInstallCheck():
         global_data = self._check_cpu_errors(global_data, total_cpu_cores, aggregate_cpu_failures)
         global_data = self._check_memory_errors(global_data, total_allocatable_memory, quantity_,
                                                 aggregate_memory_failures)
-        self._calculate_potential_workers(nodes_data)
+
         global_data = self._check_kubelet_errors(global_data, aggregate_kubelet_failures)
 
         global_data.append(nodes_data)
@@ -864,6 +848,9 @@ class ViyaPreInstallCheck():
                 node_data['osImage'] = node['status']['nodeInfo']['osImage']
                 node_data['status'] = int(0)
                 node_data['firstFailure'] = 'PASS'
+                node_data['taintNoSchedule'] = False
+                node_data['taintMaster'] = False
+                node_data['worker'] = True
 
                 addresses = (node['status']['addresses'])
                 address_type = []
@@ -876,8 +863,12 @@ class ViyaPreInstallCheck():
                     for tnode in taint_types:
                         taint_keys = tnode.keys()
                         for key in taint_keys:
-                            if tnode[key] in 'NoSchedule':
-                                node_data['taint'] = tnode[key]
+                            if tnode[key] == 'NoSchedule':
+                                node_data.update({'taintNoSchedule': True})
+
+                            if tnode[key] == 'node-role.kubernetes.io/master':
+                                node_data.update({'taintMaster': True})
+
                 except KeyError:
                     node_data['taint'] = viya_constants.KEY_NOT_FOUND
                 addr_len = len(address_type)
@@ -897,9 +888,11 @@ class ViyaPreInstallCheck():
                     var2 = str(conditions_status[i][0])
                     node_data[var1] = var2
 
-                self.logger.debug("node data {}".format(pprint.pformat(node_data)))
-                if node_data['taint'] not in "NoSchedule":
+                if node_data['taintNoSchedule'] and node_data["taintMaster"]:
+                    node_data.update({'worker': False})
+                else:
                     nodes_data.append(node_data)
+                    self._workers += 1
 
         self.logger.debug("nodes_data {}".format(pprint.pformat(nodes_data)))
         return nodes_data
