@@ -12,7 +12,7 @@
 from abc import ABC, abstractmethod
 from typing import AnyStr, Dict, List, Text, Union, Optional
 
-from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
 
 
 class KubectlInterface(ABC):

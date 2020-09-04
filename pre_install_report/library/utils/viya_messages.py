@@ -21,7 +21,7 @@ KUBECONF_ERROR = "ERROR: KUBECONFIG environment var must be set for the script "
 CHECK_NAMESPACE = ' ERROR: Check available permissions in namespace and if it is valid: '
 LIMIT_ERROR = 'ERROR: The value in the viya_set_limits.py file is not valid: {} = {}'
 KUBELET_VERSION_ERROR = 'ERROR: Check the VIYA_KUBELET_VERSION_MIN and VIYA_KUBELET_VERSION_MAX values ' \
-                        'specified in the <tool-download-dir>/viya-arkcd/pre_install_report/viya_set_limit.py file'
+                        'specified in the <tool-download-dir>/viya4-ark/pre_install_report/viya_set_limit.py file'
 OPTION_ERROR = "ERROR: option {} not recognized"
 OPTION_VALUES_ERROR = "ERROR: Provide valid values for all required options. Check options -i, -p and -H."
 INGRESS_CONTROLLER_ERROR = "ERROR: Ingress controller specified must be nginx or istio. Check value on option -i "

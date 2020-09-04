@@ -13,7 +13,7 @@ import os
 
 from typing import AnyStr, List, Text
 
-from viya_arkcd_library.structured_logging.parser import SASStructuredLoggingParser
+from viya_ark_library.structured_logging.parser import SASStructuredLoggingParser
 
 
 def test_parse_log() -> None:

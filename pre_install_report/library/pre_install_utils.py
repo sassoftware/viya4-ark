@@ -15,8 +15,8 @@ from subprocess import CalledProcessError
 import os
 
 from pre_install_report.library.utils import viya_constants
-from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface, KubernetesApiResources
-from viya_arkcd_library.logging import ViyaARKCDLogger
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface, KubernetesApiResources
+from viya_ark_library.logging import ViyaARKLogger
 
 
 class PreCheckUtils(object):
@@ -31,7 +31,7 @@ class PreCheckUtils(object):
         """
         self.data = None
         self._kubectl: KubectlInterface = params.get(viya_constants.KUBECTL)
-        self.sas_logger: ViyaARKCDLogger = params.get("logger")
+        self.sas_logger: ViyaARKLogger = params.get("logger")
         self.logger = self.sas_logger.get_logger()
         self.logger.info("PreCheckUtils ")
 

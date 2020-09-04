@@ -11,7 +11,7 @@
 ####################################################################
 import pytest
 
-from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError, NamespaceNotFoundError
+from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError, NamespaceNotFoundError
 
 
 def test_kubectl_request_forbidden_error() -> None:

@@ -21,9 +21,9 @@ from deployment_report.model.static.viya_deployment_report_keys import ViyaDeplo
 from deployment_report.model.static.viya_deployment_report_ingress_controller import \
     ViyaDeploymentReportIngressController as ExpectedIngressController
 
-from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
-from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesResource
-from viya_arkcd_library.k8s.test_impl.sas_kubectl_test import KubectlTest
+from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
+from viya_ark_library.k8s.test_impl.sas_kubectl_test import KubectlTest
 
 
 ####################################################################
@@ -147,7 +147,7 @@ def test_get_api_versions(report: ViyaDeploymentReport) -> None:
     """
     # get the static api-versions list
     test_data_file: Text = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                        f"..{os.sep}..{os.sep}..{os.sep}viya_arkcd_library{os.sep}k8s{os.sep}test_impl"
+                                        f"..{os.sep}..{os.sep}..{os.sep}viya_ark_library{os.sep}k8s{os.sep}test_impl"
                                         f"{os.sep}response_data{os.sep}api_versions.json")
     with open(test_data_file, "r") as test_data_file_pointer:
         expected_api_versions: List = json.load(test_data_file_pointer)

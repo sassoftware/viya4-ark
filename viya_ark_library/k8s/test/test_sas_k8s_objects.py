@@ -14,7 +14,7 @@ import json
 import os
 import pytest
 from typing import Dict, List, Text, Union
-from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
 
 # test data file names
 _API_RESOURCES_TEST_DATA_ = "api_resources.json"

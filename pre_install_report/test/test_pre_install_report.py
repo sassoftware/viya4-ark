@@ -21,8 +21,8 @@ from pint import UnitRegistry
 from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.pre_install_check import ViyaPreInstallCheck
 from pre_install_report.library.pre_install_check_permissions import PreCheckPermissions
-from viya_arkcd_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
-from viya_arkcd_library.logging import ViyaARKCDLogger
+from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
+from viya_ark_library.logging import ViyaARKLogger
 
 _SUCCESS_RC_ = 0
 _BAD_OPT_RC_ = 1
@@ -42,7 +42,7 @@ viya_min_aggregate_worker_memory = '56G'
 # setup sys.path for import of viya_constants
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
 # turn off logging
-sas_logger = ViyaARKCDLogger("test_report.log", logging_level=logging.NOTSET, logger_name="debug_logger")
+sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.NOTSET, logger_name="debug_logger")
 
 
 def test_get_storage_classes_json():

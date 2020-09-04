@@ -18,10 +18,10 @@ from multiprocessing.pool import ApplyResult
 from subprocess import CalledProcessError
 from typing import Any, Dict, List, Optional, Text, Tuple
 
-from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
-from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
-from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesResource
-from viya_arkcd_library.structured_logging.parser import SASStructuredLoggingParser
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
+from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
+from viya_ark_library.structured_logging.parser import SASStructuredLoggingParser
 
 
 ####################################################################

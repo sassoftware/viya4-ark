@@ -17,9 +17,9 @@ from typing import List, Optional, Text, Tuple
 
 from deployment_report.model.viya_deployment_report import ViyaDeploymentReport
 
-from viya_arkcd_library.command import Command
-from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError, NamespaceNotFoundError
-from viya_arkcd_library.k8s.sas_kubectl import Kubectl
+from viya_ark_library.command import Command
+from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError, NamespaceNotFoundError
+from viya_ark_library.k8s.sas_kubectl import Kubectl
 
 # command line options
 _DATA_FILE_OPT_SHORT_ = "d"

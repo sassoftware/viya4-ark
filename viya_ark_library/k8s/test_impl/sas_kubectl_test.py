@@ -16,8 +16,8 @@ from enum import Enum
 from subprocess import CalledProcessError
 from typing import AnyStr, Dict, List, Text, Union, Optional
 
-from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
-from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 
 _API_RESOURCES_BOTH_INGRESS_DATA_ = "api_resources_both_ingress.json"
 _API_RESOURCES_ISTIO_ONLY_DATA_ = "api_resources_istio_only.json"

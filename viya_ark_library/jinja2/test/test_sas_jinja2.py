@@ -11,7 +11,7 @@
 ####################################################################
 import os
 
-from viya_arkcd_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
+from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
 
 
 def test_as_html():

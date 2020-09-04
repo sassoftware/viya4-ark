@@ -11,7 +11,7 @@
 ####################################################################
 from typing import List, Text
 
-from viya_arkcd_library.structured_logging.spec import SASStructuredLoggingSpec
+from viya_ark_library.structured_logging.spec import SASStructuredLoggingSpec
 
 
 def test_static_var_attributes() -> None:

@@ -15,7 +15,7 @@ import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.pre_install_utils import PreCheckUtils
-from viya_arkcd_library.logging import ViyaARKCDLogger
+from viya_ark_library.logging import ViyaARKLogger
 
 
 class PreCheckPermissions(object):
@@ -36,7 +36,7 @@ class PreCheckPermissions(object):
         self.ingress_host = params.get(viya_constants.INGRESS_HOST)
         self.ingress_port = params.get(viya_constants.INGRESS_PORT)
         self.utils: PreCheckUtils = params.get(viya_constants.PERM_CLASS)
-        self.sas_logger: ViyaARKCDLogger = params.get("logger")
+        self.sas_logger: ViyaARKLogger = params.get("logger")
         self.logger = self.sas_logger.get_logger()
 
         self.namespace_admin_permission_data = {}

@@ -1,6 +1,6 @@
-usage: viya-arkcd.py download-pod-logs [-h] [-n NAMESPACE] [-o OUTPUT_DIR]
-                                       [-p PROCESSES] [-t TAIL] [-w WAIT]
-                                       [selected_components [selected_components ...]]
+usage: viya-ark.py download-pod-logs [-h] [-n NAMESPACE] [-o OUTPUT_DIR]
+                                     [-p PROCESSES] [-t TAIL] [-w WAIT]
+                                     [selected_components [selected_components ...]]
 
 Download log files for all or a select list of pods.
 

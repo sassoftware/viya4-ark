@@ -13,7 +13,7 @@ import json
 
 from typing import AnyStr, Dict, List, Optional, Text
 
-from viya_arkcd_library.structured_logging.spec import SASStructuredLoggingSpec
+from viya_ark_library.structured_logging.spec import SASStructuredLoggingSpec
 
 
 class SASStructuredLoggingParser(object):

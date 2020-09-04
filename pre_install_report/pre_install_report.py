@@ -22,10 +22,10 @@ import getopt
 from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.utils import viya_messages
 from pre_install_report.library.pre_install_check import ViyaPreInstallCheck
-from viya_arkcd_library.command import Command
-from viya_arkcd_library.k8s.sas_k8s_errors import NamespaceNotFoundError
-from viya_arkcd_library.k8s.sas_kubectl import Kubectl
-from viya_arkcd_library.logging import ViyaARKCDLogger
+from viya_ark_library.command import Command
+from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
+from viya_ark_library.k8s.sas_kubectl import Kubectl
+from viya_ark_library.logging import ViyaARKLogger
 
 PRP = pprint.PrettyPrinter(indent=4)
 
@@ -119,7 +119,7 @@ def usage(exit_code: int):
     :param exit_code: The exit code to return when exiting the program.
     """
     print()
-    print("Usage: viya-arkcd.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
+    print("Usage: viya-ark.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
     print()
     print("Options:")
     print("    -i  --ingress=nginx or istio  (Required)Kubernetes ingress controller used for Viya deployment")
@@ -207,7 +207,7 @@ def main(argv):
         print(viya_messages.OUPUT_PATH_ERROR, format(e))
         usage(viya_messages.BAD_OPT_RC_)
 
-    sas_logger = ViyaARKCDLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
+    sas_logger = ViyaARKLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
     _read_environment_var('KUBECONFIG')
 
     try:

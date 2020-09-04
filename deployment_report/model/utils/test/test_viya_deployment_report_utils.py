@@ -20,8 +20,8 @@ from deployment_report.model.static.viya_deployment_report_keys import ViyaDeplo
 from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
 from deployment_report.model.utils.viya_deployment_report_utils import ViyaDeploymentReportUtils
 
-from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesResource
-from viya_arkcd_library.k8s.test_impl.sas_kubectl_test import KubectlTest
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesResource
+from viya_ark_library.k8s.test_impl.sas_kubectl_test import KubectlTest
 
 # alias to KubectlTest.Values to shorten name
 TestVals: KubectlTest.Values = KubectlTest.Values()
