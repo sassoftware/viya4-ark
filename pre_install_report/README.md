@@ -9,7 +9,7 @@ SAS recommends running the tool and resolving any reported issues before beginni
 - The tool requires Python 3.6 or higher.  
 
 ### Required Python Packages
-SAS Viya ARKcd tools require third-party packages be installed before use. You can install all the required packages by using the provided requirements.txt file in the following command:
+SAS Viya ARK tools require third-party packages be installed before use. You can install all the required packages by using the provided requirements.txt file in the following command:
 
 ```commandline
 $ python3 -m pip install -r requirements.txt
@@ -21,12 +21,12 @@ Download the latest version of this tool and update required packages with every
 
 **Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights in the namespace where you intend to deploy your SAS Viya software.
 
-After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya-arkcd`. 
+After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya4-ark`. 
 
 The following command provides usage details:
 
 ```
-python viya-arkcd.py pre-install-report -h
+python viya-ark.py pre-install-report -h
 ```
 
 ## Report Output
@@ -35,4 +35,4 @@ The tool generates the pre-install check report,`viya_pre_install_report_<timest
 
 ## Modify CPU, Memory, and Version Settings
 
-You can modify the <tool-download-dir>/viya-arkcd/pre_install_report/viya_check_limit.properties file to alter the minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
+You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_check_limit.properties file to alter the minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.

@@ -14,9 +14,9 @@ import json
 from subprocess import CalledProcessError, check_output, DEVNULL
 from typing import AnyStr, Dict, List, Text, Union, Optional
 
-from viya_arkcd_library.k8s.sas_k8s_errors import NamespaceNotFoundError
-from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
-from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
+from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 
 # header values used in retrieving values returned by kubectl #
 _HEADER_NAME_ = "NAME"

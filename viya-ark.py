@@ -1,5 +1,5 @@
 ####################################################################
-# ### viya-arkcd.py                                              ###
+# ### viya-ark.py                                                ###
 ####################################################################
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
@@ -16,7 +16,7 @@ import os
 import pkgutil
 import sys
 
-from viya_arkcd_library.command import Command
+from viya_ark_library.command import Command
 
 # command line options #
 _HELP_SHORT_OPT_ = "h"
@@ -32,7 +32,7 @@ _BAD_OPT_RC_ = 1
 ################
 def main(argv: list):
     """
-    The main executable method for the viya-arkcd launcher script.
+    The main executable method for the viya-ark launcher script.
 
     :param argv: The list of arguments passed at invocation.
     """
@@ -93,7 +93,7 @@ def main(argv: list):
 #################
 def usage(exit_code: int):
     """
-    Prints the usage statement for the viya-arkcd launcher script and exits with the provided exit_code.
+    Prints the usage statement for the viya-ark launcher script and exits with the provided exit_code.
 
     :param exit_code: The code to return upon exit.
     """
@@ -126,7 +126,7 @@ def usage(exit_code: int):
     for command in commands:
         print("    {:<30} {}".format(command[0], command[1]))
     help_cmd_display = f"-{_HELP_SHORT_OPT_}, --{_HELP_LONG_OPT_}"
-    print("    {:<30} {}".format(help_cmd_display, "Display usage for viya-arkcd."))
+    print("    {:<30} {}".format(help_cmd_display, "Display usage for viya-ark."))
     print()
 
     sys.exit(exit_code)

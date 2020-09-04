@@ -15,7 +15,7 @@ from typing import List, Text
 
 class Command(ABC):
     """
-    Abstract Base Class for implementing a command-driven task in the viya-arkcd project.
+    Abstract Base Class for implementing a command-driven task in the viya-ark project.
     """
 
     @staticmethod

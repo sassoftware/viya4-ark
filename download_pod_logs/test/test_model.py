@@ -20,9 +20,9 @@ from typing import Dict, Text
 from download_pod_logs.model import PodLogDownloader, NoPodsError, NoMatchingPodsError, _ContainerStatus, \
     _LogDownloadProcess
 
-from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
-from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
-from viya_arkcd_library.k8s.test_impl.sas_kubectl_test import KubectlTest
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
+from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
+from viya_ark_library.k8s.test_impl.sas_kubectl_test import KubectlTest
 
 
 ####################################################################

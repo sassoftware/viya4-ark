@@ -1,24 +1,24 @@
-# SAS Viya Administration Resource Kit for Container Deployments 
+# SAS Viya 4 Administration Resource Kit
 
-The SAS Viya Administration Resource Kit for Container Deployments (SAS Viya ARKcd) provides tools and utilities to help SAS customers prepare for a SAS Viya deployment.
+The SAS Viya Administration Resource Kit (SAS Viya ARK) provides tools and utilities to help SAS customers prepare for and gather information about a SAS Viya deployment.
 
 ## Introduction
-SAS Viya ARKcd is a collection of resources that automate and streamline tasks that prepare an environment for a SAS Viya deployment. It also gathers information and generates reports about a deployment.
+SAS Viya ARK is a collection of resources that automate and streamline tasks that prepare an environment for a SAS Viya deployment. It also gathers information and generates reports about a deployment.
 
-The master branch supports the latest release of SAS Viya. Visit the releases page for specific information about SAS Viya ARKcd and related SAS Viya product releases.
+The master branch supports the latest release of SAS Viya. Visit the releases page for specific information about SAS Viya ARK and related SAS Viya product releases.
 
-SAS Viya ARKcd provides the following types of assistance:
+SAS Viya ARK provides the following types of assistance:
 
   * Pre-deployment assessment and optional configuration
   * Post-deployment automation and utilities
 
-## Prerequisites for SAS Viya ARKcd
-Obtain the latest version of SAS Viya ARKcd with every new software order.
+## Prerequisites for SAS Viya ARK
+Obtain the latest version of SAS Viya ARK with every new software order.
 
 Each tool that is included in the resource kit provides a readme that describes its specific prerequisites and functionality.
 
 ### Required Python Packages
-SAS Viya ARKcd tools require third-party packages be installed before use. All required packages can be installed using the provided `requirements.txt`:
+SAS Viya ARK tools require third-party packages be installed before use. All required packages can be installed using the provided `requirements.txt`:
 
 ```commandline
 $ python3 -m pip install -r requirements.txt
@@ -29,6 +29,7 @@ Tool support for the latest release of SAS Viya:
 
 * [Pre-installation of SAS Viya System Requirements](pre_install_report)
 * [SAS Viya Deployment Report](deployment_report)
+* [SAS Viya Log Download Tool](download_pod_logs)
 
 ## Contributing
 

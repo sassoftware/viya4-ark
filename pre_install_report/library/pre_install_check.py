@@ -31,9 +31,9 @@ from pre_install_report.library.utils import viya_messages
 from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.pre_install_check_permissions import PreCheckPermissions
 from pre_install_report.library.pre_install_utils import PreCheckUtils
-from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
-from viya_arkcd_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
-from viya_arkcd_library.logging import ViyaARKCDLogger
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
+from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
+from viya_ark_library.logging import ViyaARKLogger
 
 
 PRP = pprint.PrettyPrinter(indent=4)
@@ -55,7 +55,7 @@ class ViyaPreInstallCheck():
 
     The gathered data can be written to disk as an HTML report and a JSON file containing the gathered data.
     """
-    def __init__(self, sas_logger: ViyaARKCDLogger, viya_kubelet_version_min, viya_min_worker_allocatable_CPU,
+    def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min, viya_min_worker_allocatable_CPU,
                  viya_min_aggregate_worker_CPU_cores, viya_min_allocatable_worker_memory,
                  viya_min_aggregate_worker_memory):
         """

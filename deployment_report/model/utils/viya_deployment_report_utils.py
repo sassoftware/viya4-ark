@@ -15,8 +15,8 @@ from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
 from deployment_report.model.static.viya_deployment_report_ingress_controller \
     import ViyaDeploymentReportIngressController
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as Keys
-from viya_arkcd_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesResource
-from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesResource
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 
 
 class ViyaDeploymentReportUtils(object):

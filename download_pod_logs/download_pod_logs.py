@@ -15,10 +15,10 @@ import sys
 from argparse import ArgumentParser
 from typing import List, Text
 
-from viya_arkcd_library.command import Command
-from viya_arkcd_library.lrp_indicator import LRPIndicator
-from viya_arkcd_library.k8s.sas_kubectl import Kubectl
-from viya_arkcd_library.k8s.sas_k8s_errors import NamespaceNotFoundError
+from viya_ark_library.command import Command
+from viya_ark_library.lrp_indicator import LRPIndicator
+from viya_ark_library.k8s.sas_kubectl import Kubectl
+from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
 
 from download_pod_logs.model import NoMatchingPodsError, NoPodsError, PodLogDownloader
 
@@ -71,7 +71,7 @@ def main(argv: List):
     :param argv: The parameters passed to the script at execution.
     """
     # configure ArgumentParser
-    arg_parser = ArgumentParser(prog=f"viya-arkcd.py {DownloadPodLogsCommand.command_name()}",
+    arg_parser = ArgumentParser(prog=f"viya-ark.py {DownloadPodLogsCommand.command_name()}",
                                 description=DownloadPodLogsCommand.command_desc())
 
     # add optional arguments

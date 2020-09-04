@@ -17,12 +17,12 @@ import datetime
 _LOGGER_TIMESTAMP_TMPL_ = "%Y-%m-%dT%H_%M_%S"
 
 
-class ViyaARKCDLogger():
+class ViyaARKLogger():
 
     """
-    The ViyaARKCDLogger class represents a custom Logger, which can be instantiated my multiple tools.\
+    The ViyaARKLogger class represents a custom Logger, which can be instantiated my multiple tools.\
     Example Usage:
-        sas_logger = ViyaARKCDLogger(report_log_path)
+        sas_logger = ViyaARKLogger(report_log_path)
         my_logger  = sas_logger.get_logger()
         my_logger.info("This is an infomational message")
     """

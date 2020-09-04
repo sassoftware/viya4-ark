@@ -11,7 +11,7 @@
 ####################################################################
 import time
 
-from viya_arkcd_library.lrp_indicator import LRPIndicator
+from viya_ark_library.lrp_indicator import LRPIndicator
 
 
 def test_init_default() -> None:
