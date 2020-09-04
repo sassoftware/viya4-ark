@@ -5,7 +5,7 @@ The SAS Viya Administration Resource Kit (SAS Viya ARK) provides tools and utili
 ## Introduction
 SAS Viya ARK is a collection of resources that automate and streamline tasks that prepare an environment for a SAS Viya deployment. It also gathers information and generates reports about a deployment.
 
-The master branch supports the latest release of SAS Viya. Visit the releases page for specific information about SAS Viya ARK and related SAS Viya product releases.
+The main branch supports the latest release of SAS Viya. Visit the releases page for specific information about SAS Viya ARK and related SAS Viya product releases.
 
 SAS Viya ARK provides the following types of assistance:
 
