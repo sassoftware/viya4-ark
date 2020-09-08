@@ -1,0 +1,224 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "flannel.alpha.coreos.com/backend-data": "{\"VtepMAC\":\"aa:aa:aa:aa:aa:aa\"}",
+                    "flannel.alpha.coreos.com/backend-type": "vxlan",
+                    "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                    "flannel.alpha.coreos.com/public-ip": "0.0.0.0",
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-03-11T13:16:29Z",
+                "finalizers": [
+                    "wrangler.cattle.io/node"
+                ],
+                "labels": {
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "k3s",
+                    "beta.kubernetes.io/os": "linux",
+                    "k3s.io/hostname": "testx03048",
+                    "k3s.io/internal-ip": "0.0.0.0",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "testx03048",
+                    "kubernetes.io/os": "linux",
+                    "node-role.kubernetes.io/master": "true",
+                    "node.kubernetes.io/instance-type": "k3s"
+                },
+                "name": "testx03048",
+                "resourceVersion": "2997",
+                "selfLink": "/api/v1/nodes/testx03048",
+                "uid": "test-test-2741-test-testtesttest"
+            },
+            "spec": {
+                "podCIDR": "0.0.0.0/24",
+                "podCIDRs": [
+                    "0.0.0.0/24"
+                ],
+                "providerID": "k3s://testx03048"
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "0.0.0.0",
+                        "type": "InternalIP"
+                    },
+                    {
+                        "address": "testx03048",
+                        "type": "Hostname"
+                    }
+                ],
+                "allocatable": {
+                    "cpu": "8",
+                    "ephemeral-storage": "202954014766",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65808080Ki",
+                    "pods": "500"
+                },
+                "capacity": {
+                    "cpu": "8",
+                    "ephemeral-storage": "20862871f3f",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65808080Ki",
+                    "pods": "500"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:16:44Z",
+                        "lastTransitionTime": "2020-03-11T13:16:44Z",
+                        "message": "Flannel is running on this node",
+                        "reason": "FlannelIsUp",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:47:03Z",
+                        "lastTransitionTime": "2020-03-11T13:16:29Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:47:03Z",
+                        "lastTransitionTime": "2020-03-11T13:16:29Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:47:03Z",
+                        "lastTransitionTime": "2020-03-11T13:16:29Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:47:03Z",
+                        "lastTransitionTime": "2020-03-11T13:16:39Z",
+                        "message": "kubelet is posting ready status",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10250
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "codercom/code-server@sha256:55774d69929ceed719db03d716ce1f8425c16716669ebc3c5b41d7ff79434f27",
+                            "codercom/code-server:latest"
+                        ],
+                        "sizeBytes": 441893822
+                    },
+                    {
+                        "names": [
+                            "quay.io/kubernetes-ingress-controller/nginx-ingress-controller@sha256:b312c91d0de688a21071078982b5e3a48b13b46eda4df743317d3059fc3ca0d9",
+                            "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0"
+                        ],
+                        "sizeBytes": 322915865
+                    },
+                    {
+                        "names": [
+                            "osixia/phpldapadmin@sha256:d712b82be1336f91e082b0348715133fda333992355b533419355a65c32aa9ad",
+                            "osixia/phpldapadmin:0.9.0"
+                        ],
+                        "sizeBytes": 302255384
+                    },
+                    {
+                        "names": [
+                            "osixia/openldap@sha256:9cf1631238e606cf8b58e4654b26e6eba7182eadafefffa662cd9784ea811efe",
+                            "osixia/openldap:stable"
+                        ],
+                        "sizeBytes": 271387335
+                    },
+                    {
+                        "names": [
+                            "traefik@sha256:5ec34caf19d714f8f0ed76f9bc3dad6ba8cf6d13a1571c4294b59b77709dee43",
+                            "traefik:1.7.20"
+                        ],
+                        "sizeBytes": 85706953
+                    },
+                    {
+                        "names": [
+                            "quay.io/external_storage/nfs-client-provisioner@sha256:cdbccbf53d100b36eae744c1cb054e3d0d22a8e64bb038b7a3808dd29c174661",
+                            "quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.71"
+                        ],
+                        "sizeBytes": 45478559
+                    },
+                    {
+                        "names": [
+                            "coredns/coredns@sha256:cfa7236dab4e3860881fdf715880ff8361e42f6cba2e3771ae48e2d46452f7ba",
+                            "coredns/coredns:1.6.3"
+                        ],
+                        "sizeBytes": 44255363
+                    },
+                    {
+                        "names": [
+                            "rancher/metrics-server@sha256:b85682b103169d7db52a32a48b46d8942accb7bde3709c0a4823a23d035f9f1e",
+                            "rancher/metrics-server:v0.3.6"
+                        ],
+                        "sizeBytes": 39944451
+                    },
+                    {
+                        "names": [
+                            "rancher/local-path-provisioner@sha256:0d60b97b101e342606035ab955c623604493e89564833f1cfa207713329bdf81",
+                            "rancher/local-path-provisioner:v0.0.11"
+                        ],
+                        "sizeBytes": 36244850
+                    },
+                    {
+                        "names": [
+                            "alpine@sha256:ab00606a42621fb68f2ed6ad3c88be53497f981a7b70a79db3d7172b7333467d",
+                            "alpine:latest"
+                        ],
+                        "sizeBytes": 5591300
+                    },
+                    {
+                        "names": [
+                            "k8s.gcr.io/defaultbackend-amd64@sha256:4dc5e07c8ca4e23bddb3153737d7b8c556e5fb2f29fa558b7cd6e6df99c512c7",
+                            "k8s.gcr.io/defaultbackend-amd64:1.5"
+                        ],
+                        "sizeBytes": 5132544
+                    },
+                    {
+                        "names": [
+                            "rancher/pause@sha256:d22591b61e9c2b52aecbf07106d5db313c4f178e404d660b32517b18fbcf0144",
+                            "rancher/pause:3.1"
+                        ],
+                        "sizeBytes": 742472
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "52324406-f6f2-42db-b649-bbe29db3e8d2",
+                    "containerRuntimeVersion": "docker://19.3.7",
+                    "kernelVersion": "3.10.0-1062.12.1.el7.x86_64",
+                    "kubeProxyVersion": "v1.17.0+k3s.1",
+                    "kubeletVersion": "v1.17.0+k3s.1",
+                    "machineID": "testtestb55f49d68a3e34b9c25e3b14",
+                    "operatingSystem": "linux",
+                    "osImage": "CentOS Linux 7 (Core)",
+                    "systemUUID": "test-test-2741-test-testtesttest"
+                }
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}

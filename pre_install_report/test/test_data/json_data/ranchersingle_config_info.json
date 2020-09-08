@@ -1,0 +1,33 @@
+{
+    "kind": "Config",
+    "apiVersion": "v1",
+    "preferences": {},
+    "clusters": [
+        {
+            "name": "default",
+            "cluster": {
+                "server": "https://127.0.0.1:6443",
+                "certificate-authority-data": "DATA+OMITTED"
+            }
+        }
+    ],
+    "users": [
+        {
+            "name": "default",
+            "user": {
+                "username": "admin",
+                "password": "124ff90654bbc510a38ac61020afd0fa"
+            }
+        }
+    ],
+    "contexts": [
+        {
+            "name": "default",
+            "context": {
+                "cluster": "default",
+                "user": "default"
+            }
+        }
+    ],
+    "current-context": "default"
+}

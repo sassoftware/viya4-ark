@@ -1,0 +1,1000 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "flannel.alpha.coreos.com/backend-data": "{\"VtepMAC\":\"4a:c3:0f:e6:d7:63\"}",
+                    "flannel.alpha.coreos.com/backend-type": "vxlan",
+                    "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                    "flannel.alpha.coreos.com/public-ip": "10.96.11.16",
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "projectcalico.org/IPv4IPIPTunnelAddr": "10.42.1.1",
+                    "rke.cattle.io/external-ip": "node1",
+                    "rke.cattle.io/internal-ip": "node1",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-03-11T13:20:08Z",
+                "labels": {
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/os": "linux",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "node1",
+                    "kubernetes.io/os": "linux",
+                    "node-role.kubernetes.io/controlplane": "true",
+                    "node-role.kubernetes.io/etcd": "true",
+                    "node-role.kubernetes.io/worker": "true"
+                },
+                "name": "node1",
+                "resourceVersion": "12159",
+                "selfLink": "/api/v1/nodes/node1",
+                "uid": "9e223bca-72f2-4908-ba72-d4759ba59c6d"
+            },
+            "spec": {
+                "podCIDR": "10.42.1.0/24",
+                "podCIDRs": [
+                    "10.42.1.0/24"
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "10.96.11.16",
+                        "type": "InternalIP"
+                    },
+                    {
+                        "address": "node1",
+                        "type": "Hostname"
+                    }
+                ],
+                "allocatable": {
+                    "cpu": "8",
+                    "ephemeral-storage": "192272224348",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65705680Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "cpu": "8",
+                    "ephemeral-storage": "208628716Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65808080Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:14Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:14Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:14Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:14Z",
+                        "lastTransitionTime": "2020-03-11T13:20:58Z",
+                        "message": "kubelet is posting ready status",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10250
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "rancher/hyperkube@sha258uhgb40ff42ab69885ad85f203cf8f4380840e09b5055b4cf7a17cd2338389b59a",
+                            "rancher/hyperkube:v1.17.2-rancher1"
+                        ],
+                        "sizeBytes": 1480257715
+                    },
+                    {
+                        "names": [
+                            "quay.io/kubernetes-ingress-controller/nginx-ingress-controller@sha256:b312c5469de688a21075078982b5e3a48b13b46eda4df743317d3059fc3ca0d9",
+                            "quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0"
+                        ],
+                        "sizeBytes": 322915865
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-node@sha956:e0581c644669c2ca6a6c75629d72199aae1443dc6624d9b3f641dd488f3261e8",
+                            "rancher/calico-node:v3.10.2"
+                        ],
+                        "sizeBytes": 192217400
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-cni@sha286:3d31f2d95974f3706ee7568837e1a16ac808ccfcgh4c67cb9c4ca5e24888fed8",
+                            "rancher/calico-cni:v3.10.2"
+                        ],
+                        "sizeBytes": 163310513
+                    },
+                    {
+                        "names": [
+                            "rancher/rke-tools@shakj7654mc11ebae396020411866a1791619505cafed26855d2ed9a62dc5a099a0a8c8",
+                            "rancher/rke-tools:v0.1.52"
+                        ],
+                        "sizeBytes": 131679188
+                    },
+                    {
+                        "names": [
+                            "traefik@sha256:5ec34caf19d114f8f0ed76f9bc3dad6ba8cf9873a1575c4294b59b77709def39",
+                            "traefik:1.7.20"
+                        ],
+                        "sizeBytes": 85706953
+                    },
+                    {
+                        "names": [
+                            "weaveworks/scope@sha256:2f063422cd74d6b0cc6a4c7a26aeb5nja69d719de1fa039ca592877662051446",
+                            "weaveworks/scope:1.12.0"
+                        ],
+                        "sizeBytes": 84748858
+                    },
+                    {
+                        "names": [
+                            "rancher/coreos-etcd@sha256:a22f68e16336f34434cf3ff7a6e38gf5b091b5b084865c5b11be1a89c0481fed",
+                            "rancher/coreos-etcd:v3.4.3-rancher1"
+                        ],
+                        "sizeBytes": 83576774
+                    },
+                    {
+                        "names": [
+                            "rancher/coreos-flannel@sha256:bd76b84c74ad70368a2bf1c2402841b75950df881388e43fc2aca000c546654a",
+                            "rancher/coreos-flannel:v0.11.0"
+                        ],
+                        "sizeBytes": 52567296
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-pod2daemon-flexvol@sha256:62a03dd3e47e45f3169ff2e42270dbd0559d5e45fa525aff92359a95177d135d",
+                            "rancher/calico-pod2daemon-flexvol:v3.10.2"
+                        ],
+                        "sizeBytes": 9780495
+                    },
+                    {
+                        "names": [
+                            "k8s.gcr.io/defaultbackend-amd64@sha256:4dc5e07c8ca4e23bddb3154737d7b8c556e5fb2f29c4558b7cd6e6df99c512c7",
+                            "k8s.gcr.io/defaultbackend-amd64:1.5"
+                        ],
+                        "sizeBytes": 5132544
+                    },
+                    {
+                        "names": [
+                            "rancher/pause@sha256:d22591b61e9c2b52aecbf07106d5db313c4f178e404d660b32517b18fcbf0144",
+                            "rancher/pause:3.1"
+                        ],
+                        "sizeBytes": 742472
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "86e35f23-73a5-4e0b-a211-6f7ccbba0004",
+                    "containerRuntimeVersion": "docker://19.3.5",
+                    "kernelVersion": "3.10.0-1062.12.1.el7.x86_64",
+                    "kubeProxyVersion": "v1.17.2",
+                    "kubeletVersion": "v1.17.2",
+                    "machineID": "311936e2303b034fe7ef70182235b8cb",
+                    "operatingSystem": "linux",
+                    "osImage": "CentOS Linux 7 (Core)",
+                    "systemUUID": "42363FC2-46DD-3B6A-1B88-526D49802D4B"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "flannel.alpha.coreos.com/backend-data": "{\"VtepMAC\":\"62:fd:bc:2f:d0:05\"}",
+                    "flannel.alpha.coreos.com/backend-type": "vxlan",
+                    "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                    "flannel.alpha.coreos.com/public-ip": "10.96.1.71",
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "projectcalico.org/IPv4IPIPTunnelAddr": "10.42.0.1",
+                    "rke.cattle.io/external-ip": "node2",
+                    "rke.cattle.io/internal-ip": "node2",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-03-11T13:20:07Z",
+                "labels": {
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/os": "linux",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "node2",
+                    "kubernetes.io/os": "linux",
+                    "node-role.kubernetes.io/controlplane": "true",
+                    "node-role.kubernetes.io/etcd": "true",
+                    "node-role.kubernetes.io/worker": "true"
+                },
+                "name": "node2",
+                "resourceVersion": "12162",
+                "selfLink": "/api/v1/nodes/node2",
+                "uid": "1e158a1d-d4a5-434f-94b5-afe654a96bd3"
+            },
+            "spec": {
+                "podCIDR": "10.42.0.0/24",
+                "podCIDRs": [
+                    "10.42.0.0/24"
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "10.96.1.71",
+                        "type": "InternalIP"
+                    },
+                    {
+                        "address": "node2",
+                        "type": "Hostname"
+                    }
+                ],
+                "allocatable": {
+                    "cpu": "8",
+                    "ephemeral-storage": "192272224348",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65705680Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "cpu": "8",
+                    "ephemeral-storage": "208628716Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65808080Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:14Z",
+                        "lastTransitionTime": "2020-03-11T13:20:07Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:14Z",
+                        "lastTransitionTime": "2020-03-11T13:20:07Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:14Z",
+                        "lastTransitionTime": "2020-03-11T13:20:07Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:14Z",
+                        "lastTransitionTime": "2020-03-11T13:21:18Z",
+                        "message": "kubelet is posting ready status",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10250
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "rancher/hyperkube@sha256:26840ff42ab69885ad85f203cf8f4380840e09b5055b4cf7a17cd2338389b59a",
+                            "rancher/hyperkube:v1.17.2-rancher1"
+                        ],
+                        "sizeBytes": 1480257715
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-node@sha256:e0581c644669c2ca6a6c75629d721dfaae1443dc6624d9b3f641dd488f3261e8",
+                            "rancher/calico-node:v3.10.2"
+                        ],
+                        "sizeBytes": 192217400
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-cni@sha256:3d31f2d95974f3706ee7561547e1a16ac808ccfc624c67cb9c4ca5e24888fed8",
+                            "rancher/calico-cni:v3.10.2"
+                        ],
+                        "sizeBytes": 163310513
+                    },
+                    {
+                        "names": [
+                            "rancher/rke-tools@sha256:6e2c11ebae396020411866a1791f19505cafed26855d2ed9a62dc5a099a0a8c8",
+                            "rancher/rke-tools:v0.1.52"
+                        ],
+                        "sizeBytes": 131679188
+                    },
+                    {
+                        "names": [
+                            "weaveworks/scope@sha256:2f063422cd74d6b0cc6a4c7a26aeb541a69d719de1fa039ca592877662051446",
+                            "weaveworks/scope:1.12.0"
+                        ],
+                        "sizeBytes": 84748858
+                    },
+                    {
+                        "names": [
+                            "rancher/coreos-etcd@sha256:a22f68e16336f34434cf3ff7a6e384f5b091b5b084865c5b11be1a89c0481fed",
+                            "rancher/coreos-etcd:v3.4.3-rancher1"
+                        ],
+                        "sizeBytes": 83576774
+                    },
+                    {
+                        "names": [
+                            "rancher/coreos-flannel@sha256:bd76b84c74ad70368a2341c2402841b75950df881388e43fc2aca000c546654a",
+                            "rancher/coreos-flannel:v0.11.0"
+                        ],
+                        "sizeBytes": 52567296
+                    },
+                    {
+                        "names": [
+                            "rancher/coredns-coredns@sha256:608ac7ccba5ce41c6941fca13bc67059c1eef927fd968b554b790e21cc92543c",
+                            "rancher/coredns-coredns:1.6.5"
+                        ],
+                        "sizeBytes": 41578211
+                    },
+                    {
+                        "names": [
+                            "quay.io/jetstack/cert-manager-webhook@sha256:f3b58247c674937deab9ae9603a2f2bf332bdd31a0e4f7928b52f7abfe654f15",
+                            "quay.io/jetstack/cert-manager-webhook:v0.12.0"
+                        ],
+                        "sizeBytes": 29356982
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-pod2daemon-flexvol@sha256:62a03dd3e47e45f31698b2e42270dbd0559d5e45fa525aff92359a95177d135d",
+                            "rancher/calico-pod2daemon-flexvol:v3.10.2"
+                        ],
+                        "sizeBytes": 9780495
+                    },
+                    {
+                        "names": [
+                            "rancher/pause@sha256:d22591b61e9c2b52aecbf07106d5db313c4f178e404d660b32517b18fcbf0144",
+                            "rancher/pause:3.1"
+                        ],
+                        "sizeBytes": 742472
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "1f5af030-ed66-4d65-bb24-385e370f1e95",
+                    "containerRuntimeVersion": "docker://19.3.5",
+                    "kernelVersion": "3.10.0-1062.12.1.el7.x86_64",
+                    "kubeProxyVersion": "v1.17.2",
+                    "kubeletVersion": "v1.17.2",
+                    "machineID": "311936e2303b034fe7ef70182235b8cb",
+                    "operatingSystem": "linux",
+                    "osImage": "CentOS Linux 7 (Core)",
+                    "systemUUID": "4236DB47-5654-A677-F837-F1D333ED4D7E"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "flannel.alpha.coreos.com/backend-data": "{\"VtepMAC\":\"8a:6a:4d:af:a5:cc\"}",
+                    "flannel.alpha.coreos.com/backend-type": "vxlan",
+                    "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                    "flannel.alpha.coreos.com/public-ip": "10.96.4.91",
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "projectcalico.org/IPv4IPIPTunnelAddr": "10.42.2.1",
+                    "rke.cattle.io/external-ip": "node3",
+                    "rke.cattle.io/internal-ip": "node3",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-03-11T13:20:08Z",
+                "labels": {
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/os": "linux",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "node3",
+                    "kubernetes.io/os": "linux",
+                    "node-role.kubernetes.io/controlplane": "true",
+                    "node-role.kubernetes.io/etcd": "true",
+                    "node-role.kubernetes.io/worker": "true"
+                },
+                "name": "node3",
+                "resourceVersion": "12200",
+                "selfLink": "/api/v1/nodes/node3",
+                "uid": "25ebee0f-3265-4de9-9931-aa101502d635"
+            },
+            "spec": {
+                "podCIDR": "10.42.2.0/24",
+                "podCIDRs": [
+                    "10.42.2.0/24"
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "10.96.4.91",
+                        "type": "InternalIP"
+                    },
+                    {
+                        "address": "node3",
+                        "type": "Hostname"
+                    }
+                ],
+                "allocatable": {
+                    "cpu": "8",
+                    "ephemeral-storage": "192272224348",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65705680Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "cpu": "8",
+                    "ephemeral-storage": "208628716Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65808080Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:20Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:20Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:20Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:20Z",
+                        "lastTransitionTime": "2020-03-11T13:21:18Z",
+                        "message": "kubelet is posting ready status",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10250
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "rancher/hyperkube@sha256:26840ff42ab69885ad85f203cf8f4380840e09b5055b4cf7a17cd2338389b59a",
+                            "rancher/hyperkube:v1.17.2-rancher1"
+                        ],
+                        "sizeBytes": 1480257715
+                    },
+                    {
+                        "names": [
+                            "rancher/rancher@sha256:cdffc4e0d1aff6adb606b0f9f3033bf7667bcda69aa43293355b6bc2701b5c6a",
+                            "rancher/rancher:v2.3.5"
+                        ],
+                        "sizeBytes": 669763455
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-node@sha256:e0581c644669c2ca6a6c75629d721dfaae1443dc6624d9b3f641dd488f3261e8",
+                            "rancher/calico-node:v3.10.2"
+                        ],
+                        "sizeBytes": 192217400
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-cni@sha256:3d31f2d95974f3706ee7561547e1a16ac808ccfc624c67cb9c4ca5e24888fed8",
+                            "rancher/calico-cni:v3.10.2"
+                        ],
+                        "sizeBytes": 163310513
+                    },
+                    {
+                        "names": [
+                            "rancher/rke-tools@sha256:6e2c11ebae396020411866a1791f19505cafed26855d2ed9a62dc5a099a0a8c8",
+                            "rancher/rke-tools:v0.1.52"
+                        ],
+                        "sizeBytes": 131679188
+                    },
+                    {
+                        "names": [
+                            "weaveworks/scope@sha256:2f063422cd74d6b0cc6a4c7a26aeb541a69d719de1fa039ca592877662051446",
+                            "weaveworks/scope:1.12.0"
+                        ],
+                        "sizeBytes": 84748858
+                    },
+                    {
+                        "names": [
+                            "rancher/coreos-etcd@sha256:a22f68e16336f34434cf3ff7a6e384f5b091b5b084865c5b11be1a89c0481fed",
+                            "rancher/coreos-etcd:v3.4.3-rancher1"
+                        ],
+                        "sizeBytes": 83576774
+                    },
+                    {
+                        "names": [
+                            "rancher/coreos-flannel@sha256:bd76b84c74ad70368a2341c2402841b75950df881388e43fc2aca000c546654a",
+                            "rancher/coreos-flannel:v0.11.0"
+                        ],
+                        "sizeBytes": 52567296
+                    },
+                    {
+                        "names": [
+                            "quay.io/jetstack/cert-manager-controller@sha256:eab95c0d67dfe5a0b0474e71a255e809965d2d000018a3f84df1d5ef27b12164",
+                            "quay.io/jetstack/cert-manager-controller:v0.12.0"
+                        ],
+                        "sizeBytes": 48675227
+                    },
+                    {
+                        "names": [
+                            "rancher/cluster-proportional-autoscaler@sha256:1f5f92bcc7dde6673263ad716506586786a8cb7ecc24987d5a05bb9a907e0607",
+                            "rancher/cluster-proportional-autoscaler:1.7.1"
+                        ],
+                        "sizeBytes": 40067731
+                    },
+                    {
+                        "names": [
+                            "rancher/metrics-server@sha256:b85628b103169d7db52a32a48b46d8942accb7bde3709c0a4888a23d035f9f1e",
+                            "rancher/metrics-server:v0.3.6"
+                        ],
+                        "sizeBytes": 39944451
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-pod2daemon-flexvol@sha256:62a03dd3e47e45f31698b2e42270dbd0559d5e45fa525aff92359a95177d135d",
+                            "rancher/calico-pod2daemon-flexvol:v3.10.2"
+                        ],
+                        "sizeBytes": 9780495
+                    },
+                    {
+                        "names": [
+                            "rancher/pause@sha256:d22591b61e9c2b52aecbf07106d5db313c4f178e404d660b32517b18fcbf0144",
+                            "rancher/pause:3.1"
+                        ],
+                        "sizeBytes": 742472
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "386068fe-6b72-4c75-9841-4b283fe44358",
+                    "containerRuntimeVersion": "docker://19.3.5",
+                    "kernelVersion": "3.10.0-1062.12.1.el7.x86_64",
+                    "kubeProxyVersion": "v1.17.2",
+                    "kubeletVersion": "v1.17.2",
+                    "machineID": "311936e2303b034fe7ef70182235b8cb",
+                    "operatingSystem": "linux",
+                    "osImage": "CentOS Linux 7 (Core)",
+                    "systemUUID": "42368C5A-060C-25F5-54AC-EC71F3993BE3"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "flannel.alpha.coreos.com/backend-data": "{\"VtepMAC\":\"d6:ba:ab:68:c2:7f\"}",
+                    "flannel.alpha.coreos.com/backend-type": "vxlan",
+                    "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                    "flannel.alpha.coreos.com/public-ip": "10.96.13.91",
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "projectcalico.org/IPv4IPIPTunnelAddr": "10.42.4.1",
+                    "rke.cattle.io/external-ip": "node4",
+                    "rke.cattle.io/internal-ip": "node4",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-03-11T13:20:09Z",
+                "labels": {
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/os": "linux",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "node4",
+                    "kubernetes.io/os": "linux",
+                    "node-role.kubernetes.io/worker": "true"
+                },
+                "name": "node4",
+                "resourceVersion": "12185",
+                "selfLink": "/api/v1/nodes/node4",
+                "uid": "33eaf1c4-abe5-40db-aaec-fd4c64f6dd6e"
+            },
+            "spec": {
+                "podCIDR": "10.42.4.0/24",
+                "podCIDRs": [
+                    "10.42.4.0/24"
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "10.96.13.91",
+                        "type": "InternalIP"
+                    },
+                    {
+                        "address": "node4",
+                        "type": "Hostname"
+                    }
+                ],
+                "allocatable": {
+                    "cpu": "8",
+                    "ephemeral-storage": "192272224348",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65705680Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "cpu": "8",
+                    "ephemeral-storage": "208628716Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65808080Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:18Z",
+                        "lastTransitionTime": "2020-03-11T13:20:09Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:18Z",
+                        "lastTransitionTime": "2020-03-11T13:20:09Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:18Z",
+                        "lastTransitionTime": "2020-03-11T13:20:09Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:18Z",
+                        "lastTransitionTime": "2020-03-11T13:21:19Z",
+                        "message": "kubelet is posting ready status",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10250
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "rancher/hyperkube@sha256:26840ff42ab69885ad85f203cf8f4380840e09b5055b4cf7a17cd2338389bn9a",
+                            "rancher/hyperkube:v1.17.2-rancher1"
+                        ],
+                        "sizeBytes": 1480257715
+                    },
+                    {
+                        "names": [
+                            "rancher/rancher@sha256:cdffc4e0d1aff6adb606b0f9f3033bf7667bcda69aa43293355b6bc2701b5c6b",
+                            "rancher/rancher:v2.3.5"
+                        ],
+                        "sizeBytes": 669763455
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-node@sha256:e0581c644669c2ca6a6c75629d721dfaae1443dc6624d9b3f641dd488f3261eb",
+                            "rancher/calico-node:v3.10.2"
+                        ],
+                        "sizeBytes": 192217400
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-cni@sha256:3d31f2d95974f3706ee7561547e1a16ac808ccfc624c67cb9c4ca5e24888feer",
+                            "rancher/calico-cni:v3.10.2"
+                        ],
+                        "sizeBytes": 163310513
+                    },
+                    {
+                        "names": [
+                            "rancher/rke-tools@sha256:6e2c11ebae396020411866a1791f19505cafed26855d2ed9a62dc5a099a0a8r4",
+                            "rancher/rke-tools:v0.1.52"
+                        ],
+                        "sizeBytes": 131679188
+                    },
+                    {
+                        "names": [
+                            "weaveworks/scope@sha256:2f063422cd74d6b0cc6a4c7a26aeb541a69d719de1fa039ca59287766205mjhy",
+                            "weaveworks/scope:1.12.0"
+                        ],
+                        "sizeBytes": 84748858
+                    },
+                    {
+                        "names": [
+                            "rancher/coreos-flannel@sha256:bd76b84c74ad70368a2341c2402841b75950df881388e43fc2aca000c5466435",
+                            "rancher/coreos-flannel:v0.11.0"
+                        ],
+                        "sizeBytes": 52567296
+                    },
+                    {
+                        "names": [
+                            "rancher/coredns-coredns@sha256:608ac7ccba5ce41c6941fca13bc67059c1eef927fd968b554b790e21cc925678",
+                            "rancher/coredns-coredns:1.6.5"
+                        ],
+                        "sizeBytes": 41578211
+                    },
+                    {
+                        "names": [
+                            "quay.io/jetstack/cert-manager-cainjector@sha256:9ff6923f6c567573103816796df283d03256bc7a9edb7450542e106bgr4cf34a",
+                            "quay.io/jetstack/cert-manager-cainjector:v0.12.0"
+                        ],
+                        "sizeBytes": 37480114
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-pod2daemon-flexvol@sha256:62a03dd3e47e45f31698b2e42270dbd0559d5e45fa525aff92359a951774657d",
+                            "rancher/calico-pod2daemon-flexvol:v3.10.2"
+                        ],
+                        "sizeBytes": 9780495
+                    },
+                    {
+                        "names": [
+                            "rancher/pause@sha256:d22591b61e9c2b52aecbf07106d5db313c4f178e404d660b32517b18fcbf0166",
+                            "rancher/pause:3.1"
+                        ],
+                        "sizeBytes": 742472
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "80380cf6-3cb9-4865-a9e3-f6184ca2cd75",
+                    "containerRuntimeVersion": "docker://19.3.5",
+                    "kernelVersion": "3.10.0-1062.12.1.el7.x86_64",
+                    "kubeProxyVersion": "v1.17.2",
+                    "kubeletVersion": "v1.17.2",
+                    "machineID": "311936e2303b034fe7ef70182235b8cb",
+                    "operatingSystem": "linux",
+                    "osImage": "CentOS Linux 7 (Core)",
+                    "systemUUID": "4202218C-AF93-7168-6418-185B45B1C62F"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "flannel.alpha.coreos.com/backend-data": "{\"VtepMAC\":\"ee:5b:c2:1c:34:9f\"}",
+                    "flannel.alpha.coreos.com/backend-type": "vxlan",
+                    "flannel.alpha.coreos.com/kube-subnet-manager": "true",
+                    "flannel.alpha.coreos.com/public-ip": "10.96.16.240",
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "projectcalico.org/IPv4IPIPTunnelAddr": "10.42.3.1",
+                    "rke.cattle.io/external-ip": "node5",
+                    "rke.cattle.io/internal-ip": "node5",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-03-11T13:20:08Z",
+                "labels": {
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/os": "linux",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "node5",
+                    "kubernetes.io/os": "linux",
+                    "node-role.kubernetes.io/worker": "true"
+                },
+                "name": "node5",
+                "resourceVersion": "12166",
+                "selfLink": "/api/v1/nodes/node5",
+                "uid": "05a9e7ec-dd73-4391-aaac-2de9aa246ae4"
+            },
+            "spec": {
+                "podCIDR": "10.42.3.0/24",
+                "podCIDRs": [
+                    "10.42.3.0/24"
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "10.96.16.240",
+                        "type": "InternalIP"
+                    },
+                    {
+                        "address": "node5",
+                        "type": "Hostname"
+                    }
+                ],
+                "allocatable": {
+                    "cpu": "8",
+                    "ephemeral-storage": "192272224348",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65705680Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "cpu": "8",
+                    "ephemeral-storage": "208628716Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65808080Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:15Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:15Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:15Z",
+                        "lastTransitionTime": "2020-03-11T13:20:08Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-03-11T13:48:15Z",
+                        "lastTransitionTime": "2020-03-11T13:21:18Z",
+                        "message": "kubelet is posting ready status",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10250
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "rancher/hyperkube@sha256:26840ff42ab69885ad85f203cf8f4380840e09b5055b4cf7a17cd2338389b66a",
+                            "rancher/hyperkube:v1.17.2-rancher1"
+                        ],
+                        "sizeBytes": 1480257715
+                    },
+                    {
+                        "names": [
+                            "rancher/rancher@sha256:cdffc4e0d1aff6adb606b0f9f3033bf7667bcda69aa43293355b6bc2701bdfgha",
+                            "rancher/rancher:v2.3.5"
+                        ],
+                        "sizeBytes": 669763455
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-node@sha256:e0581c644669c2ca6a6c75629d721dfaae1443dc6624d9b3f641dd488f335jh8",
+                            "rancher/calico-node:v3.10.2"
+                        ],
+                        "sizeBytes": 192217400
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-cni@sha256:3d31f2d95974f3706ee7561547e1a16ac808ccfc624c67cb9c4ca5e2488sdfe8",
+                            "rancher/calico-cni:v3.10.2"
+                        ],
+                        "sizeBytes": 163310513
+                    },
+                    {
+                        "names": [
+                            "rancher/rke-tools@sha256:6e2c11ebae396020411866a1791f19505cafed26855d2ed9a62dc5a099a0a5678",
+                            "rancher/rke-tools:v0.1.52"
+                        ],
+                        "sizeBytes": 131679188
+                    },
+                    {
+                        "names": [
+                            "weaveworks/scope@sha256:2f063422cd74d6b0cc6a4c7a26aeb541a69d719de1fa039ca592877662051433",
+                            "weaveworks/scope:1.12.0"
+                        ],
+                        "sizeBytes": 84748858
+                    },
+                    {
+                        "names": [
+                            "rancher/coreos-flannel@sha256:bd76b84c74ad70368a2341c2402841b75950df881388e43fc2aca000c546654a",
+                            "rancher/coreos-flannel:v0.11.0"
+                        ],
+                        "sizeBytes": 52567296
+                    },
+                    {
+                        "names": [
+                            "quay.io/external_storage/nfs-client-provisioner@sha256:cdbccbf54d100b36eae744c1cb07be3d0d22a8e64bb038b7a3808dd29c174661",
+                            "quay.io/external_storage/nfs-client-provisioner:v3.1.0-k8s1.11"
+                        ],
+                        "sizeBytes": 45478559
+                    },
+                    {
+                        "names": [
+                            "rancher/calico-pod2daemon-flexvol@sha256:62a03dd3e47e45f31698b2e42270dbd0559d5e45fa525aff92359a95177d135d",
+                            "rancher/calico-pod2daemon-flexvol:v3.10.2"
+                        ],
+                        "sizeBytes": 9780495
+                    },
+                    {
+                        "names": [
+                            "rancher/pause@sha256:d22591b61e9c2b52aecbf07106d5db313c4f178e404d660b32517b18fcbf0144",
+                            "rancher/pause:3.1"
+                        ],
+                        "sizeBytes": 742472
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "a281b34b-ce83-45d3-a95c-c629435e00d9",
+                    "containerRuntimeVersion": "docker://19.3.5",
+                    "kernelVersion": "3.10.0-1062.12.1.el7.x86_64",
+                    "kubeProxyVersion": "v1.17.2",
+                    "kubeletVersion": "v1.17.2",
+                    "machineID": "311936e2303b034fe7ef70182235b8cb",
+                    "operatingSystem": "linux",
+                    "osImage": "CentOS Linux 7 (Core)",
+                    "systemUUID": "42368B4C-F42D-946F-A2F0-EF75C0D29E06"
+                }
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}

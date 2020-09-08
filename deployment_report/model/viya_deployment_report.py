@@ -22,11 +22,11 @@ from deployment_report.model.static.viya_deployment_report_ingress_controller im
     ViyaDeploymentReportIngressController as IngressController
 from deployment_report.model.utils.viya_deployment_report_utils import ViyaDeploymentReportUtils
 
-from viya_arkcd_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
-from viya_arkcd_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
-from viya_arkcd_library.k8s.sas_k8s_objects import \
+from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
+from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
+from viya_ark_library.k8s.sas_k8s_objects import \
     KubernetesApiResources, KubernetesObjectJSONEncoder, KubernetesResource
-from viya_arkcd_library.k8s.sas_kubectl_interface import KubectlInterface
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 
 # templates for string-formatted timestamp values #
 _READABLE_TIMESTAMP_TMPL_ = "%A, %B %d, %Y %I:%M%p"

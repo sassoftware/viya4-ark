@@ -1,0 +1,88 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "storage.k8s.io/v1",
+            "kind": "StorageClass",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"storage.k8s.io/v1\",\"kind\":\"StorageClass\",\"metadata\":{\"annotations\":{},\"name\":\"azurefile\"},\"mountOptions\":[\"dir_mode=0777\",\"file_mode=0777\",\"uid=0000\",\"gid=0000\"],\"parameters\":{\"skuName\":\"Standard_LRS\"},\"provisioner\":\"kubernetes.io/azure-file\"}\n"
+                },
+                "creationTimestamp": "2020-03-11T19:25:37Z",
+                "name": "azurefile",
+                "resourceVersion": "4788",
+                "selfLink": "/apis/storage.k8s.io/v1/storageclasses/azurefile",
+                "uid": "test-test-48ce-test-testtesttest"
+            },
+            "mountOptions": [
+                "dir_mode=0777",
+                "file_mode=0777",
+                "uid=0000",
+                "gid=0000"
+            ],
+            "parameters": {
+                "skuName": "Standard_LRS"
+            },
+            "provisioner": "kubernetes.io/azure-file",
+            "reclaimPolicy": "Delete",
+            "volumeBindingMode": "Immediate"
+        },
+        {
+            "apiVersion": "storage.k8s.io/v1",
+            "kind": "StorageClass",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"storage.k8s.io/v1beta1\",\"kind\":\"StorageClass\",\"metadata\":{\"annotations\":{\"storageclass.beta.kubernetes.io/is-default-class\":\"true\"},\"labels\":{\"kubernetes.io/cluster-service\":\"true\"},\"name\":\"default\"},\"parameters\":{\"cachingmode\":\"ReadOnly\",\"kind\":\"Managed\",\"storageaccounttype\":\"Standard_LRS\"},\"provisioner\":\"kubernetes.io/azure-disk\"}\n",
+                    "storageclass.beta.kubernetes.io/is-default-class": "true"
+                },
+                "creationTimestamp": "2020-03-11T19:01:15Z",
+                "labels": {
+                    "kubernetes.io/cluster-service": "true"
+                },
+                "name": "default",
+                "resourceVersion": "283",
+                "selfLink": "/apis/storage.k8s.io/v1/storageclasses/default",
+                "uid": "test-test-48ce-test-testtesttest"
+            },
+            "parameters": {
+                "cachingmode": "ReadOnly",
+                "kind": "Managed",
+                "storageaccounttype": "Standard_LRS"
+            },
+            "provisioner": "kubernetes.io/azure-disk",
+            "reclaimPolicy": "Delete",
+            "volumeBindingMode": "Immediate"
+        },
+        {
+            "apiVersion": "storage.k8s.io/v1",
+            "kind": "StorageClass",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"storage.k8s.io/v1beta1\",\"kind\":\"StorageClass\",\"metadata\":{\"annotations\":{},\"labels\":{\"kubernetes.io/cluster-service\":\"true\"},\"name\":\"managed-premium\"},\"parameters\":{\"cachingmode\":\"ReadOnly\",\"kind\":\"Managed\",\"storageaccounttype\":\"Premium_LRS\"},\"provisioner\":\"kubernetes.io/azure-disk\"}\n",
+                    "storageclass.beta.kubernetes.io/is-default-class": "true"
+                },
+                "creationTimestamp": "2020-03-11T19:01:15Z",
+                "labels": {
+                    "kubernetes.io/cluster-service": "true"
+                },
+                "name": "managed-premium",
+                "resourceVersion": "284",
+                "selfLink": "/apis/storage.k8s.io/v1/storageclasses/managed-premium",
+                "uid": "test-test-48ce-test-testtesttest"
+            },
+            "parameters": {
+                "cachingmode": "ReadOnly",
+                "kind": "Managed",
+                "storageaccounttype": "Premium_LRS"
+            },
+            "provisioner": "kubernetes.io/azure-disk",
+            "reclaimPolicy": "Delete",
+            "volumeBindingMode": "Immediate"
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}

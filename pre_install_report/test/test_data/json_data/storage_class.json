@@ -1,0 +1,64 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "allowVolumeExpansion": true,
+            "apiVersion": "storage.k8s.io/v1",
+            "kind": "StorageClass",
+            "metadata": {
+                "annotations": {
+                    "storageclass.kubernetes.io/is-default-class": "true"
+                },
+                "creationTimestamp": "2020-02-10T16:08:57Z",
+                "labels": {
+                    "app": "nfs-client-provisioner",
+                    "chart": "nfs-client-provisioner-1.2.8",
+                    "heritage": "Tiller",
+                    "release": "cloying-mole"
+                },
+                "name": "nfs-client",
+                "resourceVersion": "1691",
+                "selfLink": "/apis/storage.k8s.io/v1/storageclasses/nfs-client",
+                "uid": "334acf58-6a5c-4c54-99ac-a137fe0c9b4e"
+            },
+            "parameters": {
+                "archiveOnDelete": "false"
+            },
+            "provisioner": "cluster.local/cloying-mole-nfs-client-provisioner",
+            "reclaimPolicy": "Delete",
+            "volumeBindingMode": "Immediate"
+        },
+        {
+            "allowVolumeExpansion": true,
+            "apiVersion": "storage.k8s.io/v1",
+            "kind": "StorageClass",
+            "metadata": {
+                "annotations": {
+                    "storageclass.kubernetes.io/is-default-class": "true"
+                },
+                "creationTimestamp": "2020-02-10T16:08:57Z",
+                "labels": {
+                    "app": "nfs-client-provisioner",
+                    "chart": "nfs-client-provisioner-1.2.8",
+                    "heritage": "Tiller",
+                    "release": "cloying-mole"
+                },
+                "name": "nfs-client2",
+                "resourceVersion": "1691",
+                "selfLink": "/apis/storage.k8s.io/v1/storageclasses/nfs-client",
+                "uid": "334acf58-6a5c-4c54-99ac-a137fe0c9b4e"
+            },
+            "parameters": {
+                "archiveOnDelete": "false"
+            },
+            "provisioner": "cluster.local/cloying-mole-nfs-client-provisioner",
+            "reclaimPolicy": "Delete",
+            "volumeBindingMode": "Immediate"
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}

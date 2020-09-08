@@ -1,0 +1,27 @@
+####################################################################
+####   hello-ingress.yml                                        ####
+####################################################################
+####################################################################
+#### Author: SAS Institute Inc.                                                                                       ####
+####                                                                                                                                           ####
+####################################################################
+####################################################################
+#
+# Copyright (c) 2019-2020, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: hello-world
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: hello-world
+          servicePort: 8080
+        path: /hello-world

@@ -1,0 +1,1893 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:10:37Z",
+                "labels": {
+                    "agentpool": "cas",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_E16s_v3",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "east",
+                    "failure-domain.beta.kubernetes.io/zone": "0",
+                    "kubernetes.azure.com/cluster": "aks_east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-stateful-ABCD0056-hello00001",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Premium_LRS",
+                    "workload.sas.com/class": "cas"
+                },
+                "name": "aks30760056-east123456",
+                "resourceVersion": "227936",
+                "selfLink": "/api/v1/nodes/aks-cas-30760056-east123456",
+                "uid": "e98064bb-ae15-481f-93f9-a8c7ee4ba6b5"
+            },
+            "spec": {
+                "podCIDR": "10.244.9.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/aks_eastus/providers/Microsoft.Compute/virtualMachineScaleSets/aks-30760056-vmss/virtualMachines/0",
+                "taints": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "workload.sas.com/class",
+                        "value": "cas"
+                    }
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-cas-30760056-east123456",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "192.168.1.11",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "15740m",
+                    "ephemeral-storage": "187150362315",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "121468796Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "16",
+                    "ephemeral-storage": "203071140Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "132008828Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:11:42Z",
+                        "lastTransitionTime": "2020-09-02T20:11:42Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:12Z",
+                        "lastTransitionTime": "2020-09-02T20:10:37Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:12Z",
+                        "lastTransitionTime": "2020-09-02T20:10:37Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:12Z",
+                        "lastTransitionTime": "2020-09-02T20:10:37Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:12Z",
+                        "lastTransitionTime": "2020-09-02T20:10:38Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10111
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-cas-serverb@56hg54296ac54a275c786e7d2dece10dd36ffa9ff896e143cbc2d706da866511343dec",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-cas-server:1.7.2-20200902.1599051956979"
+                        ],
+                        "sizeBytes": 16703725896
+                    },
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-backup-agentb@56hg540975cd05da561ece14165a5e78b69de54511324c19fcda49e47504b425c6b00d",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-backup-agent:2.9.5-20200805.1596658110594"
+                        ],
+                        "sizeBytes": 1042158014
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkubeb@56hg54e2cbcdcae55e36f2ca6c3567dbe2f664a308000232a25a63dbf5c8f5575bd60e",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200714.1"
+                        ],
+                        "sizeBytes": 810251175
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkubeb@56hg54c3dde0950e1f703f8c506d80d2670cddc6083fe96ed14587ca6c3a110b69b98b",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200529.1"
+                        ],
+                        "sizeBytes": 809726279
+                    },
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-config-initb@56hg54329a6e23336a0b894bf48f0626b8e02614fc837de5bb31201a92ab7ae1a2ae68",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-config-init:1.2.4-20200828.1598660059032"
+                        ],
+                        "sizeBytes": 684788105
+                    },
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-sssd-serverb@56hg549940b81ff4a82f8c03b1102a31f4c479d7ba7144c2a53dd19323860b6313a21b",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-sssd-server:1.1.2-20200828.1598635360630"
+                        ],
+                        "sizeBytes": 622494896
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprodb@56hg54780131d482cbbf9c2b221c307f699fbbe2ced9ffad74083ea6565cdabd5c91f4",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod08072020"
+                        ],
+                        "sizeBytes": 536621814
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprodb@56hg54e5a5787184e6405980bf9c38a6f05137996547d9f02ee3a5af047929b32a940c",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod07152020"
+                        ],
+                        "sizeBytes": 429070490
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controllerb@56hg542246064c965d8408cf794097a36cbed95262f63c800770ce32ac903df0df0c80",
+                            "mcr.microsoft.com/oss/kubernetes/ingress/nginx-ingress-controller:0.19.0"
+                        ],
+                        "sizeBytes": 414090450
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/aks/hcp/hcp-tunnel-frontb@56hg54048a7817a312b94275c462e99815b5cbaf291f444660ec51574cf4cbeac92f3b",
+                            "mcr.microsoft.com/aks/hcp/hcp-tunnel-front:v1.9.2-v4.0.13"
+                        ],
+                        "sizeBytes": 365878180
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/aks/hcp/hcp-tunnel-frontb@56hg54085af8206afbb9568330373cd1b78d791814cbe6c19e2755337d7a611b1e8ab6",
+                            "mcr.microsoft.com/aks/hcp/hcp-tunnel-front:v1.9.2-v3.0.14"
+                        ],
+                        "sizeBytes": 362844269
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/aks/hcp/hcp-tunnel-frontb@56hg54fb4d1d390f0cd40e61b770583e658408908a3927ce9dfd91ceed1c26af529705",
+                            "mcr.microsoft.com/aks/hcp/hcp-tunnel-front:v1.9.2-v4.0.14"
+                        ],
+                        "sizeBytes": 355771064
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/aks/hcp/kube-svc-redirectb@56hg54af50cfa03a6b02a4173f3adb476f403efde16193f91d02e2ae8123f57ee21204",
+                            "mcr.microsoft.com/aks/hcp/kube-svc-redirect:v1.0.7"
+                        ],
+                        "sizeBytes": 353963611
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/aks/hcp/hcp-tunnel-frontb@56hg54257c78bbc7ed0e71af2baa5972b35c93e2a47ce5fd653b072bc60b2db6870b6d",
+                            "mcr.microsoft.com/aks/hcp/hcp-tunnel-front:v1.9.2-v3.0.16"
+                        ],
+                        "sizeBytes": 352737147
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "58f135b3-e98f-4478-acc9-5c56733493d8",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "2e5b61f812b640fa9aa2eb0e686635e7",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "3348605E-7421-854E-8A0A-DE3CE78C03F6"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:09:44Z",
+                "labels": {
+                    "agentpool": "compute",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_E16s_v3",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "0",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-commute-30760077-efgh000000",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "launcher.sas.com/prepullImage": "sas-programming-environment",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Premium_LRS",
+                    "workload.sas.com/class": "compute"
+                },
+                "name": "aks-compute-30760056-east123456",
+                "resourceVersion": "228051",
+                "selfLink": "/api/v1/nodes/aks-compute-30760056-east123456",
+                "uid": "c364f4d0-5c0f-426c-86e1-5bb81803e327"
+            },
+            "spec": {
+                "podCIDR": "10.244.5.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-compute-30760056-vmss/virtualMachines/0",
+                "taints": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "workload.sas.com/class",
+                        "value": "compute"
+                    }
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-compute-30760056-east123456",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "192.168.1.6",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "15740m",
+                    "ephemeral-storage": "187150362315",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "121468792Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "16",
+                    "ephemeral-storage": "203071140Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "132008824Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:10:31Z",
+                        "lastTransitionTime": "2020-09-02T20:10:31Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:48Z",
+                        "lastTransitionTime": "2020-09-02T20:09:44Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:48Z",
+                        "lastTransitionTime": "2020-09-02T20:09:44Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:48Z",
+                        "lastTransitionTime": "2020-09-02T20:09:44Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:48Z",
+                        "lastTransitionTime": "2020-09-02T20:09:45Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 10000
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-programming-environment089@5885d54ba8c46e3986293e2642c7fedbfad4907c3610f73895814dec375e2adef5f",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-programming-environment:1.8.0-20200902.1599056044520"
+                        ],
+                        "sizeBytes": 12472752134
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/coredns@@588a57091f3f2f2ad6a53f850745fa0cd7023bdeffb079cf3555448911c0e8d48ac",
+                            "mcr.microsoft.com/oss/kubernetes/coredns:1.3.1"
+                        ],
+                        "sizeBytes": 40303560
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "635697d2-b250-4816-9332-42e193ffca67",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "c618a4ead49c43edb2b78abb46262f37",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "8FF154B9-609C-094F-87C2-0D788E63E0CF"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:09:55Z",
+                "labels": {
+                    "agentpool": "connect",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_E16s_v3",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "0",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-connect-98765443-hijk000000",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "launcher.sas.com/prepullImage": "sas-programming-environment",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Premium_LRS",
+                    "workload.sas.com/class": "connect"
+                },
+                "name": "aks-connect-30760056-east123456",
+                "resourceVersion": "228067",
+                "selfLink": "/api/v1/nodes/aks-connect-30760056-east123456",
+                "uid": "5960a325-4e97-4515-951a-962cd0473a8b"
+            },
+            "spec": {
+                "podCIDR": "10.244.7.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-connect-30760056-vmss/virtualMachines/0",
+                "taints": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "workload.sas.com/class",
+                        "value": "connect"
+                    }
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-connect-30760056-hello000000",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "100.168.1.10",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "15740m",
+                    "ephemeral-storage": "187150362315",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "121468796Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "16",
+                    "ephemeral-storage": "203071140Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "132008828Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:11:11Z",
+                        "lastTransitionTime": "2020-09-02T20:11:11Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:54Z",
+                        "lastTransitionTime": "2020-09-02T20:09:55Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:54Z",
+                        "lastTransitionTime": "2020-09-02T20:09:55Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:54Z",
+                        "lastTransitionTime": "2020-09-02T20:09:55Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:54Z",
+                        "lastTransitionTime": "2020-09-02T20:09:55Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 11111
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@@588e2cbcdcae55e36f2ca6c3567dbe2f664a308000232a25a63dbf5c8f5575bd60e",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200714.1"
+                        ],
+                        "sizeBytes": 810251175
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/metrics-scraper@@587116c7fdebaf05d2ea7e9204a77c0b9d7e64c77aa29c55307658a659b3325db2d52",
+                            "mcr.microsoft.com/oss/kubernetes/metrics-scraper:v1.0.2"
+                        ],
+                        "sizeBytes": 40101600
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "d6c2f7a0-354a-4728-bc38-35c8bd58f047",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "9c3d4619acd449c3b45c4bdfdf0c66fc",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "0C2F390C-F0AE-214A-922E-A858A9D4B1A7"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:10:07Z",
+                "labels": {
+                    "agentpool": "stateful",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_D16s_v3",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "eastus2-1",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-stateful-3374056-xyzs000000",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Premium_LRS",
+                    "workload.sas.com/class": "stateful"
+                },
+                "name": "aks-stateful-30760056-east123456",
+                "resourceVersion": "227906",
+                "selfLink": "/api/v1/nodes/aks-stateful-30760056-east123456",
+                "uid": "add9abdc-46fe-468c-9a83-5200d723b017"
+            },
+            "spec": {
+                "podCIDR": "10.244.8.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/0",
+                "taints": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "workload.sas.com/class",
+                        "value": "stateful"
+                    }
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-hellowrld-30760056-east123456",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "199.168.1.7",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "15740m",
+                    "ephemeral-storage": "187150362315",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "59455676Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "16",
+                    "ephemeral-storage": "203071140Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65969340Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:11:11Z",
+                        "lastTransitionTime": "2020-09-02T20:11:11Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:04Z",
+                        "lastTransitionTime": "2020-09-02T20:10:07Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:04Z",
+                        "lastTransitionTime": "2020-09-02T20:10:07Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:04Z",
+                        "lastTransitionTime": "2020-09-02T20:10:07Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:04Z",
+                        "lastTransitionTime": "2020-09-02T20:10:08Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 12222
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube@@58711e2cbcdcae55e36f2ca6c3567dbe2f664a308000232a25a63dbf5c8f5575bd60e",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200714.1"
+                        ],
+                        "sizeBytes": 810251175
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/corednsfhds00003984e977be4296112a74f2b12d75dc60e45e22bd90bb1c255b21fc48ace24b79",
+                            "mcr.microsoft.com/oss/kubernetes/coredns:1.6.5"
+                        ],
+                        "sizeBytes": 41598691
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "7cc90914-6fbb-47e1-bd73-b223ada0b901",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "c03639056a0b4d13a982a2ca1b5371a1",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "5B83F03B-823C-EA46-B2F5-94DFD5A822F5"
+                },
+                "volumesAttached": [
+                    {
+                        "devicePath": "0",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-26a54db7-584c-4bc2-875b-cfb4846007e3"
+                    },
+                    {
+                        "devicePath": "1",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-5d17b557-a977-485b-88a2-e61515a5a89c"
+                    }
+                ],
+                "volumesInUse": [
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-26a54db7-584c-4bc2-875b-cfb4846007e3",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-5d17b557-a977-485b-88a2-e61515a5a89c"
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:09:34Z",
+                "labels": {
+                    "agentpool": "stateful",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_D16s_v3",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "eastus2-2",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-stateful-ABCD0056-hello00001",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Premium_LRS",
+                    "workload.sas.com/class": "stateful"
+                },
+                "name": "aks-stateful-ABCD0056-hello00001",
+                "resourceVersion": "227926",
+                "selfLink": "/api/v1/nodes/aks-stateful-ABCD0056-hello00001",
+                "uid": "05899903-ac1c-45cf-9182-ca6fab6336ae"
+            },
+            "spec": {
+                "podCIDR": "10.244.2.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/1",
+                "taints": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "workload.sas.com/class",
+                        "value": "stateful"
+                    }
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-connect-ABCD0056-hello00001",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "292.268.2.8",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "15740m",
+                    "ephemeral-storage": "187150362315",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "59455676Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "16",
+                    "ephemeral-storage": "203071140Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65969340Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:09:51Z",
+                        "lastTransitionTime": "2020-09-02T20:09:51Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:10Z",
+                        "lastTransitionTime": "2020-09-02T20:09:34Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:10Z",
+                        "lastTransitionTime": "2020-09-02T20:09:34Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:10Z",
+                        "lastTransitionTime": "2020-09-02T20:09:34Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:10Z",
+                        "lastTransitionTime": "2020-09-02T20:09:34Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 13333
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkubefhds0000e2cbcdcae55e36f2ca6c3567dbe2f664a308000232a25a63dbf5c8f5575bd60e",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200714.1"
+                        ],
+                        "sizeBytes": 810251175
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkubefhds0000c3dde0950e1f703f8c506d80d2670cddc6083fe96ed14587ca6c3a110b69b98b",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200529.1"
+                        ],
+                        "sizeBytes": 809726279
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/corednsfhds05814c8d39064e196620ee8eb9856d12646643425ede35c5c910aa798e147f44cee",
+                            "mcr.microsoft.com/oss/kubernetes/coredns:1.5.0"
+                        ],
+                        "sizeBytes": 42488424
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "0125bc43-5a39-4dba-9ae1-f1ca7caa40e2",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "2adaa6d906a24be3b8b48ce9a0ce869a",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "526C9858-0B26-0F4A-A12F-DBF411B8D2A1"
+                },
+                "volumesAttached": [
+                    {
+                        "devicePath": "0",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-2223a925-0167-4f40-8e25-6cecdae749ab"
+                    },
+                    {
+                        "devicePath": "1",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-fdeeb59d-3e28-4cc1-8600-70f219e89eb6"
+                    },
+                    {
+                        "devicePath": "2",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-84c173df-9c28-4d84-a7c3-0ef2478e6ac5"
+                    }
+                ],
+                "volumesInUse": [
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-2223a925-0167-4f40-8e25-6cecdae749ab",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-84c173df-9c28-4d84-a7c3-0ef2478e6ac5",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-fdeeb59d-3e28-4cc1-8600-70f219e89eb6"
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:09:38Z",
+                "labels": {
+                    "agentpool": "stateful",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_D16s_v3",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "eastus2-3",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-stateful-30760056-vmss000002",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Premium_LRS",
+                    "workload.sas.com/class": "stateful"
+                },
+                "name": "aks-stateful-30760056-vmss000002",
+                "resourceVersion": "228036",
+                "selfLink": "/api/v1/nodes/aks-stateful-30760056-vmss000002",
+                "uid": "2d5bfeea-ae1e-42d8-9b62-042d7eddc809"
+            },
+            "spec": {
+                "podCIDR": "10.244.3.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/2",
+                "taints": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "workload.sas.com/class",
+                        "value": "stateful"
+                    }
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-stateful-30760056-qrst990002",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "393.138.1.0",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "15740m",
+                    "ephemeral-storage": "187150362315",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "59455676Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "16",
+                    "ephemeral-storage": "203071140Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65969340Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:09:51Z",
+                        "lastTransitionTime": "2020-09-02T20:09:51Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:44Z",
+                        "lastTransitionTime": "2020-09-02T20:09:38Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:44Z",
+                        "lastTransitionTime": "2020-09-02T20:09:38Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:44Z",
+                        "lastTransitionTime": "2020-09-02T20:09:38Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:44Z",
+                        "lastTransitionTime": "2020-09-02T20:09:38Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 15555
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkubefhds058e2cbcdcae55e36f2ca6c3567dbe2f664a308000232a25a63dbf5c8f5575bd60e",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200714.1"
+                        ],
+                        "sizeBytes": 810251175
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkubefhds058c3dde0950e1f703f8c506d80d2670cddc6083fe96ed14587ca6c3a110b69b98b",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200529.1"
+                        ],
+                        "sizeBytes": 809726279
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/corednsfhds05814c8d39064e196620ee8eb9856d12646643425ede35c5c910aa798e147f44cee",
+                            "mcr.microsoft.com/oss/kubernetes/coredns:1.5.0"
+                        ],
+                        "sizeBytes": 42488424
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "c649575b-ca6e-45e0-becc-2406c6f35e46",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "5869af5a5d5940efae99a590ebaae4f5",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "DEDC8003-B7C5-1246-83B6-9535633B2FB6"
+                },
+                "volumesAttached": [
+                    {
+                        "devicePath": "0",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-96dd0197-f644-45dd-b53b-948c6c7e28ff"
+                    },
+                    {
+                        "devicePath": "1",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-a7b71201-2b41-4427-9b6e-9080debfd902"
+                    },
+                    {
+                        "devicePath": "2",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f16ec026-9ebb-4f36-a2a9-bee0af451df5"
+                    },
+                    {
+                        "devicePath": "3",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f679ff40-4e0a-489d-a4c8-d273ea2e8e35"
+                    }
+                ],
+                "volumesInUse": [
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-96dd0197-f644-45dd-b53b-948c6c7e28ff",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-a7b71201-2b41-4427-9b6e-9080debfd902",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f16ec026-9ebb-4f36-a2a9-bee0af451df5",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f679ff40-4e0a-489d-a4c8-d273ea2e8e35"
+                ]
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:09:54Z",
+                "labels": {
+                    "agentpool": "stateless",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_D16s_v3",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "eastus2-1",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-stateless-30760056-east123456",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Premium_LRS",
+                    "workload.sas.com/class": "stateless"
+                },
+                "name": "aks-stateless-30760056-east123456",
+                "resourceVersion": "228038",
+                "selfLink": "/api/v1/nodes/aks-stateless-30760056-east123456",
+                "uid": "d5c974fa-954c-496f-871a-dbb68fe4260e"
+            },
+            "spec": {
+                "podCIDR": "10.244.6.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateless-30760056-vmss/virtualMachines/0",
+                "taints": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "workload.sas.com/class",
+                        "value": "stateless"
+                    }
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-stateless-30760056-hellos0000",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "422.168.2.12",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "15740m",
+                    "ephemeral-storage": "187150362315",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "59455676Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "16",
+                    "ephemeral-storage": "203071140Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65969340Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:11:11Z",
+                        "lastTransitionTime": "2020-09-02T20:11:11Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:45Z",
+                        "lastTransitionTime": "2020-09-02T20:09:54Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:45Z",
+                        "lastTransitionTime": "2020-09-02T20:09:54Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:45Z",
+                        "lastTransitionTime": "2020-09-02T20:09:54Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:45Z",
+                        "lastTransitionTime": "2020-09-02T20:09:54Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 16666
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-report-executionfhds0588deffc9631ab086f5f4da464792a5b2cb289e3ae229fa05df6b848a59ebd8764",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-report-execution:1.10.0-20200902.1599025191265"
+                        ],
+                        "sizeBytes": 1611774966
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/k8s/csi/azuredisk-csifhds0582536d09114a6be2b9e9a64542990996f24e66586933b02c2a4fa41331c333b55",
+                            "mcr.microsoft.com/k8s/csi/azuredisk-csi:v0.7.0"
+                        ],
+                        "sizeBytes": 286182075
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "544383b9-9f54-4d4c-ae2b-de1e9127b476",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "51b7c37eca7245bcac5c720353c8850b",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "B329CF0E-39BD-E943-82C7-1BDD7EC63790"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:09:42Z",
+                "labels": {
+                    "agentpool": "stateless",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_D16s_v3",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "eastus2-2",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-stateless-30760056-vmss000001",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Premium_LRS",
+                    "workload.sas.com/class": "stateless"
+                },
+                "name": "aks-stateless-30760056-vmss000001",
+                "resourceVersion": "227938",
+                "selfLink": "/api/v1/nodes/aks-stateless-30760056-vmss000001",
+                "uid": "df1e3e9c-3813-40b5-844e-607201ff0bc1"
+            },
+            "spec": {
+                "podCIDR": "10.244.4.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateless-30760056-vmss/virtualMachines/1",
+                "taints": [
+                    {
+                        "effect": "NoSchedule",
+                        "key": "workload.sas.com/class",
+                        "value": "stateless"
+                    }
+                ]
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-stateless-30770056-mnopq99001",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "15740m",
+                    "ephemeral-storage": "187150362315",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "59455676Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "16",
+                    "ephemeral-storage": "203071140Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "65969340Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:10:31Z",
+                        "lastTransitionTime": "2020-09-02T20:10:31Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:12Z",
+                        "lastTransitionTime": "2020-09-02T20:09:42Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:12Z",
+                        "lastTransitionTime": "2020-09-02T20:09:42Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:12Z",
+                        "lastTransitionTime": "2020-09-02T20:09:42Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:12Z",
+                        "lastTransitionTime": "2020-09-02T20:09:42Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 17777
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-report-rendererfhds058d6752f75abca211d80f24b57e4f18019df382ba739bb6900d5b87ba08a4058f0",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-report-renderer:1.49.1-20200827.1598540787668"
+                        ],
+                        "sizeBytes": 1711348650
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/aks/hcp/tunnel-openvpnfhds05868a257999d962cc97b933881a3b6c7c61d39b176460b70633e6120be97950c17",
+                            "mcr.microsoft.com/aks/hcp/tunnel-openvpn:1.0.10"
+                        ],
+                        "sizeBytes": 283293872
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "96cee8d7-5496-4188-8ba5-68ad8bd124eb",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "4c3587fc0d7643da887675e1260cd68f",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "1546FD4B-C8A4-C242-B7CD-92384340ADF2"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:06:28Z",
+                "labels": {
+                    "agentpool": "system",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_D4_v2",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "eastus2-1",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-system-30760056-east123456",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Standard_LRS"
+                },
+                "name": "aks-system-30760056-east123456",
+                "resourceVersion": "228012",
+                "selfLink": "/api/v1/nodes/aks-system-30760056-east123456",
+                "uid": "6bf932a9-5330-4a11-8950-1201d2936ee7"
+            },
+            "spec": {
+                "podCIDR": "10.244.0.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-system-30760056-vmss/virtualMachines/0"
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-system-30760056-000000",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "7820m",
+                    "ephemeral-storage": "119716768775",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "24541100Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "8",
+                    "ephemeral-storage": "129901008Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "28789676Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:06:50Z",
+                        "lastTransitionTime": "2020-09-02T20:06:50Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:36Z",
+                        "lastTransitionTime": "2020-09-02T20:06:28Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:36Z",
+                        "lastTransitionTime": "2020-09-02T20:06:28Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:36Z",
+                        "lastTransitionTime": "2020-09-02T20:06:28Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:36Z",
+                        "lastTransitionTime": "2020-09-02T20:06:29Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 18888
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-backup-agentfhds0580975cd05da561ece14165a5e78b69de54511324c19fcda49e47504b425c6b00d",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-backup-agent:2.9.5-20200805.1596658110594"
+                        ],
+                        "sizeBytes": 1042158014
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/corednsfhds058fe1a122eeca3beaf643c19aeba64b9e1834235da76e1f5be604ad25b57e95398",
+                            "mcr.microsoft.com/oss/kubernetes/coredns:1.6.6"
+                        ],
+                        "sizeBytes": 40853219
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "a18bc9d6-58cb-4eb9-8823-d2fc7060a775",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "3557a28d97984815a6f22bfe3b14c8fc",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "7C3BCEEC-6BC6-664E-938B-49F0414B3470"
+                }
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "kind": "Node",
+            "metadata": {
+                "annotations": {
+                    "node.alpha.kubernetes.io/ttl": "0",
+                    "volumes.kubernetes.io/controller-managed-attach-detach": "true"
+                },
+                "creationTimestamp": "2020-09-02T20:06:46Z",
+                "labels": {
+                    "agentpool": "system",
+                    "beta.kubernetes.io/arch": "amd64",
+                    "beta.kubernetes.io/instance-type": "Standard_D4_v2",
+                    "beta.kubernetes.io/os": "linux",
+                    "failure-domain.beta.kubernetes.io/region": "eastus2",
+                    "failure-domain.beta.kubernetes.io/zone": "eastus2-2",
+                    "kubernetes.azure.com/cluster": "east",
+                    "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
+                    "kubernetes.azure.com/role": "agent",
+                    "kubernetes.io/arch": "amd64",
+                    "kubernetes.io/hostname": "aks-system-30760056-vmss000001",
+                    "kubernetes.io/os": "linux",
+                    "kubernetes.io/role": "agent",
+                    "node-role.kubernetes.io/agent": "",
+                    "storageprofile": "managed",
+                    "storagetier": "Standard_LRS"
+                },
+                "name": "aks-system-30760056-vmss000001",
+                "resourceVersion": "227964",
+                "selfLink": "/api/v1/nodes/aks-system-30760056-vmss000001",
+                "uid": "bce1f0c0-a2b4-400c-a2e1-ea25a26f514e"
+            },
+            "spec": {
+                "podCIDR": "10.244.1.0/24",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-system-30760056-vmss/virtualMachines/1"
+            },
+            "status": {
+                "addresses": [
+                    {
+                        "address": "aks-system-30880056-9999001",
+                        "type": "Hostname"
+                    },
+                    {
+                        "address": "0.0.0.0",
+                        "type": "InternalIP"
+                    }
+                ],
+                "allocatable": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "7820m",
+                    "ephemeral-storage": "119716768775",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "24563288Ki",
+                    "pods": "110"
+                },
+                "capacity": {
+                    "attachable-volumes-azure-disk": "32",
+                    "cpu": "8",
+                    "ephemeral-storage": "129901008Ki",
+                    "hugepages-1Gi": "0",
+                    "hugepages-2Mi": "0",
+                    "memory": "28811864Ki",
+                    "pods": "110"
+                },
+                "conditions": [
+                    {
+                        "lastHeartbeatTime": "2020-09-02T20:07:51Z",
+                        "lastTransitionTime": "2020-09-02T20:07:51Z",
+                        "message": "RouteController created a route",
+                        "reason": "RouteCreated",
+                        "status": "False",
+                        "type": "NetworkUnavailable"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:20Z",
+                        "lastTransitionTime": "2020-09-02T20:06:46Z",
+                        "message": "kubelet has sufficient memory available",
+                        "reason": "KubeletHasSufficientMemory",
+                        "status": "False",
+                        "type": "MemoryPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:20Z",
+                        "lastTransitionTime": "2020-09-02T20:06:46Z",
+                        "message": "kubelet has no disk pressure",
+                        "reason": "KubeletHasNoDiskPressure",
+                        "status": "False",
+                        "type": "DiskPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:20Z",
+                        "lastTransitionTime": "2020-09-02T20:06:46Z",
+                        "message": "kubelet has sufficient PID available",
+                        "reason": "KubeletHasSufficientPID",
+                        "status": "False",
+                        "type": "PIDPressure"
+                    },
+                    {
+                        "lastHeartbeatTime": "2020-09-03T13:20:20Z",
+                        "lastTransitionTime": "2020-09-02T20:06:46Z",
+                        "message": "kubelet is posting ready status. AppArmor enabled",
+                        "reason": "KubeletReady",
+                        "status": "True",
+                        "type": "Ready"
+                    }
+                ],
+                "config": {},
+                "daemonEndpoints": {
+                    "kubeletEndpoint": {
+                        "Port": 19999
+                    }
+                },
+                "images": [
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkubefhds058e2cbcdcae55e36f2ca6c3567dbe2f664a308000232a25a63dbf5c8f5575bd60e",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200714.1"
+                        ],
+                        "sizeBytes": 810251175
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/hyperkubefhds058c3dde0950e1f703f8c506d80d2670cddc6083fe96ed14587ca6c3a110b69b98b",
+                            "mcr.microsoft.com/oss/kubernetes/hyperkube:v1.15.11-hotfix.20200529.1"
+                        ],
+                        "sizeBytes": 809726279
+                    },
+                    {
+                        "names": [
+                            "gcr.io/google-samples/node-hellofhds058d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b"
+                        ],
+                        "sizeBytes": 643762709
+                    },
+                    {
+                        "names": [
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-postgres-12fhds0582c37fe7df3af37bf2e5e842156de97ca25459495573fc11e701e76df3b588c9c",
+                            "cr.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy-data-postgres-12:20.2.0-20200822.1598114360000"
+                        ],
+                        "sizeBytes": 574479727
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprodfhds058780131d482cbbf9c2b221c307f699fbbe2ced9ffad74083ea6565cdabd5c91f4",
+                            "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod08072020"
+                        ],
+                        "sizeBytes": 536621814
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/dashboardfhds05879ac2463a377ddf25298a5783455e593895fd23cb04c205225bc049997d40941",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.1"
+                        ],
+                        "sizeBytes": 222775261
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/dashboardfhds05873c306462949d9d9570fc1c257797fbae0169c29a8e38f7878f476007cca2c85",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.0-rc7"
+                        ],
+                        "sizeBytes": 220806770
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/k8s/csi/azurefile-csifhds058a90a12db5add96ff0046971acb9e2117ec3a408c20f19968f57b66347ab97b93",
+                            "mcr.microsoft.com/k8s/csi/azurefile-csi:v0.7.0"
+                        ],
+                        "sizeBytes": 185191241
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/calico/nodefhds058c139ae5683aee7890acc816720d7a5c81f4689b087800cf9bb74275e98b1915b",
+                            "mcr.microsoft.com/oss/calico/node:v3.8.0"
+                        ],
+                        "sizeBytes": 154769666
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/containernetworking/azure-npmfhds0580f2443de9f11d3e0d16bdc836d152cbbf3a4ba3309ca30f6d5ca65f8051b8095",
+                            "mcr.microsoft.com/containernetworking/azure-npm:v1.1.5"
+                        ],
+                        "sizeBytes": 151205567
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/calico/cnifhds058992468529422d4ebf11fbc8f5b3a99348ee92c98cb977a54f99de8b89e067255",
+                            "mcr.microsoft.com/oss/calico/cni:v3.8.0"
+                        ],
+                        "sizeBytes": 143333412
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/containernetworking/azure-npmfhds058d1ef2bebbb62bf9f97c7d51d6d799c673d638b78ac4eae51c71268b1bbab9209",
+                            "mcr.microsoft.com/containernetworking/azure-npm:v1.1.4"
+                        ],
+                        "sizeBytes": 132464587
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/containernetworking/azure-npmfhds0581886f8a6f859c6620e61340a564eab03b363e371f220ad0f5a5b062f70f2508f",
+                            "mcr.microsoft.com/containernetworking/azure-npm:v1.1.2"
+                        ],
+                        "sizeBytes": 132460491
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeperfhds0580572ee453918f23f7950168f1aa563a354d65d12bee207a100de64ea172ecd5e",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v2.0.1"
+                        ],
+                        "sizeBytes": 129068206
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/containernetworking/networkmonitorfhds058d875511410502c3e37804e1f313cc2b0a03d7a03d3d5e6adaf8994b753a76f8e",
+                            "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.6"
+                        ],
+                        "sizeBytes": 123663837
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/dashboardfhds058d3b580b36af8d1c47194762a93a1a67fb91124188690b6826d66aefc83befb86",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.0-rc3"
+                        ],
+                        "sizeBytes": 122262089
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboardfhds058dca7e06333b41acd5ba4c6554d93d7b57cf74a1f2c90a72dbbe39cbb40f86979",
+                            "mcr.microsoft.com/oss/kubernetes/kubernetes-dashboard:v1.10.1"
+                        ],
+                        "sizeBytes": 121711221
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/containernetworking/networkmonitorfhds0581ab5ce423894918c4fd7ec5533837e943dc0fb4c762c3f751486359348d4f8c9",
+                            "mcr.microsoft.com/containernetworking/networkmonitor:v0.0.7"
+                        ],
+                        "sizeBytes": 104673601
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/dashboardfhds05885fbaa5c8fd7ffc5723965685d9467a89e2148206019d1a8979cec1f2d25faef",
+                            "mcr.microsoft.com/oss/kubernetes/dashboard:v2.0.0-beta8"
+                        ],
+                        "sizeBytes": 90835430
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/calico/cnifhds0582eced7afb276895062ca2b68f0c45c2184d4621f19f2c72455b3335117db3d9c",
+                            "mcr.microsoft.com/oss/calico/cni:v3.5.0"
+                        ],
+                        "sizeBytes": 83633850
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetryfhds058427589864fb4a53866103951a81bb47e9481bbc75325eb5898d57eecf256701b",
+                            "mcr.microsoft.com/containernetworking/azure-vnet-telemetry:v1.0.30"
+                        ],
+                        "sizeBytes": 78949814
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/calico/nodefhds0583101acc2162dff74957ddc1c2b904f578d55aa27e2bc033e0531992592757570",
+                            "mcr.microsoft.com/oss/calico/node:v3.5.0"
+                        ],
+                        "sizeBytes": 71710195
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/external-dnsfhds058c535c1a165b04af5eb93393272f6a5104a82b868f1b7e9c055055f8b1e7d2836",
+                            "mcr.microsoft.com/oss/kubernetes/external-dns:v0.6.0-hotfix-20200228"
+                        ],
+                        "sizeBytes": 64446420
+                    },
+                    {
+                        "names": [
+                            "nvidia/k8s-device-pluginfhds05841b3531d338477d26eb1151c15d0bea130d31e690752315a5205d8094439b0a6",
+                            "nvidia/k8s-device-plugin:1.11"
+                        ],
+                        "sizeBytes": 63138633
+                    },
+                    {
+                        "names": [
+                            "nvidia/k8s-device-pluginfhds058327487db623cc75bdff86e56942f4af280e5f3de907339d0141fdffaeef342b8",
+                            "nvidia/k8s-device-plugin:1.10"
+                        ],
+                        "sizeBytes": 63130377
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeperfhds058f3399457971dd7844b229387ec010ba41cd7325bab28fe504e4fba53d5c72eb8",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v3.1.0-beta.12"
+                        ],
+                        "sizeBytes": 58784489
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agentfhds058c96592820876ea86194b8ee85a093c2fcf15be9eab383c8d6c24e3af7d757657",
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v2.5.0.1"
+                        ],
+                        "sizeBytes": 56209600
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeperfhds0582f58f4df929ba87de97ddc8deefba5dbf1d0fca81e8b003d2427f522fd1f5129",
+                            "mcr.microsoft.com/oss/open-policy-agent/gatekeeper:v3.1.0-beta.8"
+                        ],
+                        "sizeBytes": 55621107
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agentfhds058bddf19be25644c7176e8c501465dbad07d032288334f135877b984660b0d3ee6",
+                            "mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v2.5.0"
+                        ],
+                        "sizeBytes": 50148508
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/calico/typhafhds058247e8890ff7ab14b329416d14821c609343ef14109c6baf8d422d99e450fcb35",
+                            "mcr.microsoft.com/oss/calico/typha:v3.8.0"
+                        ],
+                        "sizeBytes": 49771270
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/calico/typhafhds058268e0b3e3e9935edd22bd5355dc10f8d823b6b2f02ae1093ee589880409012d8",
+                            "mcr.microsoft.com/oss/calico/typha:v3.5.0"
+                        ],
+                        "sizeBytes": 49374661
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubeletfhds05863484c6311775064d92e0d2391f5f028f845ccb6799cb47828df47ad971591a4",
+                            "mcr.microsoft.com/oss/virtual-kubelet/virtual-kubelet:1.2.1.1"
+                        ],
+                        "sizeBytes": 48684834
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/corednsfhds05814c8d39064e196620ee8eb9856d12646643425ede35c5c910aa798e147f44cee",
+                            "mcr.microsoft.com/oss/kubernetes/coredns:1.5.0"
+                        ],
+                        "sizeBytes": 42488424
+                    },
+                    {
+                        "names": [
+                            "mcr.microsoft.com/oss/kubernetes/corednsfhds0583984e977be4296112a74f2b12d75dc60e45e22bd90bb1c255b21fc48ace24b79",
+                            "mcr.microsoft.com/oss/kubernetes/coredns:1.6.5"
+                        ],
+                        "sizeBytes": 41598691
+                    }
+                ],
+                "nodeInfo": {
+                    "architecture": "amd64",
+                    "bootID": "0b2b98dc-1997-453c-81b2-40a505e340d1",
+                    "containerRuntimeVersion": "docker://3.0.10+azure",
+                    "kernelVersion": "4.15.0-1092-azure",
+                    "kubeProxyVersion": "v1.15.11",
+                    "kubeletVersion": "v1.15.11",
+                    "machineID": "8c50939f22ea468a9f907a7c87933bb5",
+                    "operatingSystem": "linux",
+                    "osImage": "Ubuntu 16.04.7 LTS",
+                    "systemUUID": "930EBD16-1CAD-864C-977E-65D24AD88807"
+                },
+                "volumesAttached": [
+                    {
+                        "devicePath": "0",
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-ce198a68-733b-4542-b21f-b35a97492b87"
+                    }
+                ],
+                "volumesInUse": [
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-ce198a68-733b-4542-b21f-b35a97492b87"
+                ]
+            }
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": "",
+        "selfLink": ""
+    }
+}

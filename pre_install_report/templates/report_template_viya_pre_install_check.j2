@@ -1,0 +1,398 @@
+{# ----------------------------------------------------------- #}
+{# report_template_viya_pre_install_check.j2                   #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Pre-Install Check Report Template #}
+{% extends "viya_ark_report_base.html.j2" %}
+
+{# BLOCK DEFINITIONS #}
+{% block file_name %}report_template_viya_pre_install_check.html{% endblock %}
+
+{% block page_title %}Pre-Install Check Report {% endblock %}
+
+{% block header_title %}Pre-Install Check Report{% endblock %}
+
+{% block header_title_subtext %}Gathered:
+        {% for global_nodes in global_data %}
+            {% if loop.index == 2 %}
+               {{global_nodes.timestamp}}
+            {% endif %}
+        {% endfor %}
+{% endblock %}
+{% block content %}
+
+
+<!-- Current context  -->
+{% for lists in configs_data %}
+
+    {% if loop.index == 1 %}
+       {% for node in lists %}
+          <h4>Current Context: {{node.currentcontext}} </h4>
+       {% endfor %}
+    {% endif %}
+{% endfor %}
+
+
+<!-- Name spaces  -->
+{% for lists in namespace_data %}
+    {% if loop.index == 1 %}
+       {% for node in namespace_data %}
+          <h4>Name Spaces: {{node.namespaces}}</h4>
+       {% endfor %}
+    {% endif %}
+{% endfor %}
+
+<!-- worker nodes  -->
+{% for global_nodes in global_data %}
+    {% if loop.index == 1 %}
+        <!-- installed nodes jq-accordion -->
+          <h4>Worker Nodes Detected - {{global_nodes.totalWorkers}}<h4>
+    {% endif %}
+{% endfor %}
+
+<!-- Configuration data -->
+{% for contexts in configs_data %}
+     {% if loop.index == 2 %}
+     <div class="jq-accordion">
+        <h2>Configuration Contexts</h2>
+     <div>
+        <!-- installed nodes jq-accordion -->
+        {% for node in contexts %}
+           <table>
+             <TR>
+               <TH> Context Name </TH>
+               <TH> Cluster </TH>
+               <TH> User    </TH>
+             </TR>
+             <TR>
+               <TD>{{node.contextName}}</TD>
+               <TD>{{node.cluster}}</SPAN></TD>
+               <TD>{{node.clusteruser}}</SPAN></TD>
+             </TR>
+           </table>
+        {% endfor %}
+        </div>
+        </div>
+     {% endif %}
+{% endfor %}
+
+{% for clusters in configs_data %}
+     {% if loop.index == 3 %}
+         <div class="jq-accordion">
+             <h2>Configuration Clusters</h2>
+         <div>
+
+        <!-- installed nodes jq-accordion -->
+        {% for node in clusters %}
+           <table>
+             <TR>
+               <TH> Cluster Name</TH>
+               <TH> Server Name </TH>
+             </TR>
+             <TR>
+               <TD>{{node.clustername}}</TD>
+               <TD>{{node.server}}</TD>
+             </TR>
+           </table>
+        {% endfor %}
+        </div>
+        </div>
+     {% endif %}
+{% endfor %}
+
+
+<!-- Control plane  -->
+{% for master_nodes in master_data %}
+    {% if loop.index == 1 %}
+        <!-- installed nodes jq-accordion -->
+        <div class="jq-accordion">
+          <h2>Control Plane Information - {{master_nodes.issue}}</h2>
+           <div>
+           <table>
+             <TR>
+                 <TH> Status </TH>
+             </TR>
+             <TR>
+                 <TD>{{master_nodes.firstFailure}}</SPAN></TD>
+             </TR>
+           </table>
+           </div>
+        </div>
+    {% endif %}
+{% endfor %}
+<!-- Control Plane  End -->
+
+<!-- CPU check on worker nodes  -->
+{% for nodes_data in global_data %}
+    {% set totals = '0' %}
+
+    {% if loop.index == 3 %}
+                <div class="jq-accordion">
+                   <h2>Total Allocatable CPU Cores - {{nodes_data.aggregate_cpu_failures}}</h2>
+                <div>
+    {% endif %}
+
+    {% if loop.index == 6 %}
+        {% if nodes_data|length == 0 %}
+               <table>
+                   <TR>
+                     <TH> Status </TH>
+                   </TR>
+                   <TR>
+                     <TD> No nodes available. Check permissions.</TD>
+                   </TR>
+                </table>
+        {% endif %}
+        {% for node in nodes_data %}
+        <!-- installed nodes jq-accordion -->
+               {% set check = 'PASS' %}
+               {% set column_name = '' %}
+               {% if node.error.cpu %}
+                  {% set check = 'FAIL' %}
+                  {% set column_name = 'CPU' %}
+               {% endif %}
+               <table>
+                   <TR>
+                     <TH> Node Name </TH>
+                     <TH> CPUs Cores </TH>
+                     <TH> Allocatable CPU Cores </TH>
+                     <TH> {{ column_name }} </TH>
+                   </TR>
+                   <TR>
+                     <TD>{{node.nodeName}}</TD>
+                     <TD>{{node.cpu}}</TD>
+                     <TD>{{node.allocatablecpu}}</TD>
+                     <TD>{{node.error.cpu}}</TD>
+                   </TR>
+                </table>
+        {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+
+
+{% endfor %}
+
+<!-- End CPU check worker nodes End -->
+
+<!-- Worker Nodes Kubelet version   -->
+{% for nodes_data in global_data %}
+    {% if loop.index == 5 %}
+                <div class="jq-accordion">
+                    <h2>Worker Node Services - {{nodes_data.aggregate_kubelet_failures}}</h2>
+                <div>
+    {% endif %}
+    {% if loop.index == 6 %}
+            {% if nodes_data|length == 0 %}
+               <table>
+                   <TR>
+                     <TH> Status </TH>
+                   </TR>
+                   <TR>
+                     <TD> No nodes available. Check permissions.</TD>
+                   </TR>
+                </table>
+            {% endif %}
+            {% for node in nodes_data %}
+               {% set check = 'PASS' %}
+               {% set column_name = '' %}
+               {% if node.error.kubeletversion %}
+                  {% set check = 'FAIL' %}
+                  {% set column_name = 'Kubelet Version' %}
+               {% endif %}
+               <table>
+                   <TR>
+                     <TH> Node Name </TH>
+                     <TH> Kubelet Version </TH>
+                     <TH> Container Runtime</TH>
+                     <TH> Kernel Version </TH>
+                     <TH> {{ column_name }} </TH>
+                   </TR>
+                   <TR>
+                     <TD>{{node.nodeName}}</TD>
+                     <TD>{{node.kubeletversion}}</TD>
+                     <TD>{{node.containerRuntimeVersion}}</TD>
+                     <TD>{{node.kernelVersion}}</TD>
+                     <TD>{{node.error.kubeletversion}}</TD>
+                   </TR>
+                </table>
+        {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+{% endfor %}
+
+<!-- Worker Nodes kubelet version  End  -->
+
+<!-- MEMORY Check Start  -->
+{% for nodes_data in global_data %}
+    {% if loop.index == 4 %}
+                <div class="jq-accordion">
+                    <h2>Total Allocatable Memory - {{nodes_data.aggregate_memory_failures}}</h2>
+                <div>
+    {% endif %}
+    {% if loop.index == 6 %}
+        {% if nodes_data|length == 0 %}
+               <table>
+                   <TR>
+                     <TH> Status </TH>
+                   </TR>
+                   <TR>
+                     <TD> No nodes available. Check permissions.</TD>
+                   </TR>
+                </table>
+        {% endif %}
+        {% for node in nodes_data %}
+               {% set check = 'PASS' %}
+               {% set column_name = '' %}
+               {% if node.error.allocatableMemory %}
+                  {% set check = 'FAIL' %}
+                  {% set column_name = 'Memory' %}
+               {% endif %}
+               <table>
+                   <TR>
+                     <TH> Node Name </TH>
+                     <TH> Memory </TH>
+                     <TH> Allocatable Memory </TH>
+                     <TH> Allocatable Ephemeral Storage </TH>
+                     <TH> Pods Capacity </TH>
+                     <TH> {{ column_name }} </TH>
+                   </TR>
+                   <TR>
+                     <TD>{{node.nodeName}}</TD>
+                     <TD>{{node.memory}}</TD>
+                     <TD>{{node.allocatableMemory}}</TD>
+                     <TD>{{node.allocatableephemeral}}</TD>
+                     <TD>{{node.podscapacity}}</TD>
+                     <TD>{{node.error.allocatableMemory}}</TD>
+                   </TR>
+                </table>
+        {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+{% endfor %}
+<!-- MEMORY Check End  -->
+
+<!-- Storage Class Check -->
+{% for storage in storage_data %}
+    {% if loop.index == 1 %}
+                <div class="jq-accordion">
+                    <h2>Storage Class - {{storage.Issues}}</h2>
+                <div>
+    {% endif %}
+    {% if loop.index == 2 %}
+        {% if storage|length == 0 %}
+               <table>
+                   <TR>
+                     <TH> Status </TH>
+                   </TR>
+                   <TR>
+                     <TD> No Storage class available. Check permissions.</TD>
+                   </TR>
+                </table>
+        {% endif %}
+        {% for node in storage %}
+           <table>
+             <TR>
+                 <TH> Storage Class </TH>
+                 <TH> Status </TH>
+             </TR>
+             <TR>
+                 <TD>{{node.storageClassNameName}}</TD>
+                 <TD>{{node.firstFailure}}</TD>
+             </TR>
+           </table>
+        {% endfor %}
+        </div>
+        </div>
+    {% endif %}
+{% endfor %}
+
+<!-- Storage Class Check  End -->
+
+<!-- Ingress Setting -->
+
+    <div class="jq-accordion">
+        <h2>Ingress Controller </h2>
+    <div>
+
+    {% for key, value in ingress_data %}
+           <table class="mytable">
+             <TR>
+                 <TH> Ingress Controller </TH>
+             </TR>
+             <TR>
+                 <TD> {{value}}</TD>
+             </TR>
+           </table>
+           <style>
+            .mytable td, .mytable th { width:30%; }
+            .mytable td + td, .mytable th + th { width:70%; }
+           </style>
+    {% endfor %}
+    </div>
+    </div>
+<!-- Ingress Setting End -->
+
+
+<!-- Cluster Admin Permissions -->
+    <div class="jq-accordion">
+        <h2>Cluster Admin Permissions - {{ cluster_admin_permission_aggregate}} </h2>
+    <div>
+    <table class="mytable"">
+         <TR>
+             <TH> Resources </TH>
+             <TH> Available Permissions </TH>
+         </TR>
+         {% for key, value in cluster_admin_permission_data %}
+
+         <TR>
+             <TD>{{key}}</TD>
+             <TD>{{value}}</TD>
+         </TR>
+         {% endfor %}
+    </table>
+    <style>
+        .mytable td, .mytable th { width:30%; }
+        .mytable td + td, .mytable th + th { width:70%; }
+    </style>
+
+    </div>
+    </div>
+<!-- Cluster Admin Permissions End -->
+
+<!-- NameSpace Admin Permissions -->
+    <div class="jq-accordion">
+        <h2>Namespace Admin Permissions: {{ namespace_admin_permission_aggregate }} </h2>
+    <div>
+
+    <table class="mytable">
+         <TR>
+             <TH> Resources </TH>
+             <TH> Available Permissions </TH>
+         </TR>
+         {% for key, value in namespace_admin_permission_data %}
+
+         <TR>
+             <TD> {{key}}</TD>
+             <TD> {{value}}</TD>
+         </TR>
+         {% endfor %}
+    </table>
+    <style>
+    .mytable td, .mytable th { width:30%; }
+    .mytable td + td, .mytable th + th { width:70%; }
+           </style>
+    </div>
+    </div>
+<!-- NameSpace Admin Permissions End -->
+
+{% endblock %}
+{# BLOCK DEFINITIONS #}
