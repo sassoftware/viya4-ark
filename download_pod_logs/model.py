@@ -11,12 +11,11 @@
 ####################################################################
 import datetime
 import os
-import sys
 
 from multiprocessing import Pool, TimeoutError
 from multiprocessing.pool import ApplyResult
 from subprocess import CalledProcessError
-from typing import Any, Dict, List, Optional, Text, Tuple
+from typing import Any, AnyStr, Dict, List, Optional, Text, Tuple
 
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
@@ -64,7 +63,7 @@ class PodLogDownloader(object):
         self._wait = wait
 
     def download_logs(self, selected_components: Optional[List[Text]] = None, tail: int = DEFAULT_TAIL) \
-            -> Tuple[Text, List[Text]]:
+            -> Tuple[Text, List[Text], List[Tuple[Text, Text]]]:
         """
         Downloads the log files for all or a select group of pods and their containers. A status summary is prepended
         to the downloaded log file.
@@ -76,8 +75,9 @@ class PodLogDownloader(object):
         :raises NoPodsError: If pods can be listed but no pods are found in the given namespace.
         :raises NoMatchingPodsError: If no available pods match a component in the selected_components
 
-        :returns: A tuple containing the absolute output directory and a list of names for any pods for which the
-                  timeout was reached when gathering the log.
+        :returns: A tuple containing the absolute output directory, a list of names for any pods for which the
+                  timeout was reached when gathering the log, and a list of tuples representing any errors encountered
+                  in gathering the logs for a (container_name, pod_name).
         """
         # get the current namespace
         namespace = self._kubectl.get_namespace()
@@ -142,16 +142,22 @@ class PodLogDownloader(object):
 
         # run the processes
         timeout_pods: List[Text] = list()
+        error_pods: List[Tuple[Text, Text]] = list()
         for process in write_log_processes:
             try:
-                process.get_process().get(timeout=self._wait)
+                err_info: Optional[Tuple[Text, Text]] = process.get_process().get(timeout=self._wait)
+
+                # add the error message, if returned
+                if err_info:
+                    error_pods.append(err_info)
             except TimeoutError:
                 timeout_pods.append(process.get_pod_name())
 
-        return os.path.abspath(self._output_dir), timeout_pods
+        return os.path.abspath(self._output_dir), timeout_pods, error_pods
 
     @staticmethod
-    def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text) -> None:
+    def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text) -> \
+            Optional[Tuple[Text, Text]]:
         """
         Internal method used for gathering the status and log for each container in the provided pod and writing
         the gathered information to an on-disk log file.
@@ -160,6 +166,7 @@ class PodLogDownloader(object):
         :param pod: KubernetesResource representation of the pod whose logs will be retrieved.
         :param tail: Lines of recent log file to retrieve.
         :param output_dir: The directory where log files should be written.
+        :returns: A printable error message if the log could not be retrieved.
         """
         # if this pod is not a SAS-provided resource, skip it
         if not pod.is_sas_resource():
@@ -201,14 +208,20 @@ class PodLogDownloader(object):
                 # close the status header
                 output_file.writelines(("#" * 50) + "\n\n")
 
+                # create tuple to hold information about failed containers/pods
+                err_info: Optional[Tuple[Text, Text]] = None
+
                 # call kubectl to get the log for this container
                 try:
-                    log = kubectl.logs(pod_name=f"{pod.get_name()} {container_status.get_name()}",
-                                       all_containers=False, prefix=False, tail=tail)
+                    log: List[AnyStr] = kubectl.logs(pod_name=f"{pod.get_name()} {container_status.get_name()}",
+                                                     all_containers=False, prefix=False, tail=tail)
+
                 except CalledProcessError:
-                    # print a message to stderr if the log file could not be retrieved for this container
-                    print(f"\nERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
-                          f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]", file=sys.stderr)
+                    err_msg = (f"ERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
+                               f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]")
+                    log: List[AnyStr] = [err_msg]
+
+                    err_info = (container_status.get_name(), pod.get_name())
 
                 # parse any structured logging
                 file_content = SASStructuredLoggingParser.parse_log(log)
@@ -216,6 +229,8 @@ class PodLogDownloader(object):
                 # write the retrieved log to the file
                 output_file.write("Beginning log...\n\n")
                 output_file.write("\n".join(file_content))
+
+        return err_info
 
 
 ####################################################################
