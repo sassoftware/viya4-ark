@@ -138,22 +138,29 @@ def main(argv: List):
     try:
         print()
         with LRPIndicator(enter_message="Downloading pod logs"):
-            log_dir, timeout_pods = log_downloader.download_logs(selected_components=args.selected_components,
-                                                                 tail=args.tail)
+            log_dir, timeout_pods, error_pods = log_downloader.download_logs(
+                selected_components=args.selected_components, tail=args.tail)
+
+        # print any containers that encountered errors, if present
+        if len(error_pods) > 0:
+            print("\nERROR: Log content for the following containers could not be downloaded:\n", file=sys.stderr)
+
+            # print the containers that had an error
+            for err_info in error_pods:
+                print(f"    [{err_info[0]}] in pod [{err_info[1]}]", file=sys.stderr)
+
+            print("\nContainer status information is available in the log file.", file=sys.stderr)
 
         # print any pods that timed out, if present
         if len(timeout_pods) > 0:
-            print()
-            print("WARNING: Logs for the following pods were not downloaded because they exceeded the configured wait "
-                  f"time ({args.wait}s):")
-            print()
+            print("\nWARNING: Log content for the following pods was not downloaded because the configured wait time "
+                  f"was exceeded ({args.wait}s):\n")
 
             # print the pods that timed out
             for pod_name in timeout_pods:
                 print(f"    {pod_name}")
 
-            print()
-            print("The wait time can be increased using the \"--wait=\" option.")
+            print("\nThe wait time can be increased using the \"--wait=\" option.")
 
         # print output directory
         print()
