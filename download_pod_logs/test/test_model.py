@@ -96,7 +96,7 @@ def test_download_logs() -> None:
     this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest(), output_dir="./test_download_logs")
 
     # run the method being tested
-    logs_dir, timeout_pods = this.download_logs()
+    logs_dir, timeout_pods, error_pods = this.download_logs()
 
     # verify the expected number of logs were written to disk
     assert len([name for name in os.listdir(logs_dir) if os.path.isfile(os.path.join(logs_dir, name))]) == 6
@@ -120,7 +120,7 @@ def test_download_logs_with_valid_selected_component() -> None:
     this: PodLogDownloader = PodLogDownloader(kubectl=KubectlTest(), output_dir="./test_download_logs_selected")
 
     # run the method being tested
-    logs_dir, timeout_pods = this.download_logs(selected_components=["sas-annotations"])
+    logs_dir, timeout_pods, error_pods = this.download_logs(selected_components=["sas-annotations"])
 
     # verify the expected number of logs were written to disk
     assert len([name for name in os.listdir(logs_dir) if os.path.isfile(os.path.join(logs_dir, name))]) == 1

@@ -27,9 +27,9 @@ $ python3 -m pip install -r requirements.txt
 ## Index of Tools
 Tool support for the latest release of SAS Viya:
 
-* [Pre-installation of SAS Viya System Requirements](pre_install_report)
 * [SAS Viya Deployment Report](deployment_report)
 * [SAS Viya Log Download Tool](download_pod_logs)
+* [Pre-installation of SAS Viya System Requirements](pre_install_report)
 
 ## Contributing
 
