@@ -39,12 +39,6 @@ _REPORT_FILE_NAME_TMPL_ = "viya_deployment_report_{}.html"
 # SAS custom API resource group id #
 _SAS_API_GROUP_ID_ = "sas.com"
 
-# default values for arguments shared between the model and command #
-DATA_FILE_ONLY_DEFAULT: bool = False
-INCLUDE_POD_LOG_SNIPS_DEFAULT: bool = False
-INCLUDE_RESOURCE_DEFINITIONS_DEFAULT: bool = False
-OUTPUT_DIRECTORY_DEFAULT: Text = "./"
-
 
 class ViyaDeploymentReport(object):
     """
