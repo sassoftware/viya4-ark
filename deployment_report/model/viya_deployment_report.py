@@ -49,13 +49,21 @@ class ViyaDeploymentReport(object):
 
     The gathered data can be written to disk as an HTML report and a JSON file containing the gathered data.
     """
+
+    # default values for arguments shared between the model and command #
+    DATA_FILE_ONLY_DEFAULT: bool = False
+    INCLUDE_POD_LOG_SNIPS_DEFAULT: bool = False
+    INCLUDE_RESOURCE_DEFINITIONS_DEFAULT: bool = False
+    OUTPUT_DIRECTORY_DEFAULT: Text = "./"
+
     def __init__(self) -> None:
         """
         Constructor for ViyaDeploymentReport object.
         """
         self._report_data = None
 
-    def gather_details(self, kubectl: KubectlInterface, include_pod_log_snips: bool = False) -> None:
+    def gather_details(self, kubectl: KubectlInterface,
+                       include_pod_log_snips: bool = INCLUDE_POD_LOG_SNIPS_DEFAULT) -> None:
         """
         This method executes the gathering of Kubernetes resources related to SAS components.
         Before this method is executed class fields will have a None value. This method will
@@ -496,9 +504,10 @@ class ViyaDeploymentReport(object):
         except KeyError:
             return None
 
-    def write_report(self, output_directory: Text = "", data_file_only: bool = False,
-                     include_resource_definitions: bool = False, file_timestamp: Optional[Text] = None) \
-            -> Tuple[Optional[AnyStr], Optional[AnyStr]]:
+    def write_report(self, output_directory: Text = OUTPUT_DIRECTORY_DEFAULT,
+                     data_file_only: bool = DATA_FILE_ONLY_DEFAULT,
+                     include_resource_definitions: bool = INCLUDE_RESOURCE_DEFINITIONS_DEFAULT,
+                     file_timestamp: Optional[Text] = None) -> Tuple[Optional[AnyStr], Optional[AnyStr]]:
         """
         Writes the report data to a file as a JSON string.
 

@@ -9,50 +9,17 @@
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
-import getopt
 import os
 import sys
 
-from typing import List, Optional, Text, Tuple
+from argparse import ArgumentParser
+from typing import List, Text
 
 from deployment_report.model.viya_deployment_report import ViyaDeploymentReport
 
 from viya_ark_library.command import Command
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError, NamespaceNotFoundError
 from viya_ark_library.k8s.sas_kubectl import Kubectl
-
-# command line options
-_DATA_FILE_OPT_SHORT_ = "d"
-_DATA_FILE_OPT_LONG_ = "data-file-only"
-_DATA_FILE_OPT_DESC_TMPL_ = "    -{}, --{:<30} (Optional) Generate only the report data JSON file."
-
-_KUBECTL_GLOBAL_OPT_SHORT_ = "k"
-_KUBECTL_GLOBAL_OPT_LONG_ = "kubectl-global-opts"
-_KUBECTL_GLOBAL_OPT_DESC_TMPL_ = "    -{}, --{:<30} (Optional) Any kubectl global options to use with all executions " \
-                                 "(excluding namespace, which should be set using -n, --namespace=)."
-
-_POD_SNIP_OPT_SHORT_ = "l"
-_POD_SNIP_OPT_LONG_ = "include-pod-log-snips"
-_POD_SNIP_OPT_DESC_TMPL_ = "    -{}, --{:<30} (Optional) Include a 10-line log snippet for each pod container " \
-                           "(increases command runtime and file size)."
-
-_NAMESPACE_OPT_SHORT_ = "n"
-_NAMESPACE_OPT_LONG_ = "namespace"
-_NAMESPACE_OPT_DESC_TMPL_ = "    -{}, --{:<30} (Optional) The namespace to target containing SAS software, if not " \
-                            "defined by KUBECONFIG."
-
-_OUTPUT_DIR_OPT_SHORT_ = "o"
-_OUTPUT_DIR_OPT_LONG_ = "output-dir"
-_OUTPUT_DIR_OPT_DESC_TMPL_ = "    -{}, --{:<30} (Optional) Existing directory where report files will be written."
-
-_RESOURCE_DEF_OPT_SHORT_ = "r"
-_RESOURCE_DEF_OPT_LONG_ = "include-resource-definitions"
-_RESOURCE_DEF_OPT_DESC_TMPL_ = "    -{}, --{:<30} (Optional) Include the full JSON resource definition for each " \
-                               "object in the report (increases file size)."
-
-_HELP_OPT_SHORT_ = "h"
-_HELP_OPT_LONG_ = "help"
-_HELP_OPT_DESC_TMPL_ = "    -{}, --{:<30} Print usage."
 
 # command line return codes #
 _SUCCESS_RC_ = 0
@@ -103,72 +70,47 @@ def main(argv: List):
 
     :param argv: The parameters passed to the script at execution.
     """
-    data_file_only: bool = False
-    kubectl_global_opts: Text = ""
-    include_pod_log_snips: bool = False
-    namespace: Optional[Text] = None
-    output_dir: Text = "./"
-    include_resource_definitions: bool = False
+    # configure ArgumentParser
+    arg_parser: ArgumentParser = ArgumentParser(prog=f"viya-ark.py {ViyaDeploymentReportCommand.command_name()}",
+                                                description=ViyaDeploymentReportCommand.command_desc())
 
-    # define the short options for this script
-    short_opts: Text = (f"{_DATA_FILE_OPT_SHORT_}"
-                        f"{_KUBECTL_GLOBAL_OPT_SHORT_}:"
-                        f"{_POD_SNIP_OPT_SHORT_}"
-                        f"{_NAMESPACE_OPT_SHORT_}:"
-                        f"{_OUTPUT_DIR_OPT_SHORT_}:"
-                        f"{_RESOURCE_DEF_OPT_SHORT_}"
-                        f"{_HELP_OPT_SHORT_}")
+    # add optional arguments
+    # data-file-only
+    arg_parser.add_argument(
+        "-d", "--data-file-only", action="store_true", dest="data_file_only",
+        help="Generate only the JSON-formatted data.")
+    # kubectl-global-opts
+    arg_parser.add_argument(
+        "-k", "--kubectl-global-opts", type=Text, default="", dest="kubectl_global_opts",
+        help="Any kubectl global options to use with all executions (excluding namespace, which should be set using "
+             "-n, --namespace).")
+    # include-pod-log-snips
+    arg_parser.add_argument(
+        "-l", "--include-pod-log-snips", action="store_true", dest="include_pod_log_snips",
+        help="Include the most recent log lines (up to 10) for each container in the report. This option increases "
+             "command runtime and file size.")
+    # namespace
+    arg_parser.add_argument(
+        "-n", "--namespace", type=Text, default=None, dest="namespace",
+        help="Namespace to target containing SAS software, if not defined by KUBECONFIG.")
+    # output-dir
+    arg_parser.add_argument(
+        "-o", "--output-dir", type=Text, default=ViyaDeploymentReport.OUTPUT_DIRECTORY_DEFAULT, dest="output_dir",
+        help="Directory where log files will be written. Defaults to "
+             f"\"{ViyaDeploymentReport.OUTPUT_DIRECTORY_DEFAULT}\".")
+    # include-resource-definitions
+    arg_parser.add_argument(
+        "-r", "--include-resource-definitions", action="store_true", dest="include_resource_definitions",
+        help="Include the full JSON-formatted definition for each resource in the report. This option increases file "
+             "size.")
 
-    # define the long options for this script
-    long_opts: List[Text] = [_DATA_FILE_OPT_LONG_,
-                             f"{_KUBECTL_GLOBAL_OPT_LONG_}=",
-                             _POD_SNIP_OPT_LONG_,
-                             f"{_NAMESPACE_OPT_LONG_}=",
-                             f"{_OUTPUT_DIR_OPT_LONG_}=",
-                             _RESOURCE_DEF_OPT_LONG_,
-                             _HELP_OPT_LONG_]
-
-    # get command line options
-    opts: Tuple = tuple()
-    try:
-        opts, args = getopt.getopt(argv, short_opts, long_opts)
-    except getopt.GetoptError as opt_error:
-        print()
-        print(f"ERROR: {opt_error}", file=sys.stderr)
-        usage(_BAD_OPT_RC_)
-
-    # process opts
-    for opt, arg in opts:
-        if opt in (f"-{_DATA_FILE_OPT_SHORT_}", f"--{_DATA_FILE_OPT_LONG_}"):
-            data_file_only = True
-
-        elif opt in (f"-{_KUBECTL_GLOBAL_OPT_SHORT_}", f"--{_KUBECTL_GLOBAL_OPT_LONG_}"):
-            kubectl_global_opts = arg
-
-        elif opt in (f"-{_POD_SNIP_OPT_SHORT_}", f"--{_POD_SNIP_OPT_LONG_}"):
-            include_pod_log_snips = True
-
-        elif opt in (f"-{_NAMESPACE_OPT_SHORT_}", f"--{_NAMESPACE_OPT_LONG_}"):
-            namespace = arg
-
-        elif opt in (f"-{_OUTPUT_DIR_OPT_SHORT_}", f"--{_OUTPUT_DIR_OPT_LONG_}"):
-            output_dir = arg
-
-        elif opt in (f"-{_RESOURCE_DEF_OPT_SHORT_}", f"--{_RESOURCE_DEF_OPT_LONG_}"):
-            include_resource_definitions = True
-
-        elif opt in (f"-{_HELP_OPT_SHORT_}", f"--{_HELP_OPT_LONG_}"):
-            usage(_SUCCESS_RC_)
-
-        else:
-            print()
-            print(f"ERROR: option {opt} not recognized", file=sys.stderr)
-            usage(_BAD_OPT_RC_)
+    # parse the args passed to this command
+    args = arg_parser.parse_args(argv)
 
     # initialize the kubectl object
     # this will also verify the connection to the cluster and if the namespace is valid, if provided
     try:
-        kubectl: Kubectl = Kubectl(namespace=namespace, global_opts=kubectl_global_opts)
+        kubectl: Kubectl = Kubectl(namespace=args.namespace, global_opts=args.kubectl_global_opts)
     except ConnectionError as e:
         print()
         print(f"ERROR: {e}", file=sys.stderr)
@@ -186,7 +128,7 @@ def main(argv: List):
     # gather the details for the report
     try:
         sas_deployment_report.gather_details(kubectl=kubectl,
-                                             include_pod_log_snips=include_pod_log_snips)
+                                             include_pod_log_snips=args.include_pod_log_snips)
     except KubectlRequestForbiddenError as e:
         print()
         print(f"ERROR: {e}", file=sys.stderr)
@@ -198,35 +140,11 @@ def main(argv: List):
         print()
         sys.exit(_RUNTIME_ERROR_RC_)
 
-    sas_deployment_report.write_report(output_directory=output_dir,
-                                       data_file_only=data_file_only,
-                                       include_resource_definitions=include_resource_definitions)
+    sas_deployment_report.write_report(output_directory=args.output_dir,
+                                       data_file_only=args.data_file_only,
+                                       include_resource_definitions=args.include_resource_definitions)
 
     sys.exit(_SUCCESS_RC_)
-
-
-###################
-#     usage()     #
-###################
-def usage(exit_code: int):
-    """
-    Prints the usage information for the deployment-report command and exits the program with the given exit_code.
-
-    :param exit_code: The exit code to return when exiting the program.
-    """
-    print()
-    print(f"Usage: {ViyaDeploymentReportCommand.command_name()} [<options>]")
-    print()
-    print("Options:")
-    print(_DATA_FILE_OPT_DESC_TMPL_.format(_DATA_FILE_OPT_SHORT_, _DATA_FILE_OPT_LONG_))
-    print(_KUBECTL_GLOBAL_OPT_DESC_TMPL_.format(_KUBECTL_GLOBAL_OPT_SHORT_, _KUBECTL_GLOBAL_OPT_LONG_ + "=\"<opts>\""))
-    print(_POD_SNIP_OPT_DESC_TMPL_.format(_POD_SNIP_OPT_SHORT_, _POD_SNIP_OPT_LONG_))
-    print(_NAMESPACE_OPT_DESC_TMPL_.format(_NAMESPACE_OPT_SHORT_, _NAMESPACE_OPT_LONG_ + "=\"<namespace>\""))
-    print(_OUTPUT_DIR_OPT_DESC_TMPL_.format(_OUTPUT_DIR_OPT_SHORT_, _OUTPUT_DIR_OPT_LONG_ + "=\"<dir>\""))
-    print(_RESOURCE_DEF_OPT_DESC_TMPL_.format(_RESOURCE_DEF_OPT_SHORT_, _RESOURCE_DEF_OPT_LONG_))
-    print(_HELP_OPT_DESC_TMPL_.format(_HELP_OPT_SHORT_, _HELP_OPT_LONG_))
-    print()
-    sys.exit(exit_code)
 
 
 ####################
