@@ -531,14 +531,10 @@ class ViyaDeploymentReport(object):
         # convert the data to a JSON string #
         data_json = json.dumps(self._report_data, cls=KubernetesObjectJSONEncoder, indent=4, sort_keys=True)
 
-        # blank line for output readability #
-        print()
-
         # write the report data #
         data_file_path: Text = output_directory + _REPORT_DATA_FILE_NAME_TMPL_.format(file_timestamp)
         with open(data_file_path, "w+") as data_file:
             data_file.write(data_json)
-            print("Created: {}".format(os.path.abspath(data_file_path)))
 
         # write the html file, if requested #
         html_file_path: Optional[Text] = None
@@ -550,9 +546,5 @@ class ViyaDeploymentReport(object):
                                                        trim_blocks=True, lstrip_blocks=True,
                                                        report_data=json.loads(data_json),
                                                        include_definitions=include_resource_definitions)
-            print("Created: {}".format(html_file_path))
-
-        # blank line for output readability #
-        print()
 
         return os.path.abspath(data_file_path), html_file_path
