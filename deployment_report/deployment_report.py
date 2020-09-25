@@ -18,6 +18,7 @@ from typing import List, Text
 from deployment_report.model.viya_deployment_report import ViyaDeploymentReport
 
 from viya_ark_library.command import Command
+from viya_ark_library.lrp_indicator import LRPIndicator
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError, NamespaceNotFoundError
 from viya_ark_library.k8s.sas_kubectl import Kubectl
 
@@ -127,8 +128,10 @@ def main(argv: List):
 
     # gather the details for the report
     try:
-        sas_deployment_report.gather_details(kubectl=kubectl,
-                                             include_pod_log_snips=args.include_pod_log_snips)
+        print()
+        with LRPIndicator(enter_message="Generating deployment report"):
+            sas_deployment_report.gather_details(kubectl=kubectl,
+                                                 include_pod_log_snips=args.include_pod_log_snips)
     except KubectlRequestForbiddenError as e:
         print()
         print(f"ERROR: {e}", file=sys.stderr)
@@ -140,9 +143,15 @@ def main(argv: List):
         print()
         sys.exit(_RUNTIME_ERROR_RC_)
 
-    sas_deployment_report.write_report(output_directory=args.output_dir,
-                                       data_file_only=args.data_file_only,
-                                       include_resource_definitions=args.include_resource_definitions)
+    data_file, html_file = sas_deployment_report.write_report(
+        output_directory=args.output_dir,
+        data_file_only=args.data_file_only,
+        include_resource_definitions=args.include_resource_definitions)
+
+    print(f"\nCreated: {data_file}")
+    if not args.data_file_only:
+        print(f"Created: {html_file}")
+    print()
 
     sys.exit(_SUCCESS_RC_)
 
