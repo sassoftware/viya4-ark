@@ -13,9 +13,12 @@
 
 from subprocess import CalledProcessError
 import os
+import pprint
+from typing import List
 
 from pre_install_report.library.utils import viya_constants
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface, KubernetesApiResources
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 from viya_ark_library.logging import ViyaARKLogger
 
 
@@ -53,9 +56,9 @@ class PreCheckUtils(object):
             error_msg = str(cpe.output)
             self.logger.error("deploy_manifest_file rc {} action {} filepath {} error_msg {}".format(str(rc), action,
                               file_path, error_msg))
-            return rc
+            return 1
 
-        self.logger.info("deploy_manifest_file {} rc {} action {} filepath {} data{}".format(rc, str(rc), action,
+        self.logger.info("deploy_manifest_file rc {} action {} filepath {} data{}".format(str(rc), action,
                          file_path, str(data)))
         return rc
 
@@ -67,13 +70,13 @@ class PreCheckUtils(object):
         wait --for=delete pod -l app=hello-world-pod
 
         cmd: kubectl command to be executed
-        return:  kubectl rc,  output
+        return:  kubectl rc
         """
         try:
             data = self._kubectl.do(test_cmd, False)
 
-            self.logger.info("do_cmd " + ' rc = 0' + test_cmd +
-                             ' data = ' + str(data))
+            self.logger.info("cmd {} rc = 0".format(test_cmd))
+            self.logger.debug("cmd {} rc = 0 response {}".format(test_cmd, str(data)))
             return 0
         except CalledProcessError as e:
             data = e.output
@@ -122,6 +125,52 @@ class PreCheckUtils(object):
                              cpe.returncode + " " + test_cmd)
             return False
 
+    def get_resources(self, resource_kind):
+        """
+         Retrieve specific kubernetes resource kind
+
+         return k8s_resource: List of Kubernetes resources
+         """
+        k8s_resources = []
+        return_code = 0
+        try:
+            k8s_resources: List[KubernetesResource] = self._kubectl.get_resources(resource_kind, False)
+            # my_list = []
+            # for node in k8s_resources:
+            #    my_list.append(node.as_dict())
+            # pprint.pprint(my_list)
+
+        except CalledProcessError as cpe:
+            return_code = str(cpe.returncode)
+            self.logger.exception("resource kind {} return code {}".format(str(resource_kind), str(return_code)))
+            return k8s_resources
+
+        self.logger.debug(" KubernetesResources {}".format(str(resource_kind)))
+        return k8s_resources
+
+    def get_resource(self, resource_kind, resource_name):
+        """
+        Retrieve specific kubernetes resource by name in json format
+
+        k8s_resource: Kubernetes resource information to retrieve
+        return: information as raw json
+        """
+        k8s_resource = None
+        return_code = 0
+        try:
+
+            k8s_resource = self._kubectl.get_resource(resource_kind, resource_name, False)
+        except CalledProcessError as cpe:
+            return_code = str(cpe.returncode)
+            self.logger.exception("resource {} {} return code {}".format(str(resource_kind),
+                                                                         str(resource_name), str(return_code)))
+            return k8s_resource
+
+        self.logger.debug("resource {} {} KubernetesResource {}".format(str(resource_kind),
+                                                                        str(resource_name),
+                                                                        pprint.pformat(k8s_resource.as_dict())))
+        return k8s_resource
+
     def _get_filepath(self, file_name):
         """
         Assemble and return path for specied file in project library
@@ -131,6 +180,5 @@ class PreCheckUtils(object):
         """
         current_dir = os.path.dirname(os.path.abspath(__file__))
         file_path = os.path.join(current_dir, "utils" + os.sep + file_name)
-        # current_dir = os.path.dirname(os.path.abspath(__file__))
-        # file_path = os.path.join(current_dir, file_name)
+
         return file_path

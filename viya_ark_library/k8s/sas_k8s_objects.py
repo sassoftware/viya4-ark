@@ -384,6 +384,7 @@ class KubernetesResource(MutableMapping):
         OPERATING_SYSTEM = "operatingSystem"
         OS_IMAGE = "osImage"
         OWNER_REFERENCES = "ownerReferences"
+        PARAMETERS = "parameters"
         PATH = "path"
         PATHS = "paths"
         PHASE = "phase"
@@ -394,6 +395,7 @@ class KubernetesResource(MutableMapping):
         PORT = "port"
         PORTS = "ports"
         PROTOCOL = "protocol"
+        PROVISIONER = "provisioner"
         PUBLISH_NODE_PORT_SERVICE = "publishNodePortService"
         READY = "ready"
         READY_REPLICAS = "readyReplicas"
@@ -448,6 +450,7 @@ class KubernetesResource(MutableMapping):
         REPLICA_SET = "ReplicaSet"
         SERVICE = "Service"
         STATEFUL_SET = "StatefulSet"
+        STORAGECLASS = "sc"
 
     def __init__(self, resource: Union[Dict, AnyStr]) -> None:
         """
@@ -743,3 +746,23 @@ class KubernetesResource(MutableMapping):
         :return: A native 'dict' version of this Kubernetes resource.
         """
         return self._resource
+
+    def get_parameter_value(self, key: Text) -> Optional[Any]:
+        """
+        Returns the given key's value from the 'parameters' dictionary.
+
+        :param key: The key of the value to return.
+        :return: The value mapped to the given key, or None if the given key doesn't exist.
+        """
+        try:
+            return self._resource[self.Keys.PARAMETERS][key]
+        except KeyError:
+            return None
+
+    def get_provisioner(self) -> Optional[AnyStr]:
+        """
+        Returns the 'metadata.creationTimestamp' value for this Resource.
+
+        :return: This Resource's 'metadata.creationTimestamp' value.
+        """
+        return self._resource.get(self.Keys.PROVISIONER)

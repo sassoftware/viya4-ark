@@ -26,6 +26,7 @@ from viya_ark_library.command import Command
 from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
 from viya_ark_library.k8s.sas_kubectl import Kubectl
 from viya_ark_library.logging import ViyaARKLogger
+from viya_ark_library.lrp_indicator import LRPIndicator
 
 PRP = pprint.PrettyPrinter(indent=4)
 
@@ -224,14 +225,16 @@ def main(argv):
         sys.exit(viya_messages.NAMESPACE_NOT_FOUND_RC_)
 
     check_limits = _read_properties_file()
-    sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck(sas_logger,
-                                                                    check_limits["VIYA_KUBELET_VERSION_MIN"],
-                                                                    check_limits["VIYA_MIN_WORKER_ALLOCATABLE_CPU"],
-                                                                    check_limits["VIYA_MIN_AGGREGATE_WORKER_CPU_CORES"],
-                                                                    check_limits["VIYA_MIN_ALLOCATABLE_WORKER_MEMORY"],
-                                                                    check_limits["VIYA_MIN_AGGREGATE_WORKER_MEMORY"])
+    with LRPIndicator(enter_message="Gathering facts"):
+        sas_pre_check_report: ViyaPreInstallCheck = \
+            ViyaPreInstallCheck(sas_logger, check_limits["VIYA_KUBELET_VERSION_MIN"],
+                                check_limits["VIYA_MIN_WORKER_ALLOCATABLE_CPU"],
+                                check_limits["VIYA_MIN_AGGREGATE_WORKER_CPU_CORES"],
+                                check_limits["VIYA_MIN_ALLOCATABLE_WORKER_MEMORY"],
+                                check_limits["VIYA_MIN_AGGREGATE_WORKER_MEMORY"])
     # gather the details for the report
     try:
+        print()
         sas_pre_check_report.check_details(kubectl, ingress_port, ingress_host, ingress_controller, output_dir)
     except RuntimeError as e:
         print()

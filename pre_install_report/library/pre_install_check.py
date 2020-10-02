@@ -104,33 +104,43 @@ class ViyaPreInstallCheck():
 
         ureg = UnitRegistry(datafile)
         quantity_ = ureg.Quantity
+
+        pre_check_utils_params = {}
+        pre_check_utils_params[viya_constants.KUBECTL] = self._kubectl
+        pre_check_utils_params["logger"] = self.sas_logger
+        utils = PreCheckUtils(pre_check_utils_params)
+
         configs_data = self.get_config_info()
         cluster_info = self._get_master_json()
         master_data = self._check_master(cluster_info)
         namespace_data = []
-        namespace_data = self._check_available_namespaces(self._get_namespaces_json(), namespace_data)
+        namespace_data = self._check_available_namespaces(self._get_json("namespaces"), namespace_data)
 
-        storage_json = self._get_storage_json()
+        storage_json = self._get_json("storageclass")
         storage_data = self._get_storage_classes(storage_json)
 
-        nodes_json = self._get_nodes_json()
+        nodes_json = self._get_json("nodes")
         nodes_data = self.get_nested_nodes_info(nodes_json, quantity_)
 
         global_data = []
         global_data = self.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
 
-        cluster_admin_permission_data, namespace_admin_permission_data, \
-            ingress_data, ns_admin_permission_aggregate, \
-            cluster_admin_permission_aggregate = self._check_permissions(ingress_controller, str(ingress_host),
-                                                                         str(ingress_port))
+        params = {}
+        params[viya_constants.INGRESS_CONTROLLER] = ingress_controller
+        params[viya_constants.INGRESS_HOST] = str(ingress_host)
+        params[viya_constants.INGRESS_PORT] = str(ingress_port)
+        params[viya_constants.PERM_CLASS] = utils
+        params['logger'] = self.sas_logger
 
-        self.generate_report(global_data, master_data, configs_data,
-                             storage_data,
-                             namespace_data, cluster_admin_permission_data,
-                             namespace_admin_permission_data,
-                             ingress_data,
-                             ns_admin_permission_aggregate,
-                             cluster_admin_permission_aggregate,
+        permissions_check = PreCheckPermissions(params)
+        self._check_permissions(permissions_check)
+
+        self.generate_report(global_data, master_data, configs_data, storage_data, namespace_data,
+                             permissions_check.get_cluster_admin_permission_data(),
+                             permissions_check.get_namespace_admin_permission_data(),
+                             permissions_check.get_ingress_data(),
+                             permissions_check.get_namespace_admin_permission_aggregate(),
+                             permissions_check.get_cluster_admin_permission_aggregate(),
                              output_dir)
         return
 
@@ -290,34 +300,15 @@ class ViyaPreInstallCheck():
         configs_data.append(cluster_data)
         return configs_data
 
-    def _get_nodes_json(self):
+    def _get_json(self, k8sresource):
         """
-        Retrieve the nodes information from the Kubernetes cluster in json format.
+        Retrieve the k8s resource information from the Kubernetes cluster in json format.
 
         return:  nodes information in json format
         """
-        nodes_json = self._get_raw_json("nodes")
+        resource_json = self._get_raw_json(k8sresource)
 
-        return nodes_json
-
-    def _get_namespaces_json(self):
-        """
-        Retrieve the namespaces information from Kubernetes in json format.
-
-        return:  namespaces information in json format
-        """
-        namespace_json = self._get_raw_json("namespaces")
-
-        return namespace_json
-
-    def _get_storage_json(self):
-        """
-        Retrieve the storage class information from Kubernetes in json format
-
-        return:  storage class information in json format
-        """
-        storage_json = self._get_raw_json("storageclass")
-        return storage_json
+        return resource_json
 
     def _get_storage_classes(self, storage_json):
         """
@@ -333,6 +324,8 @@ class ViyaPreInstallCheck():
             for node in storage_json['items']:
                 node_data = {}
                 node_data['storageClassNameName'] = node['metadata']['name']
+                node_data['provisioner'] = node['provisioner']
+                node_data['selfLink'] = node['metadata']['selfLink']
 
                 try:
                     annotated_lines = node['metadata']['annotations']
@@ -398,48 +391,36 @@ class ViyaPreInstallCheck():
         if os.path.exists(file_name):
             os.remove(file_name)
 
-    def _check_permissions(self, ingress_controller, ingress_host, ingress_port):
+    def _check_permissions(self, permissions_check: PreCheckPermissions):
         """
         Check if permissions are adequate to complete Viya deployment with cluster admin
         and namespace admin lveles of access to cluster resources
 
-        ingress_controller:  nginx/istio or other supported controller
-        ingress_host: user specified host for ingress controller
-        ingress_port: user specified  port for  ingress controller
-        return: dictionary objects with the results of permissions checking
+        permissions_check:  instance of PreCheckPermissions class
         """
-        pre_check_utils_params = {}
-        pre_check_utils_params[viya_constants.KUBECTL] = self._kubectl
-        pre_check_utils_params["logger"] = self.sas_logger
-        utils = PreCheckUtils(pre_check_utils_params)
-
-        params = {}
-        params[viya_constants.INGRESS_CONTROLLER] = ingress_controller
-        params[viya_constants.INGRESS_HOST] = ingress_host
-        params[viya_constants.INGRESS_PORT] = ingress_port
-        params[viya_constants.PERM_CLASS] = utils
-        params['logger'] = self.sas_logger
-
-        # initialize the PreCheckPermissions object
-        perms = PreCheckPermissions(params)
         namespace = self._kubectl.get_namespace()
+        permissions_check.get_sc_resources()
+        permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, False)
 
-        perms.check_sample_application()
-        perms.check_sample_ingress()
-        perms.check_deploy_crd()
-        perms.check_rbac_role()
-        perms.check_create_custom_resource()
-        perms.check_get_custom_resource(namespace, )
-        perms.check_delete_custom_resource()
-        perms.check_rbac_delete_role()
-        perms.check_sample_response()
-        perms.check_delete_crd()
-        perms.check_delete_sample_application()
-        perms.check_delete_sample_ingress()
+        permissions_check.check_sample_application()
+        permissions_check.check_sample_ingress()
+        permissions_check.check_deploy_crd()
+        permissions_check.check_rbac_role()
+        permissions_check.check_create_custom_resource()
+        permissions_check.check_get_custom_resource(namespace)
 
-        return perms.get_cluster_admin_permission_data(), perms.get_namespace_admin_permission_data(),\
-            perms.get_ingress_data(), perms.get_namespace_admin_permission_aggregate(), \
-            perms.get_cluster_admin_permission_aggregate()
+        permissions_check.check_delete_custom_resource()
+        permissions_check.check_rbac_delete_role()
+
+        permissions_check.check_sample_response()
+
+        permissions_check.check_delete_crd()
+        permissions_check.check_delete_sample_application()
+        permissions_check.check_delete_sample_ingress()
+        # Check the status of deployed PVCs
+        permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, True)
+        # Delete all Deployed PVCs
+        permissions_check.manage_pvc(viya_constants.KUBECTL_DELETE, False)
 
     def _escape_ansi(self, line):
         """
