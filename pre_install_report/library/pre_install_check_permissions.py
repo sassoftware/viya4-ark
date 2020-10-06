@@ -169,7 +169,7 @@ class PreCheckPermissions(object):
 
         """
         storage_class_names = self.get_storage_classes_details()
-        if storage_class_names:
+        if len(storage_class_names) > 0:
             for value in storage_class_names:
                 # check for 'kubernetes.io/azure-file', 'azurefile-disk'
                 self.logger.info("Storage class: {}".format(value))
@@ -185,9 +185,22 @@ class PreCheckPermissions(object):
                                                    PVC_AZURE_MANAGED_PREMIUM, PVC_AZURE_MANAGED_PREMIUM_NAME,
                                                    viya_constants.PERM_AZ_DISK)
                 else:
-                    self.logger.error("Storage class not attempted {}".format(value))
+                    self.logger.debug("Storage class not attempted {}".format(value))
+        else:
+            self._skip_pvc_check()
 
         self.logger.debug("Namespaced results {}".format(pprint.pformat(self.namespace_admin_permission_data)))
+
+    def _skip_pvc_check(self):
+        self.namespace_admin_permission_data[viya_constants.PERM_AZ_FILE] = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_AZ_FILE_PR] = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_AZ_DISK] = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_FILE]\
+            = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_FILE_PR] \
+            = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_DISK] \
+            = viya_constants.PERM_SKIPPING
 
     def get_sc_resources(self):
         """
@@ -195,6 +208,15 @@ class PreCheckPermissions(object):
          return k8s_resource: List of Kubernetes resources
         """
         self._storage_class_sc = self.utils.get_resources(KubernetesResource.Kinds.STORAGECLASS)
+        if not self._storage_class_sc:
+            self.cluster_admin_permission_data[viya_constants.PERM_GET + viya_constants.PERM_STORAGE_CLASS] = \
+                viya_constants.INSUFFICIENT_PERMS
+            self.cluster_admin_permission_aggregate[viya_constants.PERM_GET + viya_constants.PERM_STORAGE_CLASS] = \
+                viya_constants.INSUFFICIENT_PERMS
+        else:
+            self.cluster_admin_permission_data[viya_constants.PERM_GET + viya_constants.PERM_STORAGE_CLASS] = \
+                viya_constants.ADEQUATE_PERMS
+        return
 
     def get_storage_classes_details(self):
         """
