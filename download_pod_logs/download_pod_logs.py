@@ -98,6 +98,9 @@ def main(argv: List):
         help="Wait time, in seconds, before terminating a log-gathering process. Defaults to "
              f"\"{PodLogDownloader.DEFAULT_WAIT}\".")
 
+    arg_parser.add_argument(
+        "--no-parse", action="store_true", dest="noparse", help="Download logfile in original JSON format.")
+
     # add positional arguments
     arg_parser.add_argument(
         "selected_components", default=None, nargs="*",
@@ -127,7 +130,7 @@ def main(argv: List):
         log_downloader = PodLogDownloader(kubectl=kubectl,
                                           output_dir=args.output_dir,
                                           processes=args.processes,
-                                          wait=args.wait)
+                                          wait=args.wait, noparse=args.noparse)
     except AttributeError as e:
         print()
         print(f"ERROR: {e}", sys.stderr)
