@@ -99,7 +99,8 @@ def main(argv: List):
              f"\"{PodLogDownloader.DEFAULT_WAIT}\".")
 
     arg_parser.add_argument(
-        "--no-parse", action="store_true", dest="noparse", help="Download logfile in original JSON format.")
+        "--no-parse", action="store_true", dest="noparse",
+        help="Download log files in original format without parsing.")
 
     # add positional arguments
     arg_parser.add_argument(
@@ -130,7 +131,7 @@ def main(argv: List):
         log_downloader = PodLogDownloader(kubectl=kubectl,
                                           output_dir=args.output_dir,
                                           processes=args.processes,
-                                          wait=args.wait, noparse=args.noparse)
+                                          wait=args.wait)
     except AttributeError as e:
         print()
         print(f"ERROR: {e}", sys.stderr)
@@ -142,7 +143,7 @@ def main(argv: List):
         print()
         with LRPIndicator(enter_message="Downloading pod logs"):
             log_dir, timeout_pods, error_pods = log_downloader.download_logs(
-                selected_components=args.selected_components, tail=args.tail)
+                selected_components=args.selected_components, tail=args.tail, noparse=args.noparse)
 
         # print any containers that encountered errors, if present
         if len(error_pods) > 0:

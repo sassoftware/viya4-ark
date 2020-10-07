@@ -38,7 +38,7 @@ class PodLogDownloader(object):
     DEFAULT_WAIT = 30
 
     def __init__(self, kubectl: KubectlInterface, output_dir: Text = DEFAULT_OUTPUT_DIR,
-                 processes: int = DEFAULT_PROCESSES, wait: int = DEFAULT_WAIT, noparse: bool = False) -> None:
+                 processes: int = DEFAULT_PROCESSES, wait: int = DEFAULT_WAIT) -> None:
         """
         PodLogDownloader is responsible for configuring and executing asynchronous log gathering for all or a select
         number of pods in a given namespace.
@@ -61,16 +61,16 @@ class PodLogDownloader(object):
         self._processes = processes
         self._pool = Pool(processes=processes)
         self._wait = wait
-        self._noparse = noparse
 
-    def download_logs(self, selected_components: Optional[List[Text]] = None, tail: int = DEFAULT_TAIL) \
-            -> Tuple[Text, List[Text], List[Tuple[Text, Text]]]:
+    def download_logs(self, selected_components: Optional[List[Text]] = None, tail: int = DEFAULT_TAIL,
+                      noparse: bool = False) -> Tuple[Text, List[Text], List[Tuple[Text, Text]]]:
         """
         Downloads the log files for all or a select group of pods and their containers. A status summary is prepended
         to the downloaded log file.
 
         :param selected_components: List of component names for which logs should be retrieved.
         :param tail: Lines of recent log file to retrieve.
+        :param noparse: log file in original form.
 
         :raises KubectlRequestForbiddenError: If list pods is forbidden in the given namespace.
         :raises NoPodsError: If pods can be listed but no pods are found in the given namespace.
@@ -138,7 +138,7 @@ class PodLogDownloader(object):
         write_log_processes: List[_LogDownloadProcess] = list()
         for pod in selected_pods:
             process = self._pool.apply_async(self._write_log, args=(self._kubectl, pod, tail, self._output_dir,
-                                             self._noparse))
+                                             noparse))
             download_process = _LogDownloadProcess(pod.get_name(), process)
             write_log_processes.append(download_process)
 
@@ -195,22 +195,21 @@ class PodLogDownloader(object):
 
             # open the output file for writing
             with open(output_file_path, "w", encoding="utf-8") as output_file:
-                if (not noparse):
-                    # template for a line in the log header
-                    header_tmpl = "# {:<25} {}\n"
+                # template for a line in the log header
+                header_tmpl = "# {:<25} {}\n"
 
-                    # write status information at the top of the log
-                    output_file.write(("#" * 50) + "\n")
-                    output_file.write("# Container Status\n")
-                    output_file.write("#\n")
-                    output_file.writelines(header_tmpl.format("sas-component-name:", pod.get_sas_component_name()))
-                    output_file.writelines(header_tmpl.format("sas-component-version:",
-                                           pod.get_sas_component_version()))
-                    for key, value in container_status.get_headers_dict().items():
-                        output_file.writelines(header_tmpl.format(f"{key}:", value))
+                # write status information at the top of the log
+                output_file.write(("#" * 50) + "\n")
+                output_file.write("# Container Status\n")
+                output_file.write("#\n")
+                output_file.writelines(header_tmpl.format("sas-component-name:", pod.get_sas_component_name()))
+                output_file.writelines(header_tmpl.format("sas-component-version:",
+                                       pod.get_sas_component_version()))
+                for key, value in container_status.get_headers_dict().items():
+                    output_file.writelines(header_tmpl.format(f"{key}:", value))
 
-                    # close the status header
-                    output_file.writelines(("#" * 50) + "\n\n")
+                # close the status header
+                output_file.writelines(("#" * 50) + "\n\n")
 
                 # create tuple to hold information about failed containers/pods
                 err_info: Optional[Tuple[Text, Text]] = None
@@ -227,7 +226,7 @@ class PodLogDownloader(object):
                     err_info = (container_status.get_name(), pod.get_name())
 
                 # parse any structured logging
-                if (noparse):
+                if noparse:
                     output_file.write("\n".join(log))
                 else:
                     file_content = SASStructuredLoggingParser.parse_log(log)

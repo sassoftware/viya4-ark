@@ -26,4 +26,4 @@ optional arguments:
                         "25000".
   -w WAIT, --wait WAIT  Wait time, in seconds, before terminating a log-
                         gathering process. Defaults to "30".
-  --no-parse            Download logfile in original JSON format.
+  --no-parse            Download log files in original format without parsing.
