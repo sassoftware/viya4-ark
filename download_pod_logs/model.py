@@ -62,14 +62,15 @@ class PodLogDownloader(object):
         self._pool = Pool(processes=processes)
         self._wait = wait
 
-    def download_logs(self, selected_components: Optional[List[Text]] = None, tail: int = DEFAULT_TAIL) \
-            -> Tuple[Text, List[Text], List[Tuple[Text, Text]]]:
+    def download_logs(self, selected_components: Optional[List[Text]] = None, tail: int = DEFAULT_TAIL,
+                      noparse: bool = False) -> Tuple[Text, List[Text], List[Tuple[Text, Text]]]:
         """
         Downloads the log files for all or a select group of pods and their containers. A status summary is prepended
         to the downloaded log file.
 
         :param selected_components: List of component names for which logs should be retrieved.
         :param tail: Lines of recent log file to retrieve.
+        :param noparse: log file in original form.
 
         :raises KubectlRequestForbiddenError: If list pods is forbidden in the given namespace.
         :raises NoPodsError: If pods can be listed but no pods are found in the given namespace.
@@ -136,7 +137,8 @@ class PodLogDownloader(object):
         # create the list of pooled asynchronous processes
         write_log_processes: List[_LogDownloadProcess] = list()
         for pod in selected_pods:
-            process = self._pool.apply_async(self._write_log, args=(self._kubectl, pod, tail, self._output_dir))
+            process = self._pool.apply_async(self._write_log, args=(self._kubectl, pod, tail, self._output_dir,
+                                             noparse))
             download_process = _LogDownloadProcess(pod.get_name(), process)
             write_log_processes.append(download_process)
 
@@ -156,7 +158,7 @@ class PodLogDownloader(object):
         return os.path.abspath(self._output_dir), timeout_pods, error_pods
 
     @staticmethod
-    def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text) -> \
+    def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text, noparse: bool) -> \
             Optional[Tuple[Text, Text]]:
         """
         Internal method used for gathering the status and log for each container in the provided pod and writing
@@ -201,7 +203,8 @@ class PodLogDownloader(object):
                 output_file.write("# Container Status\n")
                 output_file.write("#\n")
                 output_file.writelines(header_tmpl.format("sas-component-name:", pod.get_sas_component_name()))
-                output_file.writelines(header_tmpl.format("sas-component-version:", pod.get_sas_component_version()))
+                output_file.writelines(header_tmpl.format("sas-component-version:",
+                                       pod.get_sas_component_version()))
                 for key, value in container_status.get_headers_dict().items():
                     output_file.writelines(header_tmpl.format(f"{key}:", value))
 
@@ -220,15 +223,16 @@ class PodLogDownloader(object):
                     err_msg = (f"ERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
                                f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]")
                     log: List[AnyStr] = [err_msg]
-
                     err_info = (container_status.get_name(), pod.get_name())
 
                 # parse any structured logging
-                file_content = SASStructuredLoggingParser.parse_log(log)
-
-                # write the retrieved log to the file
-                output_file.write("Beginning log...\n\n")
-                output_file.write("\n".join(file_content))
+                if noparse:
+                    output_file.write("\n".join(log))
+                else:
+                    file_content = SASStructuredLoggingParser.parse_log(log)
+                    # write the retrieved log to the file
+                    output_file.write("Beginning log...\n\n")
+                    output_file.write("\n".join(file_content))
 
         return err_info
 

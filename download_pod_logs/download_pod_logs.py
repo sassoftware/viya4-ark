@@ -98,6 +98,10 @@ def main(argv: List):
         help="Wait time, in seconds, before terminating a log-gathering process. Defaults to "
              f"\"{PodLogDownloader.DEFAULT_WAIT}\".")
 
+    arg_parser.add_argument(
+        "--no-parse", action="store_true", dest="noparse",
+        help="Download log files in original format without parsing.")
+
     # add positional arguments
     arg_parser.add_argument(
         "selected_components", default=None, nargs="*",
@@ -139,7 +143,7 @@ def main(argv: List):
         print()
         with LRPIndicator(enter_message="Downloading pod logs"):
             log_dir, timeout_pods, error_pods = log_downloader.download_logs(
-                selected_components=args.selected_components, tail=args.tail)
+                selected_components=args.selected_components, tail=args.tail, noparse=args.noparse)
 
         # print any containers that encountered errors, if present
         if len(error_pods) > 0:

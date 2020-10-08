@@ -1,5 +1,6 @@
 usage: viya-ark.py download-pod-logs [-h] [-n NAMESPACE] [-o OUTPUT_DIR]
                                      [-p PROCESSES] [-t TAIL] [-w WAIT]
+                                     [--no-parse]
                                      [selected_components [selected_components ...]]
 
 Download log files for all or a select list of pods.
@@ -25,3 +26,4 @@ optional arguments:
                         "25000".
   -w WAIT, --wait WAIT  Wait time, in seconds, before terminating a log-
                         gathering process. Defaults to "30".
+  --no-parse            Download log files in original format without parsing.
