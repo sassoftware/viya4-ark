@@ -158,8 +158,8 @@ class PodLogDownloader(object):
         return os.path.abspath(self._output_dir), timeout_pods, error_pods
 
     @staticmethod
-    def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text, noparse: bool) -> \
-            Optional[Tuple[Text, Text]]:
+    def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text,
+                   noparse: bool = False) -> Optional[Tuple[Text, Text]]:
         """
         Internal method used for gathering the status and log for each container in the provided pod and writing
         the gathered information to an on-disk log file.
@@ -177,8 +177,11 @@ class PodLogDownloader(object):
         # get the containerStatuses for this pod
         container_statuses: List[Dict] = pod.get_status_value(KubernetesResource.Keys.CONTAINER_STATUSES)
 
+        # create tuple to hold information about failed containers/pods
+        err_info: Optional[Tuple[Text, Text]] = None
+
         # for each container status in the list, gather status and print values and log into file
-        for container_status_dict in container_statuses:
+        for container_status_dict in container_statuses or []:
             # create object to get container status values
             container_status = _ContainerStatus(container_status_dict)
 
@@ -210,9 +213,6 @@ class PodLogDownloader(object):
 
                 # close the status header
                 output_file.writelines(("#" * 50) + "\n\n")
-
-                # create tuple to hold information about failed containers/pods
-                err_info: Optional[Tuple[Text, Text]] = None
 
                 # call kubectl to get the log for this container
                 try:
