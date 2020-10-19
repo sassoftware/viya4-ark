@@ -25,11 +25,11 @@ try:
     from yaml import CSafeLoader as Loader
 except ImportError:
     from yaml import SafeLoader as Loader
-    
+
 # Control vars
 cluster_settings = None
 
-#set up logging
+# Set up logging
 logFile = "ldap_validation_" + str(datetime.now()) + ".log"
 open(logFile, 'a').close()
 
@@ -75,22 +75,21 @@ def importConfigYAML(yaml_file):
     """
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
 
-    
     if not os.path.exists(yaml_file):
         logMessage("Invalid config yaml specified: " + str(yaml_file))
         sys.exit(1)
         return "failed"
-        
+
     try:
         logMessage("Importing sitedefault: " + yaml_file)
-        
+
         # Read the yaml file
         with open(yaml_file, 'r') as yfile:
             yaml_content = yaml.load(yfile, Loader=Loader)
         yfile.close()
 
         logMessage("Successfully loaded yaml file '" + str(yaml_file) + "'")
-        
+
         assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['host'] is not None), "Error: LDAP Host is undefined."
         assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['port'] is not None), "Error: LDAP port is undefined."
         assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['url'] is not None), "Error: LDAP URL is undefined."
@@ -100,7 +99,7 @@ def importConfigYAML(yaml_file):
         assert(yaml_content['config']['application']['sas.identities.providers.ldap.user']['baseDN'] is not None), "Error: LDAP User BaseDN is undefined."
         assert(yaml_content['config']['application']['sas.identities.providers.ldap.group']['baseDN'] is not None), "Error: LDAP Group BaseDN is undefined."
         assert(yaml_content['config']['application']['sas.identities']['administrator'] is not None), "Error: LDAP Administrator is undefined."
-        
+
         logMessage("Sitedefault contains required values.")
 
     except (IOError, ValueError):
@@ -125,17 +124,15 @@ def main(argv):
     :param argv: The parameters passed to the script at execution.
     """
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
-    
 
     try:
         opts, args = getopt.getopt(argv, "y:Y",
                                    ["sitedefault=", "sitedefault="])
     except getopt.GetoptError as opt_error:
         logMessage(opt_error)
-    
-    
+
     sitedefault_loc = ""
-    
+
     for opt, arg in opts:
         logMessage("Processing command line option <" + opt + " " + arg + ">")
         if opt in ('-y', '--sitedefault'):
@@ -145,8 +142,8 @@ def main(argv):
             logMessage("Setting sitedefault to: " + arg)
             sitedefault_loc = arg
         else:
-            logMessage(opt_error)
-            
+            logMessage("Unrecognized command line option <"+ opt + " " + arg + ">")
+
     cluster_settings = importConfigYAML(sitedefault_loc)
 
 ##################
