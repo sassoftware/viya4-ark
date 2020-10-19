@@ -64,8 +64,6 @@ class PreCheckPermissions(object):
         self.ingress_data = {}
         self.ingress_data[viya_constants.INGRESS_CONTROLLER] = self.ingress_controller
         self.ingress_file = "hello-ingress.yaml"
-        # if self.ingress_controller == viya_constants.INGRESS_ISTIO:
-        #    self.ingress_file = "helloworld-gateway.yaml"
         self._storage_class_sc: List[KubernetesResource] = None
 
     def _set_results_cluster_admin(self, resource_key, rc):
