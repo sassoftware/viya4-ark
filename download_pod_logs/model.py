@@ -147,11 +147,10 @@ class PodLogDownloader(object):
         error_pods: List[Tuple[Text, Text]] = list()
         for process in write_log_processes:
             try:
-                err_info: Optional[Tuple[Text, Text]] = process.get_process().get(timeout=self._wait)
+                err_info: List[Tuple[Optional[Text], Text]] = process.get_process().get(timeout=self._wait)
 
                 # add the error message, if returned
-                if err_info:
-                    error_pods.append(err_info)
+                error_pods.extend(err_info)
             except TimeoutError:
                 timeout_pods.append(process.get_pod_name())
 
@@ -180,17 +179,18 @@ class PodLogDownloader(object):
         # create list of tuples to hold information about failed containers/pods
         err_info: List[Tuple[Optional[Text], Text]] = list()
 
+        if not container_statuses:
+            err_info.append((None, pod.get_name()))
+            return err_info
+
         # for each container status in the list, gather status and print values and log into file
-        for container_status_dict in container_statuses or []:
+        for container_status_dict in container_statuses:
             # create object to get container status values
             container_status = _ContainerStatus(container_status_dict)
 
             # build the output file name
-            # if there are no containers to report on, return
-            if len(container_statuses) == 0:
-                return []
             # if there is only one container, only include the pod name in the log file name
-            elif len(container_statuses) == 1:
+            if len(container_statuses) == 1:
                 output_file_path = f"{output_dir}{os.sep}{pod.get_name()}.log"
             # if there is more than one container, include both the pod and container name in the log file name
             else:

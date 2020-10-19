@@ -57,7 +57,7 @@ def test_write_log_container_status_none() -> None:
 
     err_info = PodLogDownloader._write_log(kubectl=KubectlTest(), pod=pod, tail=1,
                                            output_dir="./no_container_status_test")
-    assert not err_info
+    assert not err_info[0][0]
 
 
 ####################################################################
