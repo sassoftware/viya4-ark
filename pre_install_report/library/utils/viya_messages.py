@@ -24,7 +24,7 @@ KUBELET_VERSION_ERROR = 'ERROR: Check the VIYA_KUBELET_VERSION_MIN and VIYA_KUBE
                         'specified in the <tool-download-dir>/viya4-ark/pre_install_report/viya_set_limit.py file'
 OPTION_ERROR = "ERROR: option {} not recognized"
 OPTION_VALUES_ERROR = "ERROR: Provide valid values for all required options. Check options -i, -p and -H."
-INGRESS_CONTROLLER_ERROR = "ERROR: Ingress controller specified must be nginx or istio. Check value on option -i "
+INGRESS_CONTROLLER_ERROR = "ERROR: Ingress controller specified must be nginx. Check value on option -i "
 OUPUT_PATH_ERROR = "ERROR: The report output path is not valid {}. Check value on option -o "
 EXCEPTION_MESSAGE = "ERROR: {}"
 

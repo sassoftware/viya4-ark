@@ -120,11 +120,12 @@ def usage(exit_code: int):
     :param exit_code: The exit code to return when exiting the program.
     """
     print()
-    print("Usage: viya-ark.py pre_install_report <-H|--host> <-p|--port> [<options>]")
+    print("Usage: viya-ark.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
     print()
     print("Options:")
-    print("    -H  --host                    (Required)Ingress host for nginx used for Viya deployment")
-    print("    -p  --port=xxxxx or \"\"        (Required)Ingress port for nginx used for Viya deployment")
+    print("    -i  --ingress=nginx           (Required)Kubernetes ingress controller used for Viya deployment")
+    print("    -H  --host                    (Required)Ingress host used for Viya deployment")
+    print("    -p  --port=xxxxx or \"\"        (Required)Ingress port used for Viya deployment")
     print("    -h  --help                    (Optional)Show this usage message")
     print("    -n  --namespace               (Optional)Kubernetes namespace used for Viya deployment")
     print("    -o, --output-dir=\"<dir>\"      (Optional)Write the report and log files to the provided directory")
@@ -145,12 +146,13 @@ def main(argv):
     :param argv: The parameters passed to the script at execution.
     """
     try:
-        opts, args = getopt.getopt(argv, "H:p:hn:o:d",
-                                   ["host=", "port=", "help", "namespace=", "output-dir=", "debug"])
+        opts, args = getopt.getopt(argv, "i:H:p:hn:o:d",
+                                   ["ingress=", "host=", "port=", "help", "namespace=", "output-dir=", "debug"])
     except getopt.GetoptError as opt_error:
         print(viya_messages.EXCEPTION_MESSAGE.format(opt_error))
         usage(viya_messages.BAD_OPT_RC_)
 
+    found_ingress_controller: bool = False
     found_ingress_host: bool = False
     found_ingress_port: bool = False
     output_dir: Optional[Text] = ""
@@ -165,6 +167,9 @@ def main(argv):
             logging_level = logging.DEBUG
         elif opt in ('-n', '--namespace'):
             name_space = arg
+        elif opt in ('-i', '--ingress'):
+            ingress_controller = arg
+            found_ingress_controller = True
         elif opt in ('-H', '--host'):
             ingress_host = arg
             found_ingress_host = True
@@ -178,13 +183,7 @@ def main(argv):
             print(viya_messages.OPTION_ERROR.format(str(opt)))
             usage(viya_messages.BAD_OPT_RC_)
 
-    if not found_ingress_host or not found_ingress_port:
-        print(viya_messages.OPTION_VALUES_ERROR)
-        usage(viya_messages.BAD_OPT_RC_)
-
-    ingress_controller = viya_constants.INGRESS_NGINX
-
-    # make sure path is valid #
+    # make sure path is valid and set up logging#
     if output_dir != "":
         if not output_dir.endswith(os.sep):
             output_dir = output_dir + os.sep
@@ -201,16 +200,29 @@ def main(argv):
         usage(viya_messages.BAD_OPT_RC_)
 
     sas_logger = ViyaARKLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
+    logger = sas_logger.get_logger()
     _read_environment_var('KUBECONFIG')
+
+    if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
+        logger.error(viya_messages.OPTION_VALUES_ERROR)
+        print(viya_messages.OPTION_VALUES_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
+
+    if not(str(ingress_controller) == viya_constants.INGRESS_NGINX):
+        logger.error(viya_messages.INGRESS_CONTROLLER_ERROR)
+        print(viya_messages.INGRESS_CONTROLLER_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
 
     try:
         kubectl = Kubectl(namespace=name_space)
     except ConnectionError as e:
+        logger.error(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         sys.exit(viya_messages.CONNECTION_ERROR_RC_)
     except NamespaceNotFoundError as e:
+        logger.error(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
