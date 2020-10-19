@@ -28,7 +28,10 @@ except ImportError:
     
 # Control vars
 cluster_settings = None
+
+#set up logging
 logFile = "ldap_validation_" + str(datetime.now()) + ".log"
+open(logFile, 'a').close()
 
 # --------------------------------------------------------------------------------------------------
 def logMessage(message, error_flag=False):
@@ -41,8 +44,7 @@ def logMessage(message, error_flag=False):
     Returns:
         None
     """
-    #print('===Entry {0}==='.format(inspect.stack()[0][3]))
-    
+
     dateTimeObj = datetime.now()
 
     logger = open(logFile, "a")
@@ -71,7 +73,7 @@ def importConfigYAML(yaml_file):
     Raises:
         dict - object containing all content from supplied yaml in dict format
     """
-    print('===Entry {0}==='.format(inspect.stack()[0][3]))
+    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
 
     
     if not os.path.exists(yaml_file):
@@ -80,7 +82,7 @@ def importConfigYAML(yaml_file):
         return "failed"
         
     try:
-        print("Importing sitedefault: " + yaml_file)
+        logMessage("Importing sitedefault: " + yaml_file)
         
         # Read the yaml file
         with open(yaml_file, 'r') as yfile:
@@ -89,10 +91,17 @@ def importConfigYAML(yaml_file):
 
         logMessage("Successfully loaded yaml file '" + str(yaml_file) + "'")
         
-        # Don't display the contents of the yaml file since it contains a password
-        # TO DO: obfuscate password when displaying yaml file contents
-        print("File contents:")
-        print(yaml_content)
+        assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['host'] is not None), "Error: LDAP Host is undefined."
+        assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['port'] is not None), "Error: LDAP port is undefined."
+        assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['url'] is not None), "Error: LDAP URL is undefined."
+        assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['anonymousBind'] is not None), "Error: LDAP anonymousBind is undefined."
+        assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['userDN'] is not None), "Error: LDAP userDN is undefined."
+        assert(yaml_content['config']['application']['sas.identities.providers.ldap.connection']['password'] is not None), "Error: LDAP password is undefined."
+        assert(yaml_content['config']['application']['sas.identities.providers.ldap.user']['baseDN'] is not None), "Error: LDAP User BaseDN is undefined."
+        assert(yaml_content['config']['application']['sas.identities.providers.ldap.group']['baseDN'] is not None), "Error: LDAP Group BaseDN is undefined."
+        assert(yaml_content['config']['application']['sas.identities']['administrator'] is not None), "Error: LDAP Administrator is undefined."
+        
+        logMessage("Sitedefault contains required values.")
 
     except (IOError, ValueError):
         # Log error and raise exception if yaml can't be read.
@@ -115,30 +124,28 @@ def main(argv):
 
     :param argv: The parameters passed to the script at execution.
     """
-    print('===Entry {0}==='.format(inspect.stack()[0][3]))
+    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
     
-    #set up logging
-    open(logFile, 'a').close()
-    
+
     try:
         opts, args = getopt.getopt(argv, "y:Y",
                                    ["sitedefault=", "sitedefault="])
     except getopt.GetoptError as opt_error:
-        print(opt_error)
+        logMessage(opt_error)
     
     
     sitedefault_loc = ""
     
     for opt, arg in opts:
-        print("Processing command line option <" + opt + " " + arg + ">")
+        logMessage("Processing command line option <" + opt + " " + arg + ">")
         if opt in ('-y', '--sitedefault'):
-            print("Setting sitedefault to: " + arg)
+            logMessage("Setting sitedefault to: " + arg)
             sitedefault_loc = arg
         elif opt in ('-Y', '--sitedefault'):
-            print("Setting sitedefault to: " + arg)
+            logMessage("Setting sitedefault to: " + arg)
             sitedefault_loc = arg
         else:
-            print(opt_error)
+            logMessage(opt_error)
             
     cluster_settings = importConfigYAML(sitedefault_loc)
 
