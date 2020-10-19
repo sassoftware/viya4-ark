@@ -64,8 +64,8 @@ class PreCheckPermissions(object):
         self.ingress_data = {}
         self.ingress_data[viya_constants.INGRESS_CONTROLLER] = self.ingress_controller
         self.ingress_file = "hello-ingress.yaml"
-        if self.ingress_controller == viya_constants.INGRESS_ISTIO:
-            self.ingress_file = "helloworld-gateway.yaml"
+        # if self.ingress_controller == viya_constants.INGRESS_ISTIO:
+        #    self.ingress_file = "helloworld-gateway.yaml"
         self._storage_class_sc: List[KubernetesResource] = None
 
     def _set_results_cluster_admin(self, resource_key, rc):
@@ -315,10 +315,9 @@ class PreCheckPermissions(object):
 
     def check_sample_ingress(self):
         """
-        Deploy Kubernetes Ingress or Gateway and Virtual Service for hello-world appliction in specified
+        Deploy Kubernetes Ingress for hello-world appliction in the specified
         namespace and set the permissions status in the namespace_admin_permission_data dict object.
-        If nginx is ingress controller check Ingress deployment. If istio  is ingress controller check Gateway
-        and Virtual Service deployment
+        If nginx is ingress controller check Ingress deployment (default)
 
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,

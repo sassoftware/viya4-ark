@@ -29,6 +29,8 @@ The following command provides usage details:
 python viya-ark.py pre-install-report -h
 ```
 
+**Note:** The tool currently expects an nginx ingress controller.  Other ingress controllers will not be evaluated.
+
 ## Report Output
 
 The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html`. The report is in a web-viewable, HTML format.
