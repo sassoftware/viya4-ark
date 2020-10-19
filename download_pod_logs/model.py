@@ -159,7 +159,7 @@ class PodLogDownloader(object):
 
     @staticmethod
     def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text,
-                   noparse: bool = False) -> Optional[Tuple[Text, Text]]:
+                   noparse: bool = False) -> List[Tuple[Optional[Text], Text]]:
         """
         Internal method used for gathering the status and log for each container in the provided pod and writing
         the gathered information to an on-disk log file.
@@ -177,8 +177,8 @@ class PodLogDownloader(object):
         # get the containerStatuses for this pod
         container_statuses: List[Dict] = pod.get_status_value(KubernetesResource.Keys.CONTAINER_STATUSES)
 
-        # create tuple to hold information about failed containers/pods
-        err_info: Optional[Tuple[Text, Text]] = None
+        # create list of tuples to hold information about failed containers/pods
+        err_info: List[Tuple[Optional[Text], Text]] = list()
 
         # for each container status in the list, gather status and print values and log into file
         for container_status_dict in container_statuses or []:
@@ -188,7 +188,7 @@ class PodLogDownloader(object):
             # build the output file name
             # if there are no containers to report on, return
             if len(container_statuses) == 0:
-                return
+                return []
             # if there is only one container, only include the pod name in the log file name
             elif len(container_statuses) == 1:
                 output_file_path = f"{output_dir}{os.sep}{pod.get_name()}.log"
@@ -223,7 +223,7 @@ class PodLogDownloader(object):
                     err_msg = (f"ERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
                                f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]")
                     log: List[AnyStr] = [err_msg]
-                    err_info = (container_status.get_name(), pod.get_name())
+                    err_info.append([container_status.get_name(), pod.get_name()])
 
                 # parse any structured logging
                 if noparse:

@@ -46,68 +46,18 @@ def test_write_log_container_status_none() -> None:
     This test verifies that an error is not raised when the _write_log() method is passed a pod with no
     container_status dictionary.
     """
-    pod_definition = """
-    {
-        "apiVersion": "v1",
-        "kind": "Pod",
-        "metadata": {
-            "annotations": {
-                "sas.com/component-name": "sas-annotations",
-                "sas.com/component-version": "2.2.25-20200506.1588775452057",
-                "sas.com/version": "2.2.25"
-            },
-            "creationTimestamp": "2020-05-09T00:16:45Z",
-            "generateName": "sas-annotations-58db55fd65-",
-            "labels": {
-                "app": "sas-annotations",
-                "app.kubernetes.io/name": "sas-annotations",
-                "pod-template-hash": "58db55fd65",
-                "sas.com/deployment": "sas-viya"
-            },
-            "name": "sas-annotations-58db55fd65-l2jrw",
-            "namespace": "test",
-            "resourceVersion": "11419232",
-            "selfLink": "/api/v1/namespaces/test/pods/sas-annotations-58db55fd65-l2jrw",
-            "uid": "b0e2b9c6-58f9-4c81-94b9-8ea2be06a7c1"
-        },
-        "spec": {
-            "containers": [],
-            "dnsPolicy": "ClusterFirst",
-            "enableServiceLinks": true,
-            "imagePullSecrets": [],
-            "nodeName": "k8s-master-node.test.sas.com",
-            "priority": 0,
-            "restartPolicy": "Always",
-            "schedulerName": "default-scheduler",
-            "securityContext": {},
-            "serviceAccount": "default",
-            "serviceAccountName": "default",
-            "terminationGracePeriodSeconds": 30,
-            "tolerations": [],
-            "volumes": []
-        },
-        "status": {
-            "conditions": [],
-            "hostIP": "10.104.215.7",
-            "phase": "Running",
-            "podIP": "0.0.0.0",
-            "podIPs": [
-                {
-                    "ip": "0.0.0.0"
-                }
-            ],
-            "qosClass": "Burstable",
-            "startTime": "2020-05-09T00:16:45Z"
-        }
-    }
-    """
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    poddata = os.path.join(current_dir, f"data{os.sep}pod_with_no_status.txt")
+
+    with open(poddata) as f:
+        pod_definition = f.read()
 
     # create the Kubernetes resource object
     pod: KubernetesResource = KubernetesResource(pod_definition)
 
     err_info = PodLogDownloader._write_log(kubectl=KubectlTest(), pod=pod, tail=1,
                                            output_dir="./no_container_status_test")
-    assert err_info is None
+    assert not err_info
 
 
 ####################################################################
