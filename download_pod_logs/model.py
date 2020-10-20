@@ -147,19 +147,19 @@ class PodLogDownloader(object):
         error_pods: List[Tuple[Text, Text]] = list()
         for process in write_log_processes:
             try:
-                err_info: Optional[Tuple[Text, Text]] = process.get_process().get(timeout=self._wait)
+                err_info: List[Tuple[Optional[Text], Text]] = process.get_process().get(timeout=self._wait)
 
                 # add the error message, if returned
                 if err_info:
-                    error_pods.append(err_info)
+                    error_pods.extend(err_info)
             except TimeoutError:
                 timeout_pods.append(process.get_pod_name())
 
         return os.path.abspath(self._output_dir), timeout_pods, error_pods
 
     @staticmethod
-    def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text, noparse: bool) -> \
-            Optional[Tuple[Text, Text]]:
+    def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text,
+                   noparse: bool = False) -> List[Tuple[Optional[Text], Text]]:
         """
         Internal method used for gathering the status and log for each container in the provided pod and writing
         the gathered information to an on-disk log file.
@@ -177,17 +177,21 @@ class PodLogDownloader(object):
         # get the containerStatuses for this pod
         container_statuses: List[Dict] = pod.get_status_value(KubernetesResource.Keys.CONTAINER_STATUSES)
 
+        # create list of tuples to hold information about failed containers/pods
+        err_info: List[Tuple[Optional[Text], Text]] = list()
+
+        if not container_statuses:
+            err_info.append((None, pod.get_name()))
+            return err_info
+
         # for each container status in the list, gather status and print values and log into file
         for container_status_dict in container_statuses:
             # create object to get container status values
             container_status = _ContainerStatus(container_status_dict)
 
             # build the output file name
-            # if there are no containers to report on, return
-            if len(container_statuses) == 0:
-                return
             # if there is only one container, only include the pod name in the log file name
-            elif len(container_statuses) == 1:
+            if len(container_statuses) == 1:
                 output_file_path = f"{output_dir}{os.sep}{pod.get_name()}.log"
             # if there is more than one container, include both the pod and container name in the log file name
             else:
@@ -211,9 +215,6 @@ class PodLogDownloader(object):
                 # close the status header
                 output_file.writelines(("#" * 50) + "\n\n")
 
-                # create tuple to hold information about failed containers/pods
-                err_info: Optional[Tuple[Text, Text]] = None
-
                 # call kubectl to get the log for this container
                 try:
                     log: List[AnyStr] = kubectl.logs(pod_name=f"{pod.get_name()} {container_status.get_name()}",
@@ -223,7 +224,7 @@ class PodLogDownloader(object):
                     err_msg = (f"ERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
                                f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]")
                     log: List[AnyStr] = [err_msg]
-                    err_info = (container_status.get_name(), pod.get_name())
+                    err_info.append((container_status.get_name(), pod.get_name()))
 
                 # parse any structured logging
                 if noparse:

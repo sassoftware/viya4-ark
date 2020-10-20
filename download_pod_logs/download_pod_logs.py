@@ -151,7 +151,10 @@ def main(argv: List):
 
             # print the containers that had an error
             for err_info in error_pods:
-                print(f"    [{err_info[0]}] in pod [{err_info[1]}]", file=sys.stderr)
+                if err_info[0]:
+                    print(f"    [{err_info[0]}] in pod [{err_info[1]}]", file=sys.stderr)
+                else:
+                    print(f"    All containers in pod [{err_info[1]}]", file=sys.stderr)
 
             print("\nContainer status information is available in the log file.", file=sys.stderr)
 
@@ -166,9 +169,15 @@ def main(argv: List):
 
             print("\nThe wait time can be increased using the \"--wait=\" option.")
 
-        # print output directory
         print()
-        print(f"Log files created in: {log_dir}")
+        # check folder is empty
+        if len(os.listdir(log_dir)) == 0:
+            os.rmdir(log_dir)
+            print("No log files created.")
+        else:
+            # print output directory
+            print(f"Log files created in: {log_dir}")
+
         print()
     except (NoMatchingPodsError, NoPodsError) as e:
         print()
