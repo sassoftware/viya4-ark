@@ -224,7 +224,7 @@ class PodLogDownloader(object):
                     err_msg = (f"ERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
                                f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]")
                     log: List[AnyStr] = [err_msg]
-                    err_info.append([container_status.get_name(), pod.get_name()])
+                    err_info.append((container_status.get_name(), pod.get_name()))
 
                 # parse any structured logging
                 if noparse:
