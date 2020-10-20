@@ -123,7 +123,7 @@ def usage(exit_code: int):
     print("Usage: viya-ark.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
     print()
     print("Options:")
-    print("    -i  --ingress=nginx or istio  (Required)Kubernetes ingress controller used for Viya deployment")
+    print("    -i  --ingress=nginx           (Required)Kubernetes ingress controller used for Viya deployment")
     print("    -H  --host                    (Required)Ingress host used for Viya deployment")
     print("    -p  --port=xxxxx or \"\"        (Required)Ingress port used for Viya deployment")
     print("    -h  --help                    (Optional)Show this usage message")
@@ -183,16 +183,7 @@ def main(argv):
             print(viya_messages.OPTION_ERROR.format(str(opt)))
             usage(viya_messages.BAD_OPT_RC_)
 
-    if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
-        print(viya_messages.OPTION_VALUES_ERROR)
-        usage(viya_messages.BAD_OPT_RC_)
-
-    if not(str(ingress_controller) == viya_constants.INGRESS_NGINX
-           or str(ingress_controller) == viya_constants.INGRESS_ISTIO):
-        print(viya_messages.INGRESS_CONTROLLER_ERROR)
-        usage(viya_messages.BAD_OPT_RC_)
-
-    # make sure path is valid #
+    # make sure path is valid and set up logging#
     if output_dir != "":
         if not output_dir.endswith(os.sep):
             output_dir = output_dir + os.sep
@@ -209,16 +200,29 @@ def main(argv):
         usage(viya_messages.BAD_OPT_RC_)
 
     sas_logger = ViyaARKLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
+    logger = sas_logger.get_logger()
     _read_environment_var('KUBECONFIG')
+
+    if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
+        logger.error(viya_messages.OPTION_VALUES_ERROR)
+        print(viya_messages.OPTION_VALUES_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
+
+    if not(str(ingress_controller) == viya_constants.INGRESS_NGINX):
+        logger.error(viya_messages.INGRESS_CONTROLLER_ERROR)
+        print(viya_messages.INGRESS_CONTROLLER_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
 
     try:
         kubectl = Kubectl(namespace=name_space)
     except ConnectionError as e:
+        logger.error(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         sys.exit(viya_messages.CONNECTION_ERROR_RC_)
     except NamespaceNotFoundError as e:
+        logger.error(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
