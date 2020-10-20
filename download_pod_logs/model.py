@@ -150,7 +150,8 @@ class PodLogDownloader(object):
                 err_info: List[Tuple[Optional[Text], Text]] = process.get_process().get(timeout=self._wait)
 
                 # add the error message, if returned
-                error_pods.extend(err_info)
+                if err_info:
+                    error_pods.extend(err_info)
             except TimeoutError:
                 timeout_pods.append(process.get_pod_name())
 

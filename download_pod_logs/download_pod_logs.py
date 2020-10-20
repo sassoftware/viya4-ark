@@ -151,7 +151,10 @@ def main(argv: List):
 
             # print the containers that had an error
             for err_info in error_pods:
-                print(f"    [{err_info[0]}] in pod [{err_info[1]}]", file=sys.stderr)
+                if err_info[0]:
+                    print(f"    [{err_info[0]}] in pod [{err_info[1]}]", file=sys.stderr)
+                else:
+                    print(f"    All containers in pod [{err_info[1]}]", file=sys.stderr)
 
             print("\nContainer status information is available in the log file.", file=sys.stderr)
 
