@@ -11,23 +11,28 @@
 #                                                                ###
 ####################################################################
 
-
 from datetime import datetime
-
+from ldap3 import Server, Connection, SIMPLE, SYNC, ASYNC, SUBTREE, ALL, ALL_ATTRIBUTES
 import os
 import sys
 import inspect
 import getopt
 import yaml
 import traceback
-
+import json
 try:
     from yaml import CSafeLoader as Loader
 except ImportError:
     from yaml import SafeLoader as Loader
 
 # Control vars
-cluster_settings = None
+sitedefault_variables = None
+
+# retrieve at most sizelimit entries for a search.  A sizelimit of 0 (zero) or
+# none means no limit.  A sizelimit of  max  means  the maximum integer allowable
+# by the protocol.  A server may impose a maximal sizelimit which only the root
+# user may override.
+sizeLimit = 5
 
 # Set up logging
 logFile = "ldap_validation_" + str(datetime.now()) + ".log"
@@ -45,6 +50,7 @@ ldap_group_basedn = ""
 ldap_defaultadmin_user = ""
 ldap_url = ""
 
+
 # --------------------------------------------------------------------------------------------------
 def logMessage(message, error_flag=False):
     """
@@ -61,7 +67,9 @@ def logMessage(message, error_flag=False):
 
     logger = open(logFile, "a")
 
-    if error_flag: message = "[ ERROR ] " + str(message)
+    if (error_flag):
+        message = "[ ERROR ] " + str(message)
+
     message = str(dateTimeObj) + " - " + str(message)
 
     # display the message to the terminal and write to the log
@@ -72,6 +80,7 @@ def logMessage(message, error_flag=False):
     logger.close()
 
     return None
+
 
 # --------------------------------------------------------------------------------------------------
 def importConfigYAML(yaml_file):
@@ -85,6 +94,7 @@ def importConfigYAML(yaml_file):
     Raises:
         dict - object containing all content from supplied yaml in dict format
     """
+
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
 
     if not os.path.exists(yaml_file):
@@ -113,7 +123,7 @@ def importConfigYAML(yaml_file):
         global ldap_group_basedn
         global ldap_defaultadmin_user
         global ldap_url
-        
+
         ldap_url = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['url']
         ldap_server_host = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['host']
         ldap_server_port = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['port']
@@ -124,16 +134,23 @@ def importConfigYAML(yaml_file):
         ldap_group_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.group']['baseDN']
         ldap_defaultadmin_user = yaml_content['config']['application']['sas.identities']['administrator']
         ldap_protocol = ldap_url.split(':')[0]
+        ldap_anon_bind = (ldap_anon_bind).lower()
+        if (ldap_anon_bind ==  'false'): ldap_anon_bind = False
+        if (ldap_anon_bind ==  'true'): ldap_anon_bind = True
 
-        logMessage("LDAP URL:" + ldap_url)
-        logMessage("LDAP Protocol:" + ldap_protocol)
-        logMessage("LDAP ServerHost:" + ldap_server_host)
-        logMessage("LDAP Server Port:" + str(ldap_server_port))
-        logMessage("LDAP Anonymous Bind:" + ldap_anon_bind)
-        if (ldap_bind_pw is not None): logMessage("LDAP Anonymous Bind Password: SET")
-        logMessage("LDAP Anonymous Bind User DN:" + ldap_bind_userdn)
-        logMessage("LDAP User DN:" + ldap_user_basedn)
-        logMessage("LDAP Group DN:" + ldap_group_basedn)
+        logMessage("LDAP URL:                       " + ldap_url)
+        logMessage("LDAP Protocol:                  " + ldap_protocol)
+        logMessage("LDAP ServerHost:                " + ldap_server_host)
+        logMessage("LDAP Server Port:               " + str(ldap_server_port))
+        logMessage("LDAP Anonymous Bind:            " + str(ldap_anon_bind))
+        if (ldap_bind_pw is not None):
+            logMessage("LDAP Anonymous Bind Password:   SET")
+        else:
+            logMessage("LDAP Anonymous Bind Password:   UNSET")
+        logMessage("LDAP Anonymous Bind User DN:    " + ldap_bind_userdn)
+        logMessage("LDAP User DN:                   " + ldap_user_basedn)
+        logMessage("LDAP Group DN:                  " + ldap_group_basedn)
+        logMessage("LDAP Default Admin User:        " + ldap_defaultadmin_user)
 
         assert(ldap_url is not None), "Error: LDAP Administrator is undefined."
         assert(ldap_server_host is not None), "Error: LDAP Host is undefined."
@@ -155,6 +172,7 @@ def importConfigYAML(yaml_file):
 
     return yaml_content
 
+
 # --------------------------------------------------------------------------------------------------
 def runTestSchedule():
     """
@@ -165,11 +183,19 @@ def runTestSchedule():
     Returns:
         success flag(bool) - Success/Failure of test schedule
     """
+
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
-    
+
     pingHost()
-    
+
+    performLDAPQuery(ldap_group_basedn, '(objectclass=*)')
+
+    performLDAPQuery(ldap_user_basedn, '(objectclass=*)')
+
+    performLDAPQuery(ldap_user_basedn, '(&(objectClass=*)(sAMAccountName={{' + ldap_defaultadmin_user + '}}))')
+
     return True
+
 
 # --------------------------------------------------------------------------------------------------
 def pingHost():
@@ -179,13 +205,13 @@ def pingHost():
     Argument:
         None
     Returns:
-        success flag(bool) - Success/Failure of test schedule
+        success flag(bool) - Success/Failure of ping
     """
+
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
 
     logMessage("Attempting to ping LDAP server host at " + ldap_server_host)
-    logMessage(">> " + "ping -c 1 " + ldap_server_host)
-    
+
     response = os.system("ping -c 1 " + ldap_server_host)
 
     if (int(response) == 0):
@@ -196,23 +222,64 @@ def pingHost():
 
     return False
 
+
+# --------------------------------------------------------------------------------------------------
+def performLDAPQuery(searchBase, searchFilter):
+    """
+    Execute a query on the defined LDAP server.
+
+    Argument:
+        queryString(string) - LDAP query to be executed
+    Returns:
+        success flag(bool) - Success/Failure of query
+    """
+
+    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
+
+    server = Server(ldap_protocol + "://" + ldap_server_host)
+
+    logMessage("Attempting to create connection binding.")
+    connection = Connection(server, ldap_bind_userdn, ldap_bind_pw, auto_bind=True)
+    logMessage("Bind results: " + str(connection))
+
+    logMessage("\n------------------------------------------\nQuery: search_base=" + searchBase + ", search_filter=" + searchFilter)
+
+    # perform search
+    connection.search(search_base=searchBase, search_filter=searchFilter, size_limit=sizeLimit)
+
+    # parse results
+    for entry in connection.entries:
+        logMessage("\n" + str(entry))
+
+    response = json.loads(connection.response_to_json())
+    logMessage("\n------------------------------------------\nResponse:\n\n" + str(response))
+    result = connection.result
+    logMessage("\n------------------------------------------\nResult:\n\n" + str(result))
+
+    logMessage("\n\n------------------------------------------\n------------------------------------------\n")
+
+    connection.unbind()
+
+    return True
+
 # --------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------
 ##################
 #     main()     #
 ##################
-
 def main(argv):
 
     """
-    Implementation of the main script execution for the pre_check install command.
+    Main execution point for the ldap_validator script
 
     Argument:
         arguments(string) - The parameters passed to the script at execution.
     """
+
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
 
+    # Parse command line options/arguments
     try:
         opts, args = getopt.getopt(argv, "y:Y",
                                    ["sitedefault=", "sitedefault="])
@@ -232,15 +299,18 @@ def main(argv):
         else:
             logMessage("Unrecognized command line option <" + opt + " " + arg + ">")
 
-    cluster_settings = importConfigYAML(sitedefault_loc)
+    # Load site default and define variables
+    sitedefault_variables = importConfigYAML(sitedefault_loc)
 
+    # Execute test suite
     runTestSchedule()
+
 
 # --------------------------------------------------------------------------------------------------
 ##################
 #     main()     #
 ##################
-
 if __name__ == '__main__':
     main(sys.argv[1:])
+
 # ----------------------------------------------------------------------------
