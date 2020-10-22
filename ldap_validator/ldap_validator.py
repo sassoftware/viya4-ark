@@ -12,7 +12,7 @@
 ####################################################################
 
 from datetime import datetime
-from ldap3 import Server, Connection, SIMPLE, SYNC, ASYNC, SUBTREE, ALL, ALL_ATTRIBUTES
+from ldap3 import Server, Connection
 import os
 import sys
 import inspect
@@ -24,9 +24,6 @@ try:
     from yaml import CSafeLoader as Loader
 except ImportError:
     from yaml import SafeLoader as Loader
-
-# Control vars
-sitedefault_variables = None
 
 # retrieve at most sizelimit entries for a search.  A sizelimit of 0 (zero) or
 # none means no limit.  A sizelimit of  max  means  the maximum integer allowable
@@ -66,6 +63,8 @@ def logMessage(message, error_flag=False):
     dateTimeObj = datetime.now()
 
     logger = open(logFile, "a")
+
+    if (message == ""): return None
 
     if (error_flag):
         message = "[ ERROR ] " + str(message)
@@ -133,10 +132,12 @@ def importConfigYAML(yaml_file):
         ldap_user_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.user']['baseDN']
         ldap_group_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.group']['baseDN']
         ldap_defaultadmin_user = yaml_content['config']['application']['sas.identities']['administrator']
+
         ldap_protocol = ldap_url.split(':')[0]
+
         ldap_anon_bind = (ldap_anon_bind).lower()
-        if (ldap_anon_bind ==  'false'): ldap_anon_bind = False
-        if (ldap_anon_bind ==  'true'): ldap_anon_bind = True
+        if (ldap_anon_bind == 'false'): ldap_anon_bind = False
+        if (ldap_anon_bind == 'true'): ldap_anon_bind = True
 
         logMessage("LDAP URL:                       " + ldap_url)
         logMessage("LDAP Protocol:                  " + ldap_protocol)
@@ -152,10 +153,12 @@ def importConfigYAML(yaml_file):
         logMessage("LDAP Group DN:                  " + ldap_group_basedn)
         logMessage("LDAP Default Admin User:        " + ldap_defaultadmin_user)
 
-        assert(ldap_url is not None), "Error: LDAP Administrator is undefined."
+        # check to see if the provided values are valid
+        assert(ldap_url is not None), "Error: LDAP URL: is undefined."
         assert(ldap_server_host is not None), "Error: LDAP Host is undefined."
         assert(ldap_server_port > 0), "Error: LDAP port is in correctly defined."
-        assert(ldap_anon_bind is not None), "Error: LDAP anonymousBind is undefined."
+        assert (pingHost() is True), "Error: LDAP server is not accessible on specified host and port."
+        assert(ldap_anon_bind is True or ldap_anon_bind is False), "Error: LDAP anonymousBind does not have a value of true or false."
         assert(ldap_bind_pw is not None), "Error: LDAP password is undefined."
         assert(ldap_bind_userdn is not None), "Error: LDAP bind userDN is undefined."
         assert(ldap_user_basedn is not None), "Error: LDAP User BaseDN is undefined."
@@ -186,15 +189,29 @@ def runTestSchedule():
 
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
 
-    pingHost()
-
-    performLDAPQuery(ldap_group_basedn, '(objectclass=*)')
-
-    performLDAPQuery(ldap_user_basedn, '(objectclass=*)')
-
-    performLDAPQuery(ldap_user_basedn, '(&(objectClass=*)(sAMAccountName={{' + ldap_defaultadmin_user + '}}))')
+    if (not performLDAPQuery(ldap_group_basedn, '(objectclass=*)')): failTestSuite()
+    if (not performLDAPQuery(ldap_user_basedn, '(objectclass=*)')): failTestSuite()
+    if (not performLDAPQuery(ldap_user_basedn, '(&(objectClass=*)(sAMAccountName={{' + ldap_defaultadmin_user + '}}))')): failTestSuite()
 
     return True
+
+
+# --------------------------------------------------------------------------------------------------
+def failTestSuite():
+    """
+    Ping the LDAP server on the specified connection.
+
+    Argument:
+        None
+    Returns:
+        None
+    """
+
+    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
+
+    logMessage("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.", True)
+
+    sys.exit(1)
 
 
 # --------------------------------------------------------------------------------------------------
@@ -226,7 +243,7 @@ def pingHost():
 # --------------------------------------------------------------------------------------------------
 def performLDAPQuery(searchBase, searchFilter):
     """
-    Execute a query on the defined LDAP server.
+    Execute a query on the defined LDAP server.\n
 
     Argument:
         queryString(string) - LDAP query to be executed
@@ -236,31 +253,45 @@ def performLDAPQuery(searchBase, searchFilter):
 
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
 
-    server = Server(ldap_protocol + "://" + ldap_server_host)
+    try:
+        logMessage("------------------------------------------")
+        logMessage("------------------------------------------")
+        server = Server(ldap_protocol + "://" + ldap_server_host)
 
-    logMessage("Attempting to create connection binding.")
-    connection = Connection(server, ldap_bind_userdn, ldap_bind_pw, auto_bind=True)
-    logMessage("Bind results: " + str(connection))
+        logMessage("Attempting to create connection binding.")
+        connection = Connection(server, ldap_bind_userdn, ldap_bind_pw, auto_bind=True)
+        logMessage("Bind results: " + str(connection))
 
-    logMessage("\n------------------------------------------\nQuery: search_base=" + searchBase + ", search_filter=" + searchFilter)
 
-    # perform search
-    connection.search(search_base=searchBase, search_filter=searchFilter, size_limit=sizeLimit)
+        # perform search
+        logMessage("------------------------------------------")
+        logMessage("Query: search_base=" + searchBase + ", search_filter=" + searchFilter)
+        connection.search(search_base=searchBase, search_filter=searchFilter, size_limit=sizeLimit)
+        
+    except Exception as e:
+        logMessage("LDAP search failed with the following error code: " + str(e), True)
+        return False
 
     # parse results
+    logMessage("------------------------------------------")
+    logMessage("Entries: ")
     for entry in connection.entries:
-        logMessage("\n" + str(entry))
+        logMessage(str(entry))
 
     response = json.loads(connection.response_to_json())
-    logMessage("\n------------------------------------------\nResponse:\n\n" + str(response))
+    logMessage("------------------------------------------")
+    logMessage("Response: " + str(response))
+    
     result = connection.result
-    logMessage("\n------------------------------------------\nResult:\n\n" + str(result))
+    logMessage("------------------------------------------")
+    logMessage("Result: " + str(result))
 
-    logMessage("\n\n------------------------------------------\n------------------------------------------\n")
+    logMessage("------------------------------------------")
 
     connection.unbind()
 
     return True
+
 
 # --------------------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------------------------------
@@ -300,7 +331,7 @@ def main(argv):
             logMessage("Unrecognized command line option <" + opt + " " + arg + ">")
 
     # Load site default and define variables
-    sitedefault_variables = importConfigYAML(sitedefault_loc)
+    importConfigYAML(sitedefault_loc)
 
     # Execute test suite
     runTestSchedule()
