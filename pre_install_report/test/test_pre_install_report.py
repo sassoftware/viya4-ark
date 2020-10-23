@@ -540,6 +540,32 @@ def createViyaPreInstallCheck(viya_kubelet_version_min,
     return sas_pre_check_report
 
 
+def test_get_calculated_aggregate_memory():
+
+    vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
+                                    viya_min_worker_allocatable_CPU,
+                                    viya_min_aggregate_worker_CPU_cores,
+                                    viya_min_allocatable_worker_memory,
+                                    viya_min_aggregate_worker_memory)
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    datafile = os.path.join(current_dir, 'test_data/json_data/nodes_info.json')
+    # Register Python Package Pint definitions
+    quantity_ = register_pint()
+    with open(datafile) as f:
+        data = json.load(f)
+    nodes_data = vpc.get_nested_nodes_info(data, quantity_)
+
+    global_data = []
+
+    assert vpc.get_calculated_aggregate_memory() is None
+    cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n"
+    global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
+
+    total_allocatable_memoryGi = vpc.get_calculated_aggregate_memory()
+    assert str(total_allocatable_memoryGi) == '62.3276481628418 Gi'
+
+
 def test_check_permissions():
     # namespace = 'default'
     params = {}
