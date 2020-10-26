@@ -71,6 +71,7 @@ class ViyaPreInstallCheck():
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
         self._viya_min_allocatable_worker_memory: Text = viya_min_allocatable_worker_memory
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
+        self._calculated_aggregate_allocatable_memory = None
         self._workers = 0
 
     def _parse_release_info(self, release_info):
@@ -539,7 +540,7 @@ class ViyaPreInstallCheck():
         error_msg = ""
         info_msg = str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_CPU_cores + \
-            ', Calculated: ' + str(total_alloc_cpu_cores)
+            ', Calculated: ' + str(round(total_alloc_cpu_cores,  2))
 
         min_aggr_worker_cpu_core = self._get_cpu(self._viya_min_aggregate_worker_CPU_cores,
                                                  "VIYA_MIN_AGGREGATE_WORKER_CPU_CORES")
@@ -548,7 +549,7 @@ class ViyaPreInstallCheck():
             aggregate_cpu_failures += 1
             # Check for combined cpu_core capacity of the Kubernetes nodes in cluster
         error_msg = viya_constants.SET + ': ' + \
-            str(total_alloc_cpu_cores) + ', ' + \
+            str(round(total_alloc_cpu_cores, 2)) + ', ' + \
             str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_CPU_cores
         if aggregate_cpu_failures > 0:
@@ -572,9 +573,11 @@ class ViyaPreInstallCheck():
         aggregate_memory_data = {}
         error_msg = ""
         msg = ''
+        total_allocatable_memory_toG = total_allocatable_memory.to('G')
         info_msg = str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_memory + \
-            ', Calculated: ' + str(total_allocatable_memory.to('Gi'))
+            ', Calculated: ' + str(round(total_allocatable_memory_toG, 2))
+        self._calculated_aggregate_allocatable_memory = total_allocatable_memory.to('Gi')
 
         min_aggr_worker_memory = self._get_memory(self._viya_min_aggregate_worker_memory,
                                                   "VIYA_MIN_AGGREGATE_WORKER_MEMORY", quantity_)
@@ -583,7 +586,7 @@ class ViyaPreInstallCheck():
             aggregate_memory_failures += 1
             # Check for combined cpu_core capacity of the Kubernetes nodes in cluster
         error_msg = viya_constants.SET + ': ' + \
-            str(total_allocatable_memory.to('Gi')) + ', ' + \
+            str(round(total_allocatable_memory_toG, 2)) + ', ' + \
             str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_memory
 
@@ -980,6 +983,9 @@ class ViyaPreInstallCheck():
 
         self.logger.debug("configs_data {}".format(configs_data))
         return configs_data
+
+    def get_calculated_aggregate_memory(self):
+        return self._calculated_aggregate_allocatable_memory
 
     def generate_report(self,
                         global_data,

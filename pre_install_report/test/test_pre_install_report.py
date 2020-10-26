@@ -178,9 +178,10 @@ def test_get_nested_nodes_info():
         assert global_data[0]['totalWorkers'] in '3: Current: 3, Expected: Minimum 1'
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Current: 10.1, Expected: 12, Issues Found: 2'
-        assert global_data[3]['aggregate_memory_failures'] in 'Current: 62.3276481628418 Gi, Expected: 56G,' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Current: 66.92 G, Expected: 56G,' \
                                                               ' Issues Found: 1'
-
+        total_allocatable_memoryG = vpc.get_calculated_aggregate_memory()  # quantity_("62.3276481628418 Gi").to('G')
+        assert str(round(total_allocatable_memoryG.to("G"), 2)) == '66.92 G'
         assert global_data[4]['aggregate_kubelet_failures'] in '1, Check Kubelet Version on nodes. Issues Found: 1'
 
     template_render(global_data, configs_data, storage_data, 'nested_nodes_info.html')
@@ -219,9 +220,11 @@ def test_get_nested_millicores_nodes_info():
         assert global_data[0]['totalWorkers'] in '3: Current: 3, Expected: Minimum 1'
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Current: 2.5, Expected: 20, Issues Found: 3'
-        assert global_data[3]['aggregate_memory_failures'] in 'Current: 62.3276481628418 Gi, Expected: 156G,' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Current: 66.92 G, Expected: 156G,' \
                                                               ' Issues Found: 2'
 
+        total_allocatable_memoryG = vpc.get_calculated_aggregate_memory()
+        assert str(round(total_allocatable_memoryG.to("G"), 2)) == '66.92 G'
         assert global_data[4]['aggregate_kubelet_failures'] in '2, Check Kubelet Version on nodes. Issues Found: 2'
 
     template_render(global_data, configs_data, storage_data, 'nested_millicores_nodes_info.html')
@@ -251,8 +254,10 @@ def test_ranchersingle_get_nested_nodes_info():
     pprint.pprint(global_data)
     for nodes in global_data:
         assert global_data[2]['aggregate_cpu_failures'] in 'Current: 8.0, Expected: 12, Issues Found: 1'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 62.75947570800781 Gi, ' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 67.39 G, ' \
                                                               'Issues Found: 0'
+        total_allocatable_memoryG = vpc.get_calculated_aggregate_memory()
+        assert str(round(total_allocatable_memoryG.to("G"), 2)) == '67.39 G'
         assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
 
     template_render(global_data, configs_data, storage_data, 'ranchersingle_nested_nodes_info.html')
@@ -283,7 +288,7 @@ def test_ranchermulti_get_nested_nodes_info():
     for nodes in global_data:
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Expected: 12, Calculated: 40.0, Issues Found: 0'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 313.30909729003906 Gi, ' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 336.41 G, ' \
                                                               'Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
 
@@ -421,7 +426,7 @@ def test_azure_terrform_multi_nodes_info():
     for nodes in global_data:
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Expected: 12, Calculated: 39.1, Issues Found: 0'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 135.50825119018555 Gi,' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 145.5 G,' \
                                                               ' Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
 
@@ -454,7 +459,7 @@ def test_azure_multi_get_nested_nodes_info():
     for nodes in global_data:
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Expected: 12, Calculated: 31.28, Issues Found: 0'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 93.6175537109375 Gi, ' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 100.52 G, ' \
                                                               'Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in '0, Check Kubelet Version on nodes.'
 
@@ -487,8 +492,8 @@ def test_azure_worker_nodes():
     pprint.pprint(global_data)
     for nodes in global_data:
         assert global_data[2]['aggregate_cpu_failures'] in \
-               'Expected: 12, Calculated: 141.55999999999997, Issues Found: 0'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 677.8613586425781 Gi, ' \
+               'Expected: 12, Calculated: 141.56, Issues Found: 0'
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 727.85 G, ' \
                                                               'Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in '0, Check Kubelet Version on nodes.'
 
@@ -533,6 +538,32 @@ def createViyaPreInstallCheck(viya_kubelet_version_min,
                                                                     viya_min_aggregate_worker_memory)
 
     return sas_pre_check_report
+
+
+def test_get_calculated_aggregate_memory():
+
+    vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
+                                    viya_min_worker_allocatable_CPU,
+                                    viya_min_aggregate_worker_CPU_cores,
+                                    viya_min_allocatable_worker_memory,
+                                    viya_min_aggregate_worker_memory)
+
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    datafile = os.path.join(current_dir, 'test_data/json_data/nodes_info.json')
+    # Register Python Package Pint definitions
+    quantity_ = register_pint()
+    with open(datafile) as f:
+        data = json.load(f)
+    nodes_data = vpc.get_nested_nodes_info(data, quantity_)
+
+    global_data = []
+
+    assert vpc.get_calculated_aggregate_memory() is None
+    cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n"
+    global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
+
+    total_allocatable_memoryGi = vpc.get_calculated_aggregate_memory()
+    assert str(total_allocatable_memoryGi) == '62.3276481628418 Gi'
 
 
 def test_check_permissions():
