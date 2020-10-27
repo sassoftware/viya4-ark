@@ -199,8 +199,8 @@ def runTestSchedule():
         failTestSuite()
     if (not performLDAPQuery(ldap_user_basedn, '(objectclass=*)')):
         failTestSuite()
-    if (not performLDAPQuery(ldap_user_basedn, '(&(objectClass=user)(sAMAccountName=' + 
-        ldap_defaultadmin_user + '))', True)):
+    if (not performLDAPQuery(ldap_user_basedn, '(&(objectClass=user)(sAMAccountName=' +
+            ldap_defaultadmin_user + '))', True)):
         failTestSuite()
 
     logMessage("--------------------------------------------------------------------")
