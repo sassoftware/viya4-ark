@@ -25,10 +25,10 @@ Download the latest version of this tool and update required packages with every
 ### Basic Example
 
 The following example executes the LDAP Validation script against the specified sitedefault.yaml. The sitedefault must 
-be provided using the `-y` or `--sitedefault` command line argument.
+be provided using the `-s` or `--sitedefault` command line argument.
 
 ```commandline
-$ python3 ldap_validator.py -y /path/to/sitedefault.yaml
+$ python3 ldap_validator.py -s /path/to/sitedefault.yaml
 ```
 
 ### Custom log file
@@ -37,7 +37,7 @@ Optionally, by providing the `-l` or `--logFile` command line argument, the defa
 log file.
 
 ```commandline
-$ python3 ldap_validator.py -y /path/to/sitedefault.yaml -l /path/to/my/logFile.txt
+$ python3 ldap_validator.py -s /path/to/sitedefault.yaml -l /path/to/my/logFile.txt
 ```
 
 **Note**: If the -l command line argument is not provided, a time-stamped log file will be generated in the directory 
