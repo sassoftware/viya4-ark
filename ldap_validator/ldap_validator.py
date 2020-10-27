@@ -197,10 +197,12 @@ def runTestSchedule():
 
     if (not performLDAPQuery(ldap_group_basedn, '(objectclass=*)')):
         failTestSuite()
+
     if (not performLDAPQuery(ldap_user_basedn, '(objectclass=*)')):
         failTestSuite()
-    if (not performLDAPQuery(ldap_user_basedn, '(&(objectClass=user)(sAMAccountName=' +
-                                ldap_defaultadmin_user + '))', True)):
+
+    searchString = '(&(objectClass=user)(sAMAccountName=' + ldap_defaultadmin_user + '))'
+    if (not performLDAPQuery(ldap_user_basedn, searchString, True)):
         failTestSuite()
 
     logMessage("--------------------------------------------------------------------")
