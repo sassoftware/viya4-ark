@@ -33,7 +33,7 @@ sizeLimit = 5
 
 # default log file
 logFile = "ldap_validation_" + str(datetime.now()) + ".log"
-logFile = logFile.replace(':', '.') # remove a couple troublesome characters in the timestamp
+logFile = logFile.replace(':', '.')  # remove a couple troublesome characters in the timestamp
 logFile = logFile.replace(' ', '_')
 
 # sitedefault variables
@@ -199,7 +199,8 @@ def runTestSchedule():
         failTestSuite()
     if (not performLDAPQuery(ldap_user_basedn, '(objectclass=*)')):
         failTestSuite()
-    if (not performLDAPQuery(ldap_user_basedn, '(&(objectClass=user)(sAMAccountName=' + ldap_defaultadmin_user + '))', True)):
+    if (not performLDAPQuery(ldap_user_basedn, '(&(objectClass=user)(sAMAccountName=' + 
+        ldap_defaultadmin_user + '))', True)):
         failTestSuite()
 
     logMessage("--------------------------------------------------------------------")
@@ -307,11 +308,11 @@ def performLDAPQuery(searchBase, searchFilter, verify=False):
 
     if (verify):
         assert(resultsReturned is True), "LDAP Search did not return any query results for query: 'search_base=" + \
-        searchBase + ", search_filter=" + searchFilter + "'"
+            searchBase + ", search_filter=" + searchFilter + "'"
 
     connection.unbind()
 
-    assert(queryRC is 0 or queryRC is 4), "Error: LDAP Search query failed with return code: " + str(queryRC)
+    assert(queryRC == 0 or queryRC == 4), "Error: LDAP Search query failed with return code: " + str(queryRC)
 
     return True
 
