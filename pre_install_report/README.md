@@ -31,6 +31,22 @@ python viya-ark.py pre-install-report -h
 
 **Note:** The tool currently expects an nginx ingress controller.  Other ingress controllers will not be evaluated.
 
+**Hints for Determining the Ingress Host and Port** parameter values when working with Azure, nginx ingress controller and Load Balancer.
+* Determine the ingress namespace with kubectl command:  `kubectl get namespaces`  
+* Make a note of the namespace where nginx controller is available
+* Determine the ingress controller service name with kubectl command:  `kubectl get svc -n <inginx-ingress-namespace>`
+* Note the nginx-controller details in the example output shown below: 
+```
+NAME                                 TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.0.00.000   55.147.22.101   80:31254/TCP,443:31383/TCP   28d
+```
+Use options as shown below:
+
+```
+ -i nginx  -H "52.247.32.111" -p "80" 
+ -i nginx  -H "52.247.32.111" -p "443"
+```
+ 
 ## Report Output
 
 The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html`. The report is in a web-viewable, HTML format.
