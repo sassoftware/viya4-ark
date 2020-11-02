@@ -29,10 +29,10 @@ The following command provides usage details:
 python viya-ark.py pre-install-report -h
 ```
 
-**Note:** The tool currently expects an nginx ingress controller.  Other ingress controllers will not be evaluated.
+**Note:** The tool currently expects an NGINX Ingress controller.  Other Ingress controllers will not be evaluated.
 
-**Hints and Tips:** The Ingress Host and Port parameter values with Azure, nginx ingress controller and Load Balancer
-can be determined with a kubectl command. You must specify the namespace where ingress in available as well as the ingress controller name like below:
+**Hints and Tips:** The Ingress Host and Port parameter values with Azure, NGINX ingress controller and Load Balancer
+can be determined with a kubectl command. You must specify the namespace where Ingress in available as well as the Ingress controller name like below:
 `kubectl -n <nginx-ingress-namespace> get svc <nginx-ingress-controller-name>`  
 * The output from the command will look like the example output shown below: 
 ```
