@@ -107,27 +107,6 @@
 {% endfor %}
 
 
-<!-- Control plane  -->
-{% for master_nodes in master_data %}
-    {% if loop.index == 1 %}
-        <!-- installed nodes jq-accordion -->
-        <div class="jq-accordion">
-          <h2>Control Plane Information - {{master_nodes.issue}}</h2>
-           <div>
-           <table>
-             <TR>
-                 <TH> Status </TH>
-             </TR>
-             <TR>
-                 <TD>{{master_nodes.firstFailure}}</SPAN></TD>
-             </TR>
-           </table>
-           </div>
-        </div>
-    {% endif %}
-{% endfor %}
-<!-- Control Plane  End -->
-
 <!-- CPU check on worker nodes  -->
 {% for nodes_data in global_data %}
     {% set totals = '0' %}
