@@ -579,7 +579,7 @@ def test_kubconfig_file():
         assert exc.code == viya_messages.BAD_ENV_RC_
         pass
     finally:
-        os.environ['KUBECONFIG'] = old_kubeconfig
+        os.environ['KUBECONFIG'] = str(old_kubeconfig)
 
 
 def test_check_permissions():
