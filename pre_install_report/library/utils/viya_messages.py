@@ -27,6 +27,8 @@ OPTION_VALUES_ERROR = "ERROR: Provide valid values for all required options. Che
 INGRESS_CONTROLLER_ERROR = "ERROR: Ingress controller specified must be nginx. Check value on option -i "
 OUPUT_PATH_ERROR = "ERROR: The report output path is not valid {}. Check value on option -o "
 EXCEPTION_MESSAGE = "ERROR: {}"
+KUBECONF_FILE_ERROR = "ERROR: The file specified in the KUBECONFIG environment does not exist. " \
+                      "Check that file {} exists."
 
 # command line return codes #
 SUCCESS_RC_ = 0

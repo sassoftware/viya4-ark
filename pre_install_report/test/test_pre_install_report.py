@@ -23,6 +23,8 @@ from pre_install_report.library.pre_install_check import ViyaPreInstallCheck
 from pre_install_report.library.pre_install_check_permissions import PreCheckPermissions
 from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
 from viya_ark_library.logging import ViyaARKLogger
+from pre_install_report.pre_install_report import read_environment_var
+from pre_install_report.library.utils import viya_messages
 
 _SUCCESS_RC_ = 0
 _BAD_OPT_RC_ = 1
@@ -564,6 +566,20 @@ def test_get_calculated_aggregate_memory():
 
     total_allocatable_memoryGi = vpc.get_calculated_aggregate_memory()
     assert str(total_allocatable_memoryGi) == '62.3276481628418 Gi'
+
+
+def test_kubconfig_file():
+    old_kubeconfig = os.environ.get('KUBECONFIG')  # /Users/cat/doc
+    os.environ['KUBECONFIG'] = 'blah_nonexistentfile_blah'
+    new_kubeconfig = os.environ.get('KUBECONFIG')  # /Users/cat/doc
+    assert new_kubeconfig == 'blah_nonexistentfile_blah'
+    try:
+        read_environment_var('KUBECONFIG')
+    except SystemExit as exc:
+        assert exc.code == viya_messages.BAD_ENV_RC_
+        pass
+    finally:
+        os.environ['KUBECONFIG'] = old_kubeconfig
 
 
 def test_check_permissions():

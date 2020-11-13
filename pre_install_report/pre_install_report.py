@@ -66,7 +66,7 @@ def _read_properties_file():
             sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
 
 
-def _read_environment_var(env_var):
+def read_environment_var(env_var):
     """
     This method verifies that the KUBECONFIG environment variable is set.
 
@@ -74,6 +74,10 @@ def _read_environment_var(env_var):
     """
     try:
         value_env_var = os.environ[env_var]
+        # Check if specified file exists
+        if not os.path.exists(value_env_var):
+            print(viya_messages.KUBECONF_FILE_ERROR.format(value_env_var))
+            sys.exit(viya_messages.BAD_ENV_RC_)
     except Exception:
         print(viya_messages.KUBECONF_ERROR)
         sys.exit(viya_messages.BAD_ENV_RC_)
@@ -201,7 +205,7 @@ def main(argv):
 
     sas_logger = ViyaARKLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
     logger = sas_logger.get_logger()
-    _read_environment_var('KUBECONFIG')
+    read_environment_var('KUBECONFIG')
 
     if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
         logger.error(viya_messages.OPTION_VALUES_ERROR)
