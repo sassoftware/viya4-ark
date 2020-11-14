@@ -31,19 +31,23 @@ python viya-ark.py pre-install-report -h
 
 **Note:** The tool currently expects an NGINX Ingress controller.  Other Ingress controllers will not be evaluated.
 
-**Hints and Tips:** The Ingress Host and Port parameter values with Azure, NGINX ingress controller and Load Balancer
-can be determined with a kubectl command. You must specify the namespace where Ingress in available as well as the Ingress controller name like below:
-`kubectl -n <nginx-ingress-namespace> get svc <nginx-ingress-controller-name>`  
-* The output from the command will look like the example output shown below: 
+**Hints and Tips:** The values for the Ingress Host and Ingress Port options can be determined with kubectl commands. 
+The following section provides hints for a NGINX ingress controller of Type Load Balancer.  _But, these following commands 
+may need to be modified to suit your Ingress controller deployment._  
+
+You must specify the namespace where Ingress controller in available as well as the Ingress controller name like below:
 ```
+kubectl -n <nginx-ingress-namespace> get svc <nginx-ingress-controller-name> 
+  
+Sample output from the above command : 
 NAME                                 TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)                      AGE
 ingress-nginx-controller             LoadBalancer   10.0.00.000   55.147.22.101   80:31254/TCP,443:31383/TCP   28d
 ```
 Use commands as shown below to determine the parameter values:
 ```
 $ export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.status.loadBalancer.ingress[*].ip}')
-$ export INGRESS_HTTP_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
-$ export INGRESS_HTTPS_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
+$ export INGRESS_HTTP_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="http")].nodePort}')
+$ export INGRESS_HTTPS_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
 ```
 Use the values gathered on the command line for http or https as appropriate for your deployment:
 ```
