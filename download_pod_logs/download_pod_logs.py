@@ -98,6 +98,10 @@ def main(argv: List):
         help="Wait time, in seconds, before terminating a log-gathering process. Defaults to "
              f"\"{PodLogDownloader.DEFAULT_WAIT}\".")
 
+    arg_parser.add_argument(
+        "--no-parse", action="store_true", dest="noparse",
+        help="Download log files in original format without parsing.")
+
     # add positional arguments
     arg_parser.add_argument(
         "selected_components", default=None, nargs="*",
@@ -139,7 +143,7 @@ def main(argv: List):
         print()
         with LRPIndicator(enter_message="Downloading pod logs"):
             log_dir, timeout_pods, error_pods = log_downloader.download_logs(
-                selected_components=args.selected_components, tail=args.tail)
+                selected_components=args.selected_components, tail=args.tail, noparse=args.noparse)
 
         # print any containers that encountered errors, if present
         if len(error_pods) > 0:
@@ -147,7 +151,10 @@ def main(argv: List):
 
             # print the containers that had an error
             for err_info in error_pods:
-                print(f"    [{err_info[0]}] in pod [{err_info[1]}]", file=sys.stderr)
+                if err_info[0]:
+                    print(f"    [{err_info[0]}] in pod [{err_info[1]}]", file=sys.stderr)
+                else:
+                    print(f"    All containers in pod [{err_info[1]}]", file=sys.stderr)
 
             print("\nContainer status information is available in the log file.", file=sys.stderr)
 
@@ -162,9 +169,15 @@ def main(argv: List):
 
             print("\nThe wait time can be increased using the \"--wait=\" option.")
 
-        # print output directory
         print()
-        print(f"Log files created in: {log_dir}")
+        # check folder is empty
+        if len(os.listdir(log_dir)) == 0:
+            os.rmdir(log_dir)
+            print("No log files created.")
+        else:
+            # print output directory
+            print(f"Log files created in: {log_dir}")
+
         print()
     except (NoMatchingPodsError, NoPodsError) as e:
         print()

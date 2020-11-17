@@ -49,13 +49,21 @@ class ViyaDeploymentReport(object):
 
     The gathered data can be written to disk as an HTML report and a JSON file containing the gathered data.
     """
+
+    # default values for arguments shared between the model and command #
+    DATA_FILE_ONLY_DEFAULT: bool = False
+    INCLUDE_POD_LOG_SNIPS_DEFAULT: bool = False
+    INCLUDE_RESOURCE_DEFINITIONS_DEFAULT: bool = False
+    OUTPUT_DIRECTORY_DEFAULT: Text = "./"
+
     def __init__(self) -> None:
         """
         Constructor for ViyaDeploymentReport object.
         """
         self._report_data = None
 
-    def gather_details(self, kubectl: KubectlInterface, include_pod_log_snips: bool = False) -> None:
+    def gather_details(self, kubectl: KubectlInterface,
+                       include_pod_log_snips: bool = INCLUDE_POD_LOG_SNIPS_DEFAULT) -> None:
         """
         This method executes the gathering of Kubernetes resources related to SAS components.
         Before this method is executed class fields will have a None value. This method will
@@ -496,9 +504,10 @@ class ViyaDeploymentReport(object):
         except KeyError:
             return None
 
-    def write_report(self, output_directory: Text = "", data_file_only: bool = False,
-                     include_resource_definitions: bool = False, file_timestamp: Optional[Text] = None) \
-            -> Tuple[Optional[AnyStr], Optional[AnyStr]]:
+    def write_report(self, output_directory: Text = OUTPUT_DIRECTORY_DEFAULT,
+                     data_file_only: bool = DATA_FILE_ONLY_DEFAULT,
+                     include_resource_definitions: bool = INCLUDE_RESOURCE_DEFINITIONS_DEFAULT,
+                     file_timestamp: Optional[Text] = None) -> Tuple[Optional[AnyStr], Optional[AnyStr]]:
         """
         Writes the report data to a file as a JSON string.
 
@@ -522,14 +531,10 @@ class ViyaDeploymentReport(object):
         # convert the data to a JSON string #
         data_json = json.dumps(self._report_data, cls=KubernetesObjectJSONEncoder, indent=4, sort_keys=True)
 
-        # blank line for output readability #
-        print()
-
         # write the report data #
         data_file_path: Text = output_directory + _REPORT_DATA_FILE_NAME_TMPL_.format(file_timestamp)
         with open(data_file_path, "w+") as data_file:
             data_file.write(data_json)
-            print("Created: {}".format(os.path.abspath(data_file_path)))
 
         # write the html file, if requested #
         html_file_path: Optional[Text] = None
@@ -541,9 +546,5 @@ class ViyaDeploymentReport(object):
                                                        trim_blocks=True, lstrip_blocks=True,
                                                        report_data=json.loads(data_json),
                                                        include_definitions=include_resource_definitions)
-            print("Created: {}".format(html_file_path))
-
-        # blank line for output readability #
-        print()
 
         return os.path.abspath(data_file_path), html_file_path

@@ -29,6 +29,42 @@ The following command provides usage details:
 python viya-ark.py pre-install-report -h
 ```
 
+**Note:** The tool currently expects an NGINX Ingress controller.  Other Ingress controllers are not evaluated.
+
+### Hints
+
+The values for the Ingress Host and Ingress Port options can be determined with kubectl commands. 
+The following section provides hints for a NGINX Ingress controller of Type LoadBalancer. The following commands 
+may need to be modified to suit your Ingress controller deployment.  
+
+You must specify the namespace where the Ingress controller is available as well as the Ingress controller name:
+
+```
+kubectl -n <nginx-ingress-namespace> get svc <nginx-ingress-controller-name> 
+```
+  
+Here is sample output from the command: 
+
+```
+NAME                                 TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   10.0.00.000   55.147.22.101   80:31254/TCP,443:31383/TCP   28d
+```
+
+Use the following commands to determine the parameter values:
+
+```
+$ export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.status.loadBalancer.ingress[*].ip}')
+$ export INGRESS_HTTP_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
+$ export INGRESS_HTTPS_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
+```
+
+Use the values gathered on the command line for http or https as appropriate for your deployment:
+
+```
+ -i nginx  -H $INGRESS_HOST -p $INGRESS_HTTP_PORT 
+ -i nginx  -H $INGRESS_HOST -p $INGRESS_HTTPS_PORT 
+```
+ 
 ## Report Output
 
 The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html`. The report is in a web-viewable, HTML format.

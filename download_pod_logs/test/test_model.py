@@ -27,6 +27,9 @@ from viya_ark_library.k8s.test_impl.sas_kubectl_test import KubectlTest
 
 ####################################################################
 # PodLogDownloader Tests                                         ###
+# Notes:                                                         ###
+#   No explicit tests for _write_log() because it is tested in   ###
+#   the test_download_logs()                                     ###
 ####################################################################
 def test_init_default() -> None:
     """

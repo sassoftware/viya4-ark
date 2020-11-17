@@ -13,7 +13,7 @@
 import os
 import pytest
 
-from deployment_report.deployment_report import ViyaDeploymentReportCommand, usage
+from deployment_report.deployment_report import ViyaDeploymentReportCommand, main
 
 ####################################################################
 # There is not unit test defined for:
@@ -48,27 +48,20 @@ def test_viya_deployment_report_command_command_desc():
 
 
 def test_usage(capfd):
-    # test that a SystemExit is raised
-    with pytest.raises(SystemExit) as sys_exit:
-        usage(0)
+    _argv: list = ["-h"]
 
-    # make sure the exit value is correct
-    assert sys_exit.value.code == 0
+    # run main
+    with pytest.raises(SystemExit):
+        main(_argv)
 
     # define expected output
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    test_data_file = os.path.join(current_dir, f"data{os.sep}expected_command_output.txt")
+    test_data_file = os.path.join(current_dir, f"data{os.sep}expected_usage_output.txt")
 
     with open(test_data_file) as f:
         expected = f.read()
 
-    # get the captured output
+    # get output
     out, err = capfd.readouterr()
 
-    # assert that the captured output matches the expected
     assert out == expected
-
-    # make sure that a non-zero exit code is correct
-    with pytest.raises(SystemExit) as sys_exit:
-        usage(5)
-    assert sys_exit.value.code == 5

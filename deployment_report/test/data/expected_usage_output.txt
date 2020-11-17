@@ -1,0 +1,27 @@
+usage: viya-ark.py deployment-report [-h] [-d] [-k KUBECTL_GLOBAL_OPTS] [-l]
+                                     [-n NAMESPACE] [-o OUTPUT_DIR] [-r]
+
+Generate a deployment report of SAS components for a target Kubernetes
+environment.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d, --data-file-only  Generate only the JSON-formatted data.
+  -k KUBECTL_GLOBAL_OPTS, --kubectl-global-opts KUBECTL_GLOBAL_OPTS
+                        Any kubectl global options to use with all executions
+                        (excluding namespace, which should be set using -n,
+                        --namespace).
+  -l, --include-pod-log-snips
+                        Include the most recent log lines (up to 10) for each
+                        container in the report. This option increases command
+                        runtime and file size.
+  -n NAMESPACE, --namespace NAMESPACE
+                        Namespace to target containing SAS software, if not
+                        defined by KUBECONFIG.
+  -o OUTPUT_DIR, --output-dir OUTPUT_DIR
+                        Directory where log files will be written. Defaults to
+                        "./".
+  -r, --include-resource-definitions
+                        Include the full JSON-formatted definition for each
+                        resource in the report. This option increases file
+                        size.

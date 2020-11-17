@@ -107,27 +107,6 @@
 {% endfor %}
 
 
-<!-- Control plane  -->
-{% for master_nodes in master_data %}
-    {% if loop.index == 1 %}
-        <!-- installed nodes jq-accordion -->
-        <div class="jq-accordion">
-          <h2>Control Plane Information - {{master_nodes.issue}}</h2>
-           <div>
-           <table>
-             <TR>
-                 <TH> Status </TH>
-             </TR>
-             <TR>
-                 <TD>{{master_nodes.firstFailure}}</SPAN></TD>
-             </TR>
-           </table>
-           </div>
-        </div>
-    {% endif %}
-{% endfor %}
-<!-- Control Plane  End -->
-
 <!-- CPU check on worker nodes  -->
 {% for nodes_data in global_data %}
     {% set totals = '0' %}
@@ -149,29 +128,29 @@
                    </TR>
                 </table>
         {% endif %}
-        {% for node in nodes_data %}
+        {% if nodes_data|length > 0 %}
         <!-- installed nodes jq-accordion -->
-               {% set check = 'PASS' %}
-               {% set column_name = '' %}
-               {% if node.error.cpu %}
-                  {% set check = 'FAIL' %}
-                  {% set column_name = 'CPU' %}
-               {% endif %}
-               <table>
+               <table width="100%">
+	            <col style="width:40%">
+	            <col style="width:10%">
+	            <col style="width:20%">
+	            <col style="width:30%">
                    <TR>
                      <TH> Node Name </TH>
                      <TH> CPUs Cores </TH>
                      <TH> Allocatable CPU Cores </TH>
-                     <TH> {{ column_name }} </TH>
+                     <TH> Issues</TH>
                    </TR>
+                   {% for node in nodes_data %}
                    <TR>
                      <TD>{{node.nodeName}}</TD>
                      <TD>{{node.cpu}}</TD>
                      <TD>{{node.allocatablecpu}}</TD>
                      <TD>{{node.error.cpu}}</TD>
                    </TR>
+                   {% endfor %}
                 </table>
-        {% endfor %}
+        {% endif %}
         </div>
         </div>
     {% endif %}
@@ -199,21 +178,20 @@
                    </TR>
                 </table>
             {% endif %}
-            {% for node in nodes_data %}
-               {% set check = 'PASS' %}
-               {% set column_name = '' %}
-               {% if node.error.kubeletversion %}
-                  {% set check = 'FAIL' %}
-                  {% set column_name = 'Kubelet Version' %}
-               {% endif %}
-               <table>
+            {% if nodes_data|length > 0 %}
+               <table width="100%">
+	            <col style="width:30%">
+	            <col style="width:20%">
+	            <col style="width:20%">
+	            <col style="width:30%">
                    <TR>
                      <TH> Node Name </TH>
                      <TH> Kubelet Version </TH>
                      <TH> Container Runtime</TH>
                      <TH> Kernel Version </TH>
-                     <TH> {{ column_name }} </TH>
+                     <TH> Issues </TH>
                    </TR>
+                   {% for node in nodes_data %}
                    <TR>
                      <TD>{{node.nodeName}}</TD>
                      <TD>{{node.kubeletversion}}</TD>
@@ -221,8 +199,9 @@
                      <TD>{{node.kernelVersion}}</TD>
                      <TD>{{node.error.kubeletversion}}</TD>
                    </TR>
+                   {% endfor %}
                 </table>
-        {% endfor %}
+        {% endif %}
         </div>
         </div>
     {% endif %}
@@ -248,22 +227,23 @@
                    </TR>
                 </table>
         {% endif %}
-        {% for node in nodes_data %}
-               {% set check = 'PASS' %}
-               {% set column_name = '' %}
-               {% if node.error.allocatableMemory %}
-                  {% set check = 'FAIL' %}
-                  {% set column_name = 'Memory' %}
-               {% endif %}
-               <table>
+        {% if nodes_data|length > 0 %}
+               <table width="100%">
+                    <col style="width:25%">
+                    <col style="width:15%">
+                    <col style="width:15%">
+                    <col style="width:15%">
+                    <col style="width:10%">
+                    <col style="width:20%">
                    <TR>
                      <TH> Node Name </TH>
                      <TH> Memory </TH>
                      <TH> Allocatable Memory </TH>
                      <TH> Allocatable Ephemeral Storage </TH>
                      <TH> Pods Capacity </TH>
-                     <TH> {{ column_name }} </TH>
+                     <TH> Issues </TH>
                    </TR>
+                   {% for node in nodes_data %}
                    <TR>
                      <TD>{{node.nodeName}}</TD>
                      <TD>{{node.memory}}</TD>
@@ -272,8 +252,9 @@
                      <TD>{{node.podscapacity}}</TD>
                      <TD>{{node.error.allocatableMemory}}</TD>
                    </TR>
+                   {% endfor %}
                 </table>
-        {% endfor %}
+        {% endif %}
         </div>
         </div>
     {% endif %}
@@ -298,18 +279,22 @@
                    </TR>
                 </table>
         {% endif %}
-        {% for node in storage %}
-           <table>
+        {% if storage|length > 0 %}
+           <table  width="100%">
+	            <col style="width:30%">
+	            <col style="width:70%">
              <TR>
                  <TH> Storage Class </TH>
                  <TH> Status </TH>
              </TR>
+            {% for node in storage %}
              <TR>
                  <TD>{{node.storageClassNameName}}</TD>
                  <TD>{{node.firstFailure}}</TD>
              </TR>
+             {% endfor %}
            </table>
-        {% endfor %}
+        {% endif %}
         </div>
         </div>
     {% endif %}

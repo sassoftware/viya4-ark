@@ -26,6 +26,7 @@ from viya_ark_library.command import Command
 from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
 from viya_ark_library.k8s.sas_kubectl import Kubectl
 from viya_ark_library.logging import ViyaARKLogger
+from viya_ark_library.lrp_indicator import LRPIndicator
 
 PRP = pprint.PrettyPrinter(indent=4)
 
@@ -65,7 +66,7 @@ def _read_properties_file():
             sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
 
 
-def _read_environment_var(env_var):
+def read_environment_var(env_var):
     """
     This method verifies that the KUBECONFIG environment variable is set.
 
@@ -73,6 +74,10 @@ def _read_environment_var(env_var):
     """
     try:
         value_env_var = os.environ[env_var]
+        # Check if specified file exists
+        if not os.path.exists(value_env_var):
+            print(viya_messages.KUBECONF_FILE_ERROR.format(value_env_var))
+            sys.exit(viya_messages.BAD_ENV_RC_)
     except Exception:
         print(viya_messages.KUBECONF_ERROR)
         sys.exit(viya_messages.BAD_ENV_RC_)
@@ -122,7 +127,7 @@ def usage(exit_code: int):
     print("Usage: viya-ark.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
     print()
     print("Options:")
-    print("    -i  --ingress=nginx or istio  (Required)Kubernetes ingress controller used for Viya deployment")
+    print("    -i  --ingress=nginx           (Required)Kubernetes ingress controller used for Viya deployment")
     print("    -H  --host                    (Required)Ingress host used for Viya deployment")
     print("    -p  --port=xxxxx or \"\"        (Required)Ingress port used for Viya deployment")
     print("    -h  --help                    (Optional)Show this usage message")
@@ -182,16 +187,7 @@ def main(argv):
             print(viya_messages.OPTION_ERROR.format(str(opt)))
             usage(viya_messages.BAD_OPT_RC_)
 
-    if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
-        print(viya_messages.OPTION_VALUES_ERROR)
-        usage(viya_messages.BAD_OPT_RC_)
-
-    if not(str(ingress_controller) == viya_constants.INGRESS_NGINX
-           or str(ingress_controller) == viya_constants.INGRESS_ISTIO):
-        print(viya_messages.INGRESS_CONTROLLER_ERROR)
-        usage(viya_messages.BAD_OPT_RC_)
-
-    # make sure path is valid #
+    # make sure path is valid and set up logging#
     if output_dir != "":
         if not output_dir.endswith(os.sep):
             output_dir = output_dir + os.sep
@@ -208,30 +204,45 @@ def main(argv):
         usage(viya_messages.BAD_OPT_RC_)
 
     sas_logger = ViyaARKLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
-    _read_environment_var('KUBECONFIG')
+    logger = sas_logger.get_logger()
+    read_environment_var('KUBECONFIG')
+
+    if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
+        logger.error(viya_messages.OPTION_VALUES_ERROR)
+        print(viya_messages.OPTION_VALUES_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
+
+    if not(str(ingress_controller) == viya_constants.INGRESS_NGINX):
+        logger.error(viya_messages.INGRESS_CONTROLLER_ERROR)
+        print(viya_messages.INGRESS_CONTROLLER_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
 
     try:
         kubectl = Kubectl(namespace=name_space)
     except ConnectionError as e:
+        logger.error(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         sys.exit(viya_messages.CONNECTION_ERROR_RC_)
     except NamespaceNotFoundError as e:
+        logger.error(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         print(viya_messages.EXCEPTION_MESSAGE.format(e))
         print()
         sys.exit(viya_messages.NAMESPACE_NOT_FOUND_RC_)
 
     check_limits = _read_properties_file()
-    sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck(sas_logger,
-                                                                    check_limits["VIYA_KUBELET_VERSION_MIN"],
-                                                                    check_limits["VIYA_MIN_WORKER_ALLOCATABLE_CPU"],
-                                                                    check_limits["VIYA_MIN_AGGREGATE_WORKER_CPU_CORES"],
-                                                                    check_limits["VIYA_MIN_ALLOCATABLE_WORKER_MEMORY"],
-                                                                    check_limits["VIYA_MIN_AGGREGATE_WORKER_MEMORY"])
+    with LRPIndicator(enter_message="Gathering facts"):
+        sas_pre_check_report: ViyaPreInstallCheck = \
+            ViyaPreInstallCheck(sas_logger, check_limits["VIYA_KUBELET_VERSION_MIN"],
+                                check_limits["VIYA_MIN_WORKER_ALLOCATABLE_CPU"],
+                                check_limits["VIYA_MIN_AGGREGATE_WORKER_CPU_CORES"],
+                                check_limits["VIYA_MIN_ALLOCATABLE_WORKER_MEMORY"],
+                                check_limits["VIYA_MIN_AGGREGATE_WORKER_MEMORY"])
     # gather the details for the report
     try:
+        print()
         sas_pre_check_report.check_details(kubectl, ingress_port, ingress_host, ingress_controller, output_dir)
     except RuntimeError as e:
         print()
