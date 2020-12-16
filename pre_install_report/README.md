@@ -88,4 +88,9 @@ The following issue may impact the performance and expected results of this tool
 
         NAME                                     DESIRED   CURRENT   READY   AGE
         replicaset.apps/hello-world-6665cf748b   2         2         0       115m
+
+    Suggested commands to delete resources before running the tool again:
+        kubectl -n <namespace> delete replicaset.apps/hello-world-6665cf748b
+        kubectl -n <namespace> delete pos/hello-world-6665cf748b-5x2jq
+        kubectl -n <namespace> delete pod/hello-world-6665cf748b-tkq79
 ```    
