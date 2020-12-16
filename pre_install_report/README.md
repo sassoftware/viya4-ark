@@ -75,10 +75,11 @@ The tool generates the pre-install check report,`viya_pre_install_report_<timest
 You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_check_limit.properties file to alter the minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
 
 ## Known Issues
-The following issue is known and may impact the performance and expected results of this tool.
-- All Nodes in a cluster must be in READY state before running the tool.
-    - If all the Nodes are not in READY state, the tool takes longer to run. Wait for it to complete.
-    - Also, the tool may not be unable to clean up the pods and replicaset created in the specified namespace as shown below and must be manually deleted.
+
+The following issue may impact the performance and expected results of this tool.
+- All Nodes in a cluster must be in the READY state before running the tool.
+    - If all the Nodes are not in the READY state, the tool takes longer to run. Wait for it to complete.
+    - Also, the tool may not be able to clean up the pods and replicaset created in the specified namespace as shown in the example output below. If that happens, the pods and replicaset must be manually deleted.
     They will look similar to the resources shown below:
 ```    
         NAME                               READY   STATUS    RESTARTS   AGE
