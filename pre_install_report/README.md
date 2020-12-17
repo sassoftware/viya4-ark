@@ -2,7 +2,7 @@
 
 This tool compares your Kubernetes environment to the SAS Viya system requirements. It evaluates a number of items, such as memory, CPU cores, software versions, and permissions. The output is a web-viewable, HTML report with the results. 
 
-SAS recommends running the tool and resolving any reported issues before beginning a SAS Viya deployment in a Kubernetes cluster. 
+SAS recommends running the tool and resolving any reported issues before beginning a SAS Viya deployment in a Kubernetes cluster.  
 
 ## Prerequisites 
 - The tool should be run on a machine from which the Kubernetes command-line interface, `kubectl`, can access the Kubernetes cluster. 
@@ -20,6 +20,7 @@ Download the latest version of this tool and update required packages with every
 ## Usage
 
 **Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights in the namespace where you intend to deploy your SAS Viya software.
+To obtain a complete report use a `KUBECONFIG`  with administrator rights in the cluster.
 
 After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya4-ark`. 
 
@@ -72,3 +73,24 @@ The tool generates the pre-install check report,`viya_pre_install_report_<timest
 ## Modify CPU, Memory, and Version Settings
 
 You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_check_limit.properties file to alter the minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
+
+## Known Issues
+
+The following issue may impact the performance and expected results of this tool.
+- All Nodes in a cluster must be in the READY state before running the tool.
+    - If all the Nodes are not in the READY state, the tool takes longer to run. Wait for it to complete.
+    - Also, the tool may not be able to clean up the pods and replicaset created in the specified namespace as shown in the example output below. If that happens, the pods and replicaset must be manually deleted.
+    They will look similar to the resources shown below:
+```    
+        NAME                               READY   STATUS    RESTARTS   AGE
+        pod/hello-world-6665cf748b-5x2jq   0/1     Pending   0          115m
+        pod/hello-world-6665cf748b-tkq79   0/1     Pending   0          115m
+
+        NAME                                     DESIRED   CURRENT   READY   AGE
+        replicaset.apps/hello-world-6665cf748b   2         2         0       115m
+
+    Suggested commands to delete resources before running the tool again:
+        kubectl -n <namespace> delete replicaset.apps/hello-world-6665cf748b
+        kubectl -n <namespace> delete pos/hello-world-6665cf748b-5x2jq
+        kubectl -n <namespace> delete pod/hello-world-6665cf748b-tkq79
+```    

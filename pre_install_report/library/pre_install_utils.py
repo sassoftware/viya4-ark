@@ -98,7 +98,7 @@ class PreCheckUtils(object):
             role = data.get_api_group("Role")
             rolebinding = data.get_api_group("RoleBinding")
         except CalledProcessError as e:
-            self.logger.exception("get_rbac_group_cmd  rc {}" + e.returncode)
+            self.logger.exception("get_rbac_group_cmd  rc {}" + str(e.returncode))
             return False
         if role is None:
             return False
