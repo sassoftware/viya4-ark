@@ -432,6 +432,7 @@ class KubernetesResource(MutableMapping):
         All available kinds can be discovered by calling the Kubectl.get_api_resources() method.
         """
         CAS_DEPLOYMENT = "CASDeployment"
+        CONFIGMAP = "ConfigMap"
         CRON_JOB = "CronJob"
         CRUNCHY_PG_BACKUP = "Pgbackup"
         CRUNCHY_PG_CLUSTER = "Pgcluster"

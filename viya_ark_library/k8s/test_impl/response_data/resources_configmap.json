@@ -1,0 +1,32 @@
+[
+    {
+        "apiVersion": "v1",
+        "data": {
+            "SAS_BUILD_TYPE": "x64_oci_linux_2-docker",
+            "SAS_CADENCE_DISPLAY_NAME": "Fast R/TR",
+            "SAS_CADENCE_DISPLAY_SHORT_NAME": "Fast",
+            "SAS_CADENCE_DISPLAY_VERSION": "R/TR",
+            "SAS_CADENCE_NAME": "fast",
+            "SAS_CADENCE_RELEASE": "20201214.1607958443388",
+            "SAS_CADENCE_VERSION": "2020",
+            "SAS_DEPLOYMENT_TYPE": "default",
+            "SAS_REPOSITORY_WAREHOUSE_URL": "https://ses.sas.download/ses"
+        },
+        "kind": "ConfigMap",
+        "metadata": {
+            "annotations": {
+                "kubectl.kubernetes.io/last-applied-configuration": ""
+            },
+            "creationTimestamp": "2020-12-14T15:29:58Z",
+            "labels": {
+                "sas.com/admin": "namespace",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-deployment-metadata-kkd5dm2ch9",
+            "namespace": "test",
+            "resourceVersion": "36621129",
+            "selfLink": "/api/v1/namespaces/test/configmaps/sas-deployment-metadata-kkd5dm2ch9",
+            "uid": "73ce97ad-c682-4725-b8eb-9af2f8a0c48c"
+        }
+    }
+]

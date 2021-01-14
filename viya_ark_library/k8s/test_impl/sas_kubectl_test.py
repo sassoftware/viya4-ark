@@ -182,6 +182,7 @@ class KubectlTest(KubectlInterface):
         # Resource: all kinds
         RESOURCE_KINDS_LIST: List[Text] = [
             KubernetesResource.Kinds.CAS_DEPLOYMENT,
+            KubernetesResource.Kinds.CONFIGMAP,
             KubernetesResource.Kinds.CRON_JOB,
             KubernetesResource.Kinds.DEPLOYMENT,
             KubernetesResource.Kinds.INGRESS,

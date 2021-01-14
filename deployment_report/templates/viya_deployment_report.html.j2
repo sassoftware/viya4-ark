@@ -92,6 +92,10 @@
       <th>Ingress Controller</th>
       <td>{{ report_data.kubernetes.ingressController | default("<em>could not be determined</em>") }}</td>
     </tr>
+    <tr>
+      <th>Viya Cadence Version</th>
+      <td>{{ report_data.kubernetes.cadenceInfo | default("<em>amydebug: could not be determined- cadinfo</em>") }}</t
+    </tr>
   </table>
   {# Cluster Overview: Overview Table #}
 
