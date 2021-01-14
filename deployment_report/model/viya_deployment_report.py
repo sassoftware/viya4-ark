@@ -114,16 +114,12 @@ class ViyaDeploymentReport(object):
         try:
             ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
                                                               k8s_kinds.CONFIGMAP)
-            print("amydebug: ", type(gathered_resources))
             for item in gathered_resources[k8s_kinds.CONFIGMAP]['items']:
                 if 'sas-deployment-metadata' in item:
-                    print("amydebug: sas-deployment-metadata:", item)
                     cadence_data = self.get_cadence_data(gathered_resources[k8s_kinds.CONFIGMAP]['items'][item])
-                    cadence_info = cadence_data['SAS_CADENCE_NAME'] + '-' + \
-                        cadence_data['SAS_CADENCE_VERSION'] + '-' + \
-                        cadence_data['SAS_CADENCE_RELEASE']
-                    print("amydebug: sas-cadence-data:", cadence_data)
-                    print("amydebug: api_resources-:", api_resources)
+                    cadence_info = cadence_data['SAS_CADENCE_NAME'].capitalize() + ' ' + \
+                        cadence_data['SAS_CADENCE_VERSION'] + ' (' + \
+                        cadence_data['SAS_CADENCE_RELEASE'] + ')'
 
         except CalledProcessError:
             pass
@@ -528,7 +524,7 @@ class ViyaDeploymentReport(object):
 
     def get_cadence_data(self, data: Dict) -> Optional[Dict]:
         """
-        amydebug: Returns the given key's value from the 'data' dictionary.
+        Returns the given key's value from the 'data' dictionary.
 
         :param key: The key of the value to return.
         :return: The value mapped to the given key, or None if the given key doesn't exist.
