@@ -109,6 +109,26 @@ class ViyaDeploymentReport(object):
         # create dictionary to store gathered resources #
         gathered_resources: Dict = dict()
 
+        # start by gathering details about ConfigMap #
+        cadence_info: Optional[Text] = None
+        try:
+            ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
+                                                              k8s_kinds.CONFIGMAP)
+            print("amydebug: ", type(gathered_resources))
+            for item in gathered_resources[k8s_kinds.CONFIGMAP]['items']:
+                if 'sas-deployment-metadata' in item:
+                    print("amydebug: sas-deployment-metadata:", item)
+                    cadence_data = self.get_cadence_data(gathered_resources[k8s_kinds.CONFIGMAP]['items'][item])
+                    cadence_info = cadence_data['SAS_CADENCE_NAME'] + '-' + \
+                                   cadence_data['SAS_CADENCE_VERSION'] + '-' + \
+                                   cadence_data['SAS_CADENCE_RELEASE']
+                    print("amydebug: sas-cadence-data:", cadence_data)
+                    print("amydebug: api_resources-:", api_resources)
+
+        except CalledProcessError:
+            pass
+
+        gathered_resources = dict()
         # start by gathering details about Nodes, if available #
         # this information can be reported even if Pods are not listable #
         try:
@@ -256,6 +276,8 @@ class ViyaDeploymentReport(object):
         k8s_details_dict[Keys.Kubernetes.VERSIONS_DICT]: Dict = kubectl.version()
         # create a key to hold the meta information about resources discovered in the cluster: dict #
         k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT]: Dict = dict()
+        # create a key to hold the cadence version information: str|None #
+        k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Optional[Text] = cadence_info
 
         # add the availability and count of all discovered resources #
         for kind_name, kind_details in gathered_resources.items():
@@ -501,6 +523,18 @@ class ViyaDeploymentReport(object):
 
         try:
             return self._report_data[Keys.SAS_COMPONENTS_DICT][component_name][resource_kind]
+        except KeyError:
+            return None
+
+    def get_cadence_data(self, data: Dict) -> Optional[Dict]:
+        """
+        amydebug: Returns the given key's value from the 'data' dictionary.
+
+        :param key: The key of the value to return.
+        :return: The value mapped to the given key, or None if the given key doesn't exist.
+        """
+        try:
+            return data['resourceDefinition']._resource['data']
         except KeyError:
             return None
 
