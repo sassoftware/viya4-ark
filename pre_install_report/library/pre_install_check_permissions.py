@@ -65,6 +65,8 @@ class PreCheckPermissions(object):
         self.ingress_data[viya_constants.INGRESS_CONTROLLER] = self.ingress_controller
         self.ingress_file = "hello-ingress.yaml"
         self._storage_class_sc: List[KubernetesResource] = None
+        self._sample_deployment = 0
+        self._sample_output = ""
 
     def _set_results_cluster_admin(self, resource_key, rc):
         """
@@ -73,7 +75,9 @@ class PreCheckPermissions(object):
         """
         if rc == 1:
             self.cluster_admin_permission_data[resource_key] = viya_constants.INSUFFICIENT_PERMS
-            self.cluster_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = viya_constants.INSUFFICIENT_PERMS
+            self.cluster_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
+                viya_constants.INSUFFICIENT_PERMS + ". Check Logs."
+
         else:
             self.cluster_admin_permission_data[resource_key] = viya_constants.ADEQUATE_PERMS
 
@@ -82,12 +86,41 @@ class PreCheckPermissions(object):
         Set permissions status for specified resource/verb with namespace admin role
 
         """
-        if rc == 1:
-            self.namespace_admin_permission_data[resource_key] = viya_constants.INSUFFICIENT_PERMS
-            self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] \
-                = viya_constants.INSUFFICIENT_PERMS
+        sample_keys = [viya_constants.PERM_DEPLOYMENT]
+        deployment_keys = [viya_constants.PERM_DELETE + viya_constants.PERM_DEPLOYMENT,
+                           viya_constants.PERM_SERVICE,
+                           viya_constants.PERM_DELETE + viya_constants.PERM_SERVICE,
+                           viya_constants.PERM_INGRESS,
+                           viya_constants.PERM_DELETE + viya_constants.PERM_INGRESS,
+                           viya_constants.PERM_REPLICASET,
+                           viya_constants.PERM_CREATE + viya_constants.PERM_ROLE,
+                           viya_constants.PERM_CREATE + viya_constants.PERM_ROLEBINDING,
+                           viya_constants.PERM_CREATE + viya_constants.PERM_SA,
+                           viya_constants.PERM_DELETE + viya_constants.PERM_ROLE,
+                           viya_constants.PERM_DELETE + viya_constants.PERM_ROLEBINDING,
+                           viya_constants.PERM_DELETE + viya_constants.PERM_SA
+                           ]
+        if rc != 0:
+            self.logger.debug("resource_key = {}, sample_deployment = {} ".format(str(resource_key),
+                                                                                  str(self._sample_deployment)))
+            if self._sample_deployment != 0:
+                if resource_key in deployment_keys:
+                    self.namespace_admin_permission_data[resource_key] = viya_constants.INSUFFICIENT_PERMS
+                if resource_key in sample_keys:
+                    self.namespace_admin_permission_data[resource_key] = viya_constants.INSUFFICIENT_PERMS + \
+                                                                         ". Sample Deployment Check failed! " + \
+                                                                         "Ensure Node(s) Status is Ready. " + \
+                                                                         "Check Permissions in specified namespace. " \
+                                                                         + self._sample_output
+
+            else:
+                self.namespace_admin_permission_data[resource_key] = viya_constants.INSUFFICIENT_PERMS
+            self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
+                viya_constants.INSUFFICIENT_PERMS + ". Check Logs."
         else:
             self.namespace_admin_permission_data[resource_key] = viya_constants.ADEQUATE_PERMS
+            # self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
+            #    viya_constants.ADEQUATE_PERMS
 
     def _get_pvc(self, pvc_name, key):
         """
@@ -284,20 +317,34 @@ class PreCheckPermissions(object):
 
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
                                              'hello-application.yaml')
-        #    self._set_results_namespace_admin(viya_constants.PERM_DEPLOYMENT, rc)
-        #    self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
         if rc == 0:
-            rc = self.utils.do_cmd(" rollout status deployment.v1.apps/hello-world ")
+            rc, sample_output = self.utils.do_cmd(" rollout status deployment.v1.apps/hello-world --timeout=180s")
+            # You can check if a Deployment has completed by using kubectl rollout status.
+            # If the rollout completed successfully, kubectl rollout status returns a zero exit code.
+
+            if rc != 0:
+                self._sample_deployment = 2
+                self._sample_output = sample_output
+                self._set_results_namespace_admin(viya_constants.PERM_DEPLOYMENT, rc)
+                self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
+                return 2
 
             self._set_results_namespace_admin(viya_constants.PERM_DEPLOYMENT, rc)
             self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
             if rc == 0:
-                rc = self.utils.do_cmd(" scale --replicas=2 deployment/hello-world ")
+                rc, sample_output = self.utils.do_cmd(" scale --replicas=2 deployment/hello-world ")
+                if rc != 0:
+                    self._sample_deployment = 3
+                self._set_results_namespace_admin(viya_constants.PERM_REPLICASET, rc)
+                return 3
+        else:
+            self._sample_deployment = 1
+            self._set_results_namespace_admin(viya_constants.PERM_DEPLOYMENT, rc)
+            self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
-                if rc == 0:
-                    self._set_results_namespace_admin(viya_constants.PERM_REPLICASET, rc)
+            return 1
 
     def check_sample_service(self):
         """
@@ -396,8 +443,9 @@ class PreCheckPermissions(object):
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
                                              'hello-application.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_DEPLOYMENT, rc)
+        self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_SERVICE, rc)
 
-        rc = self.utils.do_cmd(" wait --for=delete pod -l app=hello-world-pod --timeout=12s ")
+        self.utils.do_cmd(" wait --for=delete pod -l app=hello-world-pod --timeout=12s ")
 
     def check_delete_sample_service(self):
         """
@@ -443,12 +491,13 @@ class PreCheckPermissions(object):
     def check_rbac_role(self):
         """
         Check if RBAC is enabled in specified namespace
-        Create the Role and Rolebinding for the custome resource access with specified namespace. Set the
+        Create the Role and Rolebinding for the custom resource access with specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
 
         """
         found = self.utils.get_rbac_group_cmd()
-
+        self.logger.debug("get_rbace_group_cmd found = {}, sample_deployment = {}"
+                          .format(str(found), str(self._sample_deployment)))
         if found:
             rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
                                                  'viya-role.yaml')
@@ -463,7 +512,14 @@ class PreCheckPermissions(object):
                                                  'viya-rolebinding.yaml')
             self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLEBINDING, rc)
         else:
+            self.logger.debug("sample_deployment = {}".format(str(self._sample_deployment)))
             self.namespace_admin_permission_aggregate["RBAC Checking"] = viya_constants.PERM_SKIPPING
+            self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLE,
+                                              int(self._sample_deployment))
+            self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_SA,
+                                              int(self._sample_deployment))
+            self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLEBINDING,
+                                              int(self._sample_deployment))
 
     def check_rbac_delete_role(self):
         """
@@ -495,14 +551,14 @@ class PreCheckPermissions(object):
         if not allowed:
             rc1 = 1
 
-        self._set_results_namespace_admin_crd(viya_constants.PERM_CREATE + viya_constants.PERM_CR + " with RBAC "
-                                              + viya_constants.PERM_SA + " resp: = " + str(allowed), rc1)
+        self._set_results_namespace_admin_crd(viya_constants.PERM_CREATE + viya_constants.PERM_CR_RBAC
+                                              + viya_constants.PERM_SA, rc1)
         allowed: bool = self.utils.can_i(' delete viyas.company.com --as=system:serviceaccount:'
                                          + namespace + ':crreader ')
         if allowed:
             rc2 = 1
-        self._set_results_namespace_admin_crd(viya_constants.PERM_DELETE + viya_constants.PERM_CR + " with RBAC "
-                                              + viya_constants.PERM_SA + " resp: = " + str(allowed), rc2)
+        self._set_results_namespace_admin_crd(viya_constants.PERM_DELETE + viya_constants.PERM_CR_RBAC
+                                              + viya_constants.PERM_SA, rc2)
 
     def check_delete_custom_resource(self):
         """
