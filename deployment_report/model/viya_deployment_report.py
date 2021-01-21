@@ -107,15 +107,15 @@ class ViyaDeploymentReport(object):
                 sas_custom_resources[kind] = details
 
         # create dictionary to store gathered resources #
-        gathered_resources: Dict = dict()
+        gr: Dict = dict()
 
         # start by gathering details about ConfigMap #
         cadence_info: Optional[Text] = None
         try:
-            ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
+            ViyaDeploymentReportUtils.gather_resource_details(kubectl, gr, api_resources,
                                                               k8s_kinds.CONFIGMAP)
-            for item in gathered_resources[k8s_kinds.CONFIGMAP]['items']:
-                cadence_info = self.get_cadence_data(gathered_resources[k8s_kinds.CONFIGMAP]['items'][item]['resourceDefinition'])
+            for item in gr[k8s_kinds.CONFIGMAP]['items']:
+                cadence_info = self.get_cadence_data(gr[k8s_kinds.CONFIGMAP]['items'][item]['resourceDefinition'])
                 if cadence_info:
                     break
 
