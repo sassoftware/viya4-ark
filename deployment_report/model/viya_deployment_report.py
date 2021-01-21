@@ -115,11 +115,9 @@ class ViyaDeploymentReport(object):
             ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
                                                               k8s_kinds.CONFIGMAP)
             for item in gathered_resources[k8s_kinds.CONFIGMAP]['items']:
-                if 'sas-deployment-metadata' in item:
-                    cadence_data = self.get_cadence_data(gathered_resources[k8s_kinds.CONFIGMAP]['items'][item])
-                    cadence_info = cadence_data['SAS_CADENCE_NAME'].capitalize() + ' ' + \
-                        cadence_data['SAS_CADENCE_VERSION'] + ' (' + \
-                        cadence_data['SAS_CADENCE_RELEASE'] + ')'
+                cadence_info = self.get_cadence_data(gathered_resources[k8s_kinds.CONFIGMAP]['items'][item]['resourceDefinition'])
+                if cadence_info:
+                    break
 
         except CalledProcessError:
             pass
@@ -522,15 +520,22 @@ class ViyaDeploymentReport(object):
         except KeyError:
             return None
 
-    def get_cadence_data(self, data: Dict) -> Optional[Dict]:
+    def get_cadence_data(self, resource: KubernetesResource) -> Optional[Text]:
         """
-        Returns the given key's value from the 'data' dictionary.
+        Returns the combined key values from the 'data' dictionary.
 
         :param key: The key of the value to return.
         :return: The value mapped to the given key, or None if the given key doesn't exist.
         """
+        cadence_info: Optional[Text] = None
         try:
-            return data['resourceDefinition']._resource['data']
+            if 'sas-deployment-metadata' in resource.get_name():
+                cadence_data = resource.get_data()
+                cadence_info = cadence_data['SAS_CADENCE_NAME'].capitalize() + ' ' + \
+                    cadence_data['SAS_CADENCE_VERSION'] + ' (' + \
+                    cadence_data['SAS_CADENCE_RELEASE'] + ')'
+
+            return cadence_info
         except KeyError:
             return None
 

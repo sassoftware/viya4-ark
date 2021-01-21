@@ -347,6 +347,7 @@ class KubernetesResource(MutableMapping):
         CONTROLLER_TEMPLATE = "controllerTemplate"
         CREATION_TIMESTAMP = "creationTimestamp"
         CURRENT_REPLICAS = "currentReplicas"
+        DATA = "data"
         DESTINATION = "destination"
         ENV = "env"
         EXACT = "exact"
@@ -767,3 +768,11 @@ class KubernetesResource(MutableMapping):
         :return: This Resource's 'metadata.creationTimestamp' value.
         """
         return self._resource.get(self.Keys.PROVISIONER)
+
+    def get_data(self) -> Optional[Dict]:
+        """
+        Returns the 'data' dictionary for this Resource.
+
+        :return: This Resource's 'data' dictionary.
+        """
+        return self._resource.get(self.Keys.DATA)
