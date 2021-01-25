@@ -58,6 +58,10 @@ $ export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <n
 $ export INGRESS_HTTP_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
 $ export INGRESS_HTTPS_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
 ```
+The command to determin host name may be slightly different with Amazon EKS:
+```
+$ export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
+```
 
 Use the values gathered on the command line for http or https as appropriate for your deployment:
 
