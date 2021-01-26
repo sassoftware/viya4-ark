@@ -605,9 +605,9 @@ def test_write_report_unpopulated() -> None:
     assert html_file is None
 
 
-def test_get_cadence_data(report: ViyaDeploymentReport) -> None:
+def test_get_cadence_version(report: ViyaDeploymentReport) -> None:
     """
-    This test verifies that the provided cadence data is returned when values is passed to get_cadence_data().
+    This test verifies that the provided cadence data is returned when values is passed to get_cadence_version().
 
     :param report: The populated ViyaDeploymentReport returned by the report() fixture.
     """
@@ -617,14 +617,14 @@ def test_get_cadence_data(report: ViyaDeploymentReport) -> None:
     cadence_info: Text = None
 
     for c in cadence_data:
-        cadence_info = report.get_cadence_data(c)
+        cadence_info = report.get_cadence_version(c)
         if cadence_info:
             break
 
     assert cadence_info == KubectlTest.Values.CADENCEINFO
 
 
-def test_get_cadence_data_none() -> None:
+def test_get_cadence_version_none() -> None:
     """
     This test verifies that a None value is returned for the cadence when the report is unpopulated.
     """
