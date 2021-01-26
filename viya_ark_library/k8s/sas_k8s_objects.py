@@ -347,6 +347,7 @@ class KubernetesResource(MutableMapping):
         CONTROLLER_TEMPLATE = "controllerTemplate"
         CREATION_TIMESTAMP = "creationTimestamp"
         CURRENT_REPLICAS = "currentReplicas"
+        DATA = "data"
         DESTINATION = "destination"
         ENV = "env"
         EXACT = "exact"
@@ -432,6 +433,7 @@ class KubernetesResource(MutableMapping):
         All available kinds can be discovered by calling the Kubectl.get_api_resources() method.
         """
         CAS_DEPLOYMENT = "CASDeployment"
+        CONFIGMAP = "ConfigMap"
         CRON_JOB = "CronJob"
         CRUNCHY_PG_BACKUP = "Pgbackup"
         CRUNCHY_PG_CLUSTER = "Pgcluster"
@@ -766,3 +768,11 @@ class KubernetesResource(MutableMapping):
         :return: This Resource's 'metadata.creationTimestamp' value.
         """
         return self._resource.get(self.Keys.PROVISIONER)
+
+    def get_data(self) -> Optional[Dict]:
+        """
+        Returns the 'data' dictionary for this Resource.
+
+        :return: This Resource's 'data' dictionary.
+        """
+        return self._resource.get(self.Keys.DATA)

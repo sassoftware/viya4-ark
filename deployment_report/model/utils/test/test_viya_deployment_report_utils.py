@@ -52,11 +52,12 @@ def gathered_resources() -> Dict:
     # create a list of resource kinds to gather
     # nodes and networking kinds do not typically have owning objects, so these need to be called individually
     kinds_list: List = [
+        KubernetesResource.Kinds.CONFIGMAP,
+        KubernetesResource.Kinds.INGRESS,
+        KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE,
         KubernetesResource.Kinds.NODE,
         KubernetesResource.Kinds.POD,
-        KubernetesResource.Kinds.SERVICE,
-        KubernetesResource.Kinds.INGRESS,
-        KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE]
+        KubernetesResource.Kinds.SERVICE]
 
     for resource_kind in kinds_list:
         ViyaDeploymentReportUtils.gather_resource_details(
