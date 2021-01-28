@@ -112,7 +112,7 @@
                         "lastTransitionTime": "2020-09-02T20:10:38Z",
                         "message": "kubelet is posting ready status. AppArmor enabled",
                         "reason": "KubeletReady",
-                        "status": "True",
+                        "status": "Unknown",
                         "type": "Ready"
                     }
                 ],
@@ -651,7 +651,7 @@
                         "lastTransitionTime": "2020-09-02T20:10:08Z",
                         "message": "kubelet is posting ready status. AppArmor enabled",
                         "reason": "KubeletReady",
-                        "status": "True",
+                        "status": "Unknown",
                         "type": "Ready"
                     }
                 ],
@@ -816,7 +816,7 @@
                         "lastTransitionTime": "2020-09-02T20:09:34Z",
                         "message": "kubelet is posting ready status. AppArmor enabled",
                         "reason": "KubeletReady",
-                        "status": "True",
+                        "status": "Unknown",
                         "type": "Ready"
                     }
                 ],
@@ -993,7 +993,7 @@
                         "lastTransitionTime": "2020-09-02T20:09:38Z",
                         "message": "kubelet is posting ready status. AppArmor enabled",
                         "reason": "KubeletReady",
-                        "status": "True",
+                        "status": "Unknown",
                         "type": "Ready"
                     }
                 ],
@@ -1175,7 +1175,7 @@
                         "lastTransitionTime": "2020-09-02T20:09:54Z",
                         "message": "kubelet is posting ready status. AppArmor enabled",
                         "reason": "KubeletReady",
-                        "status": "True",
+                        "status": "Unknown",
                         "type": "Ready"
                     }
                 ],
@@ -1326,7 +1326,7 @@
                         "lastTransitionTime": "2020-09-02T20:09:42Z",
                         "message": "kubelet is posting ready status. AppArmor enabled",
                         "reason": "KubeletReady",
-                        "status": "True",
+                        "status": "Unknown",
                         "type": "Ready"
                     }
                 ],
@@ -1469,7 +1469,7 @@
                         "lastTransitionTime": "2020-09-02T20:06:29Z",
                         "message": "kubelet is posting ready status. AppArmor enabled",
                         "reason": "KubeletReady",
-                        "status": "True",
+                        "status": "Unknown",
                         "type": "Ready"
                     }
                 ],
@@ -1612,7 +1612,7 @@
                         "lastTransitionTime": "2020-09-02T20:06:46Z",
                         "message": "kubelet is posting ready status. AppArmor enabled",
                         "reason": "KubeletReady",
-                        "status": "True",
+                        "status": "Unknown",
                         "type": "Ready"
                     }
                 ],

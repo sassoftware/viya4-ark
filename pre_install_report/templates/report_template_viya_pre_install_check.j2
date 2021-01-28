@@ -189,6 +189,7 @@
                      <TH> Kubelet Version </TH>
                      <TH> Container Runtime</TH>
                      <TH> Kernel Version </TH>
+                     <TH> Node Status </TH>
                      <TH> Issues </TH>
                    </TR>
                    {% for node in nodes_data %}
@@ -197,6 +198,7 @@
                      <TD>{{node.kubeletversion}}</TD>
                      <TD>{{node.containerRuntimeVersion}}</TD>
                      <TD>{{node.kernelVersion}}</TD>
+                     <TD>{{node.Ready}}</TD>
                      <TD>{{node.error.kubeletversion}}</TD>
                    </TR>
                    {% endfor %}
@@ -355,7 +357,7 @@
 
 <!-- NameSpace Admin Permissions -->
     <div class="jq-accordion">
-        <h2>Namespace Admin Permissions: {{ namespace_admin_permission_aggregate }} </h2>
+        <h2>Namespace Admin Permissions - {{ namespace_admin_permission_aggregate }} </h2>
     <div>
 
     <table class="mytable">

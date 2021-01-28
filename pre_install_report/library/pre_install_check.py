@@ -73,6 +73,7 @@ class ViyaPreInstallCheck():
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
         self._calculated_aggregate_allocatable_memory = None
         self._workers = 0
+        self._aggregate_nodeStatus_failures = 0
 
     def _parse_release_info(self, release_info):
         """
@@ -609,11 +610,15 @@ class ViyaPreInstallCheck():
         return: updated global data about worker nodes retrieved
         """
         aggregate_kubelet_data = {}
-        aggregate_kubelet_data.update({'aggregate_kubelet_failures': str(aggregate_kubelet_failures)})
+        node_status_msg = ""
+        if self._aggregate_nodeStatus_failures > 0:
+            node_status_msg = " Check Node(s). All Nodes NOT in Ready Status." \
+                              + ' Issues Found: ' + str(self._aggregate_nodeStatus_failures)
+        aggregate_kubelet_data.update({'aggregate_kubelet_failures': node_status_msg})
         if aggregate_kubelet_failures > 0:
             aggregate_kubelet_data.update({'aggregate_kubelet_failures':
                                            'Check Kubelet Version on nodes.' +
-                                           ' Issues Found: ' + str(aggregate_kubelet_failures)})
+                                           ' Issues Found: ' + str(aggregate_kubelet_failures) + '.' + node_status_msg})
         global_data.append(aggregate_kubelet_data)
 
         return global_data
@@ -734,6 +739,15 @@ class ViyaPreInstallCheck():
             alloc_memory = str(node['allocatableMemory'])
             total_memory = total_memory + quantity_(str(node['memory']))
             total_allocatable_memory = total_allocatable_memory + quantity_(alloc_memory)
+
+            try:
+                nodeReady = str(node['Ready'])
+                if nodeReady == "True":
+                    pass
+                else:
+                    self._aggregate_nodeStatus_failures += 1
+            except KeyError:
+                node['Ready'] = viya_constants.KEY_NOT_FOUND
 
             if node['worker']:
                 total_cpu_cores = total_cpu_cores + alloc_cpu_cores
