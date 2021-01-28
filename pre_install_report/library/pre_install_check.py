@@ -739,7 +739,7 @@ class ViyaPreInstallCheck():
             alloc_memory = str(node['allocatableMemory'])
             total_memory = total_memory + quantity_(str(node['memory']))
             total_allocatable_memory = total_allocatable_memory + quantity_(alloc_memory)
-            # nodestatus = False
+
             try:
                 nodeReady = str(node['Ready'])
                 if nodeReady == "True":

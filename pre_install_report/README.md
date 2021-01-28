@@ -58,7 +58,7 @@ $ export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <n
 $ export INGRESS_HTTP_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
 $ export INGRESS_HTTPS_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
 ```
-The command to determine the Ingress Host may be slightly different with Amazon EKS:
+The command to determine the Ingress Host may be slightly different with Amazon Elastic Kubernetes Service(EKS):
 ```
 $ export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
 ```
