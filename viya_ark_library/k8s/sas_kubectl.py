@@ -11,7 +11,7 @@
 ####################################################################
 import json
 
-from subprocess import CalledProcessError, check_output, DEVNULL
+from subprocess import CalledProcessError, check_output, STDOUT
 from typing import AnyStr, Dict, List, Text, Union, Optional
 
 from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
@@ -22,6 +22,7 @@ from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 _HEADER_NAME_ = "NAME"
 _HEADER_SHORTNAME_ = "SHORTNAMES"
 _HEADER_APIGROUP_ = "APIGROUP"
+_HEADER_APIVERSION_ = "APIVERSION"
 _HEADER_NAMESPACED_ = "NAMESPACED"
 _HEADER_KIND_ = "KIND"
 _HEADER_VERBS_ = "VERBS"
@@ -118,14 +119,16 @@ class Kubectl(KubectlInterface):
     def get_namespace(self) -> Text:
         return self.namespace
 
-    def do(self, command: Text, ignore_errors: bool = False) -> AnyStr:
+    def do(self, command: Text, ignore_errors: bool = False, ignore_warnings: bool = False) -> AnyStr:
         # try to execute the command #
         try:
-            return check_output(f"{self.exec} {command}", shell=True, stderr=DEVNULL)
+            return check_output(f"{self.exec} {command}", shell=True, stderr=STDOUT)
         except CalledProcessError as e:
             # raise the error if errors are not being ignored, otherwise print the error to stdout #
             if not ignore_errors:
                 raise e
+            if ignore_warnings:
+                return e.output
             print(
                 (f"WARNING: Error ignored executing: {self.exec} {command} "
                  f"(rc: {e.returncode} | output: {e.output})")
@@ -140,7 +143,16 @@ class Kubectl(KubectlInterface):
         # get the index of all expected headers #
         name_index: int = api_resource_headers.index(_HEADER_NAME_)
         shortname_index: int = api_resource_headers.index(_HEADER_SHORTNAME_)
-        apigroup_index: int = api_resource_headers.index(_HEADER_APIGROUP_)
+
+        # the "APIGROUP" header is renamed to "APIVERSION" at kubectl v1.20.0
+        # since group describes the values listed at all versions, this method will
+        # return the value as the "api_group"
+        apigroup_index: int = -1
+        if _HEADER_APIGROUP_ in api_resource_headers:
+            apigroup_index = api_resource_headers.index(_HEADER_APIGROUP_)
+        elif _HEADER_APIVERSION_ in api_resource_headers:
+            apigroup_index = api_resource_headers.index(_HEADER_APIVERSION_)
+
         namespaced_index: int = api_resource_headers.index(_HEADER_NAMESPACED_)
         kind_index: int = api_resource_headers.index(_HEADER_KIND_)
         verbs_index: int = api_resource_headers.index(_HEADER_VERBS_)
@@ -176,11 +188,12 @@ class Kubectl(KubectlInterface):
                     break
 
             # get the api group value #
-            for char in api_resource_line[apigroup_index:]:
-                if char != " ":
-                    api_group = api_group + char
-                else:
-                    break
+            if apigroup_index != -1:
+                for char in api_resource_line[apigroup_index:]:
+                    if char != " ":
+                        api_group = api_group + char
+                    else:
+                        break
 
             # get the namespaced value #
             for char in api_resource_line[namespaced_index:]:
@@ -258,7 +271,7 @@ class Kubectl(KubectlInterface):
         # define the command #
         cmd: Text = f" {action} -f {file}"
         # run the command #
-        return (self.do(cmd, ignore_errors))
+        return self.do(cmd, ignore_errors)
 
     def config_view(self, ignore_errors: bool = False) -> Dict:
         # get the raw config response
@@ -303,19 +316,18 @@ class Kubectl(KubectlInterface):
 
         return KubernetesResource(resource_json.decode())
 
-    def logs(self, pod_name: Text, all_containers: bool = True, prefix: bool = True, tail: int = 10,
-             ignore_errors: bool = False) -> List:
+    def logs(self, pod_name: Text, container_name: Text, prefix: bool = True,
+             tail: int = 10, ignore_errors: bool = False, ignore_warnings: bool = False) -> List:
         # create the command to execute #
-        cmd: Text = f"logs {pod_name} --tail={tail}"
-
-        if all_containers:
-            cmd = f"{cmd} --all-containers"
+        cmd: Text = f"logs {pod_name} {container_name} --tail={tail}"
 
         if prefix:
             cmd = f"{cmd} --prefix"
 
-        pod_logs_raw: AnyStr = self.do(cmd, ignore_errors)
-        return pod_logs_raw.decode().split("\n")
+        pod_logs_raw: AnyStr = self.do(cmd, ignore_errors, ignore_warnings)
+        if pod_logs_raw:
+            return pod_logs_raw.decode().split("\n")
+        return list()
 
     def top_nodes(self, ignore_errors: bool = False) -> KubernetesMetrics:
         # get the top values #
