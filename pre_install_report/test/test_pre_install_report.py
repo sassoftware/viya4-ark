@@ -184,7 +184,7 @@ def test_get_nested_nodes_info():
                                                               ' Issues Found: 1'
         total_allocatable_memoryG = vpc.get_calculated_aggregate_memory()  # quantity_("62.3276481628418 Gi").to('G')
         assert str(round(total_allocatable_memoryG.to("G"), 2)) == '66.92 G'
-        assert global_data[4]['aggregate_kubelet_failures'] in '1, Check Kubelet Version on nodes. Issues Found: 1'
+        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 1.'
 
     template_render(global_data, configs_data, storage_data, 'nested_nodes_info.html')
 
@@ -227,7 +227,7 @@ def test_get_nested_millicores_nodes_info():
 
         total_allocatable_memoryG = vpc.get_calculated_aggregate_memory()
         assert str(round(total_allocatable_memoryG.to("G"), 2)) == '66.92 G'
-        assert global_data[4]['aggregate_kubelet_failures'] in '2, Check Kubelet Version on nodes. Issues Found: 2'
+        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 2.'
 
     template_render(global_data, configs_data, storage_data, 'nested_millicores_nodes_info.html')
 
@@ -456,6 +456,9 @@ def test_azure_multi_get_nested_nodes_info():
     global_data = []
     cluster_info = "Kubernetes master is running at https://node3:6443\n"
 
+    for node in nodes_data:
+        assert node['Ready'] in 'True'
+
     global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
     pprint.pprint(global_data)
     for nodes in global_data:
@@ -469,7 +472,7 @@ def test_azure_multi_get_nested_nodes_info():
 
 
 def test_azure_worker_nodes():
-
+    viya_kubelet_version_min = 'v1.17.0'
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_worker_allocatable_CPU,
                                     viya_min_aggregate_worker_CPU_cores,
@@ -489,7 +492,7 @@ def test_azure_worker_nodes():
 
     global_data = []
     cluster_info = "Kubernetes master is running at https://node3:6443\n"
-
+    issues_found = 8
     global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
     pprint.pprint(global_data)
     for nodes in global_data:
@@ -497,7 +500,9 @@ def test_azure_worker_nodes():
                'Expected: 12, Calculated: 141.56, Issues Found: 0'
         assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 727.85 G, ' \
                                                               'Issues Found: 0'
-        assert global_data[4]['aggregate_kubelet_failures'] in '0, Check Kubelet Version on nodes.'
+        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 10. ' \
+                                                               'Check Node(s). All Nodes NOT in Ready Status. ' \
+                                                               'Issues Found: ' + str(issues_found)
 
     template_render(global_data, configs_data, storage_data, 'azure_nodes_no_master.html')
 

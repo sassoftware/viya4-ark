@@ -77,12 +77,12 @@ class PreCheckUtils(object):
 
             self.logger.info("cmd {} rc = 0".format(test_cmd))
             self.logger.debug("cmd {} rc = 0 response {}".format(test_cmd, str(data)))
-            return 0
+            return 0, str(data)
         except CalledProcessError as e:
             data = e.output
             self.logger.error("do_cmd " + ' rc = ' + str(e.returncode) + test_cmd +
                               ' data = ' + str(data))
-            return e.returncode
+            return e.returncode, str(data)
 
     def get_rbac_group_cmd(self):
         """
@@ -91,14 +91,14 @@ class PreCheckUtils(object):
         cmd: kubectl command to retrieve api_resources
         return:  True if both Role and RoleBinding kinds have an api_group
         """
-        role = None
-        rolebinding = None
+        role: bool = None
+        rolebinding: bool = None
         try:
             data: KubernetesApiResources = self._kubectl.api_resources(False)
             role = data.get_api_group("Role")
             rolebinding = data.get_api_group("RoleBinding")
         except CalledProcessError as e:
-            self.logger.exception("get_rbac_group_cmd  rc {}" + str(e.returncode))
+            self.logger.exception("get_rbac_group_cmd  rc {} ".format(str(e.returncode)))
             return False
         if role is None:
             return False

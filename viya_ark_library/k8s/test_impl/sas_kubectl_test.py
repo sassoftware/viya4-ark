@@ -76,6 +76,7 @@ class KubectlTest(KubectlInterface):
         Class providing static references to values returned by the KubectlTest implementation.
         """
         NAMESPACE: Text = "test"
+        CADENCEINFO: Text = "Fast 2020 (20201214.1607958443388)"
 
         # Component: prometheus
         COMPONENT_PROMETHEUS_DEPLOYMENT_NAME: Text = "pushgateway-test-prometheus-pushgateway"
@@ -182,6 +183,7 @@ class KubectlTest(KubectlInterface):
         # Resource: all kinds
         RESOURCE_KINDS_LIST: List[Text] = [
             KubernetesResource.Kinds.CAS_DEPLOYMENT,
+            KubernetesResource.Kinds.CONFIGMAP,
             KubernetesResource.Kinds.CRON_JOB,
             KubernetesResource.Kinds.DEPLOYMENT,
             KubernetesResource.Kinds.INGRESS,
