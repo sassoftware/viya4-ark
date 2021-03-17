@@ -11,7 +11,7 @@
 ####################################################################
 import json
 
-from subprocess import CalledProcessError, check_output, DEVNULL
+from subprocess import CalledProcessError, check_output, STDOUT
 from typing import AnyStr, Dict, List, Text, Union, Optional
 
 from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
@@ -122,15 +122,13 @@ class Kubectl(KubectlInterface):
     def do(self, command: Text, ignore_errors: bool = False) -> AnyStr:
         # try to execute the command #
         try:
-            return check_output(f"{self.exec} {command}", shell=True, stderr=DEVNULL)
+            return check_output(f"{self.exec} {command}", shell=True, stderr=STDOUT)
         except CalledProcessError as e:
             # raise the error if errors are not being ignored, otherwise print the error to stdout #
             if not ignore_errors:
                 raise e
-            print(
-                (f"WARNING: Error ignored executing: {self.exec} {command} "
-                 f"(rc: {e.returncode} | output: {e.output})")
-            )
+
+            return e.output
 
     def api_resources(self, ignore_errors: bool = False) -> KubernetesApiResources:
         # get the api-resources and convert the response into a list #
@@ -314,19 +312,23 @@ class Kubectl(KubectlInterface):
 
         return KubernetesResource(resource_json.decode())
 
-    def logs(self, pod_name: Text, all_containers: bool = True, prefix: bool = True, tail: int = 10,
-             ignore_errors: bool = False) -> List:
+    def logs(self, pod_name: Text, container_name: Text, all_containers: bool = True, prefix: bool = True,
+             tail: int = 10, ignore_errors: bool = False) -> List:
         # create the command to execute #
-        cmd: Text = f"logs {pod_name} --tail={tail}"
 
+        cmd: Text
         if all_containers:
-            cmd = f"{cmd} --all-containers"
+            cmd = f"logs {pod_name} --all-containers --tail={tail}"
+        else:
+            cmd = f"logs {pod_name} {container_name} --tail={tail}"
 
         if prefix:
             cmd = f"{cmd} --prefix"
 
         pod_logs_raw: AnyStr = self.do(cmd, ignore_errors)
-        return pod_logs_raw.decode().split("\n")
+        if pod_logs_raw:
+            return pod_logs_raw.decode().split("\n")
+        return list()
 
     def top_nodes(self, ignore_errors: bool = False) -> KubernetesMetrics:
         # get the top values #

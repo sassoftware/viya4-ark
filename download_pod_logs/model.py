@@ -216,15 +216,33 @@ class PodLogDownloader(object):
                 output_file.writelines(("#" * 50) + "\n\n")
 
                 # call kubectl to get the log for this container
-                try:
-                    log: List[AnyStr] = kubectl.logs(pod_name=f"{pod.get_name()} {container_status.get_name()}",
-                                                     all_containers=False, prefix=False, tail=tail)
 
-                except CalledProcessError:
-                    err_msg = (f"ERROR: A log could not be retrieved for the container [{container_status.get_name()}] "
-                               f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]")
-                    log: List[AnyStr] = [err_msg]
-                    err_info.append((container_status.get_name(), pod.get_name()))
+                log: List[AnyStr] = list()
+                try:
+                    log = kubectl.logs(pod_name=pod.get_name(), container_name=container_status.get_name(),
+                                       all_containers=False, prefix=False, tail=tail, ignore_errors=False)
+                except CalledProcessError as e:
+                    # container log has error, we'll retrieve log from initContainers
+                    # add log from previous container call
+                    log += [e.output.decode("utf-8")]
+                    initcontainers: Optional[List[Dict]]
+                    initcontainers = pod.get_spec_value(KubernetesResource.Keys.INIT_CONTAINERS)
+
+                    if initcontainers:
+                        for initcontainer in initcontainers:
+                            container_name: Optional[Text] = initcontainer.get("name")
+                            log += ["\n" + "#" * 50] + [f"# Log from initContainer: {container_name}"] + ["#" * 50]
+                            try:
+                                log += kubectl.logs(pod_name=pod.get_name(),
+                                                    container_name=container_name, ignore_errors=True,
+                                                    all_containers=False, prefix=False, tail=tail)
+
+                            except CalledProcessError:
+                                err_msg = (f"ERROR: A log could not be retrieved for the container "
+                                           f"[{container_status.get_name()}] "
+                                           f"in pod [{pod.get_name()}] in namespace [{kubectl.get_namespace()}]")
+                                err_info.append((container_status.get_name(), pod.get_name()))
+                                log += [err_msg]
 
                 # parse any structured logging
                 if noparse:
