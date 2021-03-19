@@ -342,7 +342,7 @@ def performLDAPQuery(ldap_logger, ldap_server, searchBase, searchFilter, verify=
             return False
     except LDAPException as e:
         logMessage("Failed connect to Server: " + str(server) + " with error " + str(e), True)
-        ldap_logger.info("Failed connect to Server: " + str(server) + " with error " + str(e), True)
+        ldap_logger.info("Failed connect to Server: " + str(server) + " with error " + str(e))
         return False
     # parse connection result, response, entries
 
