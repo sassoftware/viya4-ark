@@ -3,20 +3,20 @@ config:
     application:
         sas.identities.providers.ldap.connection:
             host: 'your_ldap_hostname'
-            port: '389'
-            url: 'ldap://${sas.identities.providers.ldap.connection.host}:${sas.identities.providers.ldap.connection.port}'
+            port: '999'
+            url: 'ldap://${mycom.some.selected.server.connection.host}:${mycom.some.selected.server.connection.port}'
             anonymousBind: 'false'
-            userDN: 'CN=[test] SAS Demo Account,OU=Generic Accounts,OU=Admin,DC=na,DC=customer,DC=com'
+            userDN: 'CN=[test] Test Account,OU=Test Accounts,OU=Admin,DC=xa,DC=customer,DC=com'
             password: 'dummypass'
         sas.identities.providers.ldap.group:
             accountId: 'name'
-            baseDN: 'OU=Groups,DC=na,DC=customer,DC=com'
+            baseDN: 'OU=Groups,DC=xa,DC=customer,DC=com'
             createdDate: 'createTimestamp'
             distinguishedName: 'none'
             member: 'member'
             modifiedDate: 'modifyTimestamp'
-            objectClass: 'groupOfNames'
-            objectFilter: '(objectClass=groupOfNames)'
+            objectClass: 'groupNames'
+            objectFilter: '(objectClass=groupNames)'
             searchFilter: 'dn={0}'
         sas.identities.providers.ldap.user:
             accountId: 'uid'

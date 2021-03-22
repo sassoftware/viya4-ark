@@ -10,13 +10,13 @@ config:
       host: server.ldap.mycom.com
       password: password123
       port: 9999
-      url: ldap://${mycom.identity.provider.server.connection.host}:${mycom.identity.provider.server.connection.port}
+      url: ldap://${mycom.some.selected.server.connection.host}:${mycom.some.selected.server.connection.port}
       anonymousBind: 'false'
-      userDN: CN=[ECM] SAS Installation User,OU=Generic and Shared Accounts,OU=Admin,DC=na,DC=SAS,DC=com
+      userDN: CN=[ECM] Test User,OU=Generic and Shared Accounts,OU=Admin,DC=na,DC=MyCOM,DC=com
     sas.identities.providers.ldap.group:
-      baseDN: OU=Groups,DC=na,DC=MOM,DC=com
+      baseDN: OU=Groups,DC=xa,DC=MyCOM,DC=com
     sas.identities.providers.ldap.user:
-      baseDN: DC=MOM,DC=com
+      baseDN: DC=MyCOM,DC=com
       searchFilter: sAMAccountName={0}
     sas.identities:
       administrator: 'myid'

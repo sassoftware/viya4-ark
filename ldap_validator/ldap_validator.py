@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 #                                                                ###
 ####################################################################
@@ -117,6 +117,7 @@ def importSiteDefault(yaml_file, ldap_logger):
 
     if not os.path.exists(yaml_file):
         ldap_logger.info("Invalid config yaml specified: " + str(yaml_file))
+        print("Invalid config yaml is specified: " + str(yaml_file) + ". Check the path and file name.")
         logMessage("Invalid config yaml specified: " + str(yaml_file))
         sys.exit(ldap_messages.BAD_SITEYAML_RC_)
         # return "failed"
@@ -322,7 +323,7 @@ def performLDAPQuery(ldap_logger, ldap_server, searchBase, searchFilter, verify=
     logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
 
     # perform search
-
+    response = []
     try:
         logMessage("--------------------------------------------------------------------")
         server = Server(ldap_protocol + "://" + ldap_server)
@@ -369,6 +370,9 @@ def parse_connection_results(ldap_logger, response, result, entries, verify):
     ldap_logger.info("connection entries {}".format(pprint.pformat(entries)))
     if not(result):
         ldap_logger.info("connection.result is empty")
+        return False
+    if not(response):
+        ldap_logger.info("connection response is empty")
         return False
     query_rc = int(result['result'])
     logMessage("--------------------------------------------------------------------")

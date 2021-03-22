@@ -3,7 +3,7 @@
 # For instructions on how to use this file, see:
 # http://documentation.sas.com/?softwareId=calcdc&softwareVersion=production.a&softwareContextId=sitedefault
 #
-# Missing URL
+# Missing URL in sitedefault.yml
 config:
   application:
     sas.identities.providers.ldap.connection:
@@ -11,11 +11,11 @@ config:
       password: password123
       port: 9999
       anonymousBind: 'false'
-      userDN: CN=[ECM] SAS Installation User,OU=Generic and Shared Accounts,OU=Admin,DC=na,DC=SAS,DC=com
+      userDN: CN=[ECM] My Test User,OU=Some Demo Accounts,OU=Admin,DC=xa,DC=MYCOM,DC=com
     sas.identities.providers.ldap.group:
-      baseDN: OU=Groups,DC=na,DC=MOM,DC=com
+      baseDN: OU=Groups,DC=xa,DC=MYCOM,DC=com
     sas.identities.providers.ldap.user:
-      baseDN: DC=MOM,DC=com
+      baseDN: DC=MYCOM,DC=com
       searchFilter: sAMAccountName={0}
     sas.identities:
       administrator: 'myid'
