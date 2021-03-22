@@ -91,6 +91,7 @@ def test_parse_connection_results_empty_response():
     ldap_logger.info(" Parse result is " + str(parse_result))
     assert (parse_result is False)
 
+
 def test_parse_connection_results_false():
     # The test should fail since the rc in "result" is set to 999
     result = {'description': 'sizeLimitExceeded', 'dn': '', 'message': '', 'referrals': None,
