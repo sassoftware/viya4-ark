@@ -116,7 +116,7 @@ class ViyaDeploymentReportUtils(object):
                         owner_reference[KubernetesResource.Keys.NAME])
 
                     resource_relationship_list.append(relationship)
-            elif owner_references is None and is_owning_resource:
+            else:
                 # if this resource doesn't have any owner references, but it does own resources, use it as the #
                 # resource to determine a component name as this must be the resource furthest upstream        #
                 # (i.e. a probable controller)                                                                 #
