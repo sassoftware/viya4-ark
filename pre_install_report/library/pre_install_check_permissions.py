@@ -28,10 +28,16 @@ PVC_AZURE_MANAGED_PREMIUM = "pvc_azure_managed_premium.yaml"
 PVC_AZURE_FILE_NAME = "pvc-azurefile"
 PVC_AZURE_FILE_PREMIUM_NAME = "pvc-azurefile-premium"
 PVC_AZURE_MANAGED_PREMIUM_NAME = "pvc-azure-managed-premium"
+
+PVC_AWS_EBS = "pvc_aws_ebs.yaml"
+PVC_AWS_EBS_NAME = "pvc-aws-ebs"
+
 SC_TYPE_STANDARD_LRS = "Standard_LRS"
 SC_TYPE_PREMIUM_LRS = "Premium_LRS"
+SC_TYPE_AWS_EBS = "gp2"
 PROVISIONER_AZURE_FILE = "kubernetes.io/azure-file"
 PROVISIONER_AZURE_DISK = "kubernetes.io/azure-disk"
+PROVISIONER_AWS_EBS = "kubernetes.io/aws-ebs"
 
 
 class PreCheckPermissions(object):
@@ -81,7 +87,7 @@ class PreCheckPermissions(object):
         else:
             self.cluster_admin_permission_data[resource_key] = viya_constants.ADEQUATE_PERMS
 
-    def _set_results_namespace_admin(self, resource_key, rc):
+    def _set_results_namespace_admin(self, resource_key, rc, message=""):
         """
         Set permissions status for specified resource/verb with namespace admin role
 
@@ -114,7 +120,7 @@ class PreCheckPermissions(object):
                                                                          + self._sample_output
 
             else:
-                self.namespace_admin_permission_data[resource_key] = viya_constants.INSUFFICIENT_PERMS
+                self.namespace_admin_permission_data[resource_key] = viya_constants.INSUFFICIENT_PERMS + " " + message
             self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
                 viya_constants.INSUFFICIENT_PERMS + ". Check Logs."
         else:
@@ -130,25 +136,27 @@ class PreCheckPermissions(object):
         """
         k8s_resource: KubernetesResource = self.utils.get_resource("pvc", pvc_name)
         if k8s_resource is not None:
+            self.logger.debug("k8s_resource is NOT None pvc")
             self.check_pvc_phase(k8s_resource, pvc_name, key)
         else:
+            self.logger.debug("k8s_resource IS None pvc")
             self._set_results_namespace_admin(key, 1)
 
-    def check_pvc_phase(self, pvc_azurefile, pvc_name, key):
+    def check_pvc_phase(self, pvc_file, pvc_name, key):
         """
         Get status of deployed pvc yaml
 
         action:  issue kubectl command to get status Bound / Pending / error
 
         """
-        if pvc_azurefile:
-            self.logger.info("pvc_azurefile {}".format(pprint.pformat(pvc_azurefile.as_dict())))
-            if (pvc_azurefile.get_status_value("phase") == "Bound"):
+        if pvc_file:
+            self.logger.info("pvc_file {}".format(pprint.pformat(pvc_file.as_dict())))
+            if (pvc_file.get_status_value("phase") == "Bound"):
                 self._set_results_namespace_admin(key, 0)
-                self.logger.info("{} status {}".format(pvc_name, pvc_azurefile.get_status_value("phase")))
+                self.logger.info("{} status {}".format(pvc_name, pvc_file.get_status_value("phase")))
             else:
-                self._set_results_namespace_admin(key, 1)
-                self.logger.info("{} status {}".format(pvc_name, pvc_azurefile.get_status_value("phase")))
+                self._set_results_namespace_admin(key, 1, " - Persistent Volume Claim not Bound. Check Logs.")
+                self.logger.info("{} status {}".format(pvc_name, pvc_file.get_status_value("phase")))
                 self.utils.do_cmd(" describe pvc " + pvc_name)
         else:
             self._set_results_namespace_admin(key, 1)
@@ -180,6 +188,9 @@ class PreCheckPermissions(object):
             pass
 
     def _manage_specific_pvc_type(self, action, check, pvc_template_file, sc_name, pvc_yaml_file, pvc_name, key):
+        self.logger.debug("action {} check {} pvc_template_file {} sc_name {} pvc_yaml_file {} pvc_name {} key {}".
+                          format(str(action), str(check), str(pvc_template_file), str(sc_name), str(pvc_yaml_file),
+                                 str(pvc_name), str(key)))
         if check:
             if action == viya_constants.KUBECTL_APPLY and check:
                 self._get_pvc(pvc_name, key)
@@ -215,6 +226,10 @@ class PreCheckPermissions(object):
                     self._manage_specific_pvc_type(action, check, "pvc_azure_managed_premium.template", value[0],
                                                    PVC_AZURE_MANAGED_PREMIUM, PVC_AZURE_MANAGED_PREMIUM_NAME,
                                                    viya_constants.PERM_AZ_DISK)
+                elif value[1] == PVC_AWS_EBS:
+                    self._manage_specific_pvc_type(action, check, "pvc_aws_ebs.template", value[0],
+                                                   PVC_AWS_EBS, PVC_AWS_EBS_NAME,
+                                                   viya_constants.PERM_AWS_EBS)
                 else:
                     self.logger.debug("Storage class not attempted {}".format(value))
         else:
@@ -226,11 +241,14 @@ class PreCheckPermissions(object):
         self.namespace_admin_permission_data[viya_constants.PERM_AZ_FILE] = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_AZ_FILE_PR] = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_AZ_DISK] = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_AWS_EBS] = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_FILE]\
             = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_FILE_PR] \
             = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_DISK] \
+            = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AWS_EBS] \
             = viya_constants.PERM_SKIPPING
 
     def get_sc_resources(self):
@@ -260,10 +278,11 @@ class PreCheckPermissions(object):
             return storage_classes
         for k8s_resource in k8s_resources:
             self.logger.debug("As Dict {}".format(pprint.pformat(k8s_resource.as_dict())))
-            self.logger.debug("name {} provisioner{} storageaccounttype {} selfLink {} skuName {}".
+            self.logger.debug("name {} provisioner{} storageaccounttype {} type {} selfLink {} skuName {}".
                               format(str(k8s_resource.get_name()),
                                      str(k8s_resource.get_provisioner()),
                                      str(k8s_resource.get_parameter_value('storageaccounttype')),
+                                     str(k8s_resource.get_parameter_value('type')),
                                      str(k8s_resource.get_self_link()),
                                      str(k8s_resource.get_parameter_value('skuName'))))
             # print("selfLink" + str(k8s_resource.get_self_link()))
@@ -290,6 +309,14 @@ class PreCheckPermissions(object):
                                         PVC_AZURE_MANAGED_PREMIUM,
                                         str(k8s_resource.get_provisioner()),
                                         str(k8s_resource.get_parameter_value('storageaccounttype'))))
+
+            if str(k8s_resource.get_provisioner()) == PROVISIONER_AWS_EBS and \
+                    ("/storageclasses/gp2" in str(k8s_resource.get_self_link())) and \
+                    str(k8s_resource.get_parameter_value('type')) == SC_TYPE_AWS_EBS:
+                storage_classes.append((str(k8s_resource.get_name()),
+                                        PVC_AWS_EBS,
+                                        str(k8s_resource.get_provisioner()),
+                                        str(k8s_resource.get_parameter_value('type'))))
         self.logger.debug("Provisioner {} ".format(pprint.pformat(storage_classes)))
         return storage_classes
 
