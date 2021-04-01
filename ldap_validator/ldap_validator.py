@@ -14,7 +14,6 @@ import datetime
 from ldap3 import Server, Connection
 import os
 import sys
-import inspect
 import getopt
 import yaml
 import traceback
@@ -254,7 +253,7 @@ def perform_ldap_query(ldap_logger, ldap_server, searchbase, searchfilter, verif
     """
 
     ldap_logger.debug(" ldap_server = " + ldap_server + ", searchbase = " + str(searchbase) +
-                     ", searchFilter = " + str(searchfilter) + ", verify = " + str(verify))
+                      ", searchFilter = " + str(searchfilter) + ", verify = " + str(verify))
     # perform search
 
     try:
@@ -265,8 +264,8 @@ def perform_ldap_query(ldap_logger, ldap_server, searchbase, searchfilter, verif
         ldap_logger.debug("Bind results: " + str(connection))
         try:
             ldap_logger.debug("--------------------------------------------------------------------")
-            ldap_logger.debug("LDAP Query: search_base=" + searchbase + ", search_filter=" + searchfilter
-                       + "verify=" + str(verify))
+            ldap_logger.debug("LDAP Query: search_base=" + searchbase + ", search_filter=" + searchfilter +
+                              "verify=" + str(verify))
             connection.search(search_base=searchbase, search_filter=searchfilter, size_limit=sizeLimit)
             response = json.loads(connection.response_to_json())
         except Exception as e:
@@ -420,13 +419,13 @@ def main(argv):
         print("Invalid config yaml specified: " + str(sitedefault_loc))
         ldap_logger.error("Invalid config yaml specified: " + str(sitedefault_loc))
         usage(ldap_messages.BAD_OPT_RC_)
-        #sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
-    # show command line
+    # Show command line
     ldap_logger.debug("Command line: " + str(sys.argv))
 
     # Load site default and define variables
     is_imported = import_site_default(sitedefault_loc, ldap_logger, sas_logger)
+
     # Execute test suite
     run_schedule = run_test_schedule(ldap_server_host, ldap_logger)
 
@@ -436,6 +435,7 @@ def main(argv):
         print("Log: " + validator_log_path)
         ldap_logger.info("Log: " + validator_log_path)
         return exit(ldap_messages.SUCCESS_RC_)
+
 
 class LDAPValidatorCommand(Command):
     """
