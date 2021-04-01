@@ -58,7 +58,7 @@ ldap_url = ""
 
 
 # --------------------------------------------------------------------------------------------------
-def import_site_default(yaml_file):
+def import_site_default(yaml_file, ldap_logger, sas_logger):
     """
     Load config yaml file into dict structure.
 
@@ -71,14 +71,14 @@ def import_site_default(yaml_file):
     """
 
     try:
-        ldap_logger.debug("Importing sitedefault: " + yaml_file)
+        ldap_logger.info("Importing sitedefault: " + yaml_file)
 
         # Read the yaml file
         with open(yaml_file, 'r') as yfile:
             yaml_content = yaml.load(yfile, Loader=Loader)
         yfile.close()
 
-        ldap_logger.debug("Successfully loaded yaml file '" + str(yaml_file) + "'")
+        ldap_logger.info("Successfully loaded yaml file '" + str(yaml_file) + "'")
 
         # define simpler variables
         global ldap_server_host
@@ -134,7 +134,7 @@ def import_site_default(yaml_file):
             err_msg = "Error: LDAP port is in correctly defined."
             assert(ldap_server_port > 0)
             err_msg = "Error: LDAP server is not accessible on specified host and port."
-            assert (ping_host() is True)
+            assert (ping_host(ldap_logger) is True)
             err_msg = "Error: LDAP anonymousBind does not have a value of true or false."
             assert(ldap_anon_bind is True or ldap_anon_bind is False)
             err_msg = "Error: LDAP password is undefined."
@@ -152,7 +152,7 @@ def import_site_default(yaml_file):
             print()
             sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
-        ldap_logger.debug("Sitedefault contains required values.")
+        ldap_logger.info("Sitedefault contains required values.")
 
     except (IOError):
         # Log error and raise exception if yaml can't be read.
@@ -177,7 +177,7 @@ def import_site_default(yaml_file):
 
 
 # --------------------------------------------------------------------------------------------------
-def run_test_schedule(ldap_server_host):
+def run_test_schedule(ldap_server_host, ldap_logger):
     """
     Run the list of scheduled LDAP Validation tests.
 
@@ -187,21 +187,21 @@ def run_test_schedule(ldap_server_host):
         success flag(bool) - Success/Failure of test schedule
     """
 
-    if (not perform_ldap_query(ldap_server_host, ldap_group_basedn, '(objectclass=*)')):
-        failTestSuite()
+    if (not perform_ldap_query(ldap_logger, ldap_server_host, ldap_group_basedn, '(objectclass=*)')):
+        failTestSuite(ldap_logger)
 
-    if (not perform_ldap_query(ldap_server_host, ldap_user_basedn, '(objectclass=*)')):
-        failTestSuite()
+    if (not perform_ldap_query(ldap_logger, ldap_server_host, ldap_user_basedn, '(objectclass=*)')):
+        failTestSuite(ldap_logger)
 
     searchstring = '(&(objectClass=user)(sAMAccountName=' + ldap_defaultadmin_user + '))'
-    if (not perform_ldap_query(ldap_server_host,  ldap_user_basedn, searchstring, True)):
-        failTestSuite()
+    if (not perform_ldap_query(ldap_logger, ldap_server_host,  ldap_user_basedn, searchstring, True)):
+        failTestSuite(ldap_logger)
 
     return True
 
 
 # --------------------------------------------------------------------------------------------------
-def failTestSuite():
+def failTestSuite(ldap_logger):
     """
     Ping the LDAP server on the specified connection.
 
@@ -217,7 +217,7 @@ def failTestSuite():
 
 
 # --------------------------------------------------------------------------------------------------
-def ping_host():
+def ping_host(ldap_logger):
     """
     Ping the LDAP server on the specified connection.
 
@@ -229,7 +229,7 @@ def ping_host():
 
     ldap_logger.debug("Attempting to ping LDAP server host at " + ldap_server_host)
 
-    response = os.system("ping -c 1 " + ldap_server_host + "> /dev/null 2>&1")
+    response = os.system("ping -c 1 " + ldap_server_host)
 
     if (int(response) == 0):
         ldap_logger.info("Network Active")
@@ -241,7 +241,7 @@ def ping_host():
 
 
 # --------------------------------------------------------------------------------------------------
-def perform_ldap_query(ldap_server, searchbase, searchfilter, verify=False):
+def perform_ldap_query(ldap_logger, ldap_server, searchbase, searchfilter, verify=False):
     """    Execute a query on the defined LDAP server.\n
 
     Argument:
@@ -278,12 +278,12 @@ def perform_ldap_query(ldap_server, searchbase, searchfilter, verify=False):
         return False
     # parse connection result, response, entries
 
-    parse_result: bool = parse_connection_results(response, connection.result, connection.entries, verify)
+    parse_result: bool = parse_connection_results(ldap_logger, response, connection.result, connection.entries, verify)
     connection.unbind()
     return parse_result
 
 
-def parse_connection_results(response, result, entries, verify):
+def parse_connection_results(ldap_logger, response, result, entries, verify):
     """    Parse the results returned by connection to the defined LDAP server.\n
 
     Argument:
@@ -327,7 +327,7 @@ def parse_connection_results(response, result, entries, verify):
         ldap_logger.exception("Error: LDAP Search query failed with return code: " + str(query_rc))
         return False
 
-    ldap_logger.debug("LDAP search queries completed successfully")
+    ldap_logger.info("LDAP search queries completed successfully")
     return True
 
 
@@ -347,7 +347,7 @@ def usage(exit_code: int):
 
     print("Options:\n")
     print("    -s  --sitedefault           (Required)Full path the sitedefault.yaml file being validated.")
-    print("    -o, --output-dir=\"<dir>\"  (Optional)Write the report and log files to the provided directory")
+    print("    -o, --output-dir=\"<dir>\"    (Optional)Write the report and log files to the provided directory")
     print("    -d, --debug                 (Optional)Enables logging at DEBUG level. Default is INFO level")
     print("    -h  --help                  (Optional)Show this usage message")
     sys.exit(0)
@@ -367,7 +367,6 @@ def main(argv):
     Argument:
         arguments(string) - The parameters passed to the script at execution.
     """
-    global ldap_logger
     global sas_logger
 
     sitedefault_loc = ""
@@ -387,7 +386,6 @@ def main(argv):
             sitedefault_loc = arg
         elif opt in ('-o', '--output-dir'):
             output_dir = arg
-            print("OUTPUT DIR " + output_dir)
         elif opt in ('-d', '--debug'):
             print("Setting log level to DEBUG  ")
             logging_level = logging.DEBUG
@@ -419,16 +417,18 @@ def main(argv):
     ldap_logger = sas_logger.get_logger()
 
     if not os.path.exists(sitedefault_loc):
+        print("Invalid config yaml specified: " + str(sitedefault_loc))
         ldap_logger.error("Invalid config yaml specified: " + str(sitedefault_loc))
         usage(ldap_messages.BAD_OPT_RC_)
         #sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
-    # TODO show command line via debug statement
+    # show command line
+    ldap_logger.debug("Command line: " + str(sys.argv))
 
     # Load site default and define variables
-    is_imported = import_site_default(sitedefault_loc)
+    is_imported = import_site_default(sitedefault_loc, ldap_logger, sas_logger)
     # Execute test suite
-    run_schedule = run_test_schedule(ldap_server_host)
+    run_schedule = run_test_schedule(ldap_server_host, ldap_logger)
 
     if (is_imported == 0 and run_schedule):
         print("SUCCESS: All LDAP search queries completed successfully.")

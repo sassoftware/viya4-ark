@@ -16,7 +16,7 @@ import sys
 import logging
 import pytest
 
-from ldap_validator.ldap_validator import pingHost, parse_connection_results, importSiteDefault, performLDAPQuery
+from ldap_validator.ldap_validator import ping_host, parse_connection_results, import_site_default, perform_ldap_query
 from ldap_validator.ldap_validator import failTestSuite
 from viya_ark_library.logging import ViyaARKLogger
 
@@ -30,13 +30,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__f
 
 
 def test_pinghost():
-    result = pingHost()
+    result = ping_host(ldap_logger)
     assert(result is False)
 
 
 def test_failTestSuite():
     with pytest.raises(SystemExit) as pytest_wrapped_e:
-        failTestSuite()
+        failTestSuite(ldap_logger)
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 3
 
@@ -113,58 +113,58 @@ def test_parse_connection_results_empty():
     assert(parse_result is False)
 
 
-def test_importSiteDefault_bad_file_loc():
+def test_import_site_default_bad_file_loc():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sitedefault_loc = os.path.join(current_dir,
                                    "test_data" + os.sep + "yaml_data" + os.sep + "testsitedefault_invalid.yml")
     ldap_logger.info(" sitedefault file = " + str(sitedefault_loc))
     with pytest.raises(SystemExit) as pytest_wrapped_e:
-        importSiteDefault(sitedefault_loc, ldap_logger)
+        import_site_default(sitedefault_loc, ldap_logger, sas_logger)
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 3
     ldap_logger.info("pytest code" + str(pytest_wrapped_e.value.code))
 
 
-def test_importSiteDefault_keyerror():
+def test_import_site_default_keyerror():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sitedefault_loc = os.path.join(current_dir, "test_data" + os.sep + "yaml_data" +
                                    os.sep + "testsitedefault_keyerror.yml")
     ldap_logger.info(" sitedefault file = " + str(sitedefault_loc))
     with pytest.raises(SystemExit) as pytest_wrapped_e:
-        importSiteDefault(sitedefault_loc, ldap_logger)
+        import_site_default(sitedefault_loc, ldap_logger, sas_logger)
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 3
     ldap_logger.info("pytest code" + str(pytest_wrapped_e.value.code))
 
 
-def test_importSiteDefault_asserterror():
+def test_import_site_default_asserterror():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sitedefault_loc = os.path.join(current_dir, "test_data" + os.sep
                                    + "yaml_data" + os.sep + "testsitedefault_assertion.yml")
     ldap_logger.info(" sitedefault file = " + str(sitedefault_loc))
     with pytest.raises(SystemExit) as pytest_wrapped_e:
-        importSiteDefault(sitedefault_loc, ldap_logger)
+        import_site_default(sitedefault_loc, ldap_logger, sas_logger)
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 3
     ldap_logger.info("pytest code" + str(pytest_wrapped_e.value.code))
 
 
-def test_importSiteDefault_valid():
+def test_import_site_default_valid():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     sitedefault_loc = os.path.join(current_dir, "test_data" + os.sep + "yaml_data"
                                    + os.sep + "testsitedefault_invalidServer.yml")
     ldap_logger.info(" sitedefault file = " + str(sitedefault_loc))
     with pytest.raises(SystemExit) as pytest_wrapped_e:
-        importSiteDefault(sitedefault_loc, ldap_logger)
+        import_site_default(sitedefault_loc, ldap_logger, sas_logger)
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == 3
     ldap_logger.info("pytest code" + str(pytest_wrapped_e.value.code))
 
 
-def test_performLDAPQuery_invalid():
+def test_perform_ldat_query_invalid():
     searchBase = "OU = Groups, DC = na, DC = SAS, DC = com"
     searchFilter = "(objectclass= *)"
     server = "myldapserver.mycompany.com"
 
-    parse_result = performLDAPQuery(ldap_logger, server, searchBase, searchFilter, False)
+    parse_result = perform_ldap_query(ldap_logger, server, searchBase, searchFilter, False)
     assert(parse_result is False)
