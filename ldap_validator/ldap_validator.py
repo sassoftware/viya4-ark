@@ -19,12 +19,11 @@ import getopt
 import yaml
 import traceback
 import json
-import shutil
 import pprint
 import logging
+from ldap_validator.library.utils import ldap_messages
 from ldap3.core.exceptions import LDAPException
 from viya_ark_library.command import Command
-from ldap_validator.library.utils import ldap_messages
 from viya_ark_library.logging import ViyaARKLogger
 try:
     from yaml import CSafeLoader as Loader
@@ -38,16 +37,12 @@ except ImportError:
 sizeLimit = 5
 
 # templates for output file names #
-_REPORT_LOG_NAME_TMPL_ = "ldap_validator_{}.log"
+_VALIDATOR_LOG_NAME_TMPL_ = "ldap_validator_{}.log"
 _FILE_TIMESTAMP_TMPL_ = "%Y-%m-%dT%H_%M_%S"
 
 # set timestamp for report file
 file_timestamp = datetime.datetime.now().strftime(_FILE_TIMESTAMP_TMPL_)
 
-# default log file
-logFile = "ldap_validation_" + str(file_timestamp) + ".log"
-logFile = logFile.replace(':', '.')  # remove a couple troublesome characters in the timestamp
-logFile = logFile.replace(' ', '_')
 
 # sitedefault variables
 ldap_server_host = ""
@@ -60,76 +55,30 @@ ldap_user_basedn = ""
 ldap_group_basedn = ""
 ldap_defaultadmin_user = ""
 ldap_url = ""
-# Output directory for logs
-output_dir = ""
 
 
 # --------------------------------------------------------------------------------------------------
-def logMessage(message, error_flag=False):
-    """
-    Adds a message to the log; flag to mark message as error.
-
-    Argument:
-        message(str) - message to be added to the log
-        error_flag(bool) - flag to mark the message as an ERROR in the log
-    Returns:
-        None
-    """
-
-    # dateTimeObj = datetime.now()
-    timestamp = datetime.datetime.now().strftime(_FILE_TIMESTAMP_TMPL_)
-
-    logger = open(logFile, "a")
-
-    if (message == ""):
-        return None
-
-    if (error_flag):
-        message = "[ ERROR ] " + str(message)
-
-    message = "log {} ".format(timestamp) + " - " + str(message)
-
-    # display the message to the terminal and write to the log
-    print(message)
-    logger.write(message)
-    logger.write("\n")
-
-    logger.close()
-
-    return None
-
-
-# --------------------------------------------------------------------------------------------------
-def importSiteDefault(yaml_file, ldap_logger):
+def import_site_default(yaml_file):
     """
     Load config yaml file into dict structure.
 
     Argument:
         yaml_file(str) - full path/filename of yaml
-        ldap_logger    - instance of ViyaARKLogger
     Returns:
         yaml_content(dict) - containing contents of yaml file
     Raises:
         dict - object containing all content from supplied yaml in dict format
     """
 
-    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
-
-    if not os.path.exists(yaml_file):
-        ldap_logger.info("Invalid config yaml specified: " + str(yaml_file))
-        logMessage("Invalid config yaml specified: " + str(yaml_file))
-        sys.exit(ldap_messages.BAD_SITEYAML_RC_)
-        # return "failed"
-
     try:
-        logMessage("Importing sitedefault: " + yaml_file)
+        ldap_logger.debug("Importing sitedefault: " + yaml_file)
 
         # Read the yaml file
         with open(yaml_file, 'r') as yfile:
             yaml_content = yaml.load(yfile, Loader=Loader)
         yfile.close()
 
-        logMessage("Successfully loaded yaml file '" + str(yaml_file) + "'")
+        ldap_logger.debug("Successfully loaded yaml file '" + str(yaml_file) + "'")
 
         # define simpler variables
         global ldap_server_host
@@ -162,19 +111,19 @@ def importSiteDefault(yaml_file, ldap_logger):
         if (ldap_anon_bind == 'true'):
             ldap_anon_bind = True
 
-        logMessage("LDAP URL:                       " + ldap_url)
-        logMessage("LDAP Protocol:                  " + ldap_protocol)
-        logMessage("LDAP ServerHost:                " + ldap_server_host)
-        logMessage("LDAP Server Port:               " + str(ldap_server_port))
-        logMessage("LDAP Anonymous Bind:            " + str(ldap_anon_bind))
+        ldap_logger.debug("LDAP URL:                       " + ldap_url)
+        ldap_logger.debug("LDAP Protocol:                  " + ldap_protocol)
+        ldap_logger.debug("LDAP ServerHost:                " + ldap_server_host)
+        ldap_logger.debug("LDAP Server Port:               " + str(ldap_server_port))
+        ldap_logger.debug("LDAP Anonymous Bind:            " + str(ldap_anon_bind))
         if (ldap_bind_pw is not None):
-            logMessage("LDAP Anonymous Bind Password:   SET")
+            ldap_logger.debug("LDAP Anonymous Bind Password:   SET")
         else:
-            logMessage("LDAP Anonymous Bind Password:   UNSET")
-        logMessage("LDAP Anonymous Bind User DN:    " + ldap_bind_userdn)
-        logMessage("LDAP User DN:                   " + ldap_user_basedn)
-        logMessage("LDAP Group DN:                  " + ldap_group_basedn)
-        logMessage("LDAP Default Admin User:        " + ldap_defaultadmin_user)
+            ldap_logger.debug("LDAP Anonymous Bind Password:   UNSET")
+        ldap_logger.debug("LDAP Anonymous Bind User DN:    " + ldap_bind_userdn)
+        ldap_logger.debug("LDAP User DN:                   " + ldap_user_basedn)
+        ldap_logger.debug("LDAP Group DN:                  " + ldap_group_basedn)
+        ldap_logger.debug("LDAP Default Admin User:        " + ldap_defaultadmin_user)
 
         try:
             # check to see if the provided values are valid
@@ -185,7 +134,7 @@ def importSiteDefault(yaml_file, ldap_logger):
             err_msg = "Error: LDAP port is in correctly defined."
             assert(ldap_server_port > 0)
             err_msg = "Error: LDAP server is not accessible on specified host and port."
-            assert (pingHost() is True)
+            assert (ping_host() is True)
             err_msg = "Error: LDAP anonymousBind does not have a value of true or false."
             assert(ldap_anon_bind is True or ldap_anon_bind is False)
             err_msg = "Error: LDAP password is undefined."
@@ -199,28 +148,28 @@ def importSiteDefault(yaml_file, ldap_logger):
             err_msg = "Error: LDAP Administrator is undefined."
             assert(ldap_defaultadmin_user is not None)
         except AssertionError:
-            print("Errors in sitedefault file. {}".format(err_msg))
+            ldap_logger.exception("Errors in sitedefault file. {}".format(err_msg))
             print()
             sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
-        logMessage("Sitedefault contains required values.")
+        ldap_logger.debug("Sitedefault contains required values.")
 
     except (IOError):
         # Log error and raise exception if yaml can't be read.
         error_msg = '{1}\nError loading yaml file {0}\n'.format(yaml_file, traceback.format_exc())
-        logMessage(error_msg)
-        ldap_logger.info(error_msg)
-        # raise ValueError(error_msg)
+        print(error_msg)
+        print("Check log file: " + sas_logger.get_log_file())        # raise ValueError(error_msg)
         sys.exit(ldap_messages.BAD_SITEYAML_RC_)
     except ValueError:
-        error_msg = '{1}\nValue Error reading sitedefalt file {0}\n'.format(yaml_file, traceback.format_exc())
-        logMessage(error_msg)
-        ldap_logger.info(error_msg)
+        error_msg = '{1}\nValue Error reading sitedefault file {0}\n'.format(yaml_file, traceback.format_exc())
+        print(error_msg)
+        print("Check log file: " + sas_logger.get_log_file())
         sys.exit(ldap_messages.BAD_SITEYAML_RC_)
     except KeyError:
-        error_msg = '{1}\nKey Error reading sitedefalt file {0}\n'.format(yaml_file, traceback.format_exc())
-        logMessage(error_msg)
-        ldap_logger.info(error_msg)
+        error_msg = '{1}\nKey Error reading sitedefault file {0}\n'.format(yaml_file, traceback.format_exc())
+        ldap_logger.exception(error_msg)
+        print(error_msg)
+        print("Check log file: " + sas_logger.get_log_file())
         sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
     # return yaml_content
@@ -228,33 +177,25 @@ def importSiteDefault(yaml_file, ldap_logger):
 
 
 # --------------------------------------------------------------------------------------------------
-def runTestSchedule(ldap_server_host, ldap_logger):
+def run_test_schedule(ldap_server_host):
     """
     Run the list of scheduled LDAP Validation tests.
 
     Argument:
         ldap_server_host - name of LDAP server
-        ldap_logger      - instance of ViyaARKLogger
     Returns:
         success flag(bool) - Success/Failure of test schedule
     """
 
-    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
-
-    if (not performLDAPQuery(ldap_logger, ldap_server_host, ldap_group_basedn, '(objectclass=*)')):
+    if (not perform_ldap_query(ldap_server_host, ldap_group_basedn, '(objectclass=*)')):
         failTestSuite()
 
-    if (not performLDAPQuery(ldap_logger, ldap_server_host, ldap_user_basedn, '(objectclass=*)')):
+    if (not perform_ldap_query(ldap_server_host, ldap_user_basedn, '(objectclass=*)')):
         failTestSuite()
 
-    searchString = '(&(objectClass=user)(sAMAccountName=' + ldap_defaultadmin_user + '))'
-    if (not performLDAPQuery(ldap_logger, ldap_server_host,  ldap_user_basedn, searchString, True)):
+    searchstring = '(&(objectClass=user)(sAMAccountName=' + ldap_defaultadmin_user + '))'
+    if (not perform_ldap_query(ldap_server_host,  ldap_user_basedn, searchstring, True)):
         failTestSuite()
-
-    logMessage("--------------------------------------------------------------------")
-    logMessage("SUCCESS: All LDAP search queries completed successfully.")
-    logMessage("Log: " + logFile)
-    logMessage("--------------------------------------------------------------------")
 
     return True
 
@@ -270,15 +211,13 @@ def failTestSuite():
         None
     """
 
-    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
-
-    logMessage("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.", True)
+    ldap_logger.error("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.")
 
     sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
 
 # --------------------------------------------------------------------------------------------------
-def pingHost():
+def ping_host():
     """
     Ping the LDAP server on the specified connection.
 
@@ -288,74 +227,66 @@ def pingHost():
         success flag(bool) - Success/Failure of ping
     """
 
-    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
+    ldap_logger.debug("Attempting to ping LDAP server host at " + ldap_server_host)
 
-    logMessage("Attempting to ping LDAP server host at " + ldap_server_host)
-
-    response = os.system("ping -c 1 " + ldap_server_host)
+    response = os.system("ping -c 1 " + ldap_server_host + "> /dev/null 2>&1")
 
     if (int(response) == 0):
-        logMessage("Network Active")
+        ldap_logger.info("Network Active")
         return True
     else:
-        logMessage("Network Error")
+        ldap_logger.error("Network Error")
 
     return False
 
 
 # --------------------------------------------------------------------------------------------------
-def performLDAPQuery(ldap_logger, ldap_server, searchBase, searchFilter, verify=False):
+def perform_ldap_query(ldap_server, searchbase, searchfilter, verify=False):
     """    Execute a query on the defined LDAP server.\n
 
     Argument:
-        ldap_logger    - instance of ViyaARKLogger
         ldap_server    - name of LDAP server
-        searchBase(str) - baseDN to be searched
-        queryString(str) - LDAP query to be executed
+        searchbase(str) - baseDN to be searched
+        searchfilter(str) - LDAP query to be executed
         verify(bool) - Assert that a valid result is returned
     Returns:
         success flag(bool) - Success/Failure of query
     """
 
-    ldap_logger.info(" ldap_server = " + ldap_server + ", searchBase = " + str(searchBase) +
-                     ", searchFilter = " + str(searchFilter) + ", verify = " + str(verify))
-    logMessage('===Entry {0}==='.format(inspect.stack()[0][3]))
-
+    ldap_logger.debug(" ldap_server = " + ldap_server + ", searchbase = " + str(searchbase) +
+                     ", searchFilter = " + str(searchfilter) + ", verify = " + str(verify))
     # perform search
 
     try:
-        logMessage("--------------------------------------------------------------------")
+        ldap_logger.debug("--------------------------------------------------------------------")
         server = Server(ldap_protocol + "://" + ldap_server)
-        logMessage("Attempting to create connection binding.")
+        ldap_logger.debug("Attempting to create connection binding.")
         connection = Connection(server, ldap_bind_userdn, ldap_bind_pw, auto_bind=True)
-        logMessage("Bind results: " + str(connection))
+        ldap_logger.debug("Bind results: " + str(connection))
         try:
-            logMessage("--------------------------------------------------------------------")
-            logMessage("LDAP Query: search_base=" + searchBase + ", search_filter=" + searchFilter
+            ldap_logger.debug("--------------------------------------------------------------------")
+            ldap_logger.debug("LDAP Query: search_base=" + searchbase + ", search_filter=" + searchfilter
                        + "verify=" + str(verify))
-            connection.search(search_base=searchBase, search_filter=searchFilter, size_limit=sizeLimit)
+            connection.search(search_base=searchbase, search_filter=searchfilter, size_limit=sizeLimit)
             response = json.loads(connection.response_to_json())
         except Exception as e:
-            logMessage("LDAP search failed with the following error: " + str(e), True)
-            ldap_logger.info("LDAP search failed with the following error: " + str(e), True)
+            ldap_logger.exception("LDAP search failed with the following error: " + str(e))
             connection.unbind()
             return False
     except LDAPException as e:
-        logMessage("Failed connect to Server: " + str(server) + " with error " + str(e), True)
-        ldap_logger.info("Failed connect to Server: " + str(server) + " with error " + str(e))
+        ldap_logger.exception("Failed connect to Server: " + str(server) + " with error " + str(e))
         return False
     # parse connection result, response, entries
 
-    parse_result: bool = parse_connection_results(ldap_logger, response, connection.result, connection.entries, verify)
+    parse_result: bool = parse_connection_results(response, connection.result, connection.entries, verify)
     connection.unbind()
     return parse_result
 
 
-def parse_connection_results(ldap_logger, response, result, entries, verify):
+def parse_connection_results(response, result, entries, verify):
     """    Parse the results returned by connection to the defined LDAP server.\n
 
     Argument:
-        ldap_logger    - instance of ViyaARKLogger
         response       - results returned in json format
         result(dict)   - result on the connection created
         entries(list)  - entries on the connection created
@@ -364,39 +295,39 @@ def parse_connection_results(ldap_logger, response, result, entries, verify):
         success flag(bool) - Success/Failure of query
     """
     results_returned = False
-    ldap_logger.info("json response LDAP Server connection {}".format(str(response)))
-    ldap_logger.info("connection result{}".format(pprint.pformat(result)))
-    ldap_logger.info("connection entries {}".format(pprint.pformat(entries)))
+    ldap_logger.debug("json response LDAP Server connection {}".format(str(response)))
+    ldap_logger.debug("connection result{}".format(pprint.pformat(result)))
+    ldap_logger.debug("connection entries {}".format(pprint.pformat(entries)))
     if not(result):
-        ldap_logger.info("connection.result is empty")
+        ldap_logger.error("connection.result is empty")
         return False
     query_rc = int(result['result'])
-    logMessage("--------------------------------------------------------------------")
-    logMessage("Search query return code: " + str(query_rc))
-    logMessage("--------------------------------------------------------------------")
-    logMessage("Response: " + str(response['entries']))
-    logMessage("--------------------------------------------------------------------")
-    logMessage("Result: " + str(result))
-    logMessage("--------------------------------------------------------------------")
-    logMessage("Entries: ")
+    ldap_logger.debug("--------------------------------------------------------------------")
+    ldap_logger.debug("Search query return code: " + str(query_rc))
+    ldap_logger.debug("--------------------------------------------------------------------")
+    ldap_logger.debug("Response: " + str(response['entries']))
+    ldap_logger.debug("--------------------------------------------------------------------")
+    ldap_logger.debug("Result: " + str(result))
+    ldap_logger.debug("--------------------------------------------------------------------")
+    ldap_logger.debug("Entries: ")
     for entry in entries:
         results_returned = True
-        logMessage(str(entry))
-    logMessage("--------------------------------------------------------------------")
+        ldap_logger.debug(str(entry))
+    ldap_logger.debug("--------------------------------------------------------------------")
 
     if (verify):
         try:
             assert(results_returned is True)
         except AssertionError:
-            logMessage("Error: LDAP Search did not return any connection entries")
+            ldap_logger.exception("Error: LDAP Search did not return any connection entries")
             return False
     try:
         assert(query_rc == 0 or query_rc == 4)
     except AssertionError:
-        logMessage("Error: LDAP Search query failed with return code: " + str(query_rc))
+        ldap_logger.exception("Error: LDAP Search query failed with return code: " + str(query_rc))
         return False
 
-    ldap_logger.info("LDAP search queries completed successfully")
+    ldap_logger.debug("LDAP search queries completed successfully")
     return True
 
 
@@ -410,21 +341,15 @@ def usage(exit_code: int):
 
     :param exit_code: The exit code to return when exiting the program.
     """
-    print()
     print("\n")
-    print("This script will attempt to establish a connection to the LDAP")
-    print("server defined in your sitedefault.yaml file, and execute several")
-    print("queries to establish the validity of the sitedefault.yaml entries.\n")
-
-    print("Usage: python3 ldap_validator.py <-s|--sitedefault> <-l|--logFile> <-p|--port> [<options>]\n")
-    print("Example: python3 ldap_validator.py -s /path/to/sitedefault.yaml -l /path/to/my/logFile.txt\n")
+    print("Usage: python3 ldap_validator.py <-s|--sitedefault> [<options>]\n")
+    print("Example: python3 ldap_validator.py -s /path/to/sitedefault.yaml\n")
 
     print("Options:\n")
-    print("    -s  --sitedefault   (Required)Full path the sitedefault.yaml file being validated.")
-    print("    -l  --logFile       (Optional)Specify a customer log file to capture output.")
+    print("    -s  --sitedefault           (Required)Full path the sitedefault.yaml file being validated.")
     print("    -o, --output-dir=\"<dir>\"  (Optional)Write the report and log files to the provided directory")
-
-    print("    -h  --help          (Optional)Show this usage message")
+    print("    -d, --debug                 (Optional)Enables logging at DEBUG level. Default is INFO level")
+    print("    -h  --help                  (Optional)Show this usage message")
     sys.exit(0)
     print()
     sys.exit(exit_code)
@@ -442,37 +367,38 @@ def main(argv):
     Argument:
         arguments(string) - The parameters passed to the script at execution.
     """
-    global logFile
-
-    # Parse command line options/arguments
-    try:
-        opts, args = getopt.getopt(argv, "s:l:o:h", ["sitedefault=", "logFile=", "output_dir=", "help"])
-    except getopt.GetoptError as opt_error:
-        logMessage(opt_error)
+    global ldap_logger
+    global sas_logger
 
     sitedefault_loc = ""
     output_dir = ""
+    logging_level: int = logging.INFO
+
+    # Parse command line options/arguments
+    try:
+        opts, args = getopt.getopt(argv, "s:o:dh", ["sitedefault=", "output-dir=", "debug", "help"])
+    except getopt.GetoptError as opt_error:
+        print(opt_error)
+        usage(ldap_messages.BAD_OPT_RC_)
+
     for opt, arg in opts:
 
-        logMessage("Processing command line option <" + opt + " " + arg + ">")
         if opt in ('-s', '--sitedefault'):
-            logMessage("Setting sitedefault to: " + arg)
             sitedefault_loc = arg
-        elif opt in ('-l', '--logFile'):
-            oldLogFile = logFile
-            logMessage("Setting logging to: " + arg)
-            logFile = arg
-            shutil.move(oldLogFile, logFile)
         elif opt in ('-o', '--output-dir'):
             output_dir = arg
+            print("OUTPUT DIR " + output_dir)
+        elif opt in ('-d', '--debug'):
+            print("Setting log level to DEBUG  ")
+            logging_level = logging.DEBUG
         elif opt in ('-h', '--help'):
             usage(ldap_messages.SUCCESS_RC_)
         else:
             print()
-            print(ldap_messages.OPTION_ERROR.format(str(opt)))
+            print(ldap_messages.OPTION_ERROR.format(str(opt)), 'error')
             usage(ldap_messages.BAD_OPT_RC_)
 
-    # make sure path is valid #
+        # make sure path is valid #
     if output_dir != "":
         if not output_dir.endswith(os.sep):
             output_dir = output_dir + os.sep
@@ -480,18 +406,36 @@ def main(argv):
             print(ldap_messages.OUPUT_PATH_ERROR)
             usage(ldap_messages.BAD_OPT_RC_)
 
-    report_log_path = output_dir + _REPORT_LOG_NAME_TMPL_.format(file_timestamp)
-    # Set up Logger
-    # @Sherrell pls add loggin option on command line and update line below
-    # sas_logger = ViyaARKLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
-    sas_logger = ViyaARKLogger(report_log_path, logging.INFO, "ldap_logging")
+        # Set the full log path
+    validator_log_path = output_dir + _VALIDATOR_LOG_NAME_TMPL_.format(file_timestamp)
+
+    try:
+        logging.FileHandler(validator_log_path)
+    except OSError as e:
+        print(ldap_messages.OUPUT_PATH_ERROR, format(e))
+        usage(ldap_messages.BAD_OPT_RC_)
+
+    sas_logger = ViyaARKLogger(validator_log_path, logging_level=logging_level, logger_name="ldap_validator_logger")
     ldap_logger = sas_logger.get_logger()
 
-    # Load site default and define variables
-    importSiteDefault(sitedefault_loc, ldap_logger)
-    # Execute test suite
-    runTestSchedule(ldap_server_host, ldap_logger)
+    if not os.path.exists(sitedefault_loc):
+        ldap_logger.error("Invalid config yaml specified: " + str(sitedefault_loc))
+        usage(ldap_messages.BAD_OPT_RC_)
+        #sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
+    # TODO show command line via debug statement
+
+    # Load site default and define variables
+    is_imported = import_site_default(sitedefault_loc)
+    # Execute test suite
+    run_schedule = run_test_schedule(ldap_server_host)
+
+    if (is_imported == 0 and run_schedule):
+        print("SUCCESS: All LDAP search queries completed successfully.")
+        ldap_logger.info("SUCCESS: All LDAP search queries completed successfully.")
+        print("Log: " + validator_log_path)
+        ldap_logger.info("Log: " + validator_log_path)
+        return exit(ldap_messages.SUCCESS_RC_)
 
 class LDAPValidatorCommand(Command):
     """
