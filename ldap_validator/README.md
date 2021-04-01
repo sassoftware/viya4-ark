@@ -6,7 +6,7 @@ Users and Groups attributes. When finished, the tool displays a message that
 indicates if the validation was successful or not. If the tool fails to validate 
 connection using the settings in the provided sitedefault.yaml file, a non-zero 
 code is returned.
-You must _Run the tool as an Administrator_.
+You must _run the tool as an Administrator_.
 
 **Important:** This tool validates the LDAP settings in the sitedefault.yaml file 
 only. It does not validate the entire sitedefault.yaml file. If you use a 
@@ -16,17 +16,6 @@ to check every parameter in the sitedefault.yaml file for accuracy.
 
 **Note:** SAS recommends that you do not use the sitedefault.yaml file for the 
 initial deployment of your SAS Viya software. For more information, see [Add a sitedefault File to Your Deployment](http://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#n19f4zubzxljtdn12lo0nkv4n4cf).
-
-## Sitedefault file
-
-Two sample sitedefault files are included under <tool_install_dir>/viya4-ark/ldap_validator/test/test_data/yaml_data: 
-
-```
-sitedefault_sample_ad.yml and 
-sitedefault_sample_openldap.yml
-```
-
-Update the sample with the your server, so that this server is the one running the SAS Viya LDAP Validator tests.
 
 ## Prerequisites
 
