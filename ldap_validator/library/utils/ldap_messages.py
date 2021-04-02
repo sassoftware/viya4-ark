@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -14,7 +14,7 @@
 # Error Messages
 
 OPTION_ERROR = "ERROR: option {} not recognized"
-OPTION_VALUES_ERROR = "ERROR: Provide valid values for all required options. Check options -i, -p and -H."
+OPTION_VALUES_ERROR = "ERROR: Provide valid values for all required options. Check option -s."
 OUPUT_PATH_ERROR = "ERROR: The report output path is not valid {}. Check value on option -o "
 EXCEPTION_MESSAGE = "ERROR: {}"
 

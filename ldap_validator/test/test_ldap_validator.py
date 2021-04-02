@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -42,8 +42,6 @@ def test_failTestSuite():
 
 
 def test_parse_connection_results_true():
-    # sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.INFO, logger_name="test_logger")
-    # ldap_logger = sas_logger.get_logger()
     result = {'description': 'sizeLimitExceeded', 'dn': '', 'message': '', 'referrals': None,
               'result': 4, 'type': 'searchResDone'}
     entries = [{'attributes': {},
@@ -70,8 +68,6 @@ def test_parse_connection_results_true():
 
 
 def test_parse_connection_results_false():
-    # sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.INFO, logger_name="test_logger")
-    # ldap_logger = sas_logger.get_logger()
     result = {'description': 'sizeLimitExceeded', 'dn': '', 'message': '', 'referrals': None,
               'result': 999, 'type': 'searchResDone'}
     entries = [{'attributes': {}, 'dn': 'DC=SAS,DC=com'},
@@ -94,8 +90,6 @@ def test_parse_connection_results_false():
 
 
 def test_parse_connection_results_empty():
-    # sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.INFO, logger_name="test_logger")
-    # ldap_logger = sas_logger.get_logger()
     result = {'description': 'sizeLimitExceeded', 'dn': '', 'message': '', 'referrals': None,
               'result': 4, 'type': 'searchResDone'}
     entries = []

@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 #                                                                ###
 ####################################################################
@@ -336,7 +336,7 @@ def parse_connection_results(ldap_logger, response, result, entries, verify):
 ###################
 def usage(exit_code: int):
     """
-    Prints the usage information for the pre-install-report command and exits the program with the given exit_code.
+    Prints the usage information for the ldap-validator command and exits the program with the given exit_code.
 
     :param exit_code: The exit code to return when exiting the program.
     """
