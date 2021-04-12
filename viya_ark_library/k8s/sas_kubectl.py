@@ -312,12 +312,12 @@ class Kubectl(KubectlInterface):
 
         return KubernetesResource(resource_json.decode())
 
-    def logs(self, pod_name: Text, container_name: Text, all_containers: bool = True, prefix: bool = True,
-             tail: int = 10, ignore_errors: bool = False) -> List:
-        # create the command to execute #
+    def logs(self, pod_name: Text, container_name: Optional[Text] = None, prefix: bool = True, tail: int = 10,
+             ignore_errors: bool = False) -> List:
 
+        # create the command to execute #
         cmd: Text
-        if all_containers:
+        if not container_name:
             cmd = f"logs {pod_name} --all-containers --tail={tail}"
         else:
             cmd = f"logs {pod_name} {container_name} --tail={tail}"
