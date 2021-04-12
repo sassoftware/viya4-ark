@@ -186,7 +186,7 @@ class KubectlInterface(ABC):
             $ kubectl logs <pod_name> [--all-containers] [--prefix] --tail=<tail>
 
         :param pod_name: The name of the Pod whose logs should be retrieved.
-        :param container_name: The name of the specific container whose log should be retrieved. If not container is
+        :param container_name: The name of the specific container whose log should be retrieved. If no container is
                                specified, the --all-containers option is used.
         :param prefix: True if the log lines should be prefixed with the container's name, otherwise False.
         :param tail: (default: 10) Limits the results to the given number of lines. Setting this to '-1' will return the
