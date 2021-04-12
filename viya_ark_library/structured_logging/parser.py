@@ -60,6 +60,12 @@ class SASStructuredLoggingParser(object):
             # in the future, if more logging structures are added, this could be updated to check for more formats
             return log_entry
 
+        # make sure the decoded entry is a dictionary
+        if not isinstance(structured_log_entry, dict):
+            # this is not a dictionary, as expected
+            # return the entry as-is
+            return log_entry
+
         # validate that the structured entry conforms to the spec
         for required_key in SASStructuredLoggingSpec.get_required_keys():
             if required_key not in structured_log_entry:
