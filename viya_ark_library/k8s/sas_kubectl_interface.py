@@ -176,7 +176,7 @@ class KubectlInterface(ABC):
         pass
 
     @abstractmethod
-    def logs(self, pod_name: Text, all_containers: bool = True, prefix: bool = True, tail: int = 10,
+    def logs(self, pod_name: Text, container_name: Optional[Text] = None, prefix: bool = True, tail: int = 10,
              ignore_errors: bool = False) -> List:
         """
         Retrieves logs from the pod with the given name.
@@ -186,7 +186,8 @@ class KubectlInterface(ABC):
             $ kubectl logs <pod_name> [--all-containers] [--prefix] --tail=<tail>
 
         :param pod_name: The name of the Pod whose logs should be retrieved.
-        :param all_containers: True if logs should include all containers in the Pod, otherwise False.
+        :param container_name: The name of the specific container whose log should be retrieved. If no container is
+                               specified, the --all-containers option is used.
         :param prefix: True if the log lines should be prefixed with the container's name, otherwise False.
         :param tail: (default: 10) Limits the results to the given number of lines. Setting this to '-1' will return the
                      complete log.

@@ -419,8 +419,8 @@ class KubectlTest(KubectlInterface):
         # if the resource isn't found by name, raise a CalledProcessError
         raise CalledProcessError(1, f"kubectl get {k8s_api_resource.lower()} {resource_name} -o json")
 
-    def logs(self, pod_name: Text, container_name: Text, all_containers: bool = True, prefix: bool = True,
-             tail: int = 10, ignore_errors: bool = False) -> List:
+    def logs(self, pod_name: Text, container_name: Optional[Text] = None, prefix: bool = True, tail: int = 10,
+             ignore_errors: bool = False) -> List:
         # raise a CalledProcessError if an unexpected namespace is given
         if self.namespace != self.Values.NAMESPACE:
             raise CalledProcessError(1, f"kubectl -n {self.namespace} logs {pod_name}")

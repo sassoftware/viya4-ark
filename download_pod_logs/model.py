@@ -147,7 +147,7 @@ class PodLogDownloader(object):
         error_pods: List[Tuple[Text, Text]] = list()
         for process in write_log_processes:
             try:
-                err_info: List[Tuple[Optional[Text], Text]] = process.get_process().get(timeout=self._wait)
+                err_info: Optional[List[Tuple[Optional[Text], Text]]] = process.get_process().get(timeout=self._wait)
 
                 # add the error message, if returned
                 if err_info:
@@ -159,7 +159,7 @@ class PodLogDownloader(object):
 
     @staticmethod
     def _write_log(kubectl: KubectlInterface, pod: KubernetesResource, tail: int, output_dir: Text,
-                   noparse: bool = False) -> List[Tuple[Optional[Text], Text]]:
+                   noparse: bool = False) -> Optional[List[Tuple[Optional[Text], Text]]]:
         """
         Internal method used for gathering the status and log for each container in the provided pod and writing
         the gathered information to an on-disk log file.
@@ -220,7 +220,7 @@ class PodLogDownloader(object):
                 log: List[AnyStr] = list()
                 try:
                     log = kubectl.logs(pod_name=pod.get_name(), container_name=container_status.get_name(),
-                                       all_containers=False, prefix=False, tail=tail, ignore_errors=False)
+                                       prefix=False, tail=tail, ignore_errors=False)
                 except CalledProcessError as e:
                     # container log has error, we'll retrieve log from initContainers
                     # add log from previous container call
@@ -234,8 +234,8 @@ class PodLogDownloader(object):
                             log += ["\n" + "#" * 50] + [f"# Log from initContainer: {container_name}"] + ["#" * 50]
                             try:
                                 log += kubectl.logs(pod_name=pod.get_name(),
-                                                    container_name=container_name, ignore_errors=True,
-                                                    all_containers=False, prefix=False, tail=tail)
+                                                    container_name=container_name, ignore_errors=True, prefix=False,
+                                                    tail=tail)
 
                             except CalledProcessError:
                                 err_msg = (f"ERROR: A log could not be retrieved for the container "
