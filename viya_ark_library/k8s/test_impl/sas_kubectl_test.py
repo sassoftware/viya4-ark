@@ -95,6 +95,7 @@ class KubectlTest(KubectlInterface):
 
         # Component: sas-annotations
         COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME: Text = "sas-annotations"
+        COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME_DEPRECATED_DEFINITION: Text = "sas-annotations-deprecated-definition"
         COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME: Text = "sas-annotations"
         COMPONENT_SAS_ANNOTATIONS_POD_NAME: Text = "sas-annotations-58db55fd65-l2jrw"
         COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME: Text = "sas-annotations-58db55fd65"
@@ -104,7 +105,10 @@ class KubectlTest(KubectlInterface):
         COMPONENT_SAS_ANNOTATIONS_NAME: Text = "sas-annotations"
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT: Dict[Text, List[Text]] = {
             KubernetesResource.Kinds.DEPLOYMENT: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.INGRESS: [COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME],
+            KubernetesResource.Kinds.INGRESS: [
+                COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME,
+                COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME_DEPRECATED_DEFINITION
+            ],
             KubernetesResource.Kinds.POD: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
             KubernetesResource.Kinds.REPLICA_SET: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
             KubernetesResource.Kinds.SERVICE: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
@@ -218,7 +222,8 @@ class KubectlTest(KubectlInterface):
 
         # Resource: Ingress
         RESOURCE_INGRESS_LIST: List[Text] = [
-            COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME
+            COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME,
+            COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME_DEPRECATED_DEFINITION
         ]
         RESOURCE_INGRESS_COUNT: int = len(RESOURCE_INGRESS_LIST)
 
