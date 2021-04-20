@@ -6,7 +6,6 @@ config:
       host: server.ldap.mycom.com
       password: password123
       port: 9999
-      anonymousBind: 'false'
       userDN: CN=[ECM] SAS Installation User,OU=Generic and Shared Accounts,OU=Admin,DC=na,DC=SAS,DC=com
     sas.identities.providers.ldap.group:
       baseDN: OU=Groups,DC=na,DC=MOM,DC=com

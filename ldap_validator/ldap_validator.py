@@ -47,7 +47,6 @@ file_timestamp = datetime.datetime.now().strftime(_FILE_TIMESTAMP_TMPL_)
 ldap_server_host = ""
 ldap_server_port = ""
 ldap_protocol = ""
-ldap_anon_bind = ""
 ldap_bind_userdn = ""
 ldap_bind_pw = ""
 ldap_user_basedn = ""
@@ -83,7 +82,6 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
         global ldap_server_host
         global ldap_server_port
         global ldap_protocol
-        global ldap_anon_bind
         global ldap_bind_userdn
         global ldap_bind_pw
         global ldap_user_basedn
@@ -94,8 +92,6 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
         ldap_url = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['url']
         ldap_server_host = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['host']
         ldap_server_port = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['port']
-        ldap_anon_bind = \
-            yaml_content['config']['application']['sas.identities.providers.ldap.connection']['anonymousBind']
         ldap_bind_pw = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['password']
         ldap_bind_userdn = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['userDN']
         ldap_user_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.user']['baseDN']
@@ -104,17 +100,10 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
 
         ldap_protocol = ldap_url.split(':')[0]
 
-        ldap_anon_bind = (ldap_anon_bind).lower()
-        if (ldap_anon_bind == 'false'):
-            ldap_anon_bind = False
-        if (ldap_anon_bind == 'true'):
-            ldap_anon_bind = True
-
         ldap_logger.debug("LDAP URL:                       " + ldap_url)
         ldap_logger.debug("LDAP Protocol:                  " + ldap_protocol)
         ldap_logger.debug("LDAP ServerHost:                " + ldap_server_host)
         ldap_logger.debug("LDAP Server Port:               " + str(ldap_server_port))
-        ldap_logger.debug("LDAP Anonymous Bind:            " + str(ldap_anon_bind))
         if (ldap_bind_pw is not None):
             ldap_logger.debug("LDAP Anonymous Bind Password:   SET")
         else:
@@ -134,8 +123,6 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
             assert(ldap_server_port > 0)
             err_msg = "Error: LDAP server is not accessible on specified host and port."
             assert (ping_host(ldap_logger) is True)
-            err_msg = "Error: LDAP anonymousBind does not have a value of true or false."
-            assert(ldap_anon_bind is True or ldap_anon_bind is False)
             err_msg = "Error: LDAP password is undefined."
             assert(ldap_bind_pw is not None)
             err_msg = "Error: LDAP bind userDN is undefined."
@@ -211,7 +198,7 @@ def failTestSuite(ldap_logger):
     """
 
     ldap_logger.error("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.")
-
+    print("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.")
     sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
 
@@ -349,7 +336,6 @@ def usage(exit_code: int):
     print("    -o, --output-dir=\"<dir>\"    (Optional)Write the report and log files to the provided directory")
     print("    -d, --debug                 (Optional)Enables logging at DEBUG level. Default is INFO level")
     print("    -h  --help                  (Optional)Show this usage message")
-    sys.exit(0)
     print()
     sys.exit(exit_code)
 
