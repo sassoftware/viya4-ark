@@ -532,7 +532,7 @@ class ViyaDeploymentReport(object):
         try:
             if 'sas-deployment-metadata' in resource.get_name():
                 cadence_data = resource.get_data()
-                cadence_info = cadence_data['SAS_CADENCE_NAME'].capitalize() + ' ' + \
+                cadence_info = cadence_data['SAS_CADENCE_DISPLAY_NAME'] + ' ' + \
                     cadence_data['SAS_CADENCE_VERSION'] + ' (' + \
                     cadence_data['SAS_CADENCE_RELEASE'] + ')'
 
