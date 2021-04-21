@@ -73,7 +73,12 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
 
         # Read the yaml file
         with open(yaml_file, 'r') as yfile:
-            yaml_content = yaml.load(yfile, Loader=Loader)
+            try:
+                yaml_content = yaml.load(yfile, Loader=Loader)
+            except yaml.parser.ParserError:
+                ldap_logger.error("Check sitedefault file. It is not well formed.")
+                print("Check sitedefault file. It is not well formed. Please see the log for more information")
+                sys.exit(ldap_messages.BAD_SITEYAML_RC_)
         yfile.close()
 
         ldap_logger.info("Successfully loaded yaml file '" + str(yaml_file) + "'")
@@ -89,14 +94,20 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
         global ldap_defaultadmin_user
         global ldap_url
 
-        ldap_url = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['url']
-        ldap_server_host = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['host']
-        ldap_server_port = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['port']
-        ldap_bind_pw = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['password']
-        ldap_bind_userdn = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['userDN']
-        ldap_user_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.user']['baseDN']
-        ldap_group_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.group']['baseDN']
-        ldap_defaultadmin_user = yaml_content['config']['application']['sas.identities']['administrator']
+        try:
+            ldap_url = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['url']
+            ldap_server_host = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['host']
+            ldap_server_port = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['port']
+            ldap_bind_pw = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['password']
+            ldap_bind_userdn = \
+                yaml_content['config']['application']['sas.identities.providers.ldap.connection']['userDN']
+            ldap_user_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.user']['baseDN']
+            ldap_group_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.group']['baseDN']
+            ldap_defaultadmin_user = yaml_content['config']['application']['sas.identities']['administrator']
+        except (TypeError, KeyError) as e:
+            ldap_logger.exception("Failure while parsing sitedefault file. Check sitedefault file. " + str(e))
+            print("Failure while parsing sitedefault file. Please see the log for more information. " + str(e))
+            sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
         ldap_protocol = ldap_url.split(':')[0]
 
@@ -197,8 +208,8 @@ def failTestSuite(ldap_logger):
         None
     """
 
-    ldap_logger.error("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.")
-    print("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.")
+    ldap_logger.error("LDAP sitedefault.yaml verification has failed. Please see the log for more information.")
+    print("LDAP sitedefault.yaml verification has failed. Please see the log for more information.")
     sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
 
