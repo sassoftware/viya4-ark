@@ -162,9 +162,22 @@ class ViyaDeploymentReportUtils(object):
 
                     # iterate over all http paths to process each backend defined #
                     for http_path in http_paths:
-                        # get the Service name for this path #
-                        service_name: Text = \
-                            http_path[KubernetesResource.Keys.BACKEND][KubernetesResource.Keys.SERVICE_NAME]
+
+                        # init the service name var
+                        service_name: Text = ""
+
+                        # check if this is the current Ingress definition schema
+                        if ingress.get_api_version().startswith("networking.k8s.io"):
+                            # get the Service name for this path #
+                            service_name = \
+                                http_path[KubernetesResource.Keys.BACKEND][KubernetesResource.Keys.SERVICE][
+                                    KubernetesResource.Keys.NAME]
+
+                        # otherwise, use the old definition schema
+                        else:
+                            # get the Service name for this path
+                            service_name = \
+                                http_path[KubernetesResource.Keys.BACKEND][KubernetesResource.Keys.SERVICE_NAME]
 
                         try:
                             # get the Service associated with this path #

@@ -385,10 +385,18 @@ def test_define_service_to_ingress_relationships(gathered_resources: Dict) -> No
 
     # makes sure relationship is defined and exists
     assert ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST in service[ReportKeys.ResourceDetails.EXT_DICT]
-    assert len(service[ReportKeys.ResourceDetails.EXT_DICT][ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]) == 1
+    assert len(service[ReportKeys.ResourceDetails.EXT_DICT][ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]) == 2
 
-    # get the relationship
+    # get the first relationship
     rel: Dict = service[ReportKeys.ResourceDetails.EXT_DICT][ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST][0]
+
+    # make sure the relationship attributes are correct
+    assert rel[ReportKeys.ResourceDetails.Ext.Relationship.KIND] == KubernetesResource.Kinds.INGRESS
+    assert rel[ReportKeys.ResourceDetails.Ext.Relationship.NAME] == \
+           TestVals.COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME_DEPRECATED_DEFINITION
+
+    # get the second relationship
+    rel: Dict = service[ReportKeys.ResourceDetails.EXT_DICT][ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST][1]
 
     # make sure the relationship attributes are correct
     assert rel[ReportKeys.ResourceDetails.Ext.Relationship.KIND] == KubernetesResource.Kinds.INGRESS
