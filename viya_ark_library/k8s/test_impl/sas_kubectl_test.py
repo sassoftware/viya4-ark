@@ -307,7 +307,7 @@ class KubectlTest(KubectlInterface):
     def get_namespace(self) -> Text:
         return self.namespace
 
-    def do(self, command: Text, ignore_errors: bool = False) -> AnyStr:
+    def do(self, command: Text, ignore_errors: bool = False, success_rcs: Optional[List[int]] = None) -> AnyStr:
         return "Not functional in testing implementation"
 
     def api_resources(self, ignore_errors: bool = False) -> KubernetesApiResources:
