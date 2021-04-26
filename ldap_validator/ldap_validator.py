@@ -130,7 +130,7 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
             assert(ldap_url is not None)
             err_msg = "Error: LDAP Host is undefined."
             assert(ldap_server_host is not None)
-            err_msg = "Error: LDAP port is in correctly defined."
+            err_msg = "Error: LDAP port is incorrectly defined."
             assert(ldap_server_port > 0)
             err_msg = "Error: LDAP server is not accessible on specified host and port."
             assert (ping_host(ldap_logger) is True)
@@ -144,8 +144,9 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
             assert(ldap_group_basedn is not None)
             err_msg = "Error: LDAP Administrator is undefined."
             assert(ldap_defaultadmin_user is not None)
-        except AssertionError:
+        except (AssertionError, TypeError):
             ldap_logger.exception("Errors in sitedefault file. {}".format(err_msg))
+            print("Errors in sitedefault file. {}".format(err_msg))
             print()
             sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
@@ -154,12 +155,14 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
     except (IOError):
         # Log error and raise exception if yaml can't be read.
         error_msg = '{1}\nError loading yaml file {0}\n'.format(yaml_file, traceback.format_exc())
+        ldap_logger.exception(error_msg)
         print(error_msg)
         print("Check log file: " + sas_logger.get_log_file())        # raise ValueError(error_msg)
         sys.exit(ldap_messages.BAD_SITEYAML_RC_)
     except ValueError:
         error_msg = '{1}\nValue Error reading sitedefault file {0}\n'.format(yaml_file, traceback.format_exc())
         print(error_msg)
+        ldap_logger.exception(error_msg)
         print("Check log file: " + sas_logger.get_log_file())
         sys.exit(ldap_messages.BAD_SITEYAML_RC_)
     except KeyError:
