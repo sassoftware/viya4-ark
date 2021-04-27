@@ -226,10 +226,10 @@ class PodLogDownloader(object):
 
                     # add anything returned in the raised error
                     if container_err.stdout:
-                        log += str(container_err.stdout).splitlines()
+                        log += str(container_err.stdout.decode()).splitlines()
 
                     if container_err.stderr:
-                        log += str(container_err.stderr).splitlines()
+                        log += str(container_err.stderr.decode()).splitlines()
 
                     initcontainers: Optional[List[Dict]] = pod.get_spec_value(KubernetesResource.Keys.INIT_CONTAINERS)
                     if initcontainers:
@@ -242,10 +242,10 @@ class PodLogDownloader(object):
                             except CalledProcessError as initcontainer_err:
                                 # add anything returned in the raised error
                                 if initcontainer_err.stdout:
-                                    log += str(initcontainer_err.stdout).splitlines()
+                                    log += str(initcontainer_err.stdout.decode()).splitlines()
 
                                 if initcontainer_err.stderr:
-                                    log += str(initcontainer_err.stderr).splitlines()
+                                    log += str(initcontainer_err.stderr.decode()).splitlines()
 
                                 err_msg = (f"ERROR: A log could not be retrieved for the container "
                                            f"[{container_status.get_name()}] "
