@@ -217,7 +217,6 @@ def failTestSuite(ldap_logger):
 
     ldap_logger.error("LDAP sitedefault.yaml verification has failed. Please see the log for more information.")
     print("LDAP sitedefault.yaml verification has failed. Please see the log for more information.")
-    print("Check log file: " + sas_logger.get_log_file())
     sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
 
