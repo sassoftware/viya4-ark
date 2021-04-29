@@ -30,6 +30,7 @@ Tool support for the latest release of SAS Viya:
 * [SAS Viya Deployment Report](deployment_report)
 * [SAS Viya Log Download Tool](download_pod_logs)
 * [Pre-installation of SAS Viya System Requirements](pre_install_report)
+* [SAS Viya LDAP Validator](ldap_validator)
 
 ## Contributing
 

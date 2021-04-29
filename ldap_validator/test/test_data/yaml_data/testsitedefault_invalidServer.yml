@@ -1,0 +1,18 @@
+#
+# PingHost failure with bad server
+config:
+  application:
+    sas.identities.providers.ldap.connection:
+      host: server.ldap.mycom.com
+      password: password123
+      port: 9999
+      url: ldap://${mycom.identity.provider.server.connection.host}:${mycom.identity.provider.server.connection.port}
+      userDN: CN=[ECM] SAS Installation User,OU=Generic and Shared Accounts,OU=Admin,DC=na,DC=SAS,DC=com
+    sas.identities.providers.ldap.group:
+      baseDN: OU=Groups,DC=na,DC=MOM,DC=com
+    sas.identities.providers.ldap.user:
+      baseDN: DC=MOM,DC=com
+      searchFilter: sAMAccountName={0}
+    sas.identities:
+      administrator: 'myid'
+    sas.logon.initial.password:  password

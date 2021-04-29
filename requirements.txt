@@ -1,3 +1,5 @@
 jinja2>=2.11.3
 Pint==0.11
 requests==2.22.0
+pyyaml==5.1.2
+ldap3==2.9

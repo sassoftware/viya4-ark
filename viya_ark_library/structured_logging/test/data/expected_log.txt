@@ -17,3 +17,13 @@ This entry is unstructured and should be returned as-is
 {"level":"info","source":"sas-test","messageKey":"","properties":{"logger":"sas-test","caller":"src/main.go:1"},"timeStamp":"2020-07-29T12:04:17.652950+00:00","message":"This looks like a structured entry but it's missing 'version' (required by spec) so it should be returned as-is"}
 
 {"level":"info","version":1,"source":"sas-test","messageKey":"","properties":{"logger":"sas-test","caller":"src/main.go:1"},"timeStamp":"2020-07-29T12:04:17.652950+00:00"}
+
+# the lines below are valid JSON but will not parse to a dictionary, they should be returned as-is
+
+    1
+
+    true
+
+    false
+
+    ["one", "two", "three"]
