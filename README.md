@@ -13,7 +13,7 @@ SAS Viya ARK provides the following types of assistance:
   * Post-deployment automation and utilities
 
 ## Prerequisites for SAS Viya ARK
-Obtain the latest version of SAS Viya ARK with every new software order.
+Obtain the latest version of SAS Viya ARK whenever new pulling down new deployment assets or a new manifest.
 
 Each tool that is included in the resource kit provides a readme that describes its specific prerequisites and functionality.
 
