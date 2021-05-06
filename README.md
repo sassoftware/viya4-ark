@@ -24,7 +24,6 @@ SAS Viya ARK tools require third-party packages be installed before use. All req
 $ python3 -m pip install -r requirements.txt
 ```
 The Python packages are only required on the host where SAS Viya ARK tools are executed.   
-This is not an assertion regarding the SAS Viya deployment.
 
 ## Index of Tools
 Tool support for the latest release of SAS Viya:
