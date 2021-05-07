@@ -30,13 +30,15 @@ class KubectlInterface(ABC):
         pass
 
     @abstractmethod
-    def do(self, command: Text, ignore_errors: bool = False) -> AnyStr:
+    def do(self, command: Text, ignore_errors: bool = False, success_rcs: Optional[List[int]] = None) -> AnyStr:
         """
         Generic method for executing a kubectl command.
 
         :param command: The kubectl command to execute.
         :param ignore_errors: True if errors encountered during execution should be ignored (a message will be printed
                               to stdout), otherwise False.
+        :param success_rcs: A list of return codes representing a successful execution of the command. If a None value
+                            is provided, the default list "[0]" will be used.
         :raises CalledProcessError: If the command returns a non-zero return code.
         :return: The stdout of the command that was executed.
         """

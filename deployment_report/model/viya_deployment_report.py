@@ -521,25 +521,6 @@ class ViyaDeploymentReport(object):
         except KeyError:
             return None
 
-    def get_cadence_version(self, resource: KubernetesResource) -> Optional[Text]:
-        """
-        Returns the combined key values from the 'data' dictionary.
-
-        :param key: The key of the value to return.
-        :return: The value mapped to the given key, or None if the given key doesn't exist.
-        """
-        cadence_info: Optional[Text] = None
-        try:
-            if 'sas-deployment-metadata' in resource.get_name():
-                cadence_data = resource.get_data()
-                cadence_info = cadence_data['SAS_CADENCE_NAME'].capitalize() + ' ' + \
-                    cadence_data['SAS_CADENCE_VERSION'] + ' (' + \
-                    cadence_data['SAS_CADENCE_RELEASE'] + ')'
-
-            return cadence_info
-        except KeyError:
-            return None
-
     def write_report(self, output_directory: Text = OUTPUT_DIRECTORY_DEFAULT,
                      data_file_only: bool = DATA_FILE_ONLY_DEFAULT,
                      include_resource_definitions: bool = INCLUDE_RESOURCE_DEFINITIONS_DEFAULT,
@@ -584,3 +565,23 @@ class ViyaDeploymentReport(object):
                                                        include_definitions=include_resource_definitions)
 
         return os.path.abspath(data_file_path), html_file_path
+
+    @staticmethod
+    def get_cadence_version(resource: KubernetesResource) -> Optional[Text]:
+        """
+        Returns the cadence version of the targeted SAS deployment.
+
+        :param resource: The key of the value to return.
+        :return: A string representing the cadence version of the targeted SAS deployment.
+        """
+        cadence_info: Optional[Text] = None
+        try:
+            if 'sas-deployment-metadata' in resource.get_name():
+                cadence_data: Optional[Dict] = resource.get_data()
+                cadence_info = \
+                    (f"{cadence_data['SAS_CADENCE_NAME'].capitalize()} {cadence_data['SAS_CADENCE_VERSION']} "
+                     f"({cadence_data['SAS_CADENCE_RELEASE']})")
+
+            return cadence_info
+        except KeyError:
+            return None
