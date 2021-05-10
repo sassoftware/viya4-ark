@@ -11,7 +11,7 @@
 ####################################################################
 import json
 
-from subprocess import CalledProcessError, check_output, STDOUT
+from subprocess import CalledProcessError, Popen, PIPE
 from typing import AnyStr, Dict, List, Text, Union, Optional
 
 from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
@@ -119,16 +119,31 @@ class Kubectl(KubectlInterface):
     def get_namespace(self) -> Text:
         return self.namespace
 
-    def do(self, command: Text, ignore_errors: bool = False) -> AnyStr:
-        # try to execute the command #
-        try:
-            return check_output(f"{self.exec} {command}", shell=True, stderr=STDOUT)
-        except CalledProcessError as e:
-            # raise the error if errors are not being ignored, otherwise print the error to stdout #
-            if not ignore_errors:
-                raise e
+    def do(self, command: Text, ignore_errors: bool = False, success_rcs: Optional[List[int]] = None) \
+            -> AnyStr:
+        # set default return code list if one was not provided
+        if success_rcs is None:
+            success_rcs = [0]
 
-            return e.output
+        # define the process to run
+        proc: Popen = Popen(f"{self.exec} {command}", shell=True, stdout=PIPE, stderr=PIPE)
+
+        # execute the procedure
+        stdout, stderr = proc.communicate()
+
+        # get the return code
+        rc: int = proc.returncode
+
+        # check if an acceptable code was returned
+        if rc not in success_rcs:
+            if not ignore_errors:
+                raise CalledProcessError(returncode=rc, cmd=f"{self.exec} {command}", output=stdout, stderr=stderr)
+            else:
+                print(f"WARNING: Error encountered executing: {self.exec} {command} "
+                      f"(rc: {rc} | stdout: {stdout} | stderr: {stderr})")
+
+        # return the stdout
+        return stdout
 
     def api_resources(self, ignore_errors: bool = False) -> KubernetesApiResources:
         # get the api-resources and convert the response into a list #
