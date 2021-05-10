@@ -13,7 +13,7 @@ SAS Viya ARK provides the following types of assistance:
   * Post-deployment automation and utilities
 
 ## Prerequisites for SAS Viya ARK
-Obtain the latest version of SAS Viya ARK with every new software order.
+Obtain the latest version of SAS Viya ARK whenever you pull down new deployment assets or a new manifest.
 
 Each tool that is included in the resource kit provides a readme that describes its specific prerequisites and functionality.
 
@@ -23,6 +23,7 @@ SAS Viya ARK tools require third-party packages be installed before use. All req
 ```commandline
 $ python3 -m pip install -r requirements.txt
 ```
+The Python packages are only required on the host where SAS Viya ARK tools are executed.   
 
 ## Index of Tools
 Tool support for the latest release of SAS Viya:
