@@ -73,7 +73,13 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
 
         # Read the yaml file
         with open(yaml_file, 'r') as yfile:
-            yaml_content = yaml.load(yfile, Loader=Loader)
+            try:
+                yaml_content = yaml.load(yfile, Loader=Loader)
+            except yaml.parser.ParserError:
+                ldap_logger.error("Check sitedefault file. It is not well formed.")
+                print("Check sitedefault file. It is not well formed.")
+                print("Check log file: " + sas_logger.get_log_file())
+                sys.exit(ldap_messages.BAD_SITEYAML_RC_)
         yfile.close()
 
         ldap_logger.info("Successfully loaded yaml file '" + str(yaml_file) + "'")
@@ -89,29 +95,37 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
         global ldap_defaultadmin_user
         global ldap_url
 
-        ldap_url = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['url']
-        ldap_server_host = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['host']
-        ldap_server_port = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['port']
-        ldap_bind_pw = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['password']
-        ldap_bind_userdn = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['userDN']
-        ldap_user_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.user']['baseDN']
-        ldap_group_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.group']['baseDN']
-        ldap_defaultadmin_user = yaml_content['config']['application']['sas.identities']['administrator']
+        try:
+            ldap_url = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['url']
+            ldap_server_host = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['host']
+            ldap_server_port = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['port']
+            ldap_bind_pw = yaml_content['config']['application']['sas.identities.providers.ldap.connection']['password']
+            ldap_bind_userdn = \
+                yaml_content['config']['application']['sas.identities.providers.ldap.connection']['userDN']
+            ldap_user_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.user']['baseDN']
+            ldap_group_basedn = yaml_content['config']['application']['sas.identities.providers.ldap.group']['baseDN']
+            ldap_defaultadmin_user = yaml_content['config']['application']['sas.identities']['administrator']
+        except (TypeError, KeyError) as e:
+            ldap_logger.exception("Failure while parsing sitedefault file. Check sitedefault file. " + str(e))
+            print("Failure while parsing sitedefault file." + str(e))
+            print("Check log file: " + sas_logger.get_log_file())
+            sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
         ldap_protocol = ldap_url.split(':')[0]
 
-        ldap_logger.debug("LDAP URL:                       " + ldap_url)
-        ldap_logger.debug("LDAP Protocol:                  " + ldap_protocol)
-        ldap_logger.debug("LDAP ServerHost:                " + ldap_server_host)
+        ldap_logger.debug("LDAP URL:                       " + str(ldap_url))
+        ldap_logger.debug("LDAP Protocol:                  " + str(ldap_protocol))
+        ldap_logger.debug("LDAP ServerHost:                " + str(ldap_server_host))
         ldap_logger.debug("LDAP Server Port:               " + str(ldap_server_port))
         if (ldap_bind_pw is not None):
             ldap_logger.debug("LDAP Anonymous Bind Password:   SET")
         else:
             ldap_logger.debug("LDAP Anonymous Bind Password:   UNSET")
-        ldap_logger.debug("LDAP Anonymous Bind User DN:    " + ldap_bind_userdn)
-        ldap_logger.debug("LDAP User DN:                   " + ldap_user_basedn)
-        ldap_logger.debug("LDAP Group DN:                  " + ldap_group_basedn)
-        ldap_logger.debug("LDAP Default Admin User:        " + ldap_defaultadmin_user)
+
+        ldap_logger.debug("LDAP Anonymous Bind User DN:    " + str(ldap_bind_userdn))
+        ldap_logger.debug("LDAP User DN:                   " + str(ldap_user_basedn))
+        ldap_logger.debug("LDAP Group DN:                  " + str(ldap_group_basedn))
+        ldap_logger.debug("LDAP Default Admin User:        " + str(ldap_defaultadmin_user))
 
         try:
             # check to see if the provided values are valid
@@ -119,7 +133,7 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
             assert(ldap_url is not None)
             err_msg = "Error: LDAP Host is undefined."
             assert(ldap_server_host is not None)
-            err_msg = "Error: LDAP port is in correctly defined."
+            err_msg = "Error: LDAP port is incorrectly defined."
             assert(ldap_server_port > 0)
             err_msg = "Error: LDAP server is not accessible on specified host and port."
             assert (ping_host(ldap_logger) is True)
@@ -133,8 +147,10 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
             assert(ldap_group_basedn is not None)
             err_msg = "Error: LDAP Administrator is undefined."
             assert(ldap_defaultadmin_user is not None)
-        except AssertionError:
+        except (AssertionError, TypeError):
             ldap_logger.exception("Errors in sitedefault file. {}".format(err_msg))
+            print("Errors in sitedefault file. {}".format(err_msg))
+            print("Check log file: " + sas_logger.get_log_file())
             print()
             sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
@@ -143,12 +159,14 @@ def import_site_default(yaml_file, ldap_logger, sas_logger):
     except (IOError):
         # Log error and raise exception if yaml can't be read.
         error_msg = '{1}\nError loading yaml file {0}\n'.format(yaml_file, traceback.format_exc())
+        ldap_logger.exception(error_msg)
         print(error_msg)
-        print("Check log file: " + sas_logger.get_log_file())        # raise ValueError(error_msg)
+        print("Check log file: " + sas_logger.get_log_file())
         sys.exit(ldap_messages.BAD_SITEYAML_RC_)
     except ValueError:
         error_msg = '{1}\nValue Error reading sitedefault file {0}\n'.format(yaml_file, traceback.format_exc())
         print(error_msg)
+        ldap_logger.exception(error_msg)
         print("Check log file: " + sas_logger.get_log_file())
         sys.exit(ldap_messages.BAD_SITEYAML_RC_)
     except KeyError:
@@ -197,8 +215,8 @@ def failTestSuite(ldap_logger):
         None
     """
 
-    ldap_logger.error("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.")
-    print("LDAP sitedefault.yaml verification has failed. Please see the logs for more information.")
+    ldap_logger.error("LDAP sitedefault.yaml verification has failed. Please see the log for more information.")
+    print("LDAP sitedefault.yaml verification has failed. Please see the log for more information.")
     sys.exit(ldap_messages.BAD_SITEYAML_RC_)
 
 
@@ -213,7 +231,7 @@ def ping_host(ldap_logger):
         success flag(bool) - Success/Failure of ping
     """
 
-    ldap_logger.debug("Attempting to ping LDAP server host at " + ldap_server_host)
+    ldap_logger.debug("Attempting to ping LDAP server host at " + str(ldap_server_host))
 
     response = os.system("ping -c 1 " + ldap_server_host)
 
@@ -239,19 +257,19 @@ def perform_ldap_query(ldap_logger, ldap_server, searchbase, searchfilter, verif
         success flag(bool) - Success/Failure of query
     """
 
-    ldap_logger.debug(" ldap_server = " + ldap_server + ", searchbase = " + str(searchbase) +
+    ldap_logger.debug(" ldap_server = " + str(ldap_server) + ", searchbase = " + str(searchbase) +
                       ", searchFilter = " + str(searchfilter) + ", verify = " + str(verify))
     # perform search
 
     try:
         ldap_logger.debug("--------------------------------------------------------------------")
-        server = Server(ldap_protocol + "://" + ldap_server)
+        server = Server(ldap_protocol + "://" + str(ldap_server))
         ldap_logger.debug("Attempting to create connection binding.")
         connection = Connection(server, ldap_bind_userdn, ldap_bind_pw, auto_bind=True)
         ldap_logger.debug("Bind results: " + str(connection))
         try:
             ldap_logger.debug("--------------------------------------------------------------------")
-            ldap_logger.debug("LDAP Query: search_base=" + searchbase + ", search_filter=" + searchfilter +
+            ldap_logger.debug("LDAP Query: search_base=" + str(searchbase) + ", search_filter=" + str(searchfilter) +
                               "verify=" + str(verify))
             connection.search(search_base=searchbase, search_filter=searchfilter, size_limit=sizeLimit)
             response = json.loads(connection.response_to_json())
@@ -419,7 +437,7 @@ def main(argv):
         print("SUCCESS: All LDAP search queries completed successfully.")
         ldap_logger.info("SUCCESS: All LDAP search queries completed successfully.")
         print("Log: " + validator_log_path)
-        ldap_logger.info("Log: " + validator_log_path)
+        ldap_logger.info("Log: " + str(validator_log_path))
         return exit(ldap_messages.SUCCESS_RC_)
 
 
