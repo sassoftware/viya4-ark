@@ -578,10 +578,11 @@ class ViyaDeploymentReport(object):
         try:
             if 'sas-deployment-metadata' in resource.get_name():
                 cadence_data: Optional[Dict] = resource.get_data()
-                cadence_info = \
-                    (f"{cadence_data['SAS_CADENCE_NAME'].capitalize()} {cadence_data['SAS_CADENCE_VERSION']} "
-                     f"({cadence_data['SAS_CADENCE_RELEASE']})")
-
+                cadence_info = (
+                    f"{cadence_data['SAS_CADENCE_DISPLAY_NAME']} "
+                    f"{cadence_data['SAS_CADENCE_VERSION']} "
+                    f"({cadence_data['SAS_CADENCE_RELEASE']})"
+                )
             return cadence_info
         except KeyError:
             return None
