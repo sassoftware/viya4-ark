@@ -520,7 +520,7 @@ class ViyaDeploymentReport(object):
             return self._report_data[Keys.SAS_COMPONENTS_DICT][component_name][resource_kind]
         except KeyError:
             return None
-    
+
     def write_report(self, output_directory: Text = OUTPUT_DIRECTORY_DEFAULT,
                      data_file_only: bool = DATA_FILE_ONLY_DEFAULT,
                      include_resource_definitions: bool = INCLUDE_RESOURCE_DEFINITIONS_DEFAULT,
