@@ -36,7 +36,7 @@ PVC_AWS_EBS_NAME = "pvc-aws-ebs"
 
 SC_TYPE_STANDARD_LRS = "Standard_LRS"
 SC_TYPE_PREMIUM_LRS = "Premium_LRS"
-SC_TYPE_STANDARD_DISK_LRS="StandardSSD_LRS"
+SC_TYPE_STANDARD_DISK_LRS = "StandardSSD_LRS"
 SC_TYPE_AWS_EBS = "gp2"
 PROVISIONER_AZURE_FILE = "kubernetes.io/azure-file"
 PROVISIONER_AZURE_DISK = "kubernetes.io/azure-disk"
@@ -315,9 +315,6 @@ class PreCheckPermissions(object):
                                             str(k8s_resource.get_provisioner()),
                                             str(k8s_resource.get_parameter_value('skuName'))))
 
-
-            # print(" XXX storageaccounttype " + str(k8s_resource.get_parameter_value('storageaccounttype')))
-            # print(" XXX k8s_resource.get_provisioner())" +  str(k8s_resource.get_provisioner()))
             if str(k8s_resource.get_provisioner()) == PROVISIONER_AZURE_DISK:
                 if str(k8s_resource.get_parameter_value('storageaccounttype')) == SC_TYPE_PREMIUM_LRS:
                     storage_classes.append((str(k8s_resource.get_name()),
