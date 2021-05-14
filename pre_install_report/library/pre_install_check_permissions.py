@@ -24,16 +24,19 @@ from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 PVC_AZURE_FILE = "pvc_azure_file.yaml"
 PVC_AZURE_FILE_PREMIUM = "pvc_azure_file_premium.yaml"
 PVC_AZURE_MANAGED_PREMIUM = "pvc_azure_managed_premium.yaml"
+PVC_AZURE_STANDARD_DISK = "pvc_azure_standard_disk.yaml"
 
 PVC_AZURE_FILE_NAME = "pvc-azurefile"
 PVC_AZURE_FILE_PREMIUM_NAME = "pvc-azurefile-premium"
 PVC_AZURE_MANAGED_PREMIUM_NAME = "pvc-azure-managed-premium"
+PVC_AZURE_STANDARD_DISK_NAME = "pvc-azure-standard-disk"
 
 PVC_AWS_EBS = "pvc_aws_ebs.yaml"
 PVC_AWS_EBS_NAME = "pvc-aws-ebs"
 
 SC_TYPE_STANDARD_LRS = "Standard_LRS"
 SC_TYPE_PREMIUM_LRS = "Premium_LRS"
+SC_TYPE_STANDARD_DISK_LRS="StandardSSD_LRS"
 SC_TYPE_AWS_EBS = "gp2"
 PROVISIONER_AZURE_FILE = "kubernetes.io/azure-file"
 PROVISIONER_AZURE_DISK = "kubernetes.io/azure-disk"
@@ -162,7 +165,7 @@ class PreCheckPermissions(object):
             self._set_results_namespace_admin(key, 1)
 
     def _replace_sc_name_infile(self, template_file, sc_name, outfile):
-
+        self.logger.debug(" sc name for substitution {} ".format(sc_name))
         try:
             os.remove(self.utils._get_filepath(outfile))
         except OSError as err:
@@ -226,6 +229,11 @@ class PreCheckPermissions(object):
                     self._manage_specific_pvc_type(action, check, "pvc_azure_managed_premium.template", value[0],
                                                    PVC_AZURE_MANAGED_PREMIUM, PVC_AZURE_MANAGED_PREMIUM_NAME,
                                                    viya_constants.PERM_AZ_DISK)
+                elif value[1] == PVC_AZURE_STANDARD_DISK:
+                    self._manage_specific_pvc_type(action, check, "pvc_azure_standard_disk.template", value[0],
+                                                   PVC_AZURE_STANDARD_DISK, PVC_AZURE_STANDARD_DISK_NAME,
+                                                   viya_constants.PERM_AZ_DISK_STANDARD)
+
                 elif value[1] == PVC_AWS_EBS:
                     self._manage_specific_pvc_type(action, check, "pvc_aws_ebs.template", value[0],
                                                    PVC_AWS_EBS, PVC_AWS_EBS_NAME,
@@ -241,12 +249,15 @@ class PreCheckPermissions(object):
         self.namespace_admin_permission_data[viya_constants.PERM_AZ_FILE] = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_AZ_FILE_PR] = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_AZ_DISK] = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_AZ_DISK_STANDARD] = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_AWS_EBS] = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_FILE]\
             = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_FILE_PR] \
             = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_DISK] \
+            = viya_constants.PERM_SKIPPING
+        self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AZ_DISK_STANDARD] \
             = viya_constants.PERM_SKIPPING
         self.namespace_admin_permission_data[viya_constants.PERM_DELETE + viya_constants.PERM_AWS_EBS] \
             = viya_constants.PERM_SKIPPING
@@ -290,8 +301,9 @@ class PreCheckPermissions(object):
             #    print("True //storageclasses//managed-premium")
             # if ("/storageclasses/azurefile" in str(k8s_resource.get_self_link())):
             #    print("True storageclasses//managed-premium ")
-            if (str(k8s_resource.get_provisioner()) == PROVISIONER_AZURE_FILE) and \
-                    ("/storageclasses/azurefile" in str(k8s_resource.get_self_link())):
+            # print("get self link : " + str(k8s_resource.get_self_link()))
+            if (str(k8s_resource.get_provisioner()) == PROVISIONER_AZURE_FILE):
+
                 if str(k8s_resource.get_parameter_value('skuName')) == SC_TYPE_STANDARD_LRS:
                     storage_classes.append((str(k8s_resource.get_name()),
                                             PVC_AZURE_FILE,
@@ -302,13 +314,21 @@ class PreCheckPermissions(object):
                                             PVC_AZURE_FILE_PREMIUM,
                                             str(k8s_resource.get_provisioner()),
                                             str(k8s_resource.get_parameter_value('skuName'))))
-            if str(k8s_resource.get_provisioner()) == PROVISIONER_AZURE_DISK and \
-                    ("/storageclasses/managed-premium" in str(k8s_resource.get_self_link())) and \
-                    str(k8s_resource.get_parameter_value('storageaccounttype')) == SC_TYPE_PREMIUM_LRS:
-                storage_classes.append((str(k8s_resource.get_name()),
-                                        PVC_AZURE_MANAGED_PREMIUM,
-                                        str(k8s_resource.get_provisioner()),
-                                        str(k8s_resource.get_parameter_value('storageaccounttype'))))
+
+
+            # print(" XXX storageaccounttype " + str(k8s_resource.get_parameter_value('storageaccounttype')))
+            # print(" XXX k8s_resource.get_provisioner())" +  str(k8s_resource.get_provisioner()))
+            if str(k8s_resource.get_provisioner()) == PROVISIONER_AZURE_DISK:
+                if str(k8s_resource.get_parameter_value('storageaccounttype')) == SC_TYPE_PREMIUM_LRS:
+                    storage_classes.append((str(k8s_resource.get_name()),
+                                            PVC_AZURE_MANAGED_PREMIUM,
+                                            str(k8s_resource.get_provisioner()),
+                                            str(k8s_resource.get_parameter_value('storageaccounttype'))))
+                if str(k8s_resource.get_parameter_value('storageaccounttype')) == SC_TYPE_STANDARD_DISK_LRS:
+                    storage_classes.append((str(k8s_resource.get_name()),
+                                            PVC_AZURE_STANDARD_DISK,
+                                            str(k8s_resource.get_provisioner()),
+                                            str(k8s_resource.get_parameter_value('storageaccounttype'))))
 
             if str(k8s_resource.get_provisioner()) == PROVISIONER_AWS_EBS and \
                     ("/storageclasses/gp2" in str(k8s_resource.get_self_link())) and \
