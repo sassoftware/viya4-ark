@@ -22,6 +22,8 @@ Download the latest version of this tool and update required packages with every
 **Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights in the namespace where you intend to deploy your SAS Viya software.
 To obtain a complete report use a `KUBECONFIG`  with administrator rights in the cluster.
 
+Create the namespace where you plan to deploy SAS Viya.  You must specify the namespace when you run the tool. 
+
 After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya4-ark`. 
 
 The following command provides usage details:
