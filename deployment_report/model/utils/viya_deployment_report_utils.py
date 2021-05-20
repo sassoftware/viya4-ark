@@ -11,10 +11,12 @@
 ####################################################################
 from subprocess import CalledProcessError
 from typing import Dict, List, Optional, Text
-from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
+
+from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY, NAME_KEY
 from deployment_report.model.static.viya_deployment_report_ingress_controller \
     import ViyaDeploymentReportIngressController
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as Keys
+
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesResource
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 
@@ -27,10 +29,9 @@ class ViyaDeploymentReportUtils(object):
 
     @staticmethod
     def gather_resource_details(kubectl: KubectlInterface, gathered_resources: Dict,
-                                api_resources: KubernetesApiResources, resource_kind: Text,
-                                is_owning_resource: bool = False) -> None:
+                                api_resources: KubernetesApiResources, resource_kind: Text) -> None:
         """
-        Static method for gather details about resources in the target Kubernetes cluster.
+        Internal implementation of the method for gathering details about resources in the target Kubernetes cluster.
 
         The method is called recursively and will gather details about any resources described in current resource's
         "ownerReferences", if defined. If all discovered resource kinds are listable, a complete ownership chain will be
@@ -41,9 +42,6 @@ class ViyaDeploymentReportUtils(object):
         :param api_resources: The Kubectle.ApiResources object defining the API resources of the target Kubernetes
                               cluster.
         :param resource_kind: The 'kind' value of the resources to gather.
-        :param is_owning_resource: INTERNAL PARAMETER - DO NOT PROVIDE A VALUE. A parameter set internally to note that
-                                   the current resource is an owning resource for recursive calls.
-
         """
         # if an attempt has been made to gather this kind, return without moving forward #
         if resource_kind in gathered_resources:
@@ -84,6 +82,9 @@ class ViyaDeploymentReportUtils(object):
 
         # loop over the resources returned #
         for resource in resources:
+            # remove the 'managedFields' key, if it exists, to reduce file size
+            resource.get_metadata().pop(KubernetesResource.Keys.MANAGED_FIELDS, None)
+
             # add the resource to its kind dictionary                                                             #
             # create a key set to the name of the resource, under which all resource details will be stored: dict #
             resource_details = gathered_resources[resource_kind][ITEMS_KEY][resource.get_name()] = dict()
@@ -116,24 +117,10 @@ class ViyaDeploymentReportUtils(object):
                         owner_reference[KubernetesResource.Keys.NAME])
 
                     resource_relationship_list.append(relationship)
-            else:
-                # if this resource doesn't have any owner references, but it does own resources, use it as the #
-                # resource to determine a component name as this must be the resource furthest upstream        #
-                # (i.e. a probable controller)                                                                 #
-                component_name: Text = resource.get_name()
-
-                # if a SAS component name is defined, use it instead
-                if resource.get_annotation(KubernetesResource.Keys.ANNOTATION_COMPONENT_NAME) is not None:
-                    component_name = resource.get_annotation(KubernetesResource.Keys.ANNOTATION_COMPONENT_NAME)
-
-                # define the component name value #
-                resource_details[Keys.ResourceDetails.EXT_DICT][Keys.ResourceDetails.Ext.COMPONENT_NAME]: Text = \
-                    component_name
 
         # if more kinds have been discovered, gather them as well #
         for owner_kind in owner_kinds:
-            ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources, owner_kind,
-                                                              is_owning_resource=True)
+            ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources, owner_kind)
 
     @staticmethod
     def define_service_to_ingress_relationships(services: Dict, ingresses: Dict) -> None:
@@ -164,7 +151,7 @@ class ViyaDeploymentReportUtils(object):
                     for http_path in http_paths:
 
                         # init the service name var
-                        service_name: Text = ""
+                        service_name: Text
 
                         # check if this is the current Ingress definition schema
                         if ingress.get_api_version().startswith("networking.k8s.io"):
@@ -471,6 +458,13 @@ class ViyaDeploymentReportUtils(object):
         :param gathered_resources: The complete dictionary of resources gathered in the Kubernetes cluster.
         :param component: The dictionary where the resources for the current component will be compiled.
         """
+        # set up the component dict
+        if NAME_KEY not in component:
+            component[NAME_KEY]: Text = ""
+
+        if ITEMS_KEY not in component:
+            component[ITEMS_KEY]: Dict = dict()
+
         # get the relationships extension list for this resource #
         resource_relationships: List = resource_details[Keys.ResourceDetails.EXT_DICT][
             Keys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
@@ -478,12 +472,17 @@ class ViyaDeploymentReportUtils(object):
         # get the resource definition #
         resource: KubernetesResource = resource_details[Keys.ResourceDetails.RESOURCE_DEFINITION]
 
+        # if a SAS component name is defined, use it since this is the most canonical value
+        if resource.get_annotation(KubernetesResource.Keys.ANNOTATION_COMPONENT_NAME) is not None:
+            component[NAME_KEY] = \
+                resource.get_annotation(KubernetesResource.Keys.ANNOTATION_COMPONENT_NAME)
+
         # if a resource of this kind hasn't been added for the component, create the kind key #
-        if resource.get_kind() not in component:
-            component[resource.get_kind()]: Dict = dict()
+        if resource.get_kind() not in component[ITEMS_KEY]:
+            component[ITEMS_KEY][resource.get_kind()]: Dict = dict()
 
         # add the resource details to its kind dictionary, keyed by its name #
-        component[resource.get_kind()][resource.get_name()]: Dict = resource_details
+        component[ITEMS_KEY][resource.get_kind()][resource.get_name()]: Dict = resource_details
 
         # aggregate any resources defined in the relationships extension #
         for relationship in resource_relationships:
@@ -503,3 +502,13 @@ class ViyaDeploymentReportUtils(object):
             if related_resource_details is not None:
                 ViyaDeploymentReportUtils.aggregate_component_resources(related_resource_details, gathered_resources,
                                                                         component)
+
+        # if this is the last resource and the component doesn't have a name determined from an annotation,
+        # set a name based on the available values
+        if not component[NAME_KEY]:
+            component[NAME_KEY]: Text = resource.get_name()
+
+        # if a SAS component name is defined, use it instead
+        if resource.get_annotation(KubernetesResource.Keys.ANNOTATION_COMPONENT_NAME) is not None:
+            component[NAME_KEY] = \
+                resource.get_annotation(KubernetesResource.Keys.ANNOTATION_COMPONENT_NAME)

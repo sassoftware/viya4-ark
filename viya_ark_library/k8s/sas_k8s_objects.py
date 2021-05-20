@@ -374,6 +374,7 @@ class KubernetesResource(MutableMapping):
         LABEL_PG_SERVICE_NAME = "service-name"
         LABEL_SAS_DEPLOYMENT = "sas.com/deployment"
         LABELS = "labels"
+        MANAGED_FIELDS = "managedFields"
         MATCH = "match"
         MATCH_LABELS = "matchLabels"
         METADATA = "metadata"

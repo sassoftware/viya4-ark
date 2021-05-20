@@ -16,7 +16,7 @@ import os
 from subprocess import CalledProcessError
 from typing import AnyStr, Dict, List, Optional, Text, Tuple
 
-from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
+from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY, NAME_KEY
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as Keys
 from deployment_report.model.static.viya_deployment_report_ingress_controller import \
     ViyaDeploymentReportIngressController as IngressController
@@ -305,34 +305,25 @@ class ViyaDeploymentReport(object):
 
                 # determine if this component belongs to SAS and it's component name value #
                 is_sas_component: bool = False
-                component_name: Optional[Text] = None
+                component_name: Text = component[NAME_KEY]
 
                 # iterate over all resource kinds in the component #
-                for kind_details in component.values():
+                for kind_details in component[ITEMS_KEY].values():
                     # iterate over all resources of this kind #
                     for resource_details in kind_details.values():
                         # see if this resource is a SAS resource, if so this component will be treated as a SAS #
                         # component                                                                             #
-                        if is_sas_component is False and \
-                                resource_details[Keys.ResourceDetails.RESOURCE_DEFINITION].is_sas_resource():
-                            is_sas_component = True
-
-                        # see if this resource is a controller and has a component name extension #
-                        if component_name is None and \
-                                Keys.ResourceDetails.Ext.COMPONENT_NAME in resource_details[
-                                Keys.ResourceDetails.EXT_DICT]:
-
-                            component_name = resource_details[Keys.ResourceDetails.EXT_DICT][
-                                Keys.ResourceDetails.Ext.COMPONENT_NAME]
+                        is_sas_component = is_sas_component or \
+                                           resource_details[Keys.ResourceDetails.RESOURCE_DEFINITION].is_sas_resource()
 
                 # add the component to its appropriate dictionary
                 if is_sas_component:
                     if component_name not in sas_dict:
                         # if this component is being added for the first time, create its key #
-                        sas_dict[component_name]: Dict = component
+                        sas_dict[component_name]: Dict = component[ITEMS_KEY]
                     else:
                         # otherwise, merge its kinds #
-                        for kind_name, kind_details in component.items():
+                        for kind_name, kind_details in component[ITEMS_KEY].items():
                             if kind_name not in sas_dict[component_name]:
                                 sas_dict[component_name][kind_name]: Dict = kind_details
                             else:
@@ -340,7 +331,7 @@ class ViyaDeploymentReport(object):
                                     sas_dict[component_name][kind_name][resource_name]: Dict = resource_details
 
                 else:
-                    misc_dict[component_name]: Dict = component
+                    misc_dict[component_name]: Dict = component[ITEMS_KEY]
 
     def get_kubernetes_details(self) -> Optional[Dict]:
         """
