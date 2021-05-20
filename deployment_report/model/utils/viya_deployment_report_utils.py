@@ -31,7 +31,7 @@ class ViyaDeploymentReportUtils(object):
     def gather_resource_details(kubectl: KubectlInterface, gathered_resources: Dict,
                                 api_resources: KubernetesApiResources, resource_kind: Text) -> None:
         """
-        Internal implementation of the method for gathering details about resources in the target Kubernetes cluster.
+        Static method for gathering details about resources in the target Kubernetes cluster.
 
         The method is called recursively and will gather details about any resources described in current resource's
         "ownerReferences", if defined. If all discovered resource kinds are listable, a complete ownership chain will be
