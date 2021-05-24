@@ -17,7 +17,7 @@ from typing import Dict, List, Text
 from deployment_report.model.static.viya_deployment_report_ingress_controller import \
     ViyaDeploymentReportIngressController as ExpectedIngressController
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as ReportKeys
-from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
+from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY, NAME_KEY
 from deployment_report.model.utils.viya_deployment_report_utils import ViyaDeploymentReportUtils
 
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesResource
@@ -100,11 +100,6 @@ def test_gather_resource_details_cas_deployments(gathered_resources: Dict) -> No
         # make sure the expected CASDeployment is available by name
         assert name in gathered_resources[KubernetesResource.Kinds.CAS_DEPLOYMENT][ITEMS_KEY]
 
-        # the CASDeployment object is a controller, make sure it has an ext.componentName definition
-        assert ReportKeys.ResourceDetails.Ext.COMPONENT_NAME in \
-            gathered_resources[KubernetesResource.Kinds.CAS_DEPLOYMENT][ITEMS_KEY][name][
-                ReportKeys.ResourceDetails.EXT_DICT]
-
 
 def test_gather_resource_details_cron_jobs(gathered_resources: Dict) -> None:
     """
@@ -120,10 +115,6 @@ def test_gather_resource_details_cron_jobs(gathered_resources: Dict) -> None:
         # make sure the expected CronJob is available by name
         assert name in gathered_resources[KubernetesResource.Kinds.CRON_JOB][ITEMS_KEY]
 
-        # the CronJob object is a controller, make sure it has an ext.componentName definition
-        assert ReportKeys.ResourceDetails.Ext.COMPONENT_NAME in gathered_resources[KubernetesResource.Kinds.CRON_JOB][
-            ITEMS_KEY][name][ReportKeys.ResourceDetails.EXT_DICT]
-
 
 def test_gather_resource_details_deployments(gathered_resources: Dict) -> None:
     """
@@ -138,11 +129,6 @@ def test_gather_resource_details_deployments(gathered_resources: Dict) -> None:
     for name in TestVals.RESOURCE_DEPLOYMENT_LIST:
         # make sure the expected Deployment is available by name
         assert name in gathered_resources[KubernetesResource.Kinds.DEPLOYMENT][ITEMS_KEY]
-
-        # the Deployment object is a controller, make sure it has an ext.componentName definition
-        assert ReportKeys.ResourceDetails.Ext.COMPONENT_NAME in \
-            gathered_resources[KubernetesResource.Kinds.DEPLOYMENT][ITEMS_KEY][name][
-                ReportKeys.ResourceDetails.EXT_DICT]
 
 
 def test_gather_resource_details_ingresses(gathered_resources: Dict) -> None:
@@ -250,10 +236,6 @@ def test_gather_resource_details_stateful_sets(gathered_resources: Dict) -> None
     # make sure the expected StatefulSet is available by name
     assert TestVals.COMPONENT_SAS_CACHE_SERVER_STATEFUL_SET_NAME in \
         gathered_resources[KubernetesResource.Kinds.STATEFUL_SET][ITEMS_KEY]
-
-    # the StatefulSet object is a controller, make sure it has an ext.componentName definition
-    assert ReportKeys.ResourceDetails.Ext.COMPONENT_NAME in gathered_resources[KubernetesResource.Kinds.STATEFUL_SET][
-        ITEMS_KEY][TestVals.COMPONENT_SAS_CACHE_SERVER_STATEFUL_SET_NAME][ReportKeys.ResourceDetails.EXT_DICT]
 
 
 def test_gather_resource_details_virtual_services(gathered_resources: Dict) -> None:
@@ -930,15 +912,18 @@ def test_aggregate_component_resources_prometheus(gathered_resources: Dict) -> N
         component=component
     )
 
+    # make sure the component name is correct
+    assert component[NAME_KEY] == TestVals.COMPONENT_PROMETHEUS_NAME
+
     # make sure the correct number of resources were aggregated
-    assert len(component) == TestVals.COMPONENT_PROMETHEUS_RESOURCE_COUNT
+    assert len(component[ITEMS_KEY]) == TestVals.COMPONENT_PROMETHEUS_RESOURCE_COUNT
 
     # make sure the all resources are accounted for
     for kind, name_list in TestVals.COMPONENT_PROMETHEUS_RESOURCES_DICT.items():
-        assert kind in component
-        assert len(component[kind]) == len(name_list)
+        assert kind in component[ITEMS_KEY]
+        assert len(component[ITEMS_KEY][kind]) == len(name_list)
         for name in name_list:
-            assert name in component[kind]
+            assert name in component[ITEMS_KEY][kind]
 
 
 def test_aggregate_component_resources_sas_annotations(gathered_resources: Dict) -> None:
@@ -983,15 +968,18 @@ def test_aggregate_component_resources_sas_annotations(gathered_resources: Dict)
         component=component
     )
 
+    # make sure the component name is correct
+    assert component[NAME_KEY] == TestVals.COMPONENT_SAS_ANNOTATIONS_NAME
+
     # make sure the correct number of resource types were aggregated
-    assert len(component) == TestVals.COMPONENT_SAS_ANNOTATIONS_RESOURCE_COUNT
+    assert len(component[ITEMS_KEY]) == TestVals.COMPONENT_SAS_ANNOTATIONS_RESOURCE_COUNT
 
     # make sure the all resources are accounted for
     for kind, name_list in TestVals.COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT.items():
-        assert kind in component
-        assert len(component[kind]) == len(name_list)
+        assert kind in component[ITEMS_KEY]
+        assert len(component[ITEMS_KEY][kind]) == len(name_list)
         for name in name_list:
-            assert name in component[kind]
+            assert name in component[ITEMS_KEY][kind]
 
 
 def test_aggregate_component_resources_sas_cache_server(gathered_resources: Dict) -> None:
@@ -1024,15 +1012,18 @@ def test_aggregate_component_resources_sas_cache_server(gathered_resources: Dict
         component=component
     )
 
+    # make sure the component name is correct
+    assert component[NAME_KEY] == TestVals.COMPONENT_SAS_CACHE_SERVER_NAME
+
     # make sure the right number of resource types were aggregated
-    assert len(component) == TestVals.COMPONENT_SAS_CACHE_SERVER_RESOURCE_COUNT
+    assert len(component[ITEMS_KEY]) == TestVals.COMPONENT_SAS_CACHE_SERVER_RESOURCE_COUNT
 
     # make sure the all resources are accounted for
     for kind, name_list in TestVals.COMPONENT_SAS_CACHE_SERVER_RESOURCE_DICT.items():
-        assert kind in component
-        assert len(component[kind]) == len(name_list)
+        assert kind in component[ITEMS_KEY]
+        assert len(component[ITEMS_KEY][kind]) == len(name_list)
         for name in name_list:
-            assert name in component[kind]
+            assert name in component[ITEMS_KEY][kind]
 
 
 def test_aggregate_component_resources_sas_cas_operator(gathered_resources: Dict) -> None:
@@ -1065,15 +1056,18 @@ def test_aggregate_component_resources_sas_cas_operator(gathered_resources: Dict
         component=component
     )
 
+    # make sure the component name is correct
+    assert component[NAME_KEY] == TestVals.COMPONENT_SAS_CAS_OPERATOR_NAME
+
     # make sure the correct number of resource types were aggregated
-    assert len(component) == TestVals.COMPONENT_SAS_CAS_OPERATOR_RESOURCE_COUNT
+    assert len(component[ITEMS_KEY]) == TestVals.COMPONENT_SAS_CAS_OPERATOR_RESOURCE_COUNT
 
     # make sure the all resources are accounted for
     for kind, name_list in TestVals.COMPONENT_SAS_CAS_OPERATOR_RESOURCE_DICT.items():
-        assert kind in component
-        assert len(component[kind]) == len(name_list)
+        assert kind in component[ITEMS_KEY]
+        assert len(component[ITEMS_KEY][kind]) == len(name_list)
         for name in name_list:
-            assert name in component[kind]
+            assert name in component[ITEMS_KEY][kind]
 
 
 def test_aggregate_component_resources_sas_cas_server(gathered_resources: Dict) -> None:
@@ -1106,15 +1100,18 @@ def test_aggregate_component_resources_sas_cas_server(gathered_resources: Dict) 
         component=component
     )
 
+    # make sure the component name is correct
+    assert component[NAME_KEY] == TestVals.COMPONENT_SAS_CAS_SERVER_NAME
+
     # make sure the correct number of resource types were aggregated
-    assert len(component) == TestVals.COMPONENT_SAS_CAS_SERVER_RESOURCE_COUNT
+    assert len(component[ITEMS_KEY]) == TestVals.COMPONENT_SAS_CAS_SERVER_RESOURCE_COUNT
 
     # make sure the all resources are accounted for
     for kind, name_list in TestVals.COMPONENT_SAS_CAS_SERVER_RESOURCE_DICT.items():
-        assert kind in component
-        assert len(component[kind]) == len(name_list)
+        assert kind in component[ITEMS_KEY]
+        assert len(component[ITEMS_KEY][kind]) == len(name_list)
         for name in name_list:
-            assert name in component[kind]
+            assert name in component[ITEMS_KEY][kind]
 
 
 def test_aggregate_component_resources_sas_scheduled_backup_job(gathered_resources: Dict) -> None:
@@ -1141,12 +1138,15 @@ def test_aggregate_component_resources_sas_scheduled_backup_job(gathered_resourc
         component=component
     )
 
+    # make sure the component name is correct
+    assert component[NAME_KEY] == TestVals.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME
+
     # make sure the correct number of resource types were aggregated
-    assert len(component) == TestVals.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_RESOURCE_COUNT
+    assert len(component[ITEMS_KEY]) == TestVals.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_RESOURCE_COUNT
 
     # make sure the all resources are accounted for
     for kind, name_list in TestVals.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_RESOURCE_DICT.items():
-        assert kind in component
-        assert len(component[kind]) == len(name_list)
+        assert kind in component[ITEMS_KEY]
+        assert len(component[ITEMS_KEY][kind]) == len(name_list)
         for name in name_list:
-            assert name in component[kind]
+            assert name in component[ITEMS_KEY][kind]
