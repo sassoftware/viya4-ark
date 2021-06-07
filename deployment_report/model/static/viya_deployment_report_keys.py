@@ -10,8 +10,11 @@
 #                                                                ###
 ####################################################################
 
-# key used in the temporary gathered_resources dictionary under which the resource definitions are stored #
+# key used in the temporary gathered_resources and components dictionaries
+# under which the resource definitions are stored
 ITEMS_KEY = "items"
+# key used in the temporary components dictionary under which the component name is stored
+NAME_KEY = "name"
 
 
 class ViyaDeploymentReportKeys(object):

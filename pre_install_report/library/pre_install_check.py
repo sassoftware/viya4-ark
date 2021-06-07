@@ -327,7 +327,6 @@ class ViyaPreInstallCheck():
                 node_data = {}
                 node_data['storageClassNameName'] = node['metadata']['name']
                 node_data['provisioner'] = node['provisioner']
-                node_data['selfLink'] = node['metadata']['selfLink']
 
                 try:
                     annotated_lines = node['metadata']['annotations']
