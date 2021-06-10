@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -61,6 +61,29 @@ class ViyaDeploymentReport(object):
         Constructor for ViyaDeploymentReport object.
         """
         self._report_data = None
+
+    def as_dict(self) -> Optional[Dict]:
+        """
+        Returns a dictionary representation of the data gathered by this report. All nested objects are maintained
+        as-is. To parse to JSON, the KubernetesObjectJSONEncoder is needed.
+
+        :return: A dictionary representation of the data gathered by this report with all nested objects maintained
+                 as-is, or None if data has not been gathered.
+        """
+        return self._report_data
+
+    def as_dict_json_encoded(self) -> Optional[Dict]:
+        """
+        Returns a dictionary representation of the data gathered by this report. All nested objects are encoded, using
+        the KubernetesObjectJSONEncoder, to native Python objects for JSON compatibility.
+
+        :return: A dictionary representation of the data gathered by this report with all nested objects encoded for
+                 JSON compatibility.
+        """
+        if self._report_data:
+            return json.loads(json.dumps(self._report_data, cls=KubernetesObjectJSONEncoder))
+
+        return None
 
     def gather_details(self, kubectl: KubectlInterface,
                        include_pod_log_snips: bool = INCLUDE_POD_LOG_SNIPS_DEFAULT) -> None:

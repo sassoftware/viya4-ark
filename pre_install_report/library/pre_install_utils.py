@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 ####################################################################
-# ### pre_install_check permissions.py                                 ###
+# ### pre_install_check permissions.py                           ###
 ####################################################################
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
