@@ -86,10 +86,11 @@ def test_get_kubernetes_details(report: ViyaDeploymentReport) -> None:
     kube_details: Dict = report.get_kubernetes_details()
 
     # check for all expected entries
-    assert len(kube_details) == 8
+    assert len(kube_details) == 9
     assert ReportKeys.Kubernetes.API_RESOURCES_DICT in kube_details
     assert ReportKeys.Kubernetes.API_VERSIONS_LIST in kube_details
     assert ReportKeys.Kubernetes.CADENCE_INFO in kube_details
+    assert ReportKeys.Kubernetes.DB_INFO in kube_details
     assert ReportKeys.Kubernetes.DISCOVERED_KINDS_DICT in kube_details
     assert ReportKeys.Kubernetes.INGRESS_CTRL in kube_details
     assert ReportKeys.Kubernetes.NAMESPACE in kube_details
@@ -632,3 +633,22 @@ def test_get_cadence_version_none() -> None:
     # make sure None is returned
     assert ViyaDeploymentReport().get_sas_component_resources(KubectlTest.Values.CADENCEINFO,
                                                               KubernetesResource.Kinds.CONFIGMAP) is None
+
+
+def test_get_db_info(report: ViyaDeploymentReport) -> None:
+    """
+    This test verifies that the provided db data is returned when values is passed to get_db_info().
+
+    :param report: The populated ViyaDeploymentReport returned by the report() fixture.
+    """
+    # check for expected attributes
+
+    db_data = KubectlTest.get_resources(KubectlTest(), "ConfigMaps")
+    db_dict: Dict = dict()
+
+    for c in db_data:
+        db_dict = report.get_db_info(c)
+        if db_dict:
+            break
+
+    assert len(db_dict) == 1

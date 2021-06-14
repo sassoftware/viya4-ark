@@ -134,13 +134,17 @@ class ViyaDeploymentReport(object):
 
         # start by gathering details about ConfigMap #
         cadence_info: Optional[Text] = None
+        db_dict: Optional[Dict] = dict()
         try:
             ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
                                                               k8s_kinds.CONFIGMAP)
             for item in gathered_resources[k8s_kinds.CONFIGMAP]['items']:
                 resource_definition = gathered_resources[k8s_kinds.CONFIGMAP]['items'][item]['resourceDefinition']
-                cadence_info = self.get_cadence_version(resource_definition)
-                if cadence_info:
+                if not cadence_info:
+                    cadence_info = self.get_cadence_version(resource_definition)
+                if not db_dict:
+                    db_dict = self.get_db_info(resource_definition)
+                if db_dict and cadence_info:
                     break
 
         except CalledProcessError:
@@ -598,5 +602,32 @@ class ViyaDeploymentReport(object):
                     f"({cadence_data['SAS_CADENCE_RELEASE']})"
                 )
             return cadence_info
+        except KeyError:
+            return None
+
+    @staticmethod
+    def get_db_info(resource: KubernetesResource) -> Optional[Dict]:
+        """
+        Returns the db information of the targeted SAS deployment.
+
+        :param resource: The key of the value to return.
+        :return: A dict representing the db information of the targeted SAS deployment.
+        """
+        db_dict: Optional[Dict] = dict()
+        try:
+            if 'sas-postgres-config' in resource.get_name():
+                db_data: Optional[Dict] = resource.get_data()
+                if db_data['EXTERNAL_DATABASE'] == "false":
+                    return {"Type": "Internal"}
+
+                db_dict = {
+                    "Type": "External",
+                    "Host": db_data['DATABASE_HOST'],
+                    "Port": db_data['DATABASE_PORT'],
+                    "Name": db_data['DATABASE_NAME'],
+                    "User": db_data['SPRING_DATASOURCE_USERNAME']
+                }
+
+            return db_dict
         except KeyError:
             return None
