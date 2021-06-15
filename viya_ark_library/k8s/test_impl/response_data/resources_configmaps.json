@@ -47,9 +47,9 @@
                 "sas.com/deployment": "sas-viya"
             },
             "name": "sas-logon-app-parameters-g4hg56gm5b",
-            "namespace": "d24140",
+            "namespace": "test",
             "resourceVersion": "53636348",
-            "selfLink": "/api/v1/namespaces/d24140/configmaps/sas-logon-app-parameters-g4hg56gm5b",
+            "selfLink": "/api/v1/namespaces/test/configmaps/sas-logon-app-parameters-g4hg56gm5b",
             "uid": "2a38df05-ef72-439b-8155-faa984796d26"
         }
     },

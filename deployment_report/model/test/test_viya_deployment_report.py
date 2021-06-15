@@ -651,4 +651,4 @@ def test_get_db_info(report: ViyaDeploymentReport) -> None:
         if db_dict:
             break
 
-    assert len(db_dict) == 1
+    assert db_dict["Type"] == KubectlTest.Values.DBINFO

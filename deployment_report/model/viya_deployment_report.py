@@ -300,6 +300,8 @@ class ViyaDeploymentReport(object):
         k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT]: Dict = dict()
         # create a key to hold the cadence version information: str|None #
         k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Optional[Text] = cadence_info
+        # create a key to hold the viya db information: dict #
+        k8s_details_dict[Keys.Kubernetes.DB_INFO]: Dict = db_dict
 
         # add the availability and count of all discovered resources #
         for kind_name, kind_details in gathered_resources.items():
