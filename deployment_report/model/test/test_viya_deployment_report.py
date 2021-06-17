@@ -20,6 +20,7 @@ from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as ReportKeys
 from deployment_report.model.static.viya_deployment_report_ingress_controller import \
     ViyaDeploymentReportIngressController as ExpectedIngressController
+from deployment_report.model.utils.viya_deployment_report_utils import ViyaDeploymentReportUtils
 
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
@@ -618,7 +619,7 @@ def test_get_cadence_version(report: ViyaDeploymentReport) -> None:
     cadence_info: Text = None
 
     for c in cadence_data:
-        cadence_info = report.get_cadence_version(c)
+        cadence_info = ViyaDeploymentReportUtils.get_cadence_version(c)
         if cadence_info:
             break
 
@@ -647,7 +648,7 @@ def test_get_db_info(report: ViyaDeploymentReport) -> None:
     db_dict: Dict = dict()
 
     for c in db_data:
-        db_dict = report.get_db_info(c)
+        db_dict = ViyaDeploymentReportUtils.get_db_info(c)
         if db_dict:
             break
 
