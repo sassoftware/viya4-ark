@@ -585,4 +585,3 @@ class ViyaDeploymentReport(object):
                                                        include_definitions=include_resource_definitions)
 
         return os.path.abspath(data_file_path), html_file_path
-
