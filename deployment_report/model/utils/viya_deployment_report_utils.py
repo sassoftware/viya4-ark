@@ -512,3 +512,51 @@ class ViyaDeploymentReportUtils(object):
         if resource.get_annotation(KubernetesResource.Keys.ANNOTATION_COMPONENT_NAME) is not None:
             component[NAME_KEY] = \
                 resource.get_annotation(KubernetesResource.Keys.ANNOTATION_COMPONENT_NAME)
+
+    @staticmethod
+    def get_cadence_version(resource: KubernetesResource) -> Optional[Text]:
+        """
+        Returns the cadence version of the targeted SAS deployment.
+
+        :param resource: The key of the value to return.
+        :return: A string representing the cadence version of the targeted SAS deployment.
+        """
+        cadence_info: Optional[Text] = None
+        try:
+            if 'sas-deployment-metadata' in resource.get_name():
+                cadence_data: Optional[Dict] = resource.get_data()
+                cadence_info = (
+                    f"{cadence_data['SAS_CADENCE_DISPLAY_NAME']} "
+                    f"{cadence_data['SAS_CADENCE_VERSION']} "
+                    f"({cadence_data['SAS_CADENCE_RELEASE']})"
+                )
+            return cadence_info
+        except KeyError:
+            return None
+
+    @staticmethod
+    def get_db_info(resource: KubernetesResource) -> Optional[Dict]:
+        """
+        Returns the db information of the targeted SAS deployment.
+
+        :param resource: The key of the value to return.
+        :return: A dict representing the db information of the targeted SAS deployment.
+        """
+        db_dict: Optional[Dict] = dict()
+        try:
+            if 'sas-postgres-config' in resource.get_name():
+                db_data: Optional[Dict] = resource.get_data()
+                if db_data['EXTERNAL_DATABASE'] == "false":
+                    return {"Type": "Internal"}
+
+                db_dict = {
+                    "Type": "External",
+                    "Host": db_data['DATABASE_HOST'],
+                    "Port": db_data['DATABASE_PORT'],
+                    "Name": db_data['DATABASE_NAME'],
+                    "User": db_data['SPRING_DATASOURCE_USERNAME']
+                }
+
+            return db_dict
+        except KeyError:
+            return None
