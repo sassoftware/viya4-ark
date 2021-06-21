@@ -82,6 +82,9 @@ class KubernetesApiResources(object):
         :return: The API name of the given kind, or None if the given kind does not exist.
         """
         try:
+            if kind == "ConfigMap":
+                return "configmaps"
+
             return self._api_resources[kind][self.Keys.NAME]
         except KeyError:
             return None

@@ -20,7 +20,6 @@ from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as ReportKeys
 from deployment_report.model.static.viya_deployment_report_ingress_controller import \
     ViyaDeploymentReportIngressController as ExpectedIngressController
-from deployment_report.model.utils.viya_deployment_report_utils import ViyaDeploymentReportUtils
 
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
@@ -605,51 +604,3 @@ def test_write_report_unpopulated() -> None:
     # make sure None is returned
     assert data_file is None
     assert html_file is None
-
-
-def test_get_cadence_version(report: ViyaDeploymentReport) -> None:
-    """
-    This test verifies that the provided cadence data is returned when values is passed to get_cadence_version().
-
-    :param report: The populated ViyaDeploymentReport returned by the report() fixture.
-    """
-    # check for expected attributes
-
-    cadence_data = KubectlTest.get_resources(KubectlTest(), "ConfigMaps")
-    cadence_info: Text = None
-
-    for c in cadence_data:
-        cadence_info = ViyaDeploymentReportUtils.get_cadence_version(c)
-        if cadence_info:
-            break
-
-    assert cadence_info == KubectlTest.Values.CADENCEINFO
-
-
-def test_get_cadence_version_none() -> None:
-    """
-    This test verifies that a None value is returned for the cadence when the report is unpopulated.
-    """
-
-    # make sure None is returned
-    assert ViyaDeploymentReport().get_sas_component_resources(KubectlTest.Values.CADENCEINFO,
-                                                              KubernetesResource.Kinds.CONFIGMAP) is None
-
-
-def test_get_db_info(report: ViyaDeploymentReport) -> None:
-    """
-    This test verifies that the provided db data is returned when values is passed to get_db_info().
-
-    :param report: The populated ViyaDeploymentReport returned by the report() fixture.
-    """
-    # check for expected attributes
-
-    db_data = KubectlTest.get_resources(KubectlTest(), "ConfigMaps")
-    db_dict: Dict = dict()
-
-    for c in db_data:
-        db_dict = ViyaDeploymentReportUtils.get_db_info(c)
-        if db_dict:
-            break
-
-    assert db_dict["Type"] == KubectlTest.Values.DBINFO

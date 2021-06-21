@@ -1150,3 +1150,41 @@ def test_aggregate_component_resources_sas_scheduled_backup_job(gathered_resourc
         assert len(component[ITEMS_KEY][kind]) == len(name_list)
         for name in name_list:
             assert name in component[ITEMS_KEY][kind]
+
+
+def test_get_cadence_version(gathered_resources: Dict) -> None:
+    """
+    This test verifies that the provided cadence data is returned when values is passed to get_cadence_version().
+
+    :param report: The populated ViyaDeploymentReport returned by the report() fixture.
+    """
+    # check for expected attributes
+
+    cadence_data = KubectlTest.get_resources(KubectlTest(), "ConfigMaps")
+    cadence_info: Text = None
+
+    for c in cadence_data:
+        cadence_info = ViyaDeploymentReportUtils.get_cadence_version(c)
+        if cadence_info:
+            break
+
+    assert cadence_info == KubectlTest.Values.CADENCEINFO
+
+
+def test_get_db_info(gathered_resources: Dict) -> None:
+    """
+    This test verifies that the provided db data is returned when values is passed to get_db_info().
+
+    :param report: The populated ViyaDeploymentReport returned by the report() fixture.
+    """
+    # check for expected attributes
+
+    db_data = KubectlTest.get_resources(KubectlTest(), "ConfigMaps")
+    db_dict: Dict = dict()
+
+    for c in db_data:
+        db_dict = ViyaDeploymentReportUtils.get_db_info(c)
+        if db_dict:
+            break
+
+    assert db_dict["Type"] == KubectlTest.Values.DBINFO
