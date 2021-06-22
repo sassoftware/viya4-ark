@@ -117,8 +117,9 @@ def test_get_api_resources(report: ViyaDeploymentReport) -> None:
     api_resources: Dict = report.get_api_resources()
 
     # check for expected attributes
-    assert len(api_resources) == 12
+    assert len(api_resources) == 13
     assert KubernetesResource.Kinds.CAS_DEPLOYMENT in api_resources
+    assert KubernetesResource.Kinds.CONFIGMAP in api_resources
     assert KubernetesResource.Kinds.CRON_JOB in api_resources
     assert KubernetesResource.Kinds.DEPLOYMENT in api_resources
     assert KubernetesResource.Kinds.INGRESS in api_resources

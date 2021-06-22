@@ -2,7 +2,7 @@
     "CASDeployment": {
         "apiGroup": "viya.sas.com",
         "name": "casdeployments",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "cas",
         "verbs": [
             "delete",
@@ -18,7 +18,7 @@
     "CronJob": {
         "apiGroup": "batch",
         "name": "cronjobs",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "cj",
         "verbs": [
             "create",
@@ -34,7 +34,7 @@
     "Deployment": {
         "apiGroup": "apps",
         "name": "deployments",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "deploy",
         "verbs": [
             "create",
@@ -50,7 +50,7 @@
     "Job": {
         "apiGroup": "batch",
         "name": "jobs",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "",
         "verbs": [
             "create",
@@ -66,7 +66,7 @@
     "Node": {
         "apiGroup": "",
         "name": "nodes",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "no",
         "verbs": [
             "create",
@@ -82,7 +82,7 @@
     "NodeMetrics": {
         "apiGroup": "metrics.k8s.io",
         "name": "nodes",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "",
         "verbs": [
             "get",
@@ -92,7 +92,7 @@
     "Pod": {
         "apiGroup": "",
         "name": "pods",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "po",
         "verbs": [
             "create",
@@ -108,7 +108,7 @@
     "PodMetrics": {
         "apiGroup": "metrics.k8s.io",
         "name": "pods",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "",
         "verbs": [
             "get",
@@ -118,7 +118,7 @@
     "ReplicaSet": {
         "apiGroup": "apps",
         "name": "replicasets",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "rs",
         "verbs": [
             "create",
@@ -134,7 +134,7 @@
     "Service": {
         "apiGroup": "",
         "name": "services",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "svc",
         "verbs": [
             "create",
@@ -149,8 +149,24 @@
     "StatefulSet": {
         "apiGroup": "apps",
         "name": "statefulsets",
-        "namespaced": true,
+        "namespaced": True,
         "shortname": "sts",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "ConfigMap": {
+        "name": "configmaps",
+        "shortname": "cm",
+        "apiGroup": "",
+        "namespaced": True,
         "verbs": [
             "create",
             "delete",
