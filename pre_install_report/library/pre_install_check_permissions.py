@@ -11,12 +11,15 @@
 #                                                                ###
 ####################################################################
 import os
-from typing import List
+from subprocess import CalledProcessError
+from typing import List, Dict
 
 import requests
+import sys
 import pprint
+import semantic_version
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from pre_install_report.library.utils import viya_constants
+from pre_install_report.library.utils import viya_constants, viya_messages
 from pre_install_report.library.pre_install_utils import PreCheckUtils
 from viya_ark_library.logging import ViyaARKLogger
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
@@ -41,6 +44,8 @@ SC_TYPE_AWS_EBS = "gp2"
 PROVISIONER_AZURE_FILE = "kubernetes.io/azure-file"
 PROVISIONER_AZURE_DISK = "kubernetes.io/azure-disk"
 PROVISIONER_AWS_EBS = "kubernetes.io/aws-ebs"
+
+INGRESS_REL = '<1.19'
 
 
 class PreCheckPermissions(object):
@@ -72,10 +77,11 @@ class PreCheckPermissions(object):
         self.cluster_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = viya_constants.ADEQUATE_PERMS
         self.ingress_data = {}
         self.ingress_data[viya_constants.INGRESS_CONTROLLER] = self.ingress_controller
-        self.ingress_file = "hello-ingress.yaml"
+        self._ingress_file = "hello-ingress.yaml"
         self._storage_class_sc: List[KubernetesResource] = None
         self._sample_deployment = 0
         self._sample_output = ""
+        self._k8s_gitVersion = None
 
     def _set_results_cluster_admin(self, resource_key, rc):
         """
@@ -394,23 +400,54 @@ class PreCheckPermissions(object):
         """
         Deploy Kubernetes Service for hello-world appliction in specified namespace and set the
         permissions status in the namespace_admin_permission_data dict object
-
-
         """
 
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
                                              'helloworld-svc.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
+    def get_server_gitVersion(self):
+        """
+        Retrieve the Kubernetes servervrsion and validate the gitVersion
+        """
+        try:
+            versions: Dict = self.utils.get_k8s_version()
+            serverversion = versions.get('serverVersion')
+            gitVersion = serverversion.get('gitVersion')
+            self.logger.info("gitversion {} ".format(str(gitVersion)))
+
+            if gitVersion.startswith("v"):
+                gitVersion = gitVersion[1:]
+            self.set_k8s_gitVersion(gitVersion)
+        except CalledProcessError as cpe:
+            self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
+            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
+
+    def set_ingress_manifest_file(self):
+        """
+        Retrieve the server Kubernetes gitVersion using and compare it using
+        https://pypi.org/project/semantic_version/  2.8.5 initial version
+        """
+        try:
+            curr_version = semantic_version.Version(str(self.get_k8s_gitVersion()))
+
+            if(curr_version in semantic_version.SimpleSpec(INGRESS_REL)):
+                self._ingress_file = "hello-ingress-k8s-v118.yaml"
+                self.logger.debug("hello-ingress file deployed {} major {} minor {}"
+                                  .format(str(self._ingress_file), str(curr_version.major),
+                                          str(curr_version.minor)))
+        except ValueError as cpe:
+            self.logger.exception(viya_messages.EXCEPTION_MESSAGE.format(str(cpe)))
+            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
+
     def check_sample_ingress(self):
         """
         Deploy Kubernetes Ingress for hello-world appliction in the specified
         namespace and set the permissions status in the namespace_admin_permission_data dict object.
         If nginx is ingress controller check Ingress deployment (default)
-
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                             self.ingress_file)
+                                             self._ingress_file)
         self._set_results_namespace_admin(viya_constants.PERM_INGRESS, rc)
 
     def check_sample_response(self):
@@ -508,7 +545,7 @@ class PreCheckPermissions(object):
 
         """
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
-                                             self.ingress_file)
+                                             self._ingress_file)
         self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_INGRESS, rc)
 
     def check_create_custom_resource(self):
@@ -665,3 +702,23 @@ class PreCheckPermissions(object):
         return: dict object with cluster admin aggregate permissions data
         """
         return self.cluster_admin_permission_aggregate
+
+    def set_k8s_gitVersion(self, version: str):
+        """
+        Set the current Kubernetes Server Version
+        """
+        self._k8s_gitVersion = version
+
+    def get_k8s_gitVersion(self):
+        """
+        Get the current Kubernetes Server Version
+        return: string object
+        """
+        return self._k8s_gitVersion
+
+    def get_ingress_file_name(self):
+        """
+        Get the ingress manifest to be deployed
+        return: string object
+        """
+        return self._ingress_file

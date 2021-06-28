@@ -16,6 +16,7 @@ import sys
 import pprint
 import json
 import logging
+import semantic_version
 
 from pint import UnitRegistry
 from pre_install_report.library.utils import viya_constants
@@ -585,6 +586,54 @@ def test_kubconfig_file():
         pass
     finally:
         os.environ['KUBECONFIG'] = str(old_kubeconfig)
+
+
+def test_get_k8s_version():
+    """
+    Retrieve thhe server Kubernetes mjor and minor version using
+    https://pypi.org/project/packaging/  20.9 initial version
+    Used by python setup tools
+    """
+    # versions: Dict = self.utils.get_k8s_version()
+    version_string = "1.18.9-eks-d1db3c"
+    version_string2 = "1.19.0"
+    version_string3 = '1.19.a'
+
+    params = {}
+    params[viya_constants.INGRESS_CONTROLLER] = 'nginx'
+    params[viya_constants.INGRESS_HOST] = '10.240.9.8'
+    params[viya_constants.INGRESS_PORT] = '80'
+    params['logger'] = sas_logger
+
+    # initialize the PreCheckPermissions object
+    perms = PreCheckPermissions(params)
+    perms.set_k8s_gitVersion(version_string)
+    perms.set_ingress_manifest_file()
+    # check for correct ingress manifest
+    assert(str(perms.get_ingress_file_name() in "hello-ingress-k8s-v118.yaml"))
+
+    perms.set_k8s_gitVersion(version_string2)
+    perms.set_ingress_manifest_file()
+    # check for correct ingress manifest
+    assert(str(perms.get_ingress_file_name() in "hello-ingress.yaml"))
+
+    # check curren version less than 1.20
+    curr_version = semantic_version.Version(str(version_string2))
+    assert (curr_version in semantic_version.SimpleSpec('<1.20'))
+
+    perms.set_k8s_gitVersion(version_string2)
+    perms.set_ingress_manifest_file()
+    # check for correct ingress manifest
+    assert(str(perms.get_ingress_file_name() not in "hello-ingress_invalid.yaml"))
+
+    # initialize the PreCheckPermissions object
+    perms.set_k8s_gitVersion(version_string3)
+    # check for system exit rc 7
+    try:
+        perms.set_ingress_manifest_file()
+    except SystemExit as exc:
+        assert exc.code == viya_messages.RUNTIME_ERROR_RC_
+        pass
 
 
 def test_check_permissions():

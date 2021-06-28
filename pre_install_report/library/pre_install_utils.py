@@ -14,7 +14,7 @@
 from subprocess import CalledProcessError
 import os
 import pprint
-from typing import List
+from typing import List, Dict
 
 from pre_install_report.library.utils import viya_constants
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface, KubernetesApiResources
@@ -47,15 +47,13 @@ class PreCheckUtils(object):
         """
         rc = 0
         data = ''
-        error_msg = ''
         file_path = self._get_filepath(file_name)
         try:
             data = self._kubectl.manage_resource(action, file_path, False)
         except CalledProcessError as cpe:
             rc = cpe.returncode
-            error_msg = str(cpe.output)
-            self.logger.error("deploy_manifest_file rc {} action {} filepath {} error_msg {}".format(str(rc), action,
-                              file_path, error_msg))
+            self.logger.error("deploy_manifest_file rc {} action {} filepath {} error_msg {} error_out {}"
+                              .format(str(rc), str(action), str(file_path), str(cpe.stderr), str(cpe.stdout)))
             return 1
 
         self.logger.info("deploy_manifest_file rc {} action {} filepath {} data{}".format(str(rc), action,
@@ -112,7 +110,6 @@ class PreCheckUtils(object):
     def can_i(self, test_cmd):
         """
         Run the specified can-i command in designated namespace
-
         cmd: kubectl can-icommand to be executed
         return:  True if action is permitted. If not, return false
         """
@@ -170,6 +167,20 @@ class PreCheckUtils(object):
                                                                         str(resource_name),
                                                                         pprint.pformat(k8s_resource.as_dict())))
         return k8s_resource
+
+    def get_k8s_version(self):
+        """
+        Retrieve the kubectl version details
+        return:  Dict Object or raise cpe
+        """
+
+        try:
+            versions: Dict = self._kubectl.version()
+            return versions
+        except CalledProcessError as cpe:
+            self.logger.info('kubectl version failed ' + " version " + 'return code = ' +
+                             cpe.returncode)
+            raise cpe
 
     def _get_filepath(self, file_name):
         """

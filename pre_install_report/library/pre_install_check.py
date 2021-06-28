@@ -400,9 +400,11 @@ class ViyaPreInstallCheck():
         permissions_check:  instance of PreCheckPermissions class
         """
         namespace = self._kubectl.get_namespace()
+        permissions_check.get_server_gitVersion()
+        permissions_check.set_ingress_manifest_file()
         permissions_check.get_sc_resources()
-        permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, False)
 
+        permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, False)
         permissions_check.check_sample_application()
         permissions_check.check_sample_ingress()
         permissions_check.check_deploy_crd()

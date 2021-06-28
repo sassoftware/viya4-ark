@@ -1,5 +1,6 @@
 jinja2>=2.11.3
-Pint==0.11
-requests==2.22.0
+Pint>=0.11
+requests>=2.22.0
 pyyaml>=5.4
 ldap3==2.9
+semantic_version>=2.8.5

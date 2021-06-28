@@ -11,20 +11,17 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: hello-world
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
   - http:
       paths:
-      - path: /hello-world
-        pathType: Prefix
-        backend:
-          service:
-            name: hello-world
-            port:
-              number: 8080
+      - backend:
+          serviceName: hello-world
+          servicePort: 8080
+        path: /hello-world
