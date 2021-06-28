@@ -598,6 +598,7 @@ def test_get_k8s_version():
     version_string = "1.18.9-eks-d1db3c"
     version_string2 = "1.19.0"
     version_string3 = '1.19.a'
+    version_string4 = '1.17.1'
 
     params = {}
     params[viya_constants.INGRESS_CONTROLLER] = 'nginx'
@@ -612,6 +613,13 @@ def test_get_k8s_version():
     # check for correct ingress manifest
     assert(str(perms.get_ingress_file_name() in "hello-ingress-k8s-v118.yaml"))
 
+    # initialize the PreCheckPermissions object
+    perms = PreCheckPermissions(params)
+    perms.set_k8s_gitVersion(version_string4)
+    perms.set_ingress_manifest_file()
+    # check for correct ingress manifest
+    assert(str(perms.get_ingress_file_name() in "hello-ingress-k8s-v118.yaml"))
+
     perms.set_k8s_gitVersion(version_string2)
     perms.set_ingress_manifest_file()
     # check for correct ingress manifest
@@ -620,6 +628,7 @@ def test_get_k8s_version():
     # check curren version less than 1.20
     curr_version = semantic_version.Version(str(version_string2))
     assert (curr_version in semantic_version.SimpleSpec('<1.20'))
+    assert (curr_version in semantic_version.SimpleSpec('==1.19'))
 
     perms.set_k8s_gitVersion(version_string2)
     perms.set_ingress_manifest_file()
