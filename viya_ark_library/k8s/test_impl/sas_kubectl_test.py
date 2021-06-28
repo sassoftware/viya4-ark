@@ -77,6 +77,7 @@ class KubectlTest(KubectlInterface):
         """
         NAMESPACE: Text = "test"
         CADENCEINFO: Text = "Fast R/TR 2020 (20201214.1607958443388)"
+        DBINFO: Text = "Internal"
 
         # Component: prometheus
         COMPONENT_PROMETHEUS_DEPLOYMENT_NAME: Text = "pushgateway-test-prometheus-pushgateway"

@@ -193,5 +193,21 @@
             "update",
             "watch"
         ]
+    },
+    "ConfigMap": {
+        "name": "configmaps",
+        "shortname": "cm",
+        "apiGroup": "",
+        "namespaced": true,
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
     }
 }

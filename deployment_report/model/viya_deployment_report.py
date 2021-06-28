@@ -134,13 +134,17 @@ class ViyaDeploymentReport(object):
 
         # start by gathering details about ConfigMap #
         cadence_info: Optional[Text] = None
+        db_dict: Optional[Dict] = dict()
         try:
             ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
                                                               k8s_kinds.CONFIGMAP)
             for item in gathered_resources[k8s_kinds.CONFIGMAP]['items']:
                 resource_definition = gathered_resources[k8s_kinds.CONFIGMAP]['items'][item]['resourceDefinition']
-                cadence_info = self.get_cadence_version(resource_definition)
-                if cadence_info:
+                if not cadence_info:
+                    cadence_info = ViyaDeploymentReportUtils.get_cadence_version(resource_definition)
+                if not db_dict:
+                    db_dict = ViyaDeploymentReportUtils.get_db_info(resource_definition)
+                if db_dict and cadence_info:
                     break
 
         except CalledProcessError:
@@ -296,6 +300,8 @@ class ViyaDeploymentReport(object):
         k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT]: Dict = dict()
         # create a key to hold the cadence version information: str|None #
         k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Optional[Text] = cadence_info
+        # create a key to hold the viya db information: dict #
+        k8s_details_dict[Keys.Kubernetes.DB_INFO]: Dict = db_dict
 
         # add the availability and count of all discovered resources #
         for kind_name, kind_details in gathered_resources.items():
@@ -579,24 +585,3 @@ class ViyaDeploymentReport(object):
                                                        include_definitions=include_resource_definitions)
 
         return os.path.abspath(data_file_path), html_file_path
-
-    @staticmethod
-    def get_cadence_version(resource: KubernetesResource) -> Optional[Text]:
-        """
-        Returns the cadence version of the targeted SAS deployment.
-
-        :param resource: The key of the value to return.
-        :return: A string representing the cadence version of the targeted SAS deployment.
-        """
-        cadence_info: Optional[Text] = None
-        try:
-            if 'sas-deployment-metadata' in resource.get_name():
-                cadence_data: Optional[Dict] = resource.get_data()
-                cadence_info = (
-                    f"{cadence_data['SAS_CADENCE_DISPLAY_NAME']} "
-                    f"{cadence_data['SAS_CADENCE_VERSION']} "
-                    f"({cadence_data['SAS_CADENCE_RELEASE']})"
-                )
-            return cadence_info
-        except KeyError:
-            return None
