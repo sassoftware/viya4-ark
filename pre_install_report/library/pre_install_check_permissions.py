@@ -45,8 +45,8 @@ PROVISIONER_AZURE_FILE = "kubernetes.io/azure-file"
 PROVISIONER_AZURE_DISK = "kubernetes.io/azure-disk"
 PROVISIONER_AWS_EBS = "kubernetes.io/aws-ebs"
 
-INGRESS_REL_EQUAL = '==1.18'
-INGRESS_REL_LESS = '<1.18'
+INGRESS_MIN_SUPPORTED_REL_EQ = '==1.18'
+INGRESS_UNSUPPORTED_REL_LT = '<1.18'
 
 
 class PreCheckPermissions(object):
@@ -432,12 +432,12 @@ class PreCheckPermissions(object):
         try:
             curr_version = semantic_version.Version(str(self.get_k8s_gitVersion()))
 
-            if(curr_version in semantic_version.SimpleSpec(INGRESS_REL_EQUAL)):
+            if(curr_version in semantic_version.SimpleSpec(INGRESS_MIN_SUPPORTED_REL_EQ)):
                 self._ingress_file = "hello-ingress-k8s-v118.yaml"
                 self.logger.debug("hello-ingress file deployed {} major {} minor {}"
                                   .format(str(self._ingress_file), str(curr_version.major),
                                           str(curr_version.minor)))
-            if(curr_version in semantic_version.SimpleSpec(INGRESS_REL_LESS)):
+            if(curr_version in semantic_version.SimpleSpec(INGRESS_UNSUPPORTED_REL_LT)):
                 self._ingress_file = "hello-ingress-k8s-v118.yaml"
                 self.logger.error("This release of Kubernetes is not supported. major {} minor {}"
                                   .format(str(curr_version.major),
