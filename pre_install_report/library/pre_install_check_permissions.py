@@ -413,13 +413,13 @@ class PreCheckPermissions(object):
         """
         try:
             versions: Dict = self.utils.get_k8s_version()
-            serverversion = versions.get('serverVersion')
-            gitVersion = serverversion.get('gitVersion')
-            self.logger.info("gitversion {} ".format(str(gitVersion)))
+            server_version = versions.get('serverVersion')
+            git_version = server_version.get('gitVersion')
+            self.logger.info("gitversion {} ".format(str(git_version)))
 
-            if gitVersion.startswith("v"):
-                gitVersion = gitVersion[1:]
-            self.set_k8s_gitVersion(gitVersion)
+            if git_version.startswith("v"):
+                git_version = git_version[1:]
+            self.set_k8s_gitVersion(git_version)
         except CalledProcessError as cpe:
             self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
             sys.exit(viya_messages.RUNTIME_ERROR_RC_)
