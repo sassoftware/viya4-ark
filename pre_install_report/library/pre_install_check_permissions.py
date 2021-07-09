@@ -82,7 +82,7 @@ class PreCheckPermissions(object):
         self._storage_class_sc: List[KubernetesResource] = None
         self._sample_deployment = 0
         self._sample_output = ""
-        self._k8s_gitVersion = None
+        self._k8s_git_version = None
 
     def _set_results_cluster_admin(self, resource_key, rc):
         """
@@ -407,19 +407,19 @@ class PreCheckPermissions(object):
                                              'helloworld-svc.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
-    def get_server_gitVersion(self):
+    def get_server_git_version(self):
         """
-        Retrieve the Kubernetes servervrsion and validate the gitVersion
+        Retrieve the Kubernetes server version and validate the git version
         """
         try:
             versions: Dict = self.utils.get_k8s_version()
             server_version = versions.get('serverVersion')
             git_version = server_version.get('gitVersion')
-            self.logger.info("gitversion {} ".format(str(git_version)))
+            self.logger.info("git_version {} ".format(str(git_version)))
 
             if git_version.startswith("v"):
                 git_version = git_version[1:]
-            self.set_k8s_gitVersion(git_version)
+            self.set_k8s_git_version(git_version)
         except CalledProcessError as cpe:
             self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
             sys.exit(viya_messages.RUNTIME_ERROR_RC_)
@@ -430,7 +430,7 @@ class PreCheckPermissions(object):
         https://pypi.org/project/semantic_version/  2.8.5 initial version
         """
         try:
-            curr_version = semantic_version.Version(str(self.get_k8s_gitVersion()))
+            curr_version = semantic_version.Version(str(self.get_k8s_git_version()))
 
             if(curr_version in semantic_version.SimpleSpec(INGRESS_V1BETA1_REL_EQ)):
                 self._ingress_file = "hello-ingress-k8s-v118.yaml"
@@ -709,18 +709,18 @@ class PreCheckPermissions(object):
         """
         return self.cluster_admin_permission_aggregate
 
-    def set_k8s_gitVersion(self, version: str):
+    def set_k8s_git_version(self, version: str):
         """
         Set the current Kubernetes Server Version
         """
-        self._k8s_gitVersion = version
+        self._k8s_git_version = version
 
-    def get_k8s_gitVersion(self):
+    def get_k8s_git_version(self):
         """
         Get the current Kubernetes Server Version
         return: string object
         """
-        return self._k8s_gitVersion
+        return self._k8s_git_version
 
     def get_ingress_file_name(self):
         """

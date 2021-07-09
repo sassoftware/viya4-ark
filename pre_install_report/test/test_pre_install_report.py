@@ -608,19 +608,19 @@ def test_get_k8s_version():
 
     # initialize the PreCheckPermissions object
     perms = PreCheckPermissions(params)
-    perms.set_k8s_gitVersion(version_string)
+    perms.set_k8s_git_version(version_string)
     perms.set_ingress_manifest_file()
     # check for correct ingress manifest
     assert(str(perms.get_ingress_file_name() in "hello-ingress-k8s-v118.yaml"))
 
     # initialize the PreCheckPermissions object
     perms = PreCheckPermissions(params)
-    perms.set_k8s_gitVersion(version_string4)
+    perms.set_k8s_git_version(version_string4)
     perms.set_ingress_manifest_file()
     # check for correct ingress manifest
     assert(str(perms.get_ingress_file_name() in "hello-ingress-k8s-v118.yaml"))
 
-    perms.set_k8s_gitVersion(version_string2)
+    perms.set_k8s_git_version(version_string2)
     perms.set_ingress_manifest_file()
     # check for correct ingress manifest
     assert(str(perms.get_ingress_file_name() in "hello-ingress.yaml"))
@@ -630,13 +630,13 @@ def test_get_k8s_version():
     assert (curr_version in semantic_version.SimpleSpec('<1.20'))
     assert (curr_version in semantic_version.SimpleSpec('==1.19'))
 
-    perms.set_k8s_gitVersion(version_string2)
+    perms.set_k8s_git_version(version_string2)
     perms.set_ingress_manifest_file()
     # check for correct ingress manifest
     assert(str(perms.get_ingress_file_name() not in "hello-ingress_invalid.yaml"))
 
     # initialize the PreCheckPermissions object
-    perms.set_k8s_gitVersion(version_string3)
+    perms.set_k8s_git_version(version_string3)
     # check for system exit rc 7
     try:
         perms.set_ingress_manifest_file()

@@ -400,7 +400,7 @@ class ViyaPreInstallCheck():
         permissions_check:  instance of PreCheckPermissions class
         """
         namespace = self._kubectl.get_namespace()
-        permissions_check.get_server_gitVersion()
+        permissions_check.get_server_git_version()
         permissions_check.set_ingress_manifest_file()
         permissions_check.get_sc_resources()
 
