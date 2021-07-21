@@ -13,7 +13,7 @@ import pytest
 
 from typing import Dict
 
-from ..resource_util import gather_details
+from deployment_report.model.utils import relationship_util
 
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources
 from viya_ark_library.k8s.test_impl.sas_kubectl_test import KubectlTest
@@ -177,7 +177,7 @@ def _gathered_resources(ingress_simulator: KubectlTest.IngressSimulator) -> Dict
     gathered_resources: Dict = dict()
 
     for resource_kind in api_resources.as_dict().keys():
-        gather_details(
+        relationship_util.gather_details(
             kubectl=kubectl,
             gathered_resources=gathered_resources,
             api_resources=api_resources,
