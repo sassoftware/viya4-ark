@@ -15,6 +15,22 @@
             "watch"
         ]
     },
+    "ConfigMap": {
+        "name": "configmaps",
+        "shortname": "cm",
+        "apiGroup": "",
+        "namespaced": true,
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
     "CronJob": {
         "apiGroup": "batch",
         "name": "cronjobs",
@@ -36,22 +52,6 @@
         "name": "deployments",
         "namespaced": true,
         "shortname": "deploy",
-        "verbs": [
-            "create",
-            "delete",
-            "deletecollection",
-            "get",
-            "list",
-            "patch",
-            "update",
-            "watch"
-        ]
-    },
-    "Ingress": {
-        "apiGroup": "networking.k8s.io",
-        "name": "ingresses",
-        "namespaced": true,
-        "shortname": "ing",
         "verbs": [
             "create",
             "delete",
@@ -178,11 +178,11 @@
             "watch"
         ]
     },
-    "ConfigMap": {
-        "name": "configmaps",
-        "shortname": "cm",
-        "apiGroup": "",
+    "Ingress": {
+        "apiGroup": "networking.k8s.io",
+        "name": "ingresses",
         "namespaced": true,
+        "shortname": "ing",
         "verbs": [
             "create",
             "delete",

@@ -18,10 +18,9 @@ from typing import Dict, List, Text
 from deployment_report.model.viya_deployment_report import ViyaDeploymentReport
 from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as ReportKeys
-from deployment_report.model.static.viya_deployment_report_ingress_controller import \
-    ViyaDeploymentReportIngressController as ExpectedIngressController
 
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
+from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 from viya_ark_library.k8s.test_impl.sas_kubectl_test import KubectlTest
 
@@ -106,26 +105,30 @@ def test_get_kubernetes_details_unpopulated() -> None:
     assert ViyaDeploymentReport().get_kubernetes_details() is None
 
 
-def test_get_api_resources(report: ViyaDeploymentReport) -> None:
+def test_get_api_resources() -> None:
     """
     This test verifies that all the expected api-resources values returned by the KubectlTest implementation are
     present in the "kubernetes.apiResources" dictionary in the completed report.
-
-    :param report: The populated ViyaDeploymentReport returned by the report() fixture.
     """
+    report: ViyaDeploymentReport = ViyaDeploymentReport()
+    report.gather_details(kubectl=KubectlTest(ingress_simulator=KubectlTest.IngressSimulator.ALL_NGINX_USED))
+
     # get the API resources information
     api_resources: Dict = report.get_api_resources()
 
     # check for expected attributes
-    assert len(api_resources) == 13
+    assert len(api_resources) == 16
     assert KubernetesResource.Kinds.CAS_DEPLOYMENT in api_resources
     assert KubernetesResource.Kinds.CONFIGMAP in api_resources
+    assert KubernetesResource.Kinds.CONTOUR_HTTPPROXY in api_resources
     assert KubernetesResource.Kinds.CRON_JOB in api_resources
     assert KubernetesResource.Kinds.DEPLOYMENT in api_resources
     assert KubernetesResource.Kinds.INGRESS in api_resources
+    assert KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE
     assert KubernetesResource.Kinds.JOB in api_resources
     assert KubernetesResource.Kinds.NODE in api_resources
     assert KubernetesResource.Kinds.NODE_METRICS in api_resources
+    assert KubernetesResource.Kinds.OPENSHIFT_ROUTE in api_resources
     assert KubernetesResource.Kinds.POD in api_resources
     assert KubernetesResource.Kinds.POD_METRICS in api_resources
     assert KubernetesResource.Kinds.REPLICA_SET in api_resources
@@ -183,11 +186,13 @@ def test_get_discovered_resources(report: ViyaDeploymentReport) -> None:
     discovered_resources: Dict = report.get_discovered_resources()
 
     # check for expected attributes
-    assert len(discovered_resources) == 11
+    assert len(discovered_resources) == 13
     assert KubernetesResource.Kinds.CAS_DEPLOYMENT in discovered_resources
+    assert KubernetesResource.Kinds.CONTOUR_HTTPPROXY in discovered_resources
     assert KubernetesResource.Kinds.CRON_JOB in discovered_resources
     assert KubernetesResource.Kinds.DEPLOYMENT in discovered_resources
     assert KubernetesResource.Kinds.INGRESS in discovered_resources
+    assert KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE in discovered_resources
     assert KubernetesResource.Kinds.JOB in discovered_resources
     assert KubernetesResource.Kinds.NODE in discovered_resources
     assert KubernetesResource.Kinds.POD in discovered_resources
@@ -214,7 +219,7 @@ def test_get_discovered_resources_unpopulated() -> None:
     assert ViyaDeploymentReport().get_discovered_resources() is None
 
 
-def test_get_ingress_controller_nginx_only(report: ViyaDeploymentReport) -> None:
+def test_get_ingress_controller(report: ViyaDeploymentReport) -> None:
     """
     This test verifies that NGINX is returned as the ingress controller when VirtualService objects are not available
     in the api-resources.
@@ -222,46 +227,7 @@ def test_get_ingress_controller_nginx_only(report: ViyaDeploymentReport) -> None
     :param report: The populated ViyaDeploymentReport returned by the report() fixture.
     """
     # check for expected attributes
-    assert report.get_ingress_controller() == ExpectedIngressController.KUBE_NGINX
-
-
-def test_get_ingress_controller_istio_only() -> None:
-    """
-    This test verifies that ISTIO is returned as the ingress controller when Ingress objects are not available in the
-    api-resources.
-    """
-    # run the report
-    report: ViyaDeploymentReport = ViyaDeploymentReport()
-    report.gather_details(kubectl=KubectlTest(KubectlTest.IngressSimulator.ISTIO_ONLY))
-
-    # check for expected attributes
-    assert report.get_ingress_controller() == ExpectedIngressController.ISTIO
-
-
-def test_get_ingress_controller_both_nginx_used() -> None:
-    """
-    This test verifies that NGINX is returned as the ingress controller when both Ingress and VirtualService resources
-    are available but Ingress is defined for components.
-    """
-    # run the report
-    report: ViyaDeploymentReport = ViyaDeploymentReport()
-    report.gather_details(kubectl=KubectlTest(KubectlTest.IngressSimulator.BOTH_RESOURCES_NGINX_USED))
-
-    # check for expected attributes
-    assert report.get_ingress_controller() is ExpectedIngressController.KUBE_NGINX
-
-
-def test_get_ingress_controller_both_istio_used() -> None:
-    """
-    This test verifies that ISTIO is returned as the ingress controller when both Ingress and VirtualService resources
-    are available but VirtualService is defined for components.
-    """
-    # run the report
-    report: ViyaDeploymentReport = ViyaDeploymentReport()
-    report.gather_details(kubectl=KubectlTest(KubectlTest.IngressSimulator.BOTH_RESOURCES_ISTIO_USED))
-
-    # check for expected attributes
-    assert report.get_ingress_controller() is ExpectedIngressController.ISTIO
+    assert report.get_ingress_controller() == SupportedIngress.Controllers.NGINX
 
 
 def test_get_ingress_controller_none() -> None:

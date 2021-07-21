@@ -1,0 +1,46 @@
+[
+  {
+    "apiVersion": "route.openshift.io/v1",
+    "kind": "Route",
+    "metadata": {
+      "annotations": {
+        "cadence.sas.com/display-name": "Fast R/TR",
+        "cadence.sas.com/name": "fast",
+        "cadence.sas.com/release": "20200508.1588944122646",
+        "cadence.sas.com/version": "2020",
+        "kubectl.kubernetes.io/last-applied-configuration": "",
+        "haproxy.router.openshift.io/timeout": "300s",
+        "router.openshift.io/cookie-same-site": "Lax",
+        "router.openshift.io/cookie_name": "sas-ocp-route",
+        "sas.com/component-name": "sas-annotations",
+        "sas.com/component-version": "2.2.25-20200506.1588775452057",
+        "sas.com/kustomize-base": "base",
+        "sas.com/version": "2.2.25"
+      },
+      "creationTimestamp": "2020-05-08T13:36:33Z",
+      "generation": 1,
+      "labels": {
+        "app.kubernetes.io/name": "sas-annotations",
+        "sas.com/admin": "namespace",
+        "sas.com/deployment": "sas-viya"
+      },
+      "name": "sas-annotations",
+      "namespace": "test",
+      "resourceVersion": "3426839",
+      "selfLink": "/apis/route.openshift.io/v1/namespaces/test/routes/sas-annotations",
+      "uid": "4fe02d32-df6a-46fb-8b8c-4b74c0e05474"
+    },
+    "spec": {
+      "host": "k8s-master-node.test.sas.com",
+      "path": "/annotations",
+      "port": {
+        "targetPort": "http"
+      },
+      "to": {
+        "kind": "Service",
+        "name": "sas-annotations"
+      },
+      "wildcardPolicy": "None"
+    }
+  }
+]
