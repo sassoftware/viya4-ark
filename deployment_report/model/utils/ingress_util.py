@@ -9,7 +9,7 @@
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
-from typing import Dict, List, Optional, Text
+from typing import Dict, Optional, Text
 
 from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
