@@ -70,7 +70,14 @@ def aggregate_resources(resource_details: Dict, gathered_resources: Dict, compon
 
         # aggregate the related resource
         if related_resource_details is not None:
-            aggregate_resources(related_resource_details, gathered_resources, component)
+            try:
+                aggregate_resources(related_resource_details, gathered_resources, component)
+            except RecursionError:
+                # TODO: refactor this error handling; recursion errors are being raised by ambiguous results
+                # from "kubectl get pgclusters" at 2021.1.4 where the "crunchydata.com/v1" version of Pgcluster
+                # shadows the "webinfdsvr.sas.com/v1" version of Pgcluster
+                # continue to next related item if a recursion error is hit
+                continue
 
     # if this is the last resource in the chain and the component doesn't have a name determined from an annotation,
     # set a name based on the available values
