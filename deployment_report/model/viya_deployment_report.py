@@ -18,25 +18,32 @@ from typing import AnyStr, Dict, List, Optional, Text, Tuple
 
 from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY, NAME_KEY
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as Keys
-from deployment_report.model.static.viya_deployment_report_ingress_controller import \
-    ViyaDeploymentReportIngressController as IngressController
-from deployment_report.model.utils.viya_deployment_report_utils import ViyaDeploymentReportUtils
+from deployment_report.model.utils import \
+    component_util, \
+    config_util, \
+    ingress_util, \
+    metrics_util, \
+    relationship_util, \
+    resource_util
 
 from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
+from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 from viya_ark_library.k8s.sas_k8s_objects import \
-    KubernetesApiResources, KubernetesObjectJSONEncoder, KubernetesResource
+    KubernetesApiResources, \
+    KubernetesObjectJSONEncoder, \
+    KubernetesResource
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 
-# templates for string-formatted timestamp values #
+# templates for string-formatted timestamp values
 _READABLE_TIMESTAMP_TMPL_ = "%A, %B %d, %Y %I:%M%p"
 _FILE_TIMESTAMP_TMPL_ = "%Y-%m-%dT%H_%M_%S"
 
-# templates for output file names #
+# templates for output file names
 _REPORT_DATA_FILE_NAME_TMPL_ = "viya_deployment_report_data_{}.json"
 _REPORT_FILE_NAME_TMPL_ = "viya_deployment_report_{}.html"
 
-# SAS custom API resource group id #
+# SAS custom API resource group id
 _SAS_API_GROUP_ID_ = "sas.com"
 
 
@@ -116,154 +123,162 @@ class ViyaDeploymentReport(object):
         # Gather details about Kubernetes environment where SAS is deployed   #
         #######################################################################
 
-        # mark when these details were gathered #
+        # mark when these details were gathered
         gathered: Text = datetime.datetime.now().strftime(_READABLE_TIMESTAMP_TMPL_)
 
-        # gather Kubernetes API resources #
+        # gather Kubernetes API resources
         api_resources: KubernetesApiResources = kubectl.api_resources()
         api_resources_dict: Dict = api_resources.as_dict()
 
-        # make a list of any Custom Resource Definitions that are provided by SAS #
+        # make a list of any Custom Resource Definitions that are provided by SAS
         sas_custom_resources: Dict = dict()
         for kind, details in api_resources_dict.items():
             if _SAS_API_GROUP_ID_ in api_resources.get_api_group(kind):
                 sas_custom_resources[kind] = details
 
-        # create dictionary to store gathered resources #
+        # create dictionary to store gathered resources
         gathered_resources: Dict = dict()
 
-        # start by gathering details about ConfigMap #
+        # initialize variables for config values
         cadence_info: Optional[Text] = None
         db_dict: Optional[Dict] = dict()
+
         try:
-            ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
-                                                              k8s_kinds.CONFIGMAP)
-            for item in gathered_resources[k8s_kinds.CONFIGMAP]['items']:
-                resource_definition = gathered_resources[k8s_kinds.CONFIGMAP]['items'][item]['resourceDefinition']
+            # gather details about ConfigMaps
+            resource_util.gather_details(kubectl, gathered_resources, api_resources, k8s_kinds.CONFIGMAP)
+
+            # iterate over all the ConfigMaps
+            for config_map_details in gathered_resources[k8s_kinds.CONFIGMAP][ITEMS_KEY].values():
+
+                # get the ConfigMap definition
+                config_map = config_map_details[Keys.ResourceDetails.RESOURCE_DEFINITION]
+
                 if not cadence_info:
-                    cadence_info = ViyaDeploymentReportUtils.get_cadence_version(resource_definition)
+                    # set the cadence_info if it hasn't already been set
+                    cadence_info = config_util.get_cadence_version(config_map)
                 if not db_dict:
-                    db_dict = ViyaDeploymentReportUtils.get_db_info(resource_definition)
+                    # set the db_dict if it hasn't already been set
+                    db_dict = config_util.get_db_info(config_map)
                 if db_dict and cadence_info:
+                    # if both values have been defined, break the loop and move on
                     break
-
         except CalledProcessError:
+            # if ConfigMaps cannot be gathered, move on to try other resources
             pass
 
+        # initialize the dict that will hold all gathered resources
         gathered_resources = dict()
-        # start by gathering details about Nodes, if available #
-        # this information can be reported even if Pods are not listable #
+
         try:
-            ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
-                                                              k8s_kinds.NODE)
+            # start by gathering details about Nodes, if available
+            # this information can be reported even if Pods are not listable
+            resource_util.gather_details(kubectl, gathered_resources, api_resources, k8s_kinds.NODE)
         except CalledProcessError:
-            # the user may not be able to see non-namespaced resources like nodes, move on without raising an error #
+            # the user may not be able to see non-namespaced resources like nodes, move on without raising an error
             pass
 
-        # gather details about Pods in the target Kubernetes cluster                                                   #
-        # Pods are the smallest unit in Kubernetes and define 'ownerReferences', which can be used to gather upstream  #
-        # relationships                                                                                                #
-        # services, ingresses, and virtual services will be gathered separately even if Pods and their owners are      #
-        # found; networking resources are not defined in 'ownerReferences'                                             #
-        # if Pods cannot be listed, the report will report the details already gathered, and display a messages saying #
-        # that components could not be reported because pods are not listable                                          #
         try:
-            ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources, k8s_kinds.POD)
+            # gather details about Pods in the target Kubernetes cluster
+            # Pods are the smallest unit in Kubernetes and define 'ownerReferences', which can be used to gather
+            # upstream relationships
+            #
+            # services, ingresses, and virtual services will be gathered separately even if Pods and their owners are
+            # found - networking resources are not defined in 'ownerReferences'
+            #
+            # if Pods cannot be listed, the report will report the details already gathered, and display a messages
+            # saying that components could not be reported because pods are not listable
+            resource_util.gather_details(kubectl, gathered_resources, api_resources, k8s_kinds.POD)
         except CalledProcessError:
-            # if a CalledProcessError is raised when gathering pods, then surface an error up to stop the program #
-            # without the ability to list pods, aggregating component resources won't occur #
+            # if a CalledProcessError is raised when gathering pods, then surface an error up to stop the program
+            # without the ability to list pods, aggregating component resources won't occur
             raise KubectlRequestForbiddenError(f"Listing pods is forbidden in namespace [{kubectl.get_namespace()}]. "
                                                "Make sure KUBECONFIG is correctly set and that the correct namespace "
                                                "is being targeted. A namespace can be given on the command line using "
                                                "the \"--namespace=\" option.")
 
-        # define a list to hold any unavailable resources #
+        # define a list to hold any unavailable resources
         unavailable_resources: List = list()
-        ingress_ctlr: Optional[Text] = None
+
+        # define a variable to hold the ingress controller that will be determined for this cluster
+        ingress_controller: Optional[Text] = None
 
         #######################################################################
         # Start - Additional resource gathering                               #
         #######################################################################
-
-        # make sure pods were gathered #
-        # if none were found, there is no need to gather additional details #
+        # make sure pods were gathered
+        # if none were found, there is no need to gather additional details
         if gathered_resources[k8s_kinds.POD][Keys.KindDetails.COUNT] > 0:
-
             try:
-                # since Pods were listable, gather details about networking kinds #
-                for networking_kind in [k8s_kinds.SERVICE, k8s_kinds.INGRESS, k8s_kinds.ISTIO_VIRTUAL_SERVICE]:
-                    ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
-                                                                      networking_kind)
+                # since Pods were listable, gather details about networking kinds - start with services
+                resource_util.gather_details(kubectl, gathered_resources, api_resources, k8s_kinds.SERVICE)
 
-                # make sure an attempt is made to gather any SAS CDRs that were discovered    #
-                # some may have already been gathered if they are upstream owners of any Pods #
+                # look for all kinds used by supported ingress controllers
+                for ingress_kind in SupportedIngress.get_ingress_controller_to_kind_map().values():
+                    resource_util.gather_details(kubectl, gathered_resources, api_resources, ingress_kind)
+
+                # make sure an attempt is made to gather any SAS CDRs that were discovered
+                # some may have already been gathered if they are upstream owners of any Pods
                 for sas_custom_kind in sas_custom_resources.keys():
-                    ViyaDeploymentReportUtils.gather_resource_details(kubectl, gathered_resources, api_resources,
-                                                                      sas_custom_kind)
+                    resource_util.gather_details(kubectl, gathered_resources, api_resources, sas_custom_kind)
             except CalledProcessError:
-                # if any of the networking or SAS CRDs can't be listed, move since some amount of component resources #
-                # have already been gathered #
+                # if any of the networking or SAS CRDs can't be listed, move since some amount of component resources
+                # have already been gathered
                 pass
 
-            # determine the ingress controller #
-            ingress_ctlr = ViyaDeploymentReportUtils.determine_ingress_controller(gathered_resources)
+            # determine the ingress controller
+            ingress_controller = ingress_util.determine_ingress_controller(gathered_resources)
 
-            # determine if any discovered resource kinds were unavailable                                            #
-            # if at least one is unavailable, a message will be displayed saying that components may not be complete #
-            # because all resources were not listable                                                                #
+            # determine if any discovered resource kinds were unavailable
+            # if at least one is unavailable, a message will be displayed saying that components may not be complete
+            # because all resources were not listable
             for kind, kind_details in gathered_resources.items():
-                # check if the kind is unavailable #
+                # check if the kind is unavailable
                 if not kind_details[Keys.KindDetails.AVAILABLE]:
-                    # ignore the unavailable Ingress kind if Istio is used or VirtualService kind if Nginx is used
-                    if (ingress_ctlr == IngressController.ISTIO and kind != k8s_kinds.INGRESS) or \
-                            (ingress_ctlr == IngressController.KUBE_NGINX and kind != k8s_kinds.ISTIO_VIRTUAL_SERVICE):
-
+                    # ignore any ingress kinds that are not related to the ingress controller
+                    if not ingress_util.ignorable_for_controller_if_unavailable(ingress_controller, kind):
+                        # add the kind to the unavailable resources
                         unavailable_resources.append(kind)
 
             #######################################################################
             # Define relationships between resources                              #
             #######################################################################
 
-            # define the relationship between Service and Ingress #
-            ViyaDeploymentReportUtils.define_service_to_ingress_relationships(gathered_resources[k8s_kinds.SERVICE],
-                                                                              gathered_resources[k8s_kinds.INGRESS])
+            # define the relationship between Service and ingress controller kind
+            relationship_util.define_service_to_ingress_relationships(ingress_controller, gathered_resources)
 
-            # define the relationship between Service and VirtualService #
-            ViyaDeploymentReportUtils.define_service_to_virtual_service_relationships(
-                gathered_resources[k8s_kinds.SERVICE], gathered_resources[k8s_kinds.ISTIO_VIRTUAL_SERVICE])
+            # define the relationship between Pod and Service
+            relationship_util.define_pod_to_service_relationships(gathered_resources[k8s_kinds.POD],
+                                                                  gathered_resources[k8s_kinds.SERVICE])
 
-            # define the relationship between Pod and Service #
-            ViyaDeploymentReportUtils.define_pod_to_service_relationships(gathered_resources[k8s_kinds.POD],
-                                                                          gathered_resources[k8s_kinds.SERVICE])
-
-            # define the relationship between Node and Pod #
-            ViyaDeploymentReportUtils.define_node_to_pod_relationships(gathered_resources[k8s_kinds.NODE],
-                                                                       gathered_resources[k8s_kinds.POD])
+            # define the relationship between Node and Pod
+            relationship_util.define_node_to_pod_relationships(gathered_resources[k8s_kinds.NODE],
+                                                               gathered_resources[k8s_kinds.POD])
 
             #######################################################################
             # Get metrics                                                         #
             #######################################################################
 
-            # get Pod metrics #
-            ViyaDeploymentReportUtils.get_pod_metrics(kubectl, gathered_resources[k8s_kinds.POD])
+            # get Pod metrics
+            metrics_util.get_pod_metrics(kubectl, gathered_resources[k8s_kinds.POD])
 
-            # get Node metrics #
-            ViyaDeploymentReportUtils.get_node_metrics(kubectl, gathered_resources[k8s_kinds.NODE])
+            # get Node metrics
+            metrics_util.get_node_metrics(kubectl, gathered_resources[k8s_kinds.NODE])
 
             #######################################################################
             # Gather Pod logs, if requested                                       #
             #######################################################################
 
-            # check if logs were requested #
+            # check if logs were requested
             if include_pod_log_snips:
-                # loop over all Pods to get their log snips #
+                # loop over all Pods to get their log snips
                 for pod_name, pod_details in gathered_resources[k8s_kinds.POD][ITEMS_KEY].items():
                     try:
-                        # define the log snip extension for this Pod
+                        # get the log snip
                         log_snip: List = kubectl.logs(pod_name)
 
-                        pod_details[Keys.ResourceDetails.EXT_DICT][Keys.ResourceDetails.Ext.LOG_SNIP_LIST]: List \
-                            = log_snip
+                        # add it to the pod's extension dict
+                        pod_ext: Dict = pod_details[Keys.ResourceDetails.EXT_DICT]
+                        pod_ext[Keys.ResourceDetails.Ext.LOG_SNIP_LIST]: List = log_snip
                     except CalledProcessError:
                         # if the logs can't be retrieved, move on without error #
                         pass
@@ -276,90 +291,107 @@ class ViyaDeploymentReport(object):
         # Create the report data dictionary                                   #
         #######################################################################
 
-        # add the gathered time #
+        # add the gathered time
         self._report_data[Keys.GATHERED]: Text = gathered
 
-        # add any unavailable resources #
+        # add any unavailable resources
         self._report_data[Keys.UNAVAILABLE_RESOURCES_LIST]: List = unavailable_resources
 
-        # add details about the Kubernetes cluster under the 'kubernetes' key #
+        ##################################
+        # 'kubernetes' key
+        ##################################
         k8s_details_dict = self._report_data[Keys.KUBERNETES_DICT] = dict()
-        # create a key to hold the API resources available in the cluster: dict #
+
+        # create a key to hold the API resources available in the cluster: dict
         k8s_details_dict[Keys.Kubernetes.API_RESOURCES_DICT]: Dict = api_resources_dict
-        # create a key to hold the API versions in the cluster: list #
+
+        # create a key to hold the API versions in the cluster: list
         k8s_details_dict[Keys.Kubernetes.API_VERSIONS_LIST]: List = kubectl.api_versions()
-        # create a key to mark the determined ingress controller for the cluster: str|None #
-        k8s_details_dict[Keys.Kubernetes.INGRESS_CTRL]: Optional[Text] = ingress_ctlr
-        # create a key to mark the namespace evaluated for this report: str|None #
+
+        # create a key to mark the determined ingress controller for the cluster: str|None
+        k8s_details_dict[Keys.Kubernetes.INGRESS_CTRL]: Optional[Text] = ingress_controller
+
+        # create a key to mark the namespace evaluated for this report: str|None
         k8s_details_dict[Keys.Kubernetes.NAMESPACE] = kubectl.get_namespace()
-        # create a key to hold the details about node in the cluster: dict #
+
+        # create a key to hold the details about node in the cluster: dict
         k8s_details_dict[Keys.Kubernetes.NODES_DICT]: Dict = gathered_resources[k8s_kinds.NODE]
-        # create a key to hold the client/server versions for the cluster: dict #
+
+        # create a key to hold the client/server versions for the cluster: dict
         k8s_details_dict[Keys.Kubernetes.VERSIONS_DICT]: Dict = kubectl.version()
-        # create a key to hold the meta information about resources discovered in the cluster: dict #
+
+        # create a key to hold the meta information about resources discovered in the cluster: dict
         k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT]: Dict = dict()
-        # create a key to hold the cadence version information: str|None #
+
+        # create a key to hold the cadence version information: str|None
         k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Optional[Text] = cadence_info
-        # create a key to hold the viya db information: dict #
+
+        # create a key to hold the viya db information: dict
         k8s_details_dict[Keys.Kubernetes.DB_INFO]: Dict = db_dict
 
-        # add the availability and count of all discovered resources #
+        # add the availability and count of all discovered resources
         for kind_name, kind_details in gathered_resources.items():
-            # create an entry for the kind #
-            k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT][kind_name]: Dict = dict()
-            # create a key to mark if the resource kind was available: bool #
-            k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT][kind_name][Keys.KindDetails.AVAILABLE]: bool = \
-                kind_details[Keys.KindDetails.AVAILABLE]
-            # create a key to note the total count of the resource kind: int #
-            k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT][kind_name][Keys.KindDetails.COUNT]: int = \
-                kind_details[Keys.KindDetails.COUNT]
-            # create a key to note whether this kind is a SAS custom resource definition: bool #
-            k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT][kind_name][Keys.KindDetails.SAS_CRD]: bool = \
-                kind_name in sas_custom_resources
+            # create an entry for the kind
+            kind_dict = k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT][kind_name] = dict()
 
-        # if Pods are defined, associate the resources that comprise a component #
+            # create a key to mark if the resource kind was available: bool
+            kind_dict[Keys.KindDetails.AVAILABLE]: bool = kind_details[Keys.KindDetails.AVAILABLE]
+
+            # create a key to note the total count of the resource kind: int
+            kind_dict[Keys.KindDetails.COUNT]: int = kind_details[Keys.KindDetails.COUNT]
+
+            # create a key to note whether this kind is a SAS custom resource definition: bool
+            kind_dict[Keys.KindDetails.SAS_CRD]: bool = kind_name in sas_custom_resources
+
+        # if Pods are defined, aggregate the resources that comprise a component
         if gathered_resources[k8s_kinds.POD][Keys.KindDetails.COUNT] > 0:
 
-            # create the sas and misc entries in report_data #
+            # create the sas and misc entries in report_data
             sas_dict = self._report_data[Keys.SAS_COMPONENTS_DICT] = dict()
             misc_dict = self._report_data[Keys.OTHER_COMPONENTS_DICT] = dict()
 
-            # create components by building them up from the Pod via relationship extensions #
+            # create components by building them up from the Pod via relationship extensions
             for pod_details in gathered_resources[k8s_kinds.POD][ITEMS_KEY].values():
-                # define a dictionary to hold the aggregated component #
+                # define a dictionary to hold the aggregated component
                 component: Dict = dict()
 
-                # aggregate all the resources related to this Pod into a component #
-                ViyaDeploymentReportUtils.aggregate_component_resources(pod_details, gathered_resources, component)
+                # aggregate all the resources related to this Pod into a component
+                component_util.aggregate_resources(pod_details, gathered_resources, component)
 
-                # determine if this component belongs to SAS and it's component name value #
+                # note whether this component belongs to SAS
                 is_sas_component: bool = False
+
+                # note the component name value
                 component_name: Text = component[NAME_KEY]
 
-                # iterate over all resource kinds in the component #
+                # iterate over all resource kinds in the component
                 for kind_details in component[ITEMS_KEY].values():
-                    # iterate over all resources of this kind #
+                    # iterate over all resources of this kind
                     for resource_details in kind_details.values():
-                        # see if this resource is a SAS resource, if so this component will be treated as a SAS #
-                        # component                                                                             #
-                        is_sas_component = is_sas_component or \
-                                           resource_details[Keys.ResourceDetails.RESOURCE_DEFINITION].is_sas_resource()
+                        # see if this resource is a SAS resource, if so this component will be treated as a SAS
+                        # component
+                        is_sas_component = \
+                            (is_sas_component or
+                             resource_details[Keys.ResourceDetails.RESOURCE_DEFINITION].is_sas_resource())
 
                 # add the component to its appropriate dictionary
                 if is_sas_component:
                     if component_name not in sas_dict:
-                        # if this component is being added for the first time, create its key #
+                        # if this component is being added for the first time, create its key
                         sas_dict[component_name]: Dict = component[ITEMS_KEY]
                     else:
-                        # otherwise, merge its kinds #
+                        # otherwise, merge its kinds
                         for kind_name, kind_details in component[ITEMS_KEY].items():
+                            # create the kind dictionary if one is not already defined
                             if kind_name not in sas_dict[component_name]:
                                 sas_dict[component_name][kind_name]: Dict = kind_details
                             else:
+                                # otherwise add the resources into the kind dict by name
                                 for resource_name, resource_details in kind_details.items():
                                     sas_dict[component_name][kind_name][resource_name]: Dict = resource_details
 
                 else:
+                    # add this to the misc dict, it could not be treated as a SAS component
                     misc_dict[component_name]: Dict = component[ITEMS_KEY]
 
     def get_kubernetes_details(self) -> Optional[Dict]:

@@ -1,0 +1,82 @@
+[
+  {
+    "apiVersion": "projectcontour.io/v1",
+    "kind": "HTTPProxy",
+    "metadata": {
+      "annotations": {
+        "cadence.sas.com/display-name": "Fast R/TR",
+        "cadence.sas.com/name": "fast",
+        "cadence.sas.com/release": "20200508.1588944122646",
+        "cadence.sas.com/version": "2020",
+        "kubectl.kubernetes.io/last-applied-configuration": "",
+        "nginx.ingress.kubernetes.io/proxy-body-size": "2048m",
+        "nginx.ingress.kubernetes.io/proxy-read-timeout": "300",
+        "sas.com/component-name": "sas-annotations",
+        "sas.com/component-version": "2.2.25-20200506.1588775452057",
+        "sas.com/kustomize-base": "base",
+        "sas.com/version": "2.2.25"
+      },
+      "creationTimestamp": "2020-05-08T13:36:33Z",
+      "generation": 1,
+      "labels": {
+        "app.kubernetes.io/name": "sas-annotations",
+        "sas.com/admin": "namespace",
+        "sas.com/deployment": "sas-viya"
+      },
+      "name": "sas-annotations",
+      "namespace": "test",
+      "resourceVersion": "3426839",
+      "selfLink": "/apis/projectcontour.io/v1/namespaces/test/httpproxy/sas-annotations",
+      "uid": "5ef2e87c-6826-43cf-88c3-24afec767e9d"
+    },
+    "spec": {
+      "routes": [
+        {
+          "conditions": [
+            {
+              "prefix": "/annotations"
+            }
+          ],
+          "loadBalancerPolicy": {
+            "strategy": "Cookie"
+          },
+          "pathRewritePolicy": {
+            "replacePrefix": [
+              {
+                "replacement": "/annotations/"
+              }
+            ]
+          },
+          "services": [
+            {
+              "name": "sas-annotations",
+              "port": 80
+            }
+          ],
+          "timeoutPolicy": {
+            "response": "300s"
+          }
+        },
+        {
+          "conditions": [
+            {
+              "prefix": "/annotations/"
+            }
+          ],
+          "loadBalancerPolicy": {
+            "strategy": "Cookie"
+          },
+          "services": [
+            {
+              "name": "sas-annotations",
+              "port": 80
+            }
+          ],
+          "timeoutPolicy": {
+            "response": "300s"
+          }
+        }
+      ]
+    }
+  }
+]
