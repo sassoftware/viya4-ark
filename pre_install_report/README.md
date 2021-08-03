@@ -29,7 +29,7 @@ After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya
 The following command provides usage details:
 
 ```
-python viya-ark.py pre-install-report -h
+python3 viya-ark.py pre-install-report -h
 ```
 
 **Note:** The tool currently expects an NGINX Ingress controller.  Other Ingress controllers are not evaluated.
