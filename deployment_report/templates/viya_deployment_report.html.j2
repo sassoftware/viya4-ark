@@ -129,24 +129,6 @@
   </div>
   {# Cluster Overview: Kubernetes Versions Accordion #}
 
-  {# Cluster Overview: Storage Accordion #}
-  {% set kind_name = "Storage" %}
-  <div class="jq-accordion">
-    <h2>Storage</h2>
-    <div>
-      <h7>Database</h7>
-      <table>
-      {% for key, value in report_data.kubernetes.dbInfo.items() %}
-        <tr>
-          <th>{{key}}</th>
-          <td>{{value}}</td>
-        </tr>
-      {% endfor %}
-      </table>
-    </div>
-  </div>
-  {# Cluster Overview: Storage Accordion #}
-
   {# Cluster Overview: Nodes Accordion #}
   {% if report_data.kubernetes.nodes.count > 0 %}
 
