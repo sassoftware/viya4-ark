@@ -325,18 +325,9 @@ class ViyaPreInstallCheck():
         if storage_json:
             for node in storage_json['items']:
                 node_data = {}
-                node_data['storageClassNameName'] = node['metadata']['name']
-                node_data['provisioner'] = node['provisioner']
-
                 try:
-                    annotated_lines = node['metadata']['annotations']
-                    for line in annotated_lines:
-                        if "storageclass.beta.kubernetes.io/is-default-class" in line:
-                            # node['metadata']['annotations']['storageclass.beta.kubernetes.io/is-default-class']
-                            node_data['default'] = "true"
-                            default_cnt += 1
-                        else:
-                            node_data['default'] = "false"
+                    node_data['storageClassNameName'] = node['metadata']['name']
+                    node_data['provisioner'] = node['provisioner']
                     storage_nodes.append(node_data)
                 except KeyError as e:
                     self.logger.exception("KeyError {}".format(str(e)))
