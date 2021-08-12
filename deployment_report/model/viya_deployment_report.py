@@ -596,21 +596,21 @@ class ViyaDeploymentReport(object):
         except KeyError:
             return None
 
-    def get_sas_component_resources(self, component_name: Text, resource_kind: Text) -> Optional[Dict]:
+    def get_sas_component_resources(self, component_name: Text, resource_types: Text) -> Optional[Dict]:
         """
         Convenience method for getting the details about specific resources for a specific SAS component.
 
         :param component_name: The name of the SAS component whose details will be retrieved.
-        :param resource_kind: The kind value of the resources to retrieve.
-        :return: A dictionary of details about all resources of the requested kind from the requested SAS component or
+        :param resource_types: The resource type value of the resources to retrieve.
+        :return: A dictionary of details about all resources of the requested type from the requested SAS component or
                  None if details have not been gathered, the component doesn't exist or the component doesn't define the
-                 requested resource_kind.
+                 requested resource_type.
         """
         if self._report_data is None:
             return None
 
         try:
-            return self._report_data[Keys.SAS_COMPONENTS_DICT][component_name][resource_kind]
+            return self._report_data[Keys.SAS_COMPONENTS_DICT][component_name][resource_types]
         except KeyError:
             return None
 

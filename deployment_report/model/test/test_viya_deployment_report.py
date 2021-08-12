@@ -191,9 +191,6 @@ def test_get_discovered_resources(report: ViyaDeploymentReport) -> None:
     # get discovered resources information
     discovered_resources: Dict = report.get_discovered_resources()
 
-    for rtype in discovered_resources.keys():
-        print(rtype)
-
     # check for expected attributes
     assert len(discovered_resources) == 15
     assert ResourceTypeValues.CONTOUR_HTTP_PROXIES in discovered_resources
@@ -290,9 +287,6 @@ def test_get_node_details(report: ViyaDeploymentReport) -> None:
     """
     # get node information
     node_details: Dict = report.get_node_details()
-
-    for key in node_details.keys():
-        print(key)
 
     # check for expected attributes
     assert len(node_details) == 4
@@ -466,9 +460,6 @@ def test_get_sas_component(report: ViyaDeploymentReport) -> None:
     """
     # get SAS component information
     component: Dict = report.get_sas_component(TestVals.COMPONENT_SAS_ANNOTATIONS_NAME)
-
-    for rtype in component.keys():
-        print(rtype)
 
     # check for expected attributes
     assert len(component) == 6
