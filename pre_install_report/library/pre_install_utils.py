@@ -17,7 +17,7 @@ import pprint
 from typing import List, Dict
 
 from pre_install_report.library.utils import viya_constants
-from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface, KubernetesApiResources
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface, KubernetesAvailableResourceTypes
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 from viya_ark_library.logging import ViyaARKLogger
 
@@ -92,7 +92,7 @@ class PreCheckUtils(object):
         role: bool = None
         rolebinding: bool = None
         try:
-            data: KubernetesApiResources = self._kubectl.api_resources(False)
+            data: KubernetesAvailableResourceTypes = self._kubectl.api_resources(False)
             role = data.get_api_group("Role")
             rolebinding = data.get_api_group("RoleBinding")
         except CalledProcessError as e:

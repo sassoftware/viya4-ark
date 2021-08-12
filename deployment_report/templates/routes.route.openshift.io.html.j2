@@ -1,5 +1,5 @@
 {# ----------------------------------------------------------- #}
-{# httpproxy.html.j2                                           #}
+{# routes.route.openshift.io.html.j2                           #}
 {# ----------------------------------------------------------- #}
 {# Author: SAS Institute Inc.                                  #}
 {# ----------------------------------------------------------- #}
@@ -8,22 +8,16 @@
 {# SPDX-License-Identifier: Apache-2.0                         #}
 {# ----------------------------------------------------------- #}
 
-{# HTTPProxy (Contour) Template #}
+{# Route (OpenShift) Template #}
 {% extends "resource.html.j2" %}
 
 {% block additional_resource_details %}
-{% if resource_details.resourceDefinition.spec.routes|default([]) | length > 0 %}
-<h7>Routes</h7>
+{% if resource_details.resourceDefinition.spec.path|default("") != "" %}
+<h7>Path</h7>
 <table>
-{% for route in resource_details.resourceDefinition.spec.routes|default([]) %}
-{% for condition in route.conditions|default([]) %}
-{% if condition.prefix|default("") != "" %}
   <tr>
-    <td>{{ condition.prefix }}</td>
+    <td>{{ resource_details.resourceDefinition.spec.path }}</td>
   </tr>
-{% endif %}
-{% endfor %}
-{% endfor %}
 </table>
 {% endif %}
 {% endblock %}

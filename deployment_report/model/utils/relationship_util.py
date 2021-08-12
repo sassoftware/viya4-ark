@@ -15,44 +15,50 @@ from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
     ViyaDeploymentReportKeys as ReportKeys
 
+from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
+from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
 from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 
 
-def create_relationship_dict(kind: Text, name: Text) -> Dict:
+def create_relationship_dict(resource_name: Text, resource_type: Text) -> Dict:
     """
     Creates a relationship dict object for a resource's ext.relationship list.
 
-    :param kind: The kind value of the related resource.
-    :param name: The name value of the related resource.
+    :param resource_name: The name value of the related resource.
+    :param resource_type: The qualified type value of the related resource.
     :return: The dictionary defining the related resource.
     """
     relationship: Dict = dict()
-    relationship[ReportKeys.ResourceDetails.Ext.Relationship.KIND]: Text = kind
-    relationship[ReportKeys.ResourceDetails.Ext.Relationship.NAME]: Text = name
+    relationship[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_NAME]: Text = resource_name
+    relationship[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_TYPE]: Text = resource_type
     return relationship
 
 
-def define_node_to_pod_relationships(nodes: Dict, pods: Dict) -> None:
+def define_node_to_pod_relationships(resource_cache: Dict) -> None:
     """
     Defines the ext.relationship from a Node to a Pod running within that Node.
 
-    :param nodes: The Node resources gathered in the Kubernetes cluster.
-    :param pods: The Pod resources gathered in the Kubernetes cluster.
+    :param resource_cache: The cache of resources discovered for the targeted deployment.
     """
+    # get details for the cached pods and nodes
+    pods: Dict = resource_cache[ResourceTypeValues.K8S_CORE_PODS]
+    nodes: Dict = resource_cache[ResourceTypeValues.K8S_CORE_NODES]
+
     # create association between Node and Pod, if both are defined
-    if pods[ReportKeys.KindDetails.COUNT] > 0 and nodes[ReportKeys.KindDetails.COUNT] > 0:
+    if pods[ReportKeys.ResourceTypeDetails.COUNT] > 0 and nodes[ReportKeys.ResourceTypeDetails.COUNT] > 0:
         # loop over all Pods to get their Node definition
         for pod_details in pods[ITEMS_KEY].values():
             # get the definition of the current Pod
             pod: KubernetesResource = pod_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
 
             # get the Pod's Node definition
-            node_name: Text = pod.get_spec_value(KubernetesResource.Keys.NODE_NAME)
+            node_name: Text = pod.get_spec_value(KubernetesResourceKeys.NODE_NAME)
 
             try:
                 # create the Pod relationship and add it to the Node's relationships extension list
-                relationship: Dict = create_relationship_dict(pod.get_kind(), pod.get_name())
+                relationship: Dict = create_relationship_dict(resource_name=pod.get_name(),
+                                                              resource_type=ResourceTypeValues.K8S_CORE_PODS)
 
                 # add the relationship to the Node's relationships extension list
                 node_ext: Dict = nodes[ITEMS_KEY][node_name][ReportKeys.ResourceDetails.EXT_DICT]
@@ -63,16 +69,17 @@ def define_node_to_pod_relationships(nodes: Dict, pods: Dict) -> None:
                 pass
 
 
-def define_pod_to_service_relationships(pods: Dict, services: Dict) -> None:
+def define_pod_to_service_relationships(resource_cache: Dict) -> None:
     """
-    Defines the upstream ext.relationship from a Pod to a Service that exposes the
-    Pod.
+    Defines the upstream ext.relationship from a Pod to a Service that exposes the Pod.
 
-    :param pods: The Pod resources gathered in the Kubernetes cluster.
-    :param services: The Service resources gathered in the Kubernetes cluster.
+    :param resource_cache: The cache of resources discovered for the targeted deployment.
     """
+    services: Dict = resource_cache[ResourceTypeValues.K8S_CORE_SERVICES]
+    pods: Dict = resource_cache[ResourceTypeValues.K8S_CORE_PODS]
+
     # create the association between Pod and Service, if both are defined
-    if services[ReportKeys.KindDetails.COUNT] > 0 and pods[ReportKeys.KindDetails.COUNT] > 0:
+    if services[ReportKeys.ResourceTypeDetails.COUNT] > 0 and pods[ReportKeys.ResourceTypeDetails.COUNT] > 0:
 
         # iterate over all Services to process the defined selectors
         for service_details in services[ITEMS_KEY].values():
@@ -80,7 +87,7 @@ def define_pod_to_service_relationships(pods: Dict, services: Dict) -> None:
             service: KubernetesResource = service_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
 
             # get the selectors
-            selectors: Dict = service.get_spec_value(KubernetesResource.Keys.SELECTOR)
+            selectors: Dict = service.get_spec_value(KubernetesResourceKeys.SELECTOR)
 
             # if the Service doesn't define any selectors, continue to the next Service
             if selectors is None:
@@ -99,7 +106,9 @@ def define_pod_to_service_relationships(pods: Dict, services: Dict) -> None:
                         break
                 else:
                     # if the loop didn't break, define the relationship
-                    service_relationship: Dict = create_relationship_dict(service.get_kind(), service.get_name())
+                    service_relationship: Dict = \
+                        create_relationship_dict(resource_name=service.get_name(),
+                                                 resource_type=ResourceTypeValues.K8S_CORE_SERVICES)
 
                     # and add it to the pods relationship list
                     pod_ext: Dict = pod_details[ReportKeys.ResourceDetails.EXT_DICT]
@@ -107,211 +116,226 @@ def define_pod_to_service_relationships(pods: Dict, services: Dict) -> None:
                     pod_relationships.append(service_relationship)
 
 
-def define_service_to_ingress_relationships(ingress_controller: Text, gathered_resources: Dict) -> None:
+def define_service_to_ingress_relationships(resource_cache: Dict, ingress_controller: Text) -> None:
     """
-    Defines the upstream ext.relationship from a Service to the ingress kind supported by
-    the ingress controller.
+    Defines the upstream ext.relationship from a Service to the ingress kind supported by the ingress controller.
 
+    :param resource_cache: The dictionary of resources gathered from the k8s deployment.
     :param ingress_controller: The ingress controller used by the deployment.
-    :param gathered_resources: The dictionary of resources gathered from the k8s deployment.
     """
-    services: Dict = gathered_resources[KubernetesResource.Kinds.SERVICE]
+    services: Dict = resource_cache[ResourceTypeValues.K8S_CORE_SERVICES]
 
     # if no services were gathered, there's nothing to do
-    if services[ReportKeys.KindDetails.COUNT] > 0:
-        # get the dictionary of supported controller to kind mappings
-        ingress_kind_map: Dict[Text, Text] = SupportedIngress.get_ingress_controller_to_kind_map()
+    if services[ReportKeys.ResourceTypeDetails.COUNT] > 0:
+        # get the dictionary of supported controller to resource type mappings
+        controller_to_resource_types_map: Dict[Text, List[Text]] = \
+            SupportedIngress.get_ingress_controller_to_resource_types_map()
 
-        # get the resource kind mapped to the ingress controller
-        resource_kind: Text = ingress_kind_map.get(ingress_controller, None)
+        # get the resource types mapped to the ingress controller
+        resource_types: List[Text] = controller_to_resource_types_map.get(ingress_controller, None)
 
-        # if a kind wasn't returned, there's nothing to do
-        if resource_kind:
-            # get the dictionary of resources
-            resources: Optional[Dict] = gathered_resources.get(resource_kind)
+        # if a resource types weren't returned, there's nothing to do
+        if resource_types:
+            for resource_type in resource_types:
+                # get the dictionary of resources
+                resources: Optional[Dict] = resource_cache.get(resource_type)
 
-            if resources:
-                # if none of this resource type was gathered, there's nothing to do
-                if resources[ReportKeys.KindDetails.COUNT] > 0:
-                    ####################
-                    # Contour
-                    ####################
-                    if resource_kind == KubernetesResource.Kinds.CONTOUR_HTTPPROXY:
-                        _define_service_to_contour_httpproxy_relationships(services, resources)
+                if resources:
+                    # if none of this resource type was gathered, there's nothing to do
+                    if resources[ReportKeys.ResourceTypeDetails.COUNT] > 0:
+                        ####################
+                        # Contour
+                        ####################
+                        if ingress_controller == SupportedIngress.Controllers.CONTOUR:
+                            _define_service_to_contour_httpproxy_relationships(services, resources, resource_type)
 
-                    ####################
-                    # Istio
-                    ####################
-                    elif resource_kind == KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE:
-                        _define_service_to_istio_virtual_service_relationships(services, resources)
+                        ####################
+                        # Istio
+                        ####################
+                        elif ingress_controller == SupportedIngress.Controllers.ISTIO:
+                            _define_service_to_istio_virtual_service_relationships(services, resources, resource_type)
 
-                    ####################
-                    # NGINX
-                    ####################
-                    elif resource_kind == KubernetesResource.Kinds.INGRESS:
-                        _define_service_to_nginx_ingress_relationships(services, resources)
+                        ####################
+                        # NGINX
+                        ####################
+                        elif ingress_controller == SupportedIngress.Controllers.NGINX:
+                            _define_service_to_nginx_ingress_relationships(services, resources, resource_type)
 
-                    ####################
-                    # OpenShift
-                    ####################
-                    elif resource_kind == KubernetesResource.Kinds.OPENSHIFT_ROUTE:
-                        _define_service_to_openshift_route_relationships(services, resources)
+                        ####################
+                        # OpenShift
+                        ####################
+                        elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT:
+                            _define_service_to_openshift_route_relationships(services, resources, resource_type)
 
 
-def _define_service_to_contour_httpproxy_relationships(services: Dict, httpproxies: Dict) -> None:
+def _define_service_to_contour_httpproxy_relationships(services: Dict, httpproxies: Dict, httpproxies_type: Text) \
+        -> None:
     """
     Internal method that defines the upstream ext.relationship from a Service to the Contour HTTPProxy that controls
     its in-bound HTTP traffic.
 
     :param services: The Service resources gathered in the Kubernetes cluster.
     :param httpproxies: The HTTPProxy resources gathered in the Kubernetes cluster.
+    :param httpproxies_type: The qualified type value of the HTTPProxy resource type.
     """
     # iterate over all HTTPProxy objects and find for which Services they define paths
     for proxy_details in httpproxies[ITEMS_KEY].values():
         # get the definition for the current HTTPProxy
         proxy: KubernetesResource = proxy_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
 
+        # store the list of services to add relationships to
+        service_names: List[Text] = list()
+
         # get the routes for this HTTPProxy
-        routes: List = proxy.get_spec_value(KubernetesResource.Keys.ROUTES)
+        routes: List = proxy.get_spec_value(KubernetesResourceKeys.ROUTES)
 
         if routes:
             # iterate over all routes to process all associated services
             for route in routes:
                 # get the services associated with this route
-                route_services: List = route.get(KubernetesResource.Keys.SERVICES, list())
+                route_services: List = route.get(KubernetesResourceKeys.SERVICES, list())
 
                 # iterate over the list of services
                 for route_service in route_services:
                     # get the service name
-                    service_name: Text = route_service.get(KubernetesResource.Keys.NAME)
+                    service_name: Text = route_service.get(KubernetesResourceKeys.NAME)
 
-                    try:
-                        # get the Service associated with this path
-                        service: Dict = services[ITEMS_KEY][service_name]
+                    # add the service name to the list of related services
+                    if service_name not in service_names:
+                        service_names.append(service_name)
 
-                        # get the current list of service relationships
-                        service_ext: Dict = service[ReportKeys.ResourceDetails.EXT_DICT]
-                        service_relationships: List = service_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
+        for service_name in service_names:
+            try:
+                # get the Service associated with this path
+                service: Dict = services[ITEMS_KEY][service_name]
 
-                        # make sure this relationship isn't already defined
-                        for rel in service_relationships:
-                            if rel[ReportKeys.ResourceDetails.Ext.Relationship.KIND] == proxy.get_kind() and \
-                                    rel[ReportKeys.ResourceDetails.Ext.Relationship.NAME] == proxy.get_name():
-                                # this relationship already exists, break
-                                break
-                        else:
-                            # the relationship wasn't found, add it
-                            # create the relationship to the HTTPProxy
-                            proxy_relationship: Dict = create_relationship_dict(proxy.get_kind(), proxy.get_name())
+                # get the current list of service relationships
+                service_ext: Dict = service[ReportKeys.ResourceDetails.EXT_DICT]
+                service_relationships: List = service_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
 
-                            # and add it to the Service's relationships
-                            service_relationships.append(proxy_relationship)
-                    except KeyError:
-                        # if the Service isn't defined, move on without error
-                        pass
+                # make sure this relationship isn't already defined
+                for rel in service_relationships:
+                    if rel[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_NAME] == proxy.get_name() and \
+                               rel[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_TYPE] == httpproxies_type:
+                        # this relationship already exists, break
+                        break
+                    else:
+                        # the relationship wasn't found, add it
+                        # create the relationship to the HTTPProxy
+                        proxy_relationship: Dict = create_relationship_dict(resource_name=proxy.get_name(),
+                                                                            resource_type=httpproxies_type)
+
+                        # and add it to the Service's relationships
+                        service_relationships.append(proxy_relationship)
+            except KeyError:
+                # if the Service isn't defined, continue without error
+                continue
 
 
-def _define_service_to_istio_virtual_service_relationships(services: Dict, virtual_services: Dict) -> None:
+def _define_service_to_istio_virtual_service_relationships(services: Dict, virtual_services: Dict,
+                                                           virtual_services_type: Text) -> None:
     """
     Internal method that defines the upstream ext.relationship from a Service to the Istio VirtualService that
     controls its traffic.
 
     :param services: The Service resources gathered in the Kubernetes cluster.
     :param virtual_services: The VirtualService resources gathered in the Kubernetes cluster.
+    :param virtual_services_type: The qualified type value of the VirtualService resource type.
     """
     # iterate over all VirtualService objects and find which Services they define routes for
     for virtual_service_details in virtual_services[ITEMS_KEY].values():
         # get the definition of the current VirtualService
         virtual_service: KubernetesResource = virtual_service_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
 
+        # store the list of services to add relationships to
+        service_names: List[Text] = list()
+
         # get the http definitions for this VirtualService
-        http_definitions: List = virtual_service.get_spec_value(KubernetesResource.Keys.HTTP)
+        http_definitions: List = virtual_service.get_spec_value(KubernetesResourceKeys.HTTP)
 
         if http_definitions:
             # iterate over all http definitions to process their route definitions
             for http_definition in http_definitions:
                 # get the routes defined
-                routes: List = http_definition.get(KubernetesResource.Keys.ROUTE)
+                routes: List = http_definition.get(KubernetesResourceKeys.ROUTE)
 
                 if routes:
                     # iterate over all routes to process their destination hosts
                     for route in routes:
                         # get the name of the Service associated with this route
-                        service_name: Text = route[KubernetesResource.Keys.DESTINATION][KubernetesResource.Keys.HOST]
+                        service_name: Text = route[KubernetesResourceKeys.DESTINATION][KubernetesResourceKeys.HOST]
 
-                        try:
-                            # get the Service associated with this route
-                            service: Dict = services[ITEMS_KEY][service_name]
-
-                            # create the VirtualService relationship
-                            virtual_service_relationship: Dict = create_relationship_dict(virtual_service.get_kind(),
-                                                                                          virtual_service.get_name())
-
-                            # and add it to the Service's relationships
-                            service_ext: Dict = service[ReportKeys.ResourceDetails.EXT_DICT]
-                            service_relationships = service_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
-                            service_relationships.append(virtual_service_relationship)
-                        except KeyError:
-                            # if the Service isn't defined, move on without error
-                            pass
+                        # add the service name to the list of related services
+                        if service_name not in service_names:
+                            service_names.append(service_name)
         else:
             # get the tcp definitions for this VirtualService
-            tcp_definitions: List = virtual_service.get_spec_value(KubernetesResource.Keys.TCP)
+            tcp_definitions: List = virtual_service.get_spec_value(KubernetesResourceKeys.TCP)
 
             if tcp_definitions:
                 # iterate over all tcp definitions to process their route definitions
                 for tcp_definition in tcp_definitions:
                     # get the routes defined
-                    routes: List = tcp_definition.get(KubernetesResource.Keys.ROUTE)
+                    routes: List = tcp_definition.get(KubernetesResourceKeys.ROUTE)
 
                     if routes:
                         # iterate over all routes to process their destination hosts
                         for route in routes:
-                            # get the name of the Service associated with this route #
-                            service_destination: Dict = route[KubernetesResource.Keys.DESTINATION]
-                            service_name: Text = service_destination[KubernetesResource.Keys.HOST]
+                            # get the name of the Service associated with this route
+                            service_destination: Dict = route[KubernetesResourceKeys.DESTINATION]
+                            service_name: Text = service_destination[KubernetesResourceKeys.HOST]
 
                             # remove any additional address information if given a full address
                             if "." in service_name:
                                 service_name = service_name[:service_name.find(".")]
 
-                            try:
-                                # get the Service associated with this route
-                                service: Dict = services[ITEMS_KEY][service_name]
+                                # add the service name to the list of related services
+                                if service_name not in service_names:
+                                    service_names.append(service_name)
 
-                                # create the VirtualService relationship
-                                virtual_service_relationship: Dict = \
-                                    create_relationship_dict(virtual_service.get_kind(), virtual_service.get_name())
+        for service_name in service_names:
+            try:
+                # get the Service associated with this route
+                service: Dict = services[ITEMS_KEY][service_name]
 
-                                # and add it to the Service's relationships
-                                service_ext: Dict = service[ReportKeys.ResourceDetails.EXT_DICT]
-                                svc_relationships: List = service_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
-                                svc_relationships.append(virtual_service_relationship)
-                            except KeyError:
-                                # if the Service isn't defined, move on without error
-                                pass
+                # create the VirtualService relationship
+                virtual_service_relationship: Dict = \
+                    create_relationship_dict(resource_name=virtual_service.get_name(),
+                                             resource_type=virtual_services_type)
+
+                # and add it to the Service's relationships
+                service_ext: Dict = service[ReportKeys.ResourceDetails.EXT_DICT]
+                service_relationships = service_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
+                service_relationships.append(virtual_service_relationship)
+            except KeyError:
+                # if the Service isn't defined, continue without error
+                continue
 
 
-def _define_service_to_nginx_ingress_relationships(services: Dict, ingresses: Dict) -> None:
+def _define_service_to_nginx_ingress_relationships(services: Dict, ingresses: Dict, ingresses_type: Text) -> None:
     """
     Internal method that defines the upstream ext.relationship from a Service to an Ingress that controls
     its in-bound HTTP traffic.
 
     :param services: The Service resources gathered in the Kubernetes cluster.
     :param ingresses: The Ingress resources gathered in the Kubernetes cluster.
+    :param ingresses_type: The qualified type value of the Ingress resource type.
     """
     # iterate over all Ingress objects and find for which Services they define paths
     for ingress_details in ingresses[ITEMS_KEY].values():
         # get the definition for the current Ingress
         ingress: KubernetesResource = ingress_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
 
+        # store the list of services to add relationships to
+        service_names: List[Text] = list()
+
         # get the rules for this Ingress
-        rules: List = ingress.get_spec_value(KubernetesResource.Keys.RULES)
+        rules: List = ingress.get_spec_value(KubernetesResourceKeys.RULES)
 
         # iterate over all rules to process all http paths defined
         for rule in rules:
             # get the http paths for this rule
-            http_paths: List = rule[KubernetesResource.Keys.HTTP][KubernetesResource.Keys.PATHS]
+            http_paths: List = rule[KubernetesResourceKeys.HTTP][KubernetesResourceKeys.PATHS]
 
             # iterate over all http paths to process each backend defined
             for http_path in http_paths:
@@ -319,39 +343,67 @@ def _define_service_to_nginx_ingress_relationships(services: Dict, ingresses: Di
                 service_name: Text
 
                 # check the api version of this Ingress
-                if ingress.get_api_version().startswith("networking.k8s.io"):
-                    # get the Service name defined in this api version
-                    path_service: Dict = http_path[KubernetesResource.Keys.BACKEND][KubernetesResource.Keys.SERVICE]
-                    service_name = path_service[KubernetesResource.Keys.NAME]
-
-                # use the old definition schema
+                if ingresses_type == ResourceTypeValues.K8S_NETWORKING_INGRESSES:
+                    # get the Service name as defined in this group's type
+                    path_service: Dict = http_path[KubernetesResourceKeys.BACKEND][KubernetesResourceKeys.SERVICE]
+                    service_name = path_service[KubernetesResourceKeys.NAME]
                 else:
-                    # get the Service name for api version
-                    service_name = http_path[KubernetesResource.Keys.BACKEND][KubernetesResource.Keys.SERVICE_NAME]
+                    # otherwise, get the Service name as it's defined for the old group resource type
+                    service_name = http_path[KubernetesResourceKeys.BACKEND][KubernetesResourceKeys.SERVICE_NAME]
 
-                try:
-                    # get the Service associated with this path
-                    service: Dict = services[ITEMS_KEY][service_name]
+                if service_name not in service_names:
+                    service_names.append(service_name)
 
-                    # create the relationship to the Ingress
-                    ingress_relationship: Dict = create_relationship_dict(ingress.get_kind(), ingress.get_name())
+        for service_name in service_names:
+            try:
+                # get the Service associated with this path
+                service: Dict = services[ITEMS_KEY][service_name]
 
-                    # and add it to the Service's relationships
-                    service_ext: Dict = service[ReportKeys.ResourceDetails.EXT_DICT]
-                    service_relationships: List = service_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
+                # get the Service's existing relationships
+                service_ext: Dict = service[ReportKeys.ResourceDetails.EXT_DICT]
+                service_relationships: List[Dict] = service_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
+
+                for rel in service_relationships:
+                    # get the relationship attributes
+                    rel_name: Text = rel[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_NAME]
+                    rel_type: Text = rel[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_TYPE]
+
+                    if rel_name == ingress.get_name():
+                        if rel_type == ResourceTypeValues.K8S_NETWORKING_INGRESSES:
+                            # a relationship to this service with the same resource name and the currently supported
+                            # ingress type already exists and should remain in the relationships list
+                            # break the loop so the else clause does not execute
+                            break
+
+                        if (rel_type == ResourceTypeValues.K8S_EXTENSIONS_INGRESSES and
+                                ingresses_type == ResourceTypeValues.K8S_NETWORKING_INGRESSES):
+                            # a relationship to this service exists with the same resource name but the deprecated
+                            # ingress type and a current ingress type with the same name also exists
+                            # update the relationship to reference the newer type
+                            rel[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_TYPE] = ingresses_type
+
+                            # break the loop so the else clause does not execute
+                            break
+                else:
+                    # the loop was not broken so a relationship with this name doesn't exist
+                    # create one with the current ingress object
+                    ingress_relationship: Dict = create_relationship_dict(resource_name=ingress.get_name(),
+                                                                          resource_type=ingresses_type)
+
                     service_relationships.append(ingress_relationship)
-                except KeyError:
-                    # if the Service isn't defined, move on without error
-                    pass
+            except KeyError:
+                # if the Service isn't defined, continue without error
+                continue
 
 
-def _define_service_to_openshift_route_relationships(services: Dict, routes: Dict) -> None:
+def _define_service_to_openshift_route_relationships(services: Dict, routes: Dict, routes_type: Text) -> None:
     """
     Internal method that defines the upstream ext.relationship from a Service to the OpenShift Route that controls
     its in-bound HTTP traffic.
 
     :param services: The Service resources gathered in the Kubernetes cluster.
     :param routes: The Route resources gathered in the Kubernetes cluster.
+    :param routes_type: The qualified type value for the Route resource type.
     """
     # iterate over all Route objects and find for which Services they define paths
     for route_details in routes[ITEMS_KEY].values():
@@ -359,10 +411,10 @@ def _define_service_to_openshift_route_relationships(services: Dict, routes: Dic
         route: KubernetesResource = route_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
 
         # get the routes for this HTTPProxy
-        to_service_dict: Dict = route.get_spec_value(KubernetesResource.Keys.TO)
+        to_service_dict: Dict = route.get_spec_value(KubernetesResourceKeys.TO)
 
         if to_service_dict:
-            service_name: Text = to_service_dict.get(KubernetesResource.Keys.NAME, None)
+            service_name: Text = to_service_dict.get(KubernetesResourceKeys.NAME, None)
 
             if service_name:
                 try:
@@ -374,7 +426,8 @@ def _define_service_to_openshift_route_relationships(services: Dict, routes: Dic
                     service_relationships: List = service_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
 
                     # create the relationship to the Route
-                    route_relationship: Dict = create_relationship_dict(route.get_kind(), route.get_name())
+                    route_relationship: Dict = create_relationship_dict(resource_name=route.get_name(),
+                                                                        resource_type=routes_type)
 
                     # and add it to the Service's relationships
                     service_relationships.append(route_relationship)

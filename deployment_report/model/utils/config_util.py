@@ -11,69 +11,109 @@
 ####################################################################
 from typing import Dict, Optional, Text
 
+from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys
+
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 
+# ConfigMap name containing SAS deployment metadata values
+_SAS_DEPLOYMENT_METADATA_CONFIG_MAP_NAME_ = "sas-deployment-metadata"
+# ConfigMap name containing SAS postgres config values
+_SAS_POSTGRES_CONFIG_CONFIG_MAP_NAME_ = "sas-postgres-config"
 
-def get_cadence_version(config_map: KubernetesResource) -> Optional[Text]:
+# SAS deployment metadata keys
+_CADENCE_DISPLAY_NAME_KEY_ = "SAS_CADENCE_DISPLAY_NAME"
+_CADENCE_RELEASE_KEY_ = "SAS_CADENCE_RELEASE"
+_CADENCE_VERSION_KEY_ = "SAS_CADENCE_VERSION"
+
+# SAS postgres config keys
+_DATABASE_HOST_KEY_ = "DATABASE_HOST"
+_DATABASE_NAME_KEY_ = "DATABASE_NAME"
+_DATABASE_PORT_KEY_ = "DATABASE_PORT"
+_EXTERNAL_DATABASE_KEY_ = "EXTERNAL_DATABASE"
+_DATASOURCE_USERNAME_KEY_ = "SPRING_DATASOURCE_USERNAME"
+
+# database info keys
+_HOST_KEY_ = "host"
+_NAME_KEY_ = "name"
+_PORT_KEY_ = "port"
+_TYPE_KEY_ = "type"
+_USER_KEY_ = "user"
+
+# database info values
+_EXTERNAL_DB_ = "External"
+_INTERNAL_DB_ = "Internal"
+
+
+def get_cadence_version(config_maps: Dict) -> Optional[Text]:
     """
     Returns the cadence version of the targeted SAS deployment.
 
-    :param config_map: The ConfigMap resource to evaluate.
-    :return: A string representing the cadence version of the targeted SAS deployment.
-    """
-    # initialize the return value
-    cadence_info: Optional[Text] = None
+    :param config_maps: The ConfigMap resources to evaluate.
 
-    try:
-        # look for ConfigMap with expected name
-        if 'sas-deployment-metadata' in config_map.get_name():
+    :return: A string representing the cadence version of the targeted SAS deployment, or None if the given
+             ConfigMap does not contain the requested information.
+    """
+    # look for the necessary ConfigMap
+    for config_map_name, config_map_details in config_maps.items():
+        if _SAS_DEPLOYMENT_METADATA_CONFIG_MAP_NAME_ in config_map_name:
+            # get the KubernetesResource
+            config_map: KubernetesResource = \
+                config_map_details[ViyaDeploymentReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+
             # get the ConfigMap data
             cadence_data: Optional[Dict] = config_map.get_data()
 
-            # build the cadence string
-            cadence_info = (
-                f"{cadence_data['SAS_CADENCE_DISPLAY_NAME']} "
-                f"{cadence_data['SAS_CADENCE_VERSION']} "
-                f"({cadence_data['SAS_CADENCE_RELEASE']})"
-            )
+            try:
+                # build the cadence string
+                return (
+                    f"{cadence_data[_CADENCE_DISPLAY_NAME_KEY_]} "
+                    f"{cadence_data[_CADENCE_VERSION_KEY_]} "
+                    f"({cadence_data[_CADENCE_RELEASE_KEY_]})"
+                )
+            except KeyError:
+                # if an expected key wasn't defined, continue
+                continue
 
-        return cadence_info
-    except KeyError:
-        # if an expected key wasn't defined, return None
-        return None
+    # expected value wasn't found
+    return None
 
 
-def get_db_info(config_map: KubernetesResource) -> Optional[Dict]:
+def get_db_info(config_maps: Dict) -> Dict:
     """
     Returns the db information of the targeted SAS deployment.
 
-    :param config_map: The ConfigMap resource to evaluate.
-    :return: A dict representing the db information of the targeted SAS deployment.
-    """
-    # initialize the return value
-    db_dict: Optional[Dict] = dict()
+    :param config_maps: The ConfigMap resources to evaluate.
 
-    try:
-        # make sure the ConfigMap has the expected name
-        if 'sas-postgres-config' in config_map.get_name():
+    :return: A dict representing the db information of the targeted SAS deployment, or None if the given
+             ConfigMap does not contain the requested information.
+    """
+    # look for the necessary ConfigMap
+    for config_map_name, config_map_details in config_maps.items():
+        if _SAS_POSTGRES_CONFIG_CONFIG_MAP_NAME_ in config_map_name:
+            # get the KubernetesResource
+            config_map: KubernetesResource = \
+                config_map_details[ViyaDeploymentReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+
             # get the ConfigMap data
             db_data: Optional[Dict] = config_map.get_data()
 
-            # check whether the db configuration is external
-            if db_data['EXTERNAL_DATABASE'] == "false":
-                # return internal config information (all other details will be defined in the component in report)
-                return {"Type": "Internal"}
+            try:
+                # check whether the db configuration is external
+                if db_data[_EXTERNAL_DATABASE_KEY_] == "false":
+                    # return internal config information (all other details will be defined in the component in report)
+                    return {_TYPE_KEY_: _INTERNAL_DB_}
 
-            # if external, create the dict of all relevant info
-            db_dict = {
-                "Type": "External",
-                "Host": db_data['DATABASE_HOST'],
-                "Port": db_data['DATABASE_PORT'],
-                "Name": db_data['DATABASE_NAME'],
-                "User": db_data['SPRING_DATASOURCE_USERNAME']
-            }
+                # if external, create the dict of all relevant info
+                return {
+                    _TYPE_KEY_: _EXTERNAL_DB_,
+                    _HOST_KEY_: db_data[_DATABASE_HOST_KEY_],
+                    _PORT_KEY_: db_data[_DATABASE_PORT_KEY_],
+                    _NAME_KEY_: db_data[_DATABASE_NAME_KEY_],
+                    _USER_KEY_: db_data[_DATASOURCE_USERNAME_KEY_]
+                }
+            except KeyError:
+                # if an expected key wasn't defined, continue
+                continue
 
-        return db_dict
-    except KeyError:
-        # if an expected key wasn't defined, return None
-        return None
+    # expected value not found
+    return dict()

@@ -10,7 +10,7 @@
             "SAS_CADENCE_RELEASE": "20201214.1607958443388",
             "SAS_CADENCE_VERSION": "2020",
             "SAS_DEPLOYMENT_TYPE": "default",
-            "SAS_REPOSITORY_WAREHOUSE_URL": "https://ses.sas.download/ses"
+            "SAS_REPOSITORY_WAREHOUSE_URL": "https://test.sas.com/repo_warehouse"
         },
         "kind": "ConfigMap",
         "metadata": {
@@ -27,30 +27,6 @@
             "resourceVersion": "36621129",
             "selfLink": "/api/v1/namespaces/test/configmaps/sas-deployment-metadata-kkd5dm2ch9",
             "uid": "73ce97ad-c682-4725-b8eb-9af2f8a0c48c"
-        }
-    },
-    {
-        "apiVersion": "v1",
-        "data": {
-            "SAS_CONTEXT_PATH": "SASLogon",
-            "SAS_DU_NAME": "sas-logon-app",
-            "SAS_SERVICE_NAME": "sas-logon-app"
-        },
-        "kind": "ConfigMap",
-        "metadata": {
-            "annotations": {
-                "kubectl.kubernetes.io/last-applied-configuration": ""
-            },
-            "creationTimestamp": "2021-01-13T15:25:41Z",
-            "labels": {
-                "sas.com/admin": "cluster-local",
-                "sas.com/deployment": "sas-viya"
-            },
-            "name": "sas-logon-app-parameters-g4hg56gm5b",
-            "namespace": "test",
-            "resourceVersion": "53636348",
-            "selfLink": "/api/v1/namespaces/test/configmaps/sas-logon-app-parameters-g4hg56gm5b",
-            "uid": "2a38df05-ef72-439b-8155-faa984796d26"
         }
     },
     {

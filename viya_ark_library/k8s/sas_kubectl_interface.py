@@ -12,7 +12,9 @@
 from abc import ABC, abstractmethod
 from typing import AnyStr, Dict, List, Text, Union, Optional
 
-from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesAvailableResourceTypes, \
+    KubernetesMetrics, \
+    KubernetesResource
 
 
 class KubectlInterface(ABC):
@@ -45,9 +47,14 @@ class KubectlInterface(ABC):
         pass
 
     @abstractmethod
-    def api_resources(self, ignore_errors: bool = False) -> KubernetesApiResources:
+    def api_resources(self, ignore_errors: bool = False) -> KubernetesAvailableResourceTypes:
         """
-        Returns an ApiResources object defining all kubernetes API resources.
+        Returns a KubernetesAvailableResourceTypes object defining all Kubernetes API resource types available in the
+        targeted cluster. The values returned by Kubernetes on the initial call are cached and returned on any
+        subsequent calls. This is because available resource types are not likely to change after the software is
+        deployed. Other resources reported by kubectl may contain status or may in someway change during their life
+        cycle, making caching disadvantageous. To clear the cached available resource types, use
+        Kubectl.clear_api_resources_cache().
 
         Corresponding CLI command::
 
@@ -56,14 +63,18 @@ class KubectlInterface(ABC):
         :param ignore_errors: True if errors encountered during execution should be ignored (a message will be printed
                               to stdout), otherwise False.
         :raises CalledProcessError: If the command returns a non-zero return code.
-        :return: An ApiResources object.
+        :return: A KubernetesAvailableResourceTypes object.
         """
         pass
 
     @abstractmethod
     def api_versions(self, ignore_errors: bool = False) -> List:
         """
-        Returns a list of all kubernetes API versions.
+        Returns a list of all Kubernetes API versions available in the targeted cluster. The values returned by
+        Kubernetes on the initial call are cached and returned on any subsequent calls. This is because resource
+        versions are not likely to change after the software is deployed. Other resources reported by kubectl may
+        contain status or may in someway change during their life cycle, making caching disadvantageous. To clear the
+        cached resource versions, use Kubectl.clear_api_versions_cache().
 
         Corresponding CLI command::
 
@@ -72,7 +83,7 @@ class KubectlInterface(ABC):
         :param ignore_errors: True if errors encountered during execution should be ignored (a message will be printed
                               to stdout), otherwise False.
         :raises CalledProcessError: If the command returns a non-zero return code.
-        :return: A list of all Kubernetes API versions.
+        :return: A list of all available Kubernetes API versions.
         """
         pass
 
@@ -96,26 +107,9 @@ class KubectlInterface(ABC):
         pass
 
     @abstractmethod
-    def manage_resource(self, action: Text, file: Text, ignore_errors: bool = False, ) -> AnyStr:
-        """
-        Returns the ouput from a apply -f or,  delete -f kubectl command as a string
-
-        Corresponding CLI command::
-
-            $ kubectl apply -f <filename> or  kubectl delete -f <filename>
-
-        :param action:  apply or delete specified deployment file
-        :param file: name of file with path
-        :param ignore_errors: True if errors encountered during execution should be ignored (a message will be printed
-                              to stdout), otherwise False.
-        :return: A the output as a string
-        """
-        pass
-
-    @abstractmethod
     def config_view(self, ignore_errors: bool = False) -> Dict:
         """
-        Returns the current kubectl config as a Python-native dict (or as a raw string if raw=True).
+        Returns the current kubectl Config resource as a Python-native dictionary.
 
         Corresponding CLI command::
 
@@ -130,50 +124,66 @@ class KubectlInterface(ABC):
     @abstractmethod
     def cluster_info(self) -> Optional[AnyStr]:
         """
-        Returns the output from the cluster-info command
+        Returns information about the cluster being targeted by kubectl.
 
-        CLI command::
+        Corresponding CLI command::
 
             $ kubectl cluster-info
 
-        :return: The stdout of the command that was executed.
+        :return: The cluster information returned for the targeted cluster as a string.
         """
 
     @abstractmethod
-    def get_resources(self, k8s_api_resource: Text, raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+    def get_resources(self, type_version_group: Text, raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
         """
         Issues a kubectl command to retrieve a list of Kubernetes resources.
 
         Corresponding CLI command::
 
-            $ kubectl get <k8s_resource> -o json
+            $ kubectl get <type_version_group> -o json
 
-        :param k8s_api_resource: The Kubernetes resource to retrieve.
-        :param raw: Return the raw response from kubectl, not a Python native object.
+        :param type_version_group: The type name, version, and/or group of the resources to retrieve. Values accepted
+                                   by kubectl are formatted like: name[.version][.group]. The name value is
+                                   required and can be the plural or singular name of the resource type. The version
+                                   and group values are optional, but must be specified in the order mentioned above.
+                                   As a best practice, a qualified type value (formatted like: name.group) should
+                                   be used so that the returned values don't include ambiguous results
+                                   (i.e., results that have the same type name, but are defined under different API
+                                   groups).
+        :param raw: Return the response from kubectl as a Python-native dictionary, not a list of KubernetesResource
+                    objects.
         :raises CalledProcessError: If the command returns a non-zero return code.
-        :return: If raw=True, the raw response from kubectl, otherwise a list (including empty list) of Resource objects
-                 for the requested Kubernetes resource or None if the resource was not accessible.
+        :return: If raw=True, the response from kubectl as a Python-native dictionary, otherwise a list (potentially
+                 an empty list) of KubernetesResource objects for the requested Kubernetes resource type;
+                 or None if the resource type was not accessible.
         """
         pass
 
     @abstractmethod
-    def get_resource(self, k8s_api_resource: Text, resource_name: Text, raw: bool = False,
+    def get_resource(self, type_version_group: Text, resource_name: Text, raw: bool = False,
                      ignore_errors: bool = False) -> Union[AnyStr, KubernetesResource]:
         """
-        Issues a kubectl command to retrieve the definition of the requested Kubernetes resource.
+        Issues a kubectl command to retrieve the definition of the requested Kubernetes resource, by name.
 
         Corresponding CLI command::
 
-            $ kubectl get <k8s_resource> <resource_name> -o json
+            $ kubectl get <type_version_group> <resource_name> -o json
 
-        :param k8s_api_resource: The Kubernetes resource to retrieve.
+        :param type_version_group: The type name, version, and/or group of the resources to retrieve. Values accepted
+                                   by kubectl are formatted like: name[.version][.group]. The name value is
+                                   required and can be the plural or singular name of the resource type. The version
+                                   and group values are optional, but must be specified in the order mentioned above.
+                                   As a best practice, a qualified type value (formatted like: name.group) should
+                                   be used so that the returned values don't include ambiguous results
+                                   (i.e., results that have the same type name, but are defined under different API
+                                   groups).
         :param resource_name: The name of the resource to retrieve.
-        :param raw: Return the raw response from kubectl, not a Python native object.
+        :param raw: Return the raw response from kubectl as a string, not as a KubernetesResource object.
         :param ignore_errors: True if errors encountered during execution should be ignored (a message will be printed
                               to stdout), otherwise False.
         :raises CalledProcessError: If the command returns a non-zero return code.
-        :return: If raw=True, the raw response from kubectl, otherwise a Resource object representing the requested
-                 resource.
+        :return: If raw=True, the raw response from kubectl as a string, otherwise a KubernetesResource object
+                 representing the requested resource.
         """
         pass
 
@@ -185,7 +195,7 @@ class KubectlInterface(ABC):
 
         Corresponding CLI command::
 
-            $ kubectl logs <pod_name> [--all-containers] [--prefix] --tail=<tail>
+            $ kubectl logs <pod_name> [<container_name>|--all-containers] [--prefix] --tail=<tail>
 
         :param pod_name: The name of the Pod whose logs should be retrieved.
         :param container_name: The name of the specific container whose log should be retrieved. If no container is
@@ -196,14 +206,31 @@ class KubectlInterface(ABC):
         :param ignore_errors: True if errors encountered during execution should be ignored (a message will be printed
                               to stdout), otherwise False.
         :raises CalledProcessError: If the command returns a non-zero return code.
-        :return: A list of the requested lines from the given Pods logs.
+        :return: A list of the requested lines from the given Pod/Container logs.
+        """
+        pass
+
+    @abstractmethod
+    def manage_resource(self, action: Text, file: Text, ignore_errors: bool = False, ) -> AnyStr:
+        """
+        Manages (applies or deletes) a Kubernetes resource using a resource definition from a file.
+
+        Corresponding CLI command::
+
+            $ kubectl <apply|delete> -f <filename>
+
+        :param action: "apply" or "delete". The action to take against the resource in the given file in Kubernetes.
+        :param file: Path to the file containing the resource definition.
+        :param ignore_errors: True if errors encountered during execution should be ignored (a message will be printed
+                              to stdout), otherwise False.
+        :return: The content written to stdout by kubectl.
         """
         pass
 
     @abstractmethod
     def top_nodes(self, ignore_errors: bool = False) -> KubernetesMetrics:
         """
-        Returns a KuberentesMetrics object with top values for all Nodes in the Kubernetes environment.
+        Returns a KubernetesMetrics object with top values for all Nodes in the targeted Kubernetes environment.
 
         Corresponding CLI command::
 
@@ -219,7 +246,7 @@ class KubectlInterface(ABC):
     @abstractmethod
     def top_pods(self, ignore_errors: bool = False) -> KubernetesMetrics:
         """
-        Returns a KubernetesMetrics object with top values for all Pods in the Kubernetes environment.
+        Returns a KubernetesMetrics object with top values for all Pods in the targeted Kubernetes environment.
 
         Corresponding CLI command::
 
@@ -235,11 +262,15 @@ class KubectlInterface(ABC):
     @abstractmethod
     def version(self, ignore_errors: bool = False) -> Dict:
         """
-        Returns a dictionary defining the client and server versions in the Kubernetes environment.
+        Returns a dictionary defining the client and server versions in the Kubernetes environment. The values returned
+        by Kubernetes on the initial call are cached and returned on any subsequent calls. This is because client/server
+        versions are not likely to change during the execution of Viya-ARK tools. Other resources reported by kubectl
+        may contain status or may in someway change during their life cycle, making caching disadvantageous. To clear
+        the cached version, use Kubectl.clear_version_cache().
 
         Corresponding CLI command::
 
-        $ kubectl version -o json
+            $ kubectl version -o json
 
         :param ignore_errors: True if errors encountered during execution should be ignored (a message will be printed
                               to stdout), otherwise False.

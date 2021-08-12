@@ -27,12 +27,12 @@ from deployment_report.model.utils import \
     resource_util
 
 from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
+from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
 from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 from viya_ark_library.k8s.sas_k8s_objects import \
-    KubernetesApiResources, \
-    KubernetesObjectJSONEncoder, \
-    KubernetesResource
+    KubernetesAvailableResourceTypes, \
+    KubernetesObjectJSONEncoder
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 
 # templates for string-formatted timestamp values
@@ -92,6 +92,114 @@ class ViyaDeploymentReport(object):
 
         return None
 
+    @staticmethod
+    def _create_resource_cache(kubectl: KubectlInterface, sas_custom_resource_types: List[Text]) -> Dict:
+        """
+        Creates a cache of resources targeted by the deployment report. The cache is a dictionary keyed by the
+        resource type value of the resources that have been cached.
+
+        :param kubectl: The Kubectl object configured to communicate with the targeted deployment.
+
+        :raises CalledProcessError: If pod resources cannot be gathered. Pods are the smallest and most basic resource
+                                    in Kubernetes and are needed to discover other resource controller types.
+
+        :return: A dictionary of cached resources keyed by their resource type values.
+        """
+        # create the cache dictionary
+        resource_cache: Dict = dict()
+
+        ################
+        # No cache_resources() calls should be placed above this call
+        ################
+
+        try:
+            ################
+            # Pods and resource controllers
+            ################
+            # Pods are the smallest unit in Kubernetes and define 'ownerReferences', which can be used to cache
+            # upstream relationships to controller resources
+            #
+            # resources that are not described in "ownerReferences" definitions will be cached separately
+            resource_util.cache_resources(resource_type=ResourceTypeValues.K8S_CORE_PODS,
+                                          kubectl=kubectl,
+                                          resource_cache=resource_cache)
+        except CalledProcessError:
+            # if a CalledProcessError is raised when caching pods, then surface an error up to stop the program
+            # without the ability to list pods, aggregating component resources won't occur
+            raise KubectlRequestForbiddenError(f"Listing pods is forbidden in namespace [{kubectl.get_namespace()}]. "
+                                               "Make sure KUBECONFIG is correctly set and that the correct namespace "
+                                               "is being targeted. A namespace can be given on the command line using "
+                                               "the \"--namespace=\" option.")
+
+        ################
+        # No cache_resources() calls should be placed between this call and the previous
+        ################
+
+        # cache values that are not owned by components but could still be included in the report, if present
+        for resource_type in [ResourceTypeValues.K8S_CORE_NODES,
+                              ResourceTypeValues.K8S_CORE_CONFIG_MAPS]:
+            try:
+                ################
+                # Nodes
+                # ConfigMaps
+                ################
+                resource_util.cache_resources(resource_type=resource_type,
+                                              kubectl=kubectl,
+                                              resource_cache=resource_cache)
+            except CalledProcessError:
+                # these resources may not exist or they may not be listable
+                # continue without error, they will be omitted from the final report
+                pass
+
+        # if pods were found, cache additional resources that relate to them
+        if resource_cache[ResourceTypeValues.K8S_CORE_PODS][Keys.ResourceTypeDetails.COUNT] > 0:
+            try:
+                ################
+                # Services
+                ################
+                # gather details about networking types - start with services
+                resource_util.cache_resources(resource_type=ResourceTypeValues.K8S_CORE_SERVICES,
+                                              kubectl=kubectl,
+                                              resource_cache=resource_cache)
+            except CalledProcessError:
+                # continue caching other resources, services will be excluded from the final report
+                pass
+
+            # look for all resource types used by supported ingress controllers
+            for ingress_resource_types in SupportedIngress.get_ingress_controller_to_resource_types_map().values():
+                for ingress_resource_type in ingress_resource_types:
+                    try:
+                        ################
+                        # HTTPProxy
+                        # Ingress (extensions)
+                        # Ingress (networking.k8s.io)
+                        # Route
+                        # VirtualService
+                        ################
+                        resource_util.cache_resources(resource_type=ingress_resource_type,
+                                                      kubectl=kubectl,
+                                                      resource_cache=resource_cache)
+                    except CalledProcessError:
+                        # continue caching other resources
+                        continue
+
+                # make sure an attempt is made to gather any SAS custom resources that were discovered
+                # some may have already been gathered if they are upstream owners of any Pods
+                for sas_custom_resource_type in sas_custom_resource_types:
+                    try:
+                        ################
+                        # SAS Custom Resources
+                        ################
+                        resource_util.cache_resources(resource_type=sas_custom_resource_type,
+                                                      kubectl=kubectl,
+                                                      resource_cache=resource_cache)
+                    except CalledProcessError:
+                        # continue caching other resources
+                        continue
+
+        # return all discovered resources
+        return resource_cache
+
     def gather_details(self, kubectl: KubectlInterface,
                        include_pod_log_snips: bool = INCLUDE_POD_LOG_SNIPS_DEFAULT) -> None:
         """
@@ -109,190 +217,118 @@ class ViyaDeploymentReport(object):
         #######################################################################
         # Initialize class fields                                             #
         #######################################################################
-
         self._report_data: Dict = dict()
 
         #######################################################################
-        # Initialize method fields                                            #
+        # Get the timestamp for when the report data was gathered             #
         #######################################################################
-
-        # map Key classes to shorter var names for better readability
-        k8s_kinds: KubernetesResource.Kinds = KubernetesResource.Kinds()
+        report_data_gathered_timestamp: Text = datetime.datetime.now().strftime(_READABLE_TIMESTAMP_TMPL_)
 
         #######################################################################
-        # Gather details about Kubernetes environment where SAS is deployed   #
+        # Get the resource types available in the targeted namespace          #
         #######################################################################
+        available_resource_types: KubernetesAvailableResourceTypes = kubectl.api_resources()
+        available_resource_types_dict: Dict = available_resource_types.as_dict()
 
-        # mark when these details were gathered
-        gathered: Text = datetime.datetime.now().strftime(_READABLE_TIMESTAMP_TMPL_)
+        # make a list of any custom resource types that are provided by SAS
+        sas_custom_resource_types: List = list()
+        for resource_type, details in available_resource_types_dict.items():
+            if _SAS_API_GROUP_ID_ in details[KubernetesAvailableResourceTypes.Keys.GROUP]:
+                sas_custom_resource_types.append(resource_type)
 
-        # gather Kubernetes API resources
-        api_resources: KubernetesApiResources = kubectl.api_resources()
-        api_resources_dict: Dict = api_resources.as_dict()
+        #######################################################################
+        # Create a cache of resources discovered in the targeted namespace    #
+        #######################################################################
+        resource_cache: Dict = self._create_resource_cache(kubectl=kubectl,
+                                                           sas_custom_resource_types=sas_custom_resource_types)
 
-        # make a list of any Custom Resource Definitions that are provided by SAS
-        sas_custom_resources: Dict = dict()
-        for kind, details in api_resources_dict.items():
-            if _SAS_API_GROUP_ID_ in api_resources.get_api_group(kind):
-                sas_custom_resources[kind] = details
+        #######################################################################
+        # Get configuration values from ConfigMaps                            #
+        #######################################################################
+        # get the ConfigMap resources that were cached above
+        config_maps: Dict = resource_cache[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY]
 
-        # create dictionary to store gathered resources
-        gathered_resources: Dict = dict()
+        # get the report values from ConfigMap resources
+        cadence_info: Optional[Text] = config_util.get_cadence_version(config_maps=config_maps)
+        db_dict: Optional[Dict] = config_util.get_db_info(config_maps=config_maps)
 
-        # initialize variables for config values
-        cadence_info: Optional[Text] = None
-        db_dict: Optional[Dict] = dict()
+        #######################################################################
+        # Check whether pod resources were found (resources exist)            #
+        #######################################################################
+        pods_found: bool = \
+            resource_cache[ResourceTypeValues.K8S_CORE_PODS][Keys.ResourceTypeDetails.COUNT] > 0
 
-        try:
-            # gather details about ConfigMaps
-            resource_util.gather_details(kubectl, gathered_resources, api_resources, k8s_kinds.CONFIGMAP)
-
-            # iterate over all the ConfigMaps
-            for config_map_details in gathered_resources[k8s_kinds.CONFIGMAP][ITEMS_KEY].values():
-
-                # get the ConfigMap definition
-                config_map = config_map_details[Keys.ResourceDetails.RESOURCE_DEFINITION]
-
-                if not cadence_info:
-                    # set the cadence_info if it hasn't already been set
-                    cadence_info = config_util.get_cadence_version(config_map)
-                if not db_dict:
-                    # set the db_dict if it hasn't already been set
-                    db_dict = config_util.get_db_info(config_map)
-                if db_dict and cadence_info:
-                    # if both values have been defined, break the loop and move on
-                    break
-        except CalledProcessError:
-            # if ConfigMaps cannot be gathered, move on to try other resources
-            pass
-
-        # initialize the dict that will hold all gathered resources
-        gathered_resources = dict()
-
-        try:
-            # start by gathering details about Nodes, if available
-            # this information can be reported even if Pods are not listable
-            resource_util.gather_details(kubectl, gathered_resources, api_resources, k8s_kinds.NODE)
-        except CalledProcessError:
-            # the user may not be able to see non-namespaced resources like nodes, move on without raising an error
-            pass
-
-        try:
-            # gather details about Pods in the target Kubernetes cluster
-            # Pods are the smallest unit in Kubernetes and define 'ownerReferences', which can be used to gather
-            # upstream relationships
-            #
-            # services, ingresses, and virtual services will be gathered separately even if Pods and their owners are
-            # found - networking resources are not defined in 'ownerReferences'
-            #
-            # if Pods cannot be listed, the report will report the details already gathered, and display a messages
-            # saying that components could not be reported because pods are not listable
-            resource_util.gather_details(kubectl, gathered_resources, api_resources, k8s_kinds.POD)
-        except CalledProcessError:
-            # if a CalledProcessError is raised when gathering pods, then surface an error up to stop the program
-            # without the ability to list pods, aggregating component resources won't occur
-            raise KubectlRequestForbiddenError(f"Listing pods is forbidden in namespace [{kubectl.get_namespace()}]. "
-                                               "Make sure KUBECONFIG is correctly set and that the correct namespace "
-                                               "is being targeted. A namespace can be given on the command line using "
-                                               "the \"--namespace=\" option.")
-
-        # define a list to hold any unavailable resources
+        #######################################################################
+        # Determine ingress controller and unavailable resource types         #
+        #######################################################################
+        # default values in-case pods were not found
+        ingress_controller: Optional[Text] = None
         unavailable_resources: List = list()
 
-        # define a variable to hold the ingress controller that will be determined for this cluster
-        ingress_controller: Optional[Text] = None
+        # evaluate resources that would be gathered if pods were found
+        if pods_found:
+            # determine the ingress controller for the deployment
+            # this will help to evaluate which resources should be considered "unavailable"
+            ingress_controller = ingress_util.determine_ingress_controller(resource_cache)
 
-        #######################################################################
-        # Start - Additional resource gathering                               #
-        #######################################################################
-        # make sure pods were gathered
-        # if none were found, there is no need to gather additional details
-        if gathered_resources[k8s_kinds.POD][Keys.KindDetails.COUNT] > 0:
-            try:
-                # since Pods were listable, gather details about networking kinds - start with services
-                resource_util.gather_details(kubectl, gathered_resources, api_resources, k8s_kinds.SERVICE)
-
-                # look for all kinds used by supported ingress controllers
-                for ingress_kind in SupportedIngress.get_ingress_controller_to_kind_map().values():
-                    resource_util.gather_details(kubectl, gathered_resources, api_resources, ingress_kind)
-
-                # make sure an attempt is made to gather any SAS CDRs that were discovered
-                # some may have already been gathered if they are upstream owners of any Pods
-                for sas_custom_kind in sas_custom_resources.keys():
-                    resource_util.gather_details(kubectl, gathered_resources, api_resources, sas_custom_kind)
-            except CalledProcessError:
-                # if any of the networking or SAS CRDs can't be listed, move since some amount of component resources
-                # have already been gathered
-                pass
-
-            # determine the ingress controller
-            ingress_controller = ingress_util.determine_ingress_controller(gathered_resources)
-
-            # determine if any discovered resource kinds were unavailable
+            # determine if any resource types for which caching was attempted were unavailable
             # if at least one is unavailable, a message will be displayed saying that components may not be complete
             # because all resources were not listable
-            for kind, kind_details in gathered_resources.items():
-                # check if the kind is unavailable
-                if not kind_details[Keys.KindDetails.AVAILABLE]:
-                    # ignore any ingress kinds that are not related to the ingress controller
-                    if not ingress_util.ignorable_for_controller_if_unavailable(ingress_controller, kind):
-                        # add the kind to the unavailable resources
-                        unavailable_resources.append(kind)
+            for resource_type, resource_type_details in resource_cache.items():
+                # check if the resource type is unavailable
+                if not resource_type_details[Keys.ResourceTypeDetails.AVAILABLE]:
+                    # ignore any ingress resource types not related to the ingress controller
+                    if not ingress_util.ignorable_for_controller_if_unavailable(ingress_controller, resource_type):
+                        # add the resource type to the unavailable resources
+                        unavailable_resources.append(resource_type)
 
-            #######################################################################
-            # Define relationships between resources                              #
-            #######################################################################
-
-            # define the relationship between Service and ingress controller kind
-            relationship_util.define_service_to_ingress_relationships(ingress_controller, gathered_resources)
+        #######################################################################
+        # Define relationships between resources                              #
+        #######################################################################
+        # if pods were not found, resource relationships won't be determinable
+        if pods_found:
+            # define the relationship between Node and Pod
+            relationship_util.define_node_to_pod_relationships(resource_cache=resource_cache)
 
             # define the relationship between Pod and Service
-            relationship_util.define_pod_to_service_relationships(gathered_resources[k8s_kinds.POD],
-                                                                  gathered_resources[k8s_kinds.SERVICE])
+            relationship_util.define_pod_to_service_relationships(resource_cache=resource_cache)
 
-            # define the relationship between Node and Pod
-            relationship_util.define_node_to_pod_relationships(gathered_resources[k8s_kinds.NODE],
-                                                               gathered_resources[k8s_kinds.POD])
-
-            #######################################################################
-            # Get metrics                                                         #
-            #######################################################################
-
-            # get Pod metrics
-            metrics_util.get_pod_metrics(kubectl, gathered_resources[k8s_kinds.POD])
-
-            # get Node metrics
-            metrics_util.get_node_metrics(kubectl, gathered_resources[k8s_kinds.NODE])
-
-            #######################################################################
-            # Gather Pod logs, if requested                                       #
-            #######################################################################
-
-            # check if logs were requested
-            if include_pod_log_snips:
-                # loop over all Pods to get their log snips
-                for pod_name, pod_details in gathered_resources[k8s_kinds.POD][ITEMS_KEY].items():
-                    try:
-                        # get the log snip
-                        log_snip: List = kubectl.logs(pod_name)
-
-                        # add it to the pod's extension dict
-                        pod_ext: Dict = pod_details[Keys.ResourceDetails.EXT_DICT]
-                        pod_ext[Keys.ResourceDetails.Ext.LOG_SNIP_LIST]: List = log_snip
-                    except CalledProcessError:
-                        # if the logs can't be retrieved, move on without error #
-                        pass
+            # define the relationship between Service and ingress controller resource types
+            relationship_util.define_service_to_ingress_relationships(resource_cache=resource_cache,
+                                                                      ingress_controller=ingress_controller)
 
         #######################################################################
-        # End - Additional resource gathering                                 #
+        # Get metrics                                                         #
         #######################################################################
+        # get Pod metrics
+        metrics_util.get_pod_metrics(kubectl, resource_cache[ResourceTypeValues.K8S_CORE_PODS])
+
+        # get Node metrics
+        metrics_util.get_node_metrics(kubectl, resource_cache[ResourceTypeValues.K8S_CORE_NODES])
+
+        #######################################################################
+        # Gather Pod logs, if requested                                       #
+        #######################################################################
+        # check if logs were requested
+        if pods_found and include_pod_log_snips:
+            # loop over all Pods to get their log snips
+            for pod_name, pod_details in resource_cache[ResourceTypeValues.K8S_CORE_PODS][ITEMS_KEY].items():
+                try:
+                    # get the log snip
+                    log_snip: List = kubectl.logs(pod_name)
+
+                    # add it to the pod's extension dict
+                    pod_ext: Dict = pod_details[Keys.ResourceDetails.EXT_DICT]
+                    pod_ext[Keys.ResourceDetails.Ext.LOG_SNIP_LIST]: List = log_snip
+                except CalledProcessError:
+                    # if the logs can't be retrieved, continue without error
+                    pass
 
         #######################################################################
         # Create the report data dictionary                                   #
         #######################################################################
-
         # add the gathered time
-        self._report_data[Keys.GATHERED]: Text = gathered
+        self._report_data[Keys.GATHERED]: Text = report_data_gathered_timestamp
 
         # add any unavailable resources
         self._report_data[Keys.UNAVAILABLE_RESOURCES_LIST]: List = unavailable_resources
@@ -303,7 +339,7 @@ class ViyaDeploymentReport(object):
         k8s_details_dict = self._report_data[Keys.KUBERNETES_DICT] = dict()
 
         # create a key to hold the API resources available in the cluster: dict
-        k8s_details_dict[Keys.Kubernetes.API_RESOURCES_DICT]: Dict = api_resources_dict
+        k8s_details_dict[Keys.Kubernetes.API_RESOURCES_DICT]: Dict = available_resource_types_dict
 
         # create a key to hold the API versions in the cluster: list
         k8s_details_dict[Keys.Kubernetes.API_VERSIONS_LIST]: List = kubectl.api_versions()
@@ -315,59 +351,64 @@ class ViyaDeploymentReport(object):
         k8s_details_dict[Keys.Kubernetes.NAMESPACE] = kubectl.get_namespace()
 
         # create a key to hold the details about node in the cluster: dict
-        k8s_details_dict[Keys.Kubernetes.NODES_DICT]: Dict = gathered_resources[k8s_kinds.NODE]
+        k8s_details_dict[Keys.Kubernetes.NODES_DICT]: Dict = resource_cache[ResourceTypeValues.K8S_CORE_NODES]
 
         # create a key to hold the client/server versions for the cluster: dict
         k8s_details_dict[Keys.Kubernetes.VERSIONS_DICT]: Dict = kubectl.version()
 
         # create a key to hold the meta information about resources discovered in the cluster: dict
-        k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT]: Dict = dict()
+        k8s_details_dict[Keys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT]: Dict = dict()
 
         # create a key to hold the cadence version information: str|None
         k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Optional[Text] = cadence_info
 
-        # create a key to hold the viya db information: dict
+        # create a key to hold the Viya db information: dict
         k8s_details_dict[Keys.Kubernetes.DB_INFO]: Dict = db_dict
 
         # add the availability and count of all discovered resources
-        for kind_name, kind_details in gathered_resources.items():
-            # create an entry for the kind
-            kind_dict = k8s_details_dict[Keys.Kubernetes.DISCOVERED_KINDS_DICT][kind_name] = dict()
+        for resource_type, resource_type_details in resource_cache.items():
+            # create an entry for the resource
+            type_dict = k8s_details_dict[Keys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT][resource_type] = dict()
 
-            # create a key to mark if the resource kind was available: bool
-            kind_dict[Keys.KindDetails.AVAILABLE]: bool = kind_details[Keys.KindDetails.AVAILABLE]
+            # create a key to mark if the resource type was available: bool
+            type_dict[Keys.ResourceTypeDetails.AVAILABLE]: bool = \
+                resource_type_details[Keys.ResourceTypeDetails.AVAILABLE]
 
-            # create a key to note the total count of the resource kind: int
-            kind_dict[Keys.KindDetails.COUNT]: int = kind_details[Keys.KindDetails.COUNT]
+            # create a key to note the total count of the resource type: int
+            type_dict[Keys.ResourceTypeDetails.COUNT]: int = resource_type_details[Keys.ResourceTypeDetails.COUNT]
 
-            # create a key to note whether this kind is a SAS custom resource definition: bool
-            kind_dict[Keys.KindDetails.SAS_CRD]: bool = kind_name in sas_custom_resources
+            # create a key to note the kind value of the resource
+            type_dict[Keys.ResourceTypeDetails.KIND]: Text = resource_type_details[Keys.ResourceTypeDetails.KIND]
+
+            # create a key to note whether this type is a SAS custom resource definition: bool
+            type_dict[Keys.ResourceTypeDetails.SAS_CRD]: bool = resource_type in sas_custom_resource_types
 
         # if Pods are defined, aggregate the resources that comprise a component
-        if gathered_resources[k8s_kinds.POD][Keys.KindDetails.COUNT] > 0:
-
+        if pods_found:
             # create the sas and misc entries in report_data
             sas_dict = self._report_data[Keys.SAS_COMPONENTS_DICT] = dict()
             misc_dict = self._report_data[Keys.OTHER_COMPONENTS_DICT] = dict()
 
             # create components by building them up from the Pod via relationship extensions
-            for pod_details in gathered_resources[k8s_kinds.POD][ITEMS_KEY].values():
+            for pod_details in resource_cache[ResourceTypeValues.K8S_CORE_PODS][ITEMS_KEY].values():
                 # define a dictionary to hold the aggregated component
                 component: Dict = dict()
 
                 # aggregate all the resources related to this Pod into a component
-                component_util.aggregate_resources(pod_details, gathered_resources, component)
+                component_util.aggregate_resources(resource_details=pod_details,
+                                                   component=component,
+                                                   resource_cache=resource_cache)
 
                 # note whether this component belongs to SAS
                 is_sas_component: bool = False
 
-                # note the component name value
+                # get the component name value
                 component_name: Text = component[NAME_KEY]
 
-                # iterate over all resource kinds in the component
-                for kind_details in component[ITEMS_KEY].values():
-                    # iterate over all resources of this kind
-                    for resource_details in kind_details.values():
+                # iterate over all resource types in the component
+                for resource_type_details in component[ITEMS_KEY].values():
+                    # iterate over all resources of this type
+                    for resource_details in resource_type_details.values():
                         # see if this resource is a SAS resource, if so this component will be treated as a SAS
                         # component
                         is_sas_component = \
@@ -380,15 +421,15 @@ class ViyaDeploymentReport(object):
                         # if this component is being added for the first time, create its key
                         sas_dict[component_name]: Dict = component[ITEMS_KEY]
                     else:
-                        # otherwise, merge its kinds
-                        for kind_name, kind_details in component[ITEMS_KEY].items():
-                            # create the kind dictionary if one is not already defined
-                            if kind_name not in sas_dict[component_name]:
-                                sas_dict[component_name][kind_name]: Dict = kind_details
+                        # otherwise, merge with the resource type
+                        for resource_type, resource_type_details in component[ITEMS_KEY].items():
+                            # create the resource type dictionary if one is not already defined
+                            if resource_type not in sas_dict[component_name]:
+                                sas_dict[component_name][resource_type]: Dict = resource_type_details
                             else:
-                                # otherwise add the resources into the kind dict by name
-                                for resource_name, resource_details in kind_details.items():
-                                    sas_dict[component_name][kind_name][resource_name]: Dict = resource_details
+                                # otherwise add the resources into the resource type dict by name
+                                for resource_name, resource_details in resource_type_details.items():
+                                    sas_dict[component_name][resource_type][resource_name]: Dict = resource_details
 
                 else:
                     # add this to the misc dict, it could not be treated as a SAS component
@@ -449,7 +490,7 @@ class ViyaDeploymentReport(object):
             return None
 
         try:
-            return self._report_data[Keys.KUBERNETES_DICT][Keys.Kubernetes.DISCOVERED_KINDS_DICT]
+            return self._report_data[Keys.KUBERNETES_DICT][Keys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT]
         except KeyError:
             return None
 

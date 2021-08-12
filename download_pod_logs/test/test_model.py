@@ -276,7 +276,7 @@ expected_terminated_dict = \
     }
 
 # test dictionary representing a "waiting" container status
-exptected_waiting_dict = \
+expected_waiting_dict = \
     {
         "containerID": "docker://59c6c4fc36529bf4ffd434eb30e0b8e726cd6bbec9fdb53262ba5b75f6d0235c",
         "image": "test.sas.com/test/sas-annotations:2.2.25-20200506.1588775452057",
@@ -441,14 +441,14 @@ def test_get_state_dict_waiting() -> None:
     This test verifies that the correct state dictionary is returned when the container is in the "waiting" state.
     """
     # create the test object and get the actual test values
-    this: _ContainerStatus = _ContainerStatus(exptected_waiting_dict)
+    this: _ContainerStatus = _ContainerStatus(expected_waiting_dict)
     actual_state_dict: Dict[Text, Text] = this.get_state_dict()
 
     # verify actual values match the expected values
     assert isinstance(actual_state_dict, dict)
     assert len(actual_state_dict) == 2
     assert actual_state_dict["container-state"] == "waiting"
-    assert actual_state_dict["container-state-reason"] == exptected_waiting_dict["state"]["waiting"]["reason"]
+    assert actual_state_dict["container-state-reason"] == expected_waiting_dict["state"]["waiting"]["reason"]
 
 
 def test_get_state_dict_missing() -> None:
