@@ -291,10 +291,14 @@ def test_get_node_details(report: ViyaDeploymentReport) -> None:
     # get node information
     node_details: Dict = report.get_node_details()
 
+    for key in node_details.keys():
+        print(key)
+
     # check for expected attributes
-    assert len(node_details) == 3
+    assert len(node_details) == 4
     assert node_details[ReportKeys.ResourceTypeDetails.AVAILABLE] is True
     assert node_details[ReportKeys.ResourceTypeDetails.COUNT] == 1
+    assert node_details[ReportKeys.ResourceTypeDetails.KIND] == "Node"
     assert len(node_details[ITEMS_KEY]) == 1
     assert TestVals.RESOURCE_NODE_1_NAME in node_details[ITEMS_KEY]
 

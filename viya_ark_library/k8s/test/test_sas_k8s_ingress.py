@@ -41,9 +41,9 @@ def test_get_ingress_controller_to_kind_map() -> None:
     assert SupportedIngress.Controllers.NGINX in supported_ingress_map
     assert len(supported_ingress_map[SupportedIngress.Controllers.NGINX]) == 2
     assert supported_ingress_map[SupportedIngress.Controllers.NGINX][0] == \
-           KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES
-    assert supported_ingress_map[SupportedIngress.Controllers.NGINX][1] == \
            KubernetesResourceTypeValues.K8S_NETWORKING_INGRESSES
+    assert supported_ingress_map[SupportedIngress.Controllers.NGINX][1] == \
+           KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES
 
     # OpenShift
     assert SupportedIngress.Controllers.OPENSHIFT in supported_ingress_map

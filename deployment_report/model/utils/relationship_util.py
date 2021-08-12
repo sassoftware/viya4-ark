@@ -217,16 +217,16 @@ def _define_service_to_contour_httpproxy_relationships(services: Dict, httpproxi
                 for rel in service_relationships:
                     if rel[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_NAME] == proxy.get_name() and \
                                rel[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_TYPE] == httpproxies_type:
-                        # this relationship already exists, break
+                        # this relationship already exists, break the loop so the else clause doesn't execute
                         break
-                    else:
-                        # the relationship wasn't found, add it
-                        # create the relationship to the HTTPProxy
-                        proxy_relationship: Dict = create_relationship_dict(resource_name=proxy.get_name(),
-                                                                            resource_type=httpproxies_type)
+                else:
+                    # the relationship wasn't found, add it
+                    # create the relationship to the HTTPProxy
+                    proxy_relationship: Dict = create_relationship_dict(resource_name=proxy.get_name(),
+                                                                        resource_type=httpproxies_type)
 
-                        # and add it to the Service's relationships
-                        service_relationships.append(proxy_relationship)
+                    # and add it to the Service's relationships
+                    service_relationships.append(proxy_relationship)
             except KeyError:
                 # if the Service isn't defined, continue without error
                 continue
