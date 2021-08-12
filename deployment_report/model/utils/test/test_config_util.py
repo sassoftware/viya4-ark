@@ -11,7 +11,7 @@
 ####################################################################
 import pytest
 
-from typing import Dict, Optional, Text
+from typing import Dict
 
 from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
 from deployment_report.model.utils import config_util
