@@ -29,7 +29,7 @@ After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya
 The following command provides usage details:
 
 ```
-python viya-ark.py pre-install-report -h
+python3 viya-ark.py pre-install-report -h
 ```
 
 **Note:** The tool currently expects an NGINX Ingress controller.  Other Ingress controllers are not evaluated.
@@ -56,7 +56,7 @@ ingress-nginx-controller             LoadBalancer   10.0.00.000   55.147.22.101 
 Use the following commands to determine the parameter values:
 
 ```
-$ export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.status.loadBalancer.ingress[*].ip}')
+$ export INGRESS_HOST=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.status.loadBalancer.ingress[*].ip}')
 $ export INGRESS_HTTP_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
 $ export INGRESS_HTTPS_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
 ```
@@ -84,19 +84,19 @@ You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_check_l
 
 The following issue may impact the performance and expected results of this tool.
 - All Nodes in a cluster must be in the READY state before running the tool.
-    - If all the Nodes are not in the READY state, the tool takes longer to run. Wait for it to complete.
-    - Also, the tool may not be able to clean up the pods and replicaset created in the specified namespace as shown in the example output below. If that happens, the pods and replicaset must be manually deleted.
-    They will look similar to the resources shown below:
+- If all the Nodes are not in the READY state, the tool takes longer to run. Wait for it to complete.
+  Also, the tool may not be able to clean up the pods and replicaset created in the specified namespace as shown in the example output below. If that happens, the pods and replicaset must be manually deleted.
+  They will look similar to the resources shown below:
 ```    
-        NAME                               READY   STATUS    RESTARTS   AGE
-        pod/hello-world-6665cf748b-5x2jq   0/1     Pending   0          115m
-        pod/hello-world-6665cf748b-tkq79   0/1     Pending   0          115m
+    NAME                               READY   STATUS    RESTARTS   AGE
+    pod/hello-world-6665cf748b-5x2jq   0/1     Pending   0          115m
+    pod/hello-world-6665cf748b-tkq79   0/1     Pending   0          115m
 
-        NAME                                     DESIRED   CURRENT   READY   AGE
-        replicaset.apps/hello-world-6665cf748b   2         2         0       115m
+    NAME                                     DESIRED   CURRENT   READY   AGE
+    replicaset.apps/hello-world-6665cf748b   2         2         0       115m
 
     Suggested commands to delete resources before running the tool again:
         kubectl -n <namespace> delete replicaset.apps/hello-world-6665cf748b
-        kubectl -n <namespace> delete pos/hello-world-6665cf748b-5x2jq
+        kubectl -n <namespace> delete pod/hello-world-6665cf748b-5x2jq
         kubectl -n <namespace> delete pod/hello-world-6665cf748b-tkq79
 ```    

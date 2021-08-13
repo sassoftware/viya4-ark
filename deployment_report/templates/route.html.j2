@@ -1,0 +1,23 @@
+{# ----------------------------------------------------------- #}
+{# route.html.j2                                               #}
+{# ----------------------------------------------------------- #}
+{# Author: SAS Institute Inc.                                  #}
+{# ----------------------------------------------------------- #}
+{# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.      #}
+{# All Rights Reserved.                                        #}
+{# SPDX-License-Identifier: Apache-2.0                         #}
+{# ----------------------------------------------------------- #}
+
+{# Route (OpenShift) Template #}
+{% extends "resource.html.j2" %}
+
+{% block additional_resource_details %}
+{% if resource_details.resourceDefinition.spec.path|default("") != "" %}
+<h7>Path</h7>
+<table>
+  <tr>
+    <td>{{ resource_details.resourceDefinition.spec.path }}</td>
+  </tr>
+</table>
+{% endif %}
+{% endblock %}

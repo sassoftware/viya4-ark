@@ -84,7 +84,7 @@
             "name": "sas-annotations",
             "namespace": "test",
             "resourceVersion": "3426839",
-            "selfLink": "/apis/extensions/v1beta1/namespaces/test/ingresses/sas-annotations",
+            "selfLink": "/apis/networking.k8s.io/v1/namespaces/test/ingresses/sas-annotations",
             "uid": "5ab2defa-c50c-47db-8415-d9cb8b0de782"
         },
         "spec": {

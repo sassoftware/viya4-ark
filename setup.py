@@ -1,19 +1,23 @@
+#!/usr/bin/env python
+
 ####################################################################
-# ### viya_deployment_report_ingress_controller.py               ###
+# ### setup.py                                                   ###
 ####################################################################
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
 
+from setuptools import find_packages, setup
 
-class ViyaDeploymentReportIngressController(object):
-    """
-    Class defining static references to the supported ingress controller values.
-    """
-    KUBE_NGINX = "kube-nginx"
-    ISTIO = "istio"
+setup(
+    setup_requires=["pbr"],
+    pbr=True,
+    licenses_files=["LICENSE"],
+    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
+    python_requires=">=3.6",
+)

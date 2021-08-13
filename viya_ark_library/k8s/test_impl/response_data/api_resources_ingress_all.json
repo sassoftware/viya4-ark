@@ -15,6 +15,22 @@
             "watch"
         ]
     },
+    "ConfigMap": {
+        "name": "configmaps",
+        "shortname": "cm",
+        "apiGroup": "",
+        "namespaced": true,
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
     "CronJob": {
         "apiGroup": "batch",
         "name": "cronjobs",
@@ -158,6 +174,70 @@
             "get",
             "list",
             "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "HTTPProxy": {
+        "apiGroup": "projectcontour.io/v1",
+        "name": "httpproxy",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "create",
+            "update",
+            "watch"
+        ]
+    },
+    "Ingress": {
+        "apiGroup": "networking.k8s.io",
+        "name": "ingresses",
+        "namespaced": true,
+        "shortname": "ing",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "Route": {
+        "apiGroup": "route.openshift.io/v1",
+        "name": "routes",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "create",
+            "update",
+            "watch"
+        ]
+    },
+    "VirtualService": {
+        "apiGroup": "networking.istio.io",
+        "name": "virtualservices",
+        "namespaced": true,
+        "shortname": "vs",
+        "verbs": [
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "create",
             "update",
             "watch"
         ]

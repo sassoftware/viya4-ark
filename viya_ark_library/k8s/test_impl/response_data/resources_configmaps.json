@@ -47,10 +47,44 @@
                 "sas.com/deployment": "sas-viya"
             },
             "name": "sas-logon-app-parameters-g4hg56gm5b",
-            "namespace": "d24140",
+            "namespace": "test",
             "resourceVersion": "53636348",
-            "selfLink": "/api/v1/namespaces/d24140/configmaps/sas-logon-app-parameters-g4hg56gm5b",
+            "selfLink": "/api/v1/namespaces/test/configmaps/sas-logon-app-parameters-g4hg56gm5b",
             "uid": "2a38df05-ef72-439b-8155-faa984796d26"
+        }
+    },
+    {
+        "apiVersion": "v1",
+        "data": {
+            "CONSUL_HTTP_ADDR": "https://sas-consul-server:8500",
+            "DATABASE_HOST": "sas-crunchy-data-postgres",
+            "DATABASE_NAME": "SharedServices",
+            "DATABASE_PORT": "5432",
+            "DATABASE_SSL_ENABLED": "true",
+            "EXTERNAL_DATABASE": "false",
+            "NSQ_MAX_TRIES": "60",
+            "POSTGRES_OPERATOR_SERVICE_SCHEME": "https",
+            "REQUESTS_CA_BUNDLE": "/security/trustedcerts.pem",
+            "SAS_DATABASE_DATABASESERVERNAME": "sas-crunchy-data-postgres",
+            "SAS_DATABASE_SCHEMA": "${application.schema}",
+            "SPRING_DATASOURCE_DRIVER-CLASS-NAME": "org.postgresql.Driver",
+            "SSL_CERT_FILE": "/security/trustedcerts.pem"
+        },
+        "kind": "ConfigMap",
+        "metadata": {
+            "annotations": {
+              "kubectl.kubernetes.io/last-applied-configuration": ""
+            },
+            "creationTimestamp": "2021-05-18T20:02:42Z",
+            "labels": {
+              "sas.com/admin": "cluster-local",
+              "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-postgres-config-5dt8fm92c7",
+            "namespace": "test",
+            "resourceVersion": "7736",
+            "selfLink": "/api/v1/namespaces/test/configmaps/sas-postgres-config-5dt8fm92c7",
+            "uid": "9924c601-602f-404a-b113-7b6671f0e88f"
         }
     }
 ]

@@ -1,0 +1,197 @@
+{
+    "CASDeployment": {
+        "apiGroup": "viya.sas.com",
+        "name": "casdeployments",
+        "namespaced": true,
+        "shortname": "cas",
+        "verbs": [
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "create",
+            "update",
+            "watch"
+        ]
+    },
+    "ConfigMap": {
+        "name": "configmaps",
+        "shortname": "cm",
+        "apiGroup": "",
+        "namespaced": true,
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "CronJob": {
+        "apiGroup": "batch",
+        "name": "cronjobs",
+        "namespaced": true,
+        "shortname": "cj",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "Deployment": {
+        "apiGroup": "apps",
+        "name": "deployments",
+        "namespaced": true,
+        "shortname": "deploy",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "Job": {
+        "apiGroup": "batch",
+        "name": "jobs",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "Node": {
+        "apiGroup": "",
+        "name": "nodes",
+        "namespaced": true,
+        "shortname": "no",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "NodeMetrics": {
+        "apiGroup": "metrics.k8s.io",
+        "name": "nodes",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "get",
+            "list"
+        ]
+    },
+    "Pod": {
+        "apiGroup": "",
+        "name": "pods",
+        "namespaced": true,
+        "shortname": "po",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "PodMetrics": {
+        "apiGroup": "metrics.k8s.io",
+        "name": "pods",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "get",
+            "list"
+        ]
+    },
+    "ReplicaSet": {
+        "apiGroup": "apps",
+        "name": "replicasets",
+        "namespaced": true,
+        "shortname": "rs",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "Service": {
+        "apiGroup": "",
+        "name": "services",
+        "namespaced": true,
+        "shortname": "svc",
+        "verbs": [
+            "create",
+            "delete",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "StatefulSet": {
+        "apiGroup": "apps",
+        "name": "statefulsets",
+        "namespaced": true,
+        "shortname": "sts",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
+    "VirtualService": {
+        "apiGroup": "networking.istio.io",
+        "name": "virtualservices",
+        "namespaced": true,
+        "shortname": "vs",
+        "verbs": [
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "create",
+            "update",
+            "watch"
+        ]
+    }
+}

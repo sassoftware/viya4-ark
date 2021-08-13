@@ -15,6 +15,22 @@
             "watch"
         ]
     },
+    "ConfigMap": {
+        "name": "configmaps",
+        "shortname": "cm",
+        "apiGroup": "",
+        "namespaced": true,
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ]
+    },
     "CronJob": {
         "apiGroup": "batch",
         "name": "cronjobs",
@@ -162,11 +178,11 @@
             "watch"
         ]
     },
-    "VirtualService": {
-        "apiGroup": "networking.istio.io",
-        "name": "virtualservices",
+    "HTTPProxy": {
+        "apiGroup": "projectcontour.io/v1",
+        "name": "httpproxy",
         "namespaced": true,
-        "shortname": "vs",
+        "shortname": "",
         "verbs": [
             "delete",
             "deletecollection",
