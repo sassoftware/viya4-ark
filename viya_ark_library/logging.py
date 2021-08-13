@@ -17,20 +17,20 @@ import datetime
 _LOGGER_TIMESTAMP_TMPL_ = "%Y-%m-%dT%H_%M_%S"
 
 
-class ViyaARKLogger():
-
+class ViyaARKLogger(object):
     """
-    The ViyaARKLogger class represents a custom Logger, which can be instantiated my multiple tools.\
+    The ViyaARKLogger class represents a custom Logger, which can be instantiated my multiple tools.
+
     Example Usage:
         sas_logger = ViyaARKLogger(report_log_path)
         my_logger  = sas_logger.get_logger()
-        my_logger.info("This is an infomational message")
+        my_logger.info("This is an informational message")
     """
 
     def __init__(self, log_file: Text, logging_level: int = logging.INFO, logger_name: Text = "sas_logger"):
         """
-        Constructor the  SAS custom Logger class.
-        :params - specify the following
+        Constructor for the  SAS custom Logger class.
+
         :param logging_level: One of the predefined levels - DEBUG, INFO, WARN, ERROR, CRITICAL
         :param log_file: The log file name with full path. Path must be valid
         """
@@ -55,25 +55,24 @@ class ViyaARKLogger():
 
     def get_logger(self):
         """
-        Return the custom Logger
-
+        Return the custom Logger.
         """
         return self.logger
 
     def get_logger_name(self):
         """
-        Return the custome logger name
+        Return the custom logger name.
         """
         return self.logger_name
 
     def get_log_file(self):
         """
-        Return the log file name
+        Return the log file name.
         """
         return self.log_file
 
     def get_log_level(self):
         """
-        Return the logging level
+        Return the logging level.
         """
         return self.logging_level

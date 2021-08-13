@@ -1,6 +1,7 @@
 {
-    "CASDeployment": {
-        "apiGroup": "viya.sas.com",
+    "casdeployments.viya.sas.com": {
+        "group": "viya.sas.com",
+        "kind": "CASDeployment",
         "name": "casdeployments",
         "namespaced": true,
         "shortname": "cas",
@@ -13,13 +14,15 @@
             "create",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1alpha1"
     },
-    "ConfigMap": {
+    "configmaps": {
+        "group": "",
+        "kind": "ConfigMap",
         "name": "configmaps",
-        "shortname": "cm",
-        "apiGroup": "",
         "namespaced": true,
+        "shortname": "cm",
         "verbs": [
             "create",
             "delete",
@@ -29,10 +32,12 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
     },
-    "CronJob": {
-        "apiGroup": "batch",
+    "cronjobs.batch": {
+        "group": "batch",
+        "kind": "CronJob",
         "name": "cronjobs",
         "namespaced": true,
         "shortname": "cj",
@@ -45,10 +50,12 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1beta1"
     },
-    "Deployment": {
-        "apiGroup": "apps",
+    "deployments.apps": {
+        "group": "apps",
+        "kind": "Deployment",
         "name": "deployments",
         "namespaced": true,
         "shortname": "deploy",
@@ -61,10 +68,12 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
     },
-    "Job": {
-        "apiGroup": "batch",
+    "jobs.batch": {
+        "group": "batch",
+        "kind": "Job",
         "name": "jobs",
         "namespaced": true,
         "shortname": "",
@@ -77,10 +86,12 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
     },
-    "Node": {
-        "apiGroup": "",
+    "nodes": {
+        "group": "",
+        "kind": "Node",
         "name": "nodes",
         "namespaced": true,
         "shortname": "no",
@@ -93,20 +104,24 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
     },
-    "NodeMetrics": {
-        "apiGroup": "metrics.k8s.io",
+    "nodes.metrics.k8s.io": {
+        "group": "metrics.k8s.io",
+        "kind": "NodeMetrics",
         "name": "nodes",
         "namespaced": true,
         "shortname": "",
         "verbs": [
             "get",
             "list"
-        ]
+        ],
+        "version": "v1beta1"
     },
-    "Pod": {
-        "apiGroup": "",
+    "pods": {
+        "group": "",
+        "kind": "Pod",
         "name": "pods",
         "namespaced": true,
         "shortname": "po",
@@ -119,20 +134,24 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
     },
-    "PodMetrics": {
-        "apiGroup": "metrics.k8s.io",
+    "pods.metrics.k8s.io": {
+        "group": "metrics.k8s.io",
+        "kind": "PodMetrics",
         "name": "pods",
         "namespaced": true,
         "shortname": "",
         "verbs": [
             "get",
             "list"
-        ]
+        ],
+        "version": "v1beta1"
     },
-    "ReplicaSet": {
-        "apiGroup": "apps",
+    "replicasets.apps": {
+        "group": "apps",
+        "kind": "ReplicaSet",
         "name": "replicasets",
         "namespaced": true,
         "shortname": "rs",
@@ -145,10 +164,12 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
     },
-    "Service": {
-        "apiGroup": "",
+    "services": {
+        "group": "",
+        "kind": "Service",
         "name": "services",
         "namespaced": true,
         "shortname": "svc",
@@ -160,10 +181,12 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
     },
-    "StatefulSet": {
-        "apiGroup": "apps",
+    "statefulsets.apps": {
+        "group": "apps",
+        "kind": "StatefulSet",
         "name": "statefulsets",
         "namespaced": true,
         "shortname": "sts",
@@ -176,6 +199,7 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
     }
 }

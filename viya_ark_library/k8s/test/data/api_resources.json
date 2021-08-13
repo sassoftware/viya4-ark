@@ -1,9 +1,10 @@
 {
-    "APIService": {
-        "apiGroup": "apiregistration.k8s.io",
-        "name": "apiservices",
+    "coreresources": {
+        "group": "",
+        "kind": "CoreResource",
+        "name": "coreresources",
         "namespaced": true,
-        "shortname": "",
+        "shortname": "r",
         "verbs": [
             "create",
             "delete",
@@ -13,6 +14,61 @@
             "patch",
             "update",
             "watch"
-        ]
+        ],
+        "version": "v1"
+    },
+    "customresources.namespaced.custom.group.io": {
+        "group": "namespaced.custom.group.io",
+        "kind": "CustomResource",
+        "name": "customresources",
+        "namespaced": true,
+        "shortname": "cr",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ],
+        "version": "v1"
+    },
+    "customresources.unnamespaced.custom.group.io": {
+        "group": "unnamespaced.custom.group.io",
+        "kind": "CustomResource",
+        "name": "customresources",
+        "namespaced": false,
+        "shortname": "cr",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ],
+        "version": "v1"
+    },
+    "unversionedresources.custom.group.io": {
+        "group": "custom.group.io",
+        "kind": "UnversionedResource",
+        "name": "unversionedresources",
+        "namespaced": true,
+        "shortname": "ur",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ],
+        "version": ""
     }
 }

@@ -13,16 +13,20 @@ import json
 import os
 import pytest
 
-from typing import Dict, List, Text
+from typing import Dict, List, Text, Type
 
 from deployment_report.model.viya_deployment_report import ViyaDeploymentReport
 from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
 from deployment_report.model.static.viya_deployment_report_keys import ViyaDeploymentReportKeys as ReportKeys
+from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 
+from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
 from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
-from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 from viya_ark_library.k8s.test_impl.sas_kubectl_test import KubectlTest
+
+# create an alias to the KubectlTest.Values() class
+TestVals: Type[KubectlTest.Values] = KubectlTest.Values
 
 
 ####################################################################
@@ -90,7 +94,7 @@ def test_get_kubernetes_details(report: ViyaDeploymentReport) -> None:
     assert ReportKeys.Kubernetes.API_VERSIONS_LIST in kube_details
     assert ReportKeys.Kubernetes.CADENCE_INFO in kube_details
     assert ReportKeys.Kubernetes.DB_INFO in kube_details
-    assert ReportKeys.Kubernetes.DISCOVERED_KINDS_DICT in kube_details
+    assert ReportKeys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT in kube_details
     assert ReportKeys.Kubernetes.INGRESS_CTRL in kube_details
     assert ReportKeys.Kubernetes.NAMESPACE in kube_details
     assert ReportKeys.Kubernetes.NODES_DICT in kube_details
@@ -117,23 +121,25 @@ def test_get_api_resources() -> None:
     api_resources: Dict = report.get_api_resources()
 
     # check for expected attributes
-    assert len(api_resources) == 16
-    assert KubernetesResource.Kinds.CAS_DEPLOYMENT in api_resources
-    assert KubernetesResource.Kinds.CONFIGMAP in api_resources
-    assert KubernetesResource.Kinds.CONTOUR_HTTPPROXY in api_resources
-    assert KubernetesResource.Kinds.CRON_JOB in api_resources
-    assert KubernetesResource.Kinds.DEPLOYMENT in api_resources
-    assert KubernetesResource.Kinds.INGRESS in api_resources
-    assert KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE
-    assert KubernetesResource.Kinds.JOB in api_resources
-    assert KubernetesResource.Kinds.NODE in api_resources
-    assert KubernetesResource.Kinds.NODE_METRICS in api_resources
-    assert KubernetesResource.Kinds.OPENSHIFT_ROUTE in api_resources
-    assert KubernetesResource.Kinds.POD in api_resources
-    assert KubernetesResource.Kinds.POD_METRICS in api_resources
-    assert KubernetesResource.Kinds.REPLICA_SET in api_resources
-    assert KubernetesResource.Kinds.SERVICE in api_resources
-    assert KubernetesResource.Kinds.STATEFUL_SET in api_resources
+    assert len(api_resources) == 17
+
+    assert ResourceTypeValues.CONTOUR_HTTP_PROXIES in api_resources
+    assert ResourceTypeValues.ISTIO_VIRTUAL_SERVICES
+    assert ResourceTypeValues.K8S_APPS_DEPLOYMENTS in api_resources
+    assert ResourceTypeValues.K8S_APPS_REPLICA_SETS in api_resources
+    assert ResourceTypeValues.K8S_APPS_STATEFUL_SETS in api_resources
+    assert ResourceTypeValues.K8S_BATCH_CRON_JOBS in api_resources
+    assert ResourceTypeValues.K8S_BATCH_JOBS in api_resources
+    assert ResourceTypeValues.K8S_CORE_CONFIG_MAPS in api_resources
+    assert ResourceTypeValues.K8S_CORE_NODES in api_resources
+    assert ResourceTypeValues.K8S_CORE_PODS in api_resources
+    assert ResourceTypeValues.K8S_CORE_SERVICES in api_resources
+    assert ResourceTypeValues.K8S_EXTENSIONS_INGRESSES in api_resources
+    assert ResourceTypeValues.K8S_METRICS_NODES in api_resources
+    assert ResourceTypeValues.K8S_METRICS_PODS in api_resources
+    assert ResourceTypeValues.K8S_NETWORKING_INGRESSES in api_resources
+    assert ResourceTypeValues.OPENSHIFT_ROUTES in api_resources
+    assert ResourceTypeValues.SAS_CAS_DEPLOYMENTS in api_resources
 
 
 def test_get_api_resources_unpopulated() -> None:
@@ -186,28 +192,30 @@ def test_get_discovered_resources(report: ViyaDeploymentReport) -> None:
     discovered_resources: Dict = report.get_discovered_resources()
 
     # check for expected attributes
-    assert len(discovered_resources) == 13
-    assert KubernetesResource.Kinds.CAS_DEPLOYMENT in discovered_resources
-    assert KubernetesResource.Kinds.CONTOUR_HTTPPROXY in discovered_resources
-    assert KubernetesResource.Kinds.CRON_JOB in discovered_resources
-    assert KubernetesResource.Kinds.DEPLOYMENT in discovered_resources
-    assert KubernetesResource.Kinds.INGRESS in discovered_resources
-    assert KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE in discovered_resources
-    assert KubernetesResource.Kinds.JOB in discovered_resources
-    assert KubernetesResource.Kinds.NODE in discovered_resources
-    assert KubernetesResource.Kinds.POD in discovered_resources
-    assert KubernetesResource.Kinds.REPLICA_SET in discovered_resources
-    assert KubernetesResource.Kinds.SERVICE in discovered_resources
-    assert KubernetesResource.Kinds.STATEFUL_SET in discovered_resources
-    assert KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE in discovered_resources
+    assert len(discovered_resources) == 15
+    assert ResourceTypeValues.CONTOUR_HTTP_PROXIES in discovered_resources
+    assert ResourceTypeValues.ISTIO_VIRTUAL_SERVICES in discovered_resources
+    assert ResourceTypeValues.K8S_APPS_DEPLOYMENTS in discovered_resources
+    assert ResourceTypeValues.K8S_APPS_REPLICA_SETS in discovered_resources
+    assert ResourceTypeValues.K8S_APPS_STATEFUL_SETS in discovered_resources
+    assert ResourceTypeValues.K8S_BATCH_CRON_JOBS in discovered_resources
+    assert ResourceTypeValues.K8S_BATCH_JOBS in discovered_resources
+    assert ResourceTypeValues.K8S_CORE_CONFIG_MAPS in discovered_resources
+    assert ResourceTypeValues.K8S_CORE_NODES in discovered_resources
+    assert ResourceTypeValues.K8S_CORE_PODS in discovered_resources
+    assert ResourceTypeValues.K8S_CORE_SERVICES in discovered_resources
+    assert ResourceTypeValues.K8S_EXTENSIONS_INGRESSES in discovered_resources
+    assert ResourceTypeValues.K8S_NETWORKING_INGRESSES in discovered_resources
+    assert ResourceTypeValues.OPENSHIFT_ROUTES in discovered_resources
+    assert ResourceTypeValues.SAS_CAS_DEPLOYMENTS in discovered_resources
 
-    # get details of a discovered kind
-    details: Dict = discovered_resources[KubernetesResource.Kinds.CAS_DEPLOYMENT]
+    # get details of a discovered types
+    details: Dict = discovered_resources[ResourceTypeValues.SAS_CAS_DEPLOYMENTS]
 
-    # check for expected attributes in discovered kind
-    assert details[ReportKeys.KindDetails.AVAILABLE] is True
-    assert details[ReportKeys.KindDetails.COUNT] == 1
-    assert details[ReportKeys.KindDetails.SAS_CRD] is True
+    # check for expected attributes in discovered types
+    assert details[ReportKeys.ResourceTypeDetails.AVAILABLE] is True
+    assert details[ReportKeys.ResourceTypeDetails.COUNT] == 1
+    assert details[ReportKeys.ResourceTypeDetails.SAS_CRD] is True
 
 
 def test_get_discovered_resources_unpopulated() -> None:
@@ -257,7 +265,7 @@ def test_get_namespace_provided(report: ViyaDeploymentReport) -> None:
     :param report: The populated ViyaDeploymentReport returned by the report() fixture.
     """
     # check for expected attributes
-    assert report.get_namespace() == KubectlTest.Values.NAMESPACE
+    assert report.get_namespace() == TestVals.NAMESPACE
 
 
 def test_get_namespace_unpopulated() -> None:
@@ -281,11 +289,12 @@ def test_get_node_details(report: ViyaDeploymentReport) -> None:
     node_details: Dict = report.get_node_details()
 
     # check for expected attributes
-    assert len(node_details) == 3
-    assert node_details[ReportKeys.KindDetails.AVAILABLE] is True
-    assert node_details[ReportKeys.KindDetails.COUNT] == 1
+    assert len(node_details) == 4
+    assert node_details[ReportKeys.ResourceTypeDetails.AVAILABLE] is True
+    assert node_details[ReportKeys.ResourceTypeDetails.COUNT] == 1
+    assert node_details[ReportKeys.ResourceTypeDetails.KIND] == "Node"
     assert len(node_details[ITEMS_KEY]) == 1
-    assert KubectlTest.Values.RESOURCE_NODE_1_NAME in node_details[ITEMS_KEY]
+    assert TestVals.RESOURCE_NODE_1_NAME in node_details[ITEMS_KEY]
 
 
 def test_get_node_details_unpopulated() -> None:
@@ -331,11 +340,11 @@ def test_get_other_components(report: ViyaDeploymentReport) -> None:
 
     # check for expected attributes
     assert len(other_components) == 1
-    assert KubectlTest.Values.COMPONENT_PROMETHEUS_NAME in other_components
-    assert KubernetesResource.Kinds.DEPLOYMENT in other_components[KubectlTest.Values.COMPONENT_PROMETHEUS_NAME]
-    assert KubernetesResource.Kinds.POD in other_components[KubectlTest.Values.COMPONENT_PROMETHEUS_NAME]
-    assert KubernetesResource.Kinds.REPLICA_SET in other_components[KubectlTest.Values.COMPONENT_PROMETHEUS_NAME]
-    assert KubernetesResource.Kinds.SERVICE in other_components[KubectlTest.Values.COMPONENT_PROMETHEUS_NAME]
+    assert TestVals.COMPONENT_PROMETHEUS_NAME in other_components
+    assert ResourceTypeValues.K8S_APPS_DEPLOYMENTS in other_components[TestVals.COMPONENT_PROMETHEUS_NAME]
+    assert ResourceTypeValues.K8S_CORE_PODS in other_components[TestVals.COMPONENT_PROMETHEUS_NAME]
+    assert ResourceTypeValues.K8S_APPS_REPLICA_SETS in other_components[TestVals.COMPONENT_PROMETHEUS_NAME]
+    assert ResourceTypeValues.K8S_CORE_SERVICES in other_components[TestVals.COMPONENT_PROMETHEUS_NAME]
 
 
 def test_get_other_components_unpopulated() -> None:
@@ -370,12 +379,12 @@ def test_get_sas_components_casdeployment_owned(report: ViyaDeploymentReport) ->
     sas_components: Dict = report.get_sas_components()
 
     # check for expected attributes
-    assert KubectlTest.Values.COMPONENT_SAS_CAS_OPERATOR_NAME in sas_components
-    assert KubernetesResource.Kinds.CAS_DEPLOYMENT in sas_components[KubectlTest.Values.COMPONENT_SAS_CAS_OPERATOR_NAME]
-    assert KubernetesResource.Kinds.DEPLOYMENT in sas_components[KubectlTest.Values.COMPONENT_SAS_CAS_OPERATOR_NAME]
-    assert KubernetesResource.Kinds.POD in sas_components[KubectlTest.Values.COMPONENT_SAS_CAS_OPERATOR_NAME]
-    assert KubernetesResource.Kinds.REPLICA_SET in sas_components[KubectlTest.Values.COMPONENT_SAS_CAS_OPERATOR_NAME]
-    assert KubernetesResource.Kinds.SERVICE in sas_components[KubectlTest.Values.COMPONENT_SAS_CAS_OPERATOR_NAME]
+    assert TestVals.COMPONENT_SAS_CAS_OPERATOR_NAME in sas_components
+    assert ResourceTypeValues.SAS_CAS_DEPLOYMENTS in sas_components[TestVals.COMPONENT_SAS_CAS_OPERATOR_NAME]
+    assert ResourceTypeValues.K8S_APPS_DEPLOYMENTS in sas_components[TestVals.COMPONENT_SAS_CAS_OPERATOR_NAME]
+    assert ResourceTypeValues.K8S_CORE_PODS in sas_components[TestVals.COMPONENT_SAS_CAS_OPERATOR_NAME]
+    assert ResourceTypeValues.K8S_APPS_REPLICA_SETS in sas_components[TestVals.COMPONENT_SAS_CAS_OPERATOR_NAME]
+    assert ResourceTypeValues.K8S_CORE_SERVICES in sas_components[TestVals.COMPONENT_SAS_CAS_OPERATOR_NAME]
 
 
 def test_get_sas_components_cronjob_owned(report: ViyaDeploymentReport) -> None:
@@ -389,11 +398,11 @@ def test_get_sas_components_cronjob_owned(report: ViyaDeploymentReport) -> None:
     sas_components: Dict = report.get_sas_components()
 
     # check for expected attributes
-    assert KubectlTest.Values.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME in sas_components
-    assert KubernetesResource.Kinds.CRON_JOB in \
-        sas_components[KubectlTest.Values.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME]
-    assert KubernetesResource.Kinds.JOB in sas_components[KubectlTest.Values.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME]
-    assert KubernetesResource.Kinds.POD in sas_components[KubectlTest.Values.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME]
+    assert TestVals.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME in sas_components
+    assert ResourceTypeValues.K8S_BATCH_CRON_JOBS in \
+        sas_components[TestVals.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME]
+    assert ResourceTypeValues.K8S_BATCH_JOBS in sas_components[TestVals.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME]
+    assert ResourceTypeValues.K8S_CORE_PODS in sas_components[TestVals.COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME]
 
 
 def test_get_sas_components_deployment_owned(report: ViyaDeploymentReport) -> None:
@@ -407,12 +416,13 @@ def test_get_sas_components_deployment_owned(report: ViyaDeploymentReport) -> No
     sas_components: Dict = report.get_sas_components()
 
     # check for expected attributes
-    assert KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME in sas_components
-    assert KubernetesResource.Kinds.DEPLOYMENT in sas_components[KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME]
-    assert KubernetesResource.Kinds.INGRESS in sas_components[KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME]
-    assert KubernetesResource.Kinds.POD in sas_components[KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME]
-    assert KubernetesResource.Kinds.REPLICA_SET in sas_components[KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME]
-    assert KubernetesResource.Kinds.SERVICE in sas_components[KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME]
+    assert TestVals.COMPONENT_SAS_ANNOTATIONS_NAME in sas_components
+    assert ResourceTypeValues.K8S_APPS_DEPLOYMENTS in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
+    assert ResourceTypeValues.K8S_EXTENSIONS_INGRESSES in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
+    assert ResourceTypeValues.K8S_NETWORKING_INGRESSES in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
+    assert ResourceTypeValues.K8S_CORE_PODS in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
+    assert ResourceTypeValues.K8S_APPS_REPLICA_SETS in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
+    assert ResourceTypeValues.K8S_CORE_SERVICES in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
 
 
 def test_get_sas_components_statefulset_owned(report: ViyaDeploymentReport) -> None:
@@ -426,12 +436,12 @@ def test_get_sas_components_statefulset_owned(report: ViyaDeploymentReport) -> N
     sas_components: Dict = report.get_sas_components()
 
     # check for expected attributes
-    assert KubectlTest.Values.COMPONENT_SAS_CACHE_SERVER_NAME in sas_components
-    assert KubernetesResource.Kinds.POD in sas_components[KubectlTest.Values.COMPONENT_SAS_CACHE_SERVER_NAME]
-    assert KubernetesResource.Kinds.SERVICE in \
-        sas_components[KubectlTest.Values.COMPONENT_SAS_CACHE_SERVER_NAME]
-    assert KubernetesResource.Kinds.STATEFUL_SET in \
-        sas_components[KubectlTest.Values.COMPONENT_SAS_CACHE_SERVER_NAME]
+    assert TestVals.COMPONENT_SAS_CACHE_SERVER_NAME in sas_components
+    assert ResourceTypeValues.K8S_CORE_PODS in sas_components[TestVals.COMPONENT_SAS_CACHE_SERVER_NAME]
+    assert ResourceTypeValues.K8S_CORE_SERVICES in \
+        sas_components[TestVals.COMPONENT_SAS_CACHE_SERVER_NAME]
+    assert ResourceTypeValues.K8S_APPS_STATEFUL_SETS in \
+        sas_components[TestVals.COMPONENT_SAS_CACHE_SERVER_NAME]
 
 
 def test_get_sas_components_unpopulated() -> None:
@@ -449,15 +459,16 @@ def test_get_sas_component(report: ViyaDeploymentReport) -> None:
     :param report: The populated ViyaDeploymentReport returned by the report() fixture.
     """
     # get SAS component information
-    component: Dict = report.get_sas_component(KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME)
+    component: Dict = report.get_sas_component(TestVals.COMPONENT_SAS_ANNOTATIONS_NAME)
 
     # check for expected attributes
-    assert len(component) == 5
-    assert KubernetesResource.Kinds.DEPLOYMENT in component
-    assert KubernetesResource.Kinds.INGRESS in component
-    assert KubernetesResource.Kinds.POD in component
-    assert KubernetesResource.Kinds.REPLICA_SET in component
-    assert KubernetesResource.Kinds.SERVICE in component
+    assert len(component) == 6
+    assert ResourceTypeValues.K8S_APPS_DEPLOYMENTS in component
+    assert ResourceTypeValues.K8S_EXTENSIONS_INGRESSES in component
+    assert ResourceTypeValues.K8S_NETWORKING_INGRESSES in component
+    assert ResourceTypeValues.K8S_CORE_PODS in component
+    assert ResourceTypeValues.K8S_APPS_REPLICA_SETS in component
+    assert ResourceTypeValues.K8S_CORE_SERVICES in component
 
 
 def test_get_sas_component_bad_param(report: ViyaDeploymentReport) -> None:
@@ -476,7 +487,7 @@ def test_get_sas_component_unpopulated() -> None:
     This test verifies that a None value is returned for a requested SAS component when the report is unpopulated.
     """
     # make sure None is returned
-    assert ViyaDeploymentReport().get_sas_component(KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME) is None
+    assert ViyaDeploymentReport().get_sas_component(TestVals.COMPONENT_SAS_ANNOTATIONS_NAME) is None
 
 
 def test_get_sas_component_resources(report: ViyaDeploymentReport) -> None:
@@ -487,14 +498,13 @@ def test_get_sas_component_resources(report: ViyaDeploymentReport) -> None:
     """
     # get component resource details
     component_resource_details: Dict = report.get_sas_component_resources(
-        KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME, KubernetesResource.Kinds.DEPLOYMENT)
+        TestVals.COMPONENT_SAS_ANNOTATIONS_NAME, ResourceTypeValues.K8S_APPS_DEPLOYMENTS)
 
     # check for expected attributes
     assert len(component_resource_details) == 1
-    assert KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME in component_resource_details
-    assert component_resource_details[KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME][
-               ReportKeys.ResourceDetails.RESOURCE_DEFINITION][KubernetesResource.Keys.KIND] == \
-        KubernetesResource.Kinds.DEPLOYMENT
+    assert TestVals.COMPONENT_SAS_ANNOTATIONS_NAME in component_resource_details
+    assert component_resource_details[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME][
+               ReportKeys.ResourceDetails.RESOURCE_DEFINITION][KubernetesResourceKeys.KIND] == "Deployment"
 
 
 def test_get_sas_component_resources_bad_params(report: ViyaDeploymentReport) -> None:
@@ -505,8 +515,8 @@ def test_get_sas_component_resources_bad_params(report: ViyaDeploymentReport) ->
     :param report: The populated ViyaDeploymentReport returned by the report() fixture.
     """
     # make sure None is returned
-    assert report.get_sas_component_resources("sas-foo", KubernetesResource.Kinds.DEPLOYMENT) is None
-    assert report.get_sas_component_resources(KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME, "Foo") is None
+    assert report.get_sas_component_resources("sas-foo", ResourceTypeValues.K8S_APPS_DEPLOYMENTS) is None
+    assert report.get_sas_component_resources(TestVals.COMPONENT_SAS_ANNOTATIONS_NAME, "Foo") is None
 
 
 def test_get_sas_component_resources_unpopulated() -> None:
@@ -514,8 +524,8 @@ def test_get_sas_component_resources_unpopulated() -> None:
     This test verifies that a None value is returned for a requested component resource when the report is unpopulated.
     """
     # make sure None is returned
-    assert ViyaDeploymentReport().get_sas_component_resources(KubectlTest.Values.COMPONENT_SAS_ANNOTATIONS_NAME,
-                                                              KubernetesResource.Kinds.DEPLOYMENT) is None
+    assert ViyaDeploymentReport().get_sas_component_resources(TestVals.COMPONENT_SAS_ANNOTATIONS_NAME,
+                                                              ResourceTypeValues.K8S_APPS_DEPLOYMENTS) is None
 
 
 def test_write_report(report: ViyaDeploymentReport) -> None:

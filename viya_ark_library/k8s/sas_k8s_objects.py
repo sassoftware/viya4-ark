@@ -9,11 +9,14 @@
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
-from collections.abc import MutableMapping
 import json
-from typing import Any, AnyStr, Dict, Iterator, List, Optional, Text, Union
 
-# name prefix for Resources deployed by SAS #
+from collections.abc import MutableMapping
+from typing import Any, AnyStr, Dict, Iterator, List, Optional, Text, Tuple, Union
+
+from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
+
+# values used to determine if a resource is a SAS custom resource
 _SAS_RESOURCE_KEY_CONTAINS_ = "sas.com"
 _SAS_RESOURCE_NAME_PREFIX_ = "sas-"
 _SAS_RESOURCE_NAME_CONTAINS_ = "-sas-"
@@ -21,146 +24,404 @@ _SAS_RESOURCE_NAME_CONTAINS_ = "-sas-"
 
 ###################################################################################
 #                                                                                 #
-# Class: KubernetesApiResources                                                   #
+# Class: KubernetesAvailableResourceTypes                                         #
 #                                                                                 #
 ###################################################################################
-class KubernetesApiResources(object):
+class KubernetesAvailableResourceTypes(object):
     """
-    Class representing the response returned from the `kubectl api-resources` command.
+    Class providing access to values returned from the `kubectl api-resources` command about resource types available
+    in the targeted cluster.
     """
 
     class Keys(object):
         """
-        Class defining static references to key value used in the KubernetesApiResources dictionary representation.
+        Class defining static references to keys used in the KubernetesAvailableResourceTypes dictionary
+        representation.
         """
-        API_GROUP = "apiGroup"
+        GROUP = "group"
+        KIND = "kind"
         NAME = "name"
         NAMESPACED = "namespaced"
         SHORT_NAME = "shortname"
         VERBS = "verbs"
+        VERSION = "version"
 
-    def __init__(self, api_resources_dict: Dict) -> None:
+    def __init__(self, api_resources_response_dict: Dict) -> None:
         """
-        Constructor for KubernetesApiResources objects.
+        Constructor for KubernetesAvailableResourceTypes objects.
 
-        :param api_resources_dict: The dictionary representing all API resources.
+        :param api_resources_response_dict: The dictionary representing all API resource types.
         """
-        self._api_resources = api_resources_dict
+        self._api_resource_types = api_resources_response_dict
 
-    def is_available(self, kind: Text) -> bool:
+    def _find_resource_type(self, kind: Text, api_version: Optional[Text] = None) \
+            -> Tuple[Optional[Text], Optional[Dict], bool]:
         """
-        Is the given kind available in the environment?
+        Finds the requested resource type by comparing (case-insensitive) the "kind" value of available resource types
+        returned by Kubernetes for the targeted namespace against the value provided via the "kind" parameter. If a
+        value is provided via the "api_version" parameter, it is used to avoid ambiguity (i.e., to distinguish between
+        resource types with the same "kind" value). If not provided, the first resource type with a matching "kind" is
+        returned.
 
-        :param kind: The kind whose availability should be checked.
-        :return: True if the kind is available, otherwise False.
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: A tuple containing [0] - the qualified type value of the available resource type
+                 (i.e., <name>.<group>), [1] - a dictionary defining the details of the available resource type, and
+                 [2] a bool representing whether a matching resource type was found. If the resource type could not be
+                 found, the first two values in the tuple will be None.
         """
-        return kind in self._api_resources
+        # if the api resources dictionary isn't populated, return values
+        # indicating that the resource type couldn't be found
+        if not self._api_resource_types:
+            return None, None, False
 
-    def get_api_group(self, kind: Text) -> Optional[AnyStr]:
+        # default requested group and version values
+        requested_group: Optional[Text] = None
+        requested_version: Optional[Text] = None
+
+        # only process the apiVersion if the optional parameter was provided
+        if api_version:
+            if "/" in api_version:
+                # if the value contains a "/" then group and version information is provided, separate them
+                group_and_version: List[Text] = api_version.rsplit("/", 1)
+                requested_group = group_and_version[0]  # group will be the first value in list
+                requested_version = group_and_version[1]  # version will be the second value in the list
+            else:
+                # if the value doesn't contain a "/" then the resource type should be treated as a member of the k8s
+                # core api whose group value is omitted, the value represents only version information
+                requested_version = api_version
+
+        # iterate over available resources
+        for qualified_type, details in self._api_resource_types.items():
+            # get the kind value for this resource type
+            available_kind: Text = details[self.Keys.KIND]
+
+            # check for matching kind values (case-insensitive)
+            if available_kind.lower() != kind.lower():
+                # no match, move to the next resource type
+                continue
+
+            # compare group values if a group was provided
+            if requested_group:
+                # get the group value for this resource
+                available_group: Text = details[self.Keys.GROUP]
+
+                # check for matching group values (case-insensitive)
+                if available_group.lower() != requested_group.lower():
+                    # no match, move to the next resource type
+                    continue
+
+            # compare version values if a version was provided
+            if requested_version:
+                # get the version value for this resource
+                available_version: Text = details[self.Keys.VERSION]
+
+                # some versions of kubectl don't return the resource type version when requesting api-resources
+                # if a version is not defined for this resource type, a version comparison will not be valid
+                # if a version is defined for this resource type , check for matching version values (case-insensitive)
+                if available_version != "" and available_version.lower() != requested_version.lower():
+                    # no match, move to next resource type
+                    continue
+
+            # based on the provided values, a matching resource type was found
+            return qualified_type, details, True
+
+        # the resource type wasn't found
+        return None, None, False
+
+    def is_available(self, kind: Text, api_version: Optional[Text] = None) -> bool:
         """
-        Returns the API group for the given kind.
+        Is the requested resource type available in the environment?
 
-        :param kind: The kind whose API group value will be retrieved.
-        :return: The API group of the given kind, or None if the given kind does not exist.
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: True if the resource type is available, otherwise False.
+        """
+        _, _, type_found = self._find_resource_type(kind=kind, api_version=api_version)
+
+        return type_found
+
+    def get_api_group(self, kind: Text, api_version: Optional[Text] = None) -> Optional[AnyStr]:
+        """
+        Deprecated. Alias to KubernetesAvailableResourceTypes.get_group(), which should be used instead.
+        """
+        return self.get_group(kind=kind, api_version=api_version)
+
+    def get_group(self, kind: Text, api_version: Optional[Text] = None) -> Optional[AnyStr]:
+        """
+        Returns the group for the requested resource type.
+
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: The group of the requested resource type, or None if the requested resource type wasn't found.
+        """
+        _, type_details, type_found = self._find_resource_type(kind=kind, api_version=api_version)
+
+        if type_found:
+            return type_details[self.Keys.GROUP]
+
+        return None
+
+    def get_kind(self, resource_type: Text) -> Optional[Text]:
+        """
+        Return kind value for the requested resource type.
+
+        :param resource_type: The resource type value of the resource whose kind value will be retrieved.
+        :return: The kind value of the requested resource type.
         """
         try:
-            return self._api_resources[kind][self.Keys.API_GROUP]
+            return self._api_resource_types[resource_type][KubernetesResourceKeys.KIND]
         except KeyError:
             return None
 
-    def get_name(self, kind: Text) -> Optional[AnyStr]:
+    def get_name(self, kind: Text, api_version: Optional[Text] = None) -> Optional[AnyStr]:
         """
-        Returns the API name for the given kind. This value can be used in "get" requests via Kubectl.
+        Returns the name value of the requested resource type. This value can be used in Kubectl.get_resource[s]()
+        requests to get all resources of a given type, regardless of version or group.
+
+        NOTE: This value may lead to ambiguous results if more than one type defines the same name value.
+              Use KubernetesAvailableResourceTypes.get_type() to avoid ambiguous results.
 
         Example::
 
             kubectl = Kubectl()
-            api_resources = kubectl.get_api_resources()
-            deployments = kubectl.get_resources(api_resources.get_name(<kind>))
+            api_resources = kubectl.api_resources()
+            deployment_type_name = api_resources.get_name(kind="Deployment", api_version="apps/v1")
 
-        :param kind: The kind whose name value will be retrieved.
-        :return: The API name of the given kind, or None if the given kind does not exist.
-        """
-        try:
-            return self._api_resources[kind][self.Keys.NAME]
-        except KeyError:
-            return None
+            print(deployment_type_name)
+            >> deployments
 
-    def is_namespaced(self, kind: Text) -> Optional[bool]:
-        """
-        Is the given kind namespaced?
+            deployments = kubectl.get_resources(deployment_type_name)
 
-        :param kind: The kind whose namspaced designation will be returned.
-        :return: True if the kind is namespaced, otherwise False or None if the kind does not exist.
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: The name of the requested resource type, or None if the requested resource type wasn't found.
         """
-        try:
-            return self._api_resources[kind][self.Keys.NAMESPACED]
-        except KeyError:
-            return None
+        _, type_details, type_found = self._find_resource_type(kind=kind, api_version=api_version)
 
-    def get_short_name(self, kind: Text) -> Optional[AnyStr]:
-        """
-        Returns the short API name for the given kind.
+        if type_found:
+            return type_details[self.Keys.NAME]
 
-        :param kind: The kind whose short name value will be retrieved.
-        :return: The API short name of the given kind, or None if the kind does not exist.
-        """
-        try:
-            return self._api_resources[kind][self.Keys.SHORT_NAME]
-        except KeyError:
-            return None
+        return None
 
-    def get_verbs(self, kind: Text) -> Optional[List]:
+    def is_namespaced(self, kind: Text, api_version: Optional[Text] = None) -> Optional[bool]:
         """
-        Returns the list of verbs defined for the given kind.
+        Is the requested resource type namespaced?
 
-        :param kind: The kind whose verbs list will be returned.
-        :return: The list of verbs defined for the given kind, or None if the kind does not exist.
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: True if the resource type is namespaced, otherwise False; or None if the resource type wasn't found.
         """
-        try:
-            return self._api_resources[kind][self.Keys.VERBS]
-        except KeyError:
-            return None
+        _, type_details, type_found = self._find_resource_type(kind=kind, api_version=api_version)
 
-    def kind_as_dict(self, kind: Text) -> Optional[Dict]:
+        if type_found:
+            return type_details[self.Keys.NAMESPACED]
+
+        return None
+
+    def get_short_name(self, kind: Text, api_version: Optional[Text] = None) -> Optional[AnyStr]:
         """
-        Returns the given kind in a Python-native dictionary representation.
+        Returns the short name for the requested resource type.
+
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: The short name of the requested resource type, or None if the resource type wasn't found.
+        """
+        _, type_details, type_found = self._find_resource_type(kind=kind, api_version=api_version)
+
+        if type_found:
+            return type_details[self.Keys.SHORT_NAME]
+
+        return None
+
+    def get_type(self, kind: Text, api_version: Optional[Text] = None) -> Optional[AnyStr]:
+        """
+        Returns the qualified type value (i.e., <name>.<group>) of the requested resource type. This value can be used
+        in Kubectl.get_resource[s]() requests to get all versions of a resource under a specific group. This value
+        helps negate the possibility of ambiguous results (i.e., types with the same name value).
+
+        Example::
+
+            kubectl = Kubectl()
+            api_resources = kubectl.api_resources()
+            deployment_type = api_resources.get_type(kind="Deployment", api_version="apps/v1")
+
+            print(deployment_type)
+            >> deployments.apps
+
+            deployments = kubectl.get_resources(deployment_type)
+
+
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: The qualified type value of the requested resource type, or None if the requested resource type wasn't
+                 found.
+        """
+        qualified_type, _, type_found = self._find_resource_type(kind=kind, api_version=api_version)
+
+        if type_found:
+            return qualified_type
+
+        return None
+
+    def get_type_fully_qualified(self, kind: Text, api_version: Optional[Text] = None) -> Optional[AnyStr]:
+        """
+        Returns the fully-qualified type value of the requested resource type. A fully-qualified type consists of the
+        resource type name, version, and group formatted like: <name>.<version>.<group>. This value can be used in
+        Kubectl.get_resource[s]() requests to get a specific version of the requested resource type under a specific
+        group.
+
+        NOTE: All versions of kubectl prior to v1.20.0 do not return version information for api-resources. When using
+        a version of kubectl older than the v1.20.0 version, this value will be the same as the value returned by
+        KubernetesAvailableResourceTypes.get_type().
+
+        Example::
+
+            kubectl = Kubectl()
+            api_resources = kubectl.api_resources()
+            fully_qualified_deployment_type = \
+                api_resources.get_type_fully_qualified(kind="Deployment, api_version="apps/v1")
+
+            print(fully_qualified_deployment_type)
+            >> deployments.v1.apps
+
+            deployments_v1 = kubectl.get_resources(fully_qualified_deployment_type)
+
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: The fully-qualified type value of the requested resource type, or None if the requested resource type
+                 wasn't found.
+        """
+        qualified_type, type_details, type_found = self._find_resource_type(kind=kind, api_version=api_version)
+
+        if type_found:
+            if not type_details[self.Keys.VERSION]:
+                # if a version isn't defined, return the qualified type since the values will be the same
+                return qualified_type
+            elif not type_details[self.Keys.GROUP]:
+                # if a group isn't defined, this resource type is in the k8s core api and the qualified type is
+                # all that can be used
+                return qualified_type
+            else:
+                # if both a version and group are defined, build the fully-qualified type
+                name: Text = type_details[self.Keys.NAME]
+                version: Text = type_details[self.Keys.VERSION]
+                group: Text = type_details[self.Keys.GROUP]
+                return f"{name}.{version}.{group}"
+
+        return None
+
+    def get_verbs(self, kind: Text, api_version: Optional[Text] = None) -> Optional[List[Text]]:
+        """
+        Returns the list of verbs defined for the requested resource type.
+
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: The list of verbs defined for the requested resource type, or None if the resource type wasn't found.
+        """
+        _, type_details, type_found = self._find_resource_type(kind=kind, api_version=api_version)
+
+        if type_found:
+            return type_details[self.Keys.VERBS]
+
+        return None
+
+    def get_version(self, kind: Text, api_version: Optional[Text] = None) -> Optional[Text]:
+        """
+        Returns the version defined for the requested resource type.
+
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: The version defined for the requested resource type, or None if the resource type wasn't found.
+        """
+        _, type_details, type_found = self._find_resource_type(kind=kind, api_version=api_version)
+
+        if type_found:
+            return type_details[self.Keys.VERSION]
+
+        return None
+
+    def resource_type_as_dict(self, kind: Text, api_version: Optional[Text] = None) -> Optional[Tuple[AnyStr, Dict]]:
+        """
+        Returns the qualified type value of the requested resource type and the type details in a Python-native
+        dictionary representation.
 
         The returned dictionary is structured like so::
 
             {
+                "group": "",
+                "kind": "",
                 "name": "",
-                "shortname": "",
-                "apiGroup": "",
                 "namespaced": bool,
-                "verbs": []
+                "shortname": "",
+                "verbs": [],
+                "version": ""
             }
 
-        :param kind: The kind to return in a Python-native dictionary representation.
-        :return: A dictionary representation of the requested kind, or None if the kind does not exist
+        :param kind: The kind value of the resource type being requested.
+        :param api_version: The "apiVersion" (as defined by Kubernetes: <group>/<version>) of the resource type being
+                            requested. If provided, this value is used to avoid ambiguous results (i.e., resource types
+                            with the same kind value).
+        :return: A tuple containing [0] - the qualified type value of the requested resource type, and [2] - a
+        dictionary representation of the requested resource type, or None if the resource wasn't found.
         """
-        return self._api_resources.get(kind)
+        qualified_type, type_details, type_found = self._find_resource_type(kind=kind, api_version=api_version)
+
+        if type_found:
+            return qualified_type, type_details
+
+        return None
+
+    def kind_as_dict(self, kind: Text, api_version: Optional[Text] = None) -> Optional[Tuple[AnyStr, Dict]]:
+        """
+        Deprecated. Alias to KubernetesAvailableResourceTypes.resource_type_as_dict(), which should be used instead.
+        """
+        return self.resource_type_as_dict(kind=kind, api_version=api_version)
 
     def as_dict(self) -> Dict:
         """
-        Returns a dictionary representation of the API resources.
+        Returns a Python-native dictionary representation of all API resource types returned by kubectl for the
+        targeted namespace.
 
         The returned dictionary is structured like so::
 
             {
-                "<resource_kind>": {
+                "<type>": {
+                    "group": "",
+                    "kind": "",
                     "name": "",
-                    "shortname": "",
-                    "apiGroup": "",
                     "namespaced": bool,
-                    "verbs": []
+                    "shortname": "",
+                    "verbs": [],
+                    "version": ""
                 },
                 ...
             }
 
-        :return: A dictionary representation of this object.
+        :return: A Python-native dictionary representation of all API resource types returned by kubectl for the
+        targeted namespace.
         """
-        return self._api_resources
+        return self._api_resource_types
 
 
 ###################################################################################
@@ -183,7 +444,7 @@ class KubernetesObjectJSONEncoder(json.JSONEncoder):
         """
         if isinstance(o, KubernetesResource):
             return o.as_dict()
-        if isinstance(o, KubernetesApiResources):
+        if isinstance(o, KubernetesAvailableResourceTypes):
             return o.as_dict()
         if isinstance(o, KubernetesMetrics):
             return o.as_dict()
@@ -323,146 +584,6 @@ class KubernetesResource(MutableMapping):
     methods for retrieving values.
     """
 
-    class Keys(object):
-        """
-        Class providing static access to commonly used key names in Resource objects (list is not all-inclusive).
-        """
-        ADDRESSES = "addresses"
-        ANNOTATIONS = "annotations"
-        ANNOTATION_PROXY_BODY_SIZE = "nginx.ingress.kubernetes.io/proxy-body-size"
-        ANNOTATION_COMPONENT_NAME = "sas.com/component-name"
-        ANNOTATION_COMPONENT_VERSION = "sas.com/component-version"
-        ANNOTATION_VERSION = "sas.com/version"
-        API_VERSION = "apiVersion"
-        ARCHITECTURE = "architecture"
-        AVAILABLE_REPLICAS = "availableReplicas"
-        BACKEND = "backend"
-        CAPACITY = "capacity"
-        CLUSTER_IP = "clusterIP"
-        COLLISION_COUNT = "collisionCount"
-        COMPLETION_TIME = "completionTime"
-        CONDITIONS = "conditions"
-        CONTAINER_RUNTIME_VERSION = "containerRuntimeVersion"
-        CONTAINER_STATUSES = "containerStatuses"
-        CONTAINERS = "containers"
-        CONTROLLER_TEMPLATE = "controllerTemplate"
-        CREATION_TIMESTAMP = "creationTimestamp"
-        CURRENT_REPLICAS = "currentReplicas"
-        DATA = "data"
-        DESTINATION = "destination"
-        ENV = "env"
-        EXACT = "exact"
-        FULLY_LABELED_REPLICAS = "fullyLabeledReplicas"
-        GATEWAYS = "gateways"
-        GENERATION = "generation"
-        HTTP = "http"
-        HOST = "host"
-        HOSTS = "hosts"
-        HOST_IP = "hostIP"
-        IMAGE = "image"
-        IMAGES = "images"
-        INIT_CONTAINERS = "initContainers"
-        ITEMS = "items"
-        KERNEL_VERSION = "kernelVersion"
-        KIND = "kind"
-        KUBE_PROXY_VERSION = "kubeProxyVersion"
-        KUBELET_VERSION = "kubeletVersion"
-        LABEL_CAS_NODE_TYPE = "cas-node-type"
-        LABEL_CAS_SERVER = "cas-server"
-        LABEL_MANAGED_BY = "app.kubernetes.io/managed-by"
-        LABEL_PG_CLUSTER = "pg-cluster"
-        LABEL_PG_DEPLOYMENT_NAME = "deployment-name"
-        LABEL_PG_SERVICE_NAME = "service-name"
-        LABEL_SAS_DEPLOYMENT = "sas.com/deployment"
-        LABELS = "labels"
-        MANAGED_FIELDS = "managedFields"
-        MATCH = "match"
-        MATCH_LABELS = "matchLabels"
-        METADATA = "metadata"
-        NAME = "name"
-        NAMESPACE = "namespace"
-        NODE_INFO = "nodeInfo"
-        NODE_NAME = "nodeName"
-        NUMBER = "number"
-        OBSERVED_GENERATION = "observedGeneration"
-        OPERATING_SYSTEM = "operatingSystem"
-        OS_IMAGE = "osImage"
-        OWNER_REFERENCES = "ownerReferences"
-        PARAMETERS = "parameters"
-        PATH = "path"
-        PATHS = "paths"
-        PHASE = "phase"
-        POD_CIDR = "podCIDR"
-        POD_CIDRS = "podCIDRs"
-        POD_IP = "podIP"
-        POD_IPS = "podIPs"
-        PORT = "port"
-        PORTS = "ports"
-        PROTOCOL = "protocol"
-        PROVISIONER = "provisioner"
-        PUBLISH_NODE_PORT_SERVICE = "publishNodePortService"
-        READY = "ready"
-        READY_REPLICAS = "readyReplicas"
-        REPLICAS = "replicas"
-        RESOURCES = "resources"
-        RESOURCE_VERSION = "resourceVersion"
-        RESTART_COUNT = "restartCount"
-        ROUTE = "route"
-        ROUTES = "routes"
-        RULES = "rules"
-        SELECTOR = "selector"
-        SELF_LINK = "selfLink"
-        SERVICE = "service"
-        SERVICE_PORT = "servicePort"
-        SERVICE_NAME = "serviceName"
-        SERVICES = "services"
-        SPEC = "spec"
-        START_TIME = "startTime"
-        STARTED = "started"
-        STATE = "state"
-        STATUS = "status"
-        SUCCEEDED = "succeeded"
-        TARGET_PORT = "targetPort"
-        TCP = "tcp"
-        TO = "to"
-        TEMPLATE = "template"
-        UID = "uid"
-        URI = "uri"
-        UPDATED_REPLICAS = "updatedReplicas"
-        UNAVAILABLE_REPLICAS = "unavailableReplicas"
-        WORKER_TEMPLATE = "workerTemplate"
-        WORKERS = "workers"
-
-    class Kinds(object):
-        """
-        Class defining commonly used Kubernetes kind names for SAS deployments (list is not all-inclusive).
-
-        All available kinds can be discovered by calling the Kubectl.get_api_resources() method.
-        """
-        CAS_DEPLOYMENT = "CASDeployment"
-        CONFIGMAP = "ConfigMap"
-        CONTOUR_HTTPPROXY = "HTTPProxy"
-        CRON_JOB = "CronJob"
-        CRUNCHY_PG_BACKUP = "Pgbackup"
-        CRUNCHY_PG_CLUSTER = "Pgcluster"
-        CRUNCHY_PG_POLICY = "Pgpolicy"
-        CRUNCHY_PG_REPLICA = "Pgreplica"
-        CRUNCHY_PG_TASK = "Pgtask"
-        DEPLOYMENT = "Deployment"
-        ENDPOINT = "Endpoint"
-        INGRESS = "Ingress"
-        ISTIO_VIRTUAL_SERVICE = "VirtualService"
-        JOB = "Job"
-        NODE = "Node"
-        NODE_METRICS = "NodeMetrics"
-        OPENSHIFT_ROUTE = "Route"
-        POD = "Pod"
-        POD_METRICS = "PodMetrics"
-        REPLICA_SET = "ReplicaSet"
-        SERVICE = "Service"
-        STATEFUL_SET = "StatefulSet"
-        STORAGECLASS = "sc"
-
     def __init__(self, resource: Union[Dict, AnyStr]) -> None:
         """
         Constructor for Resource class.
@@ -557,7 +678,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'apiVersion' value.
         """
-        return self._resource.get(self.Keys.API_VERSION)
+        return self._resource.get(KubernetesResourceKeys.API_VERSION)
 
     def get_kind(self) -> AnyStr:
         """
@@ -565,7 +686,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'kind' value.
         """
-        return self._resource.get(self.Keys.KIND)
+        return self._resource.get(KubernetesResourceKeys.KIND)
 
     def get_metadata(self) -> Optional[Dict]:
         """
@@ -573,7 +694,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'metadata' dictionary.
         """
-        return self._resource.get(self.Keys.METADATA)
+        return self._resource.get(KubernetesResourceKeys.METADATA)
 
     def get_metadata_value(self, key: Text) -> Optional[Any]:
         """
@@ -583,7 +704,7 @@ class KubernetesResource(MutableMapping):
         :return: The value mapped to the given key, or None if the given key doesn't exist.
         """
         try:
-            return self._resource[self.Keys.METADATA][key]
+            return self._resource[KubernetesResourceKeys.METADATA][key]
         except KeyError:
             return None
 
@@ -593,7 +714,7 @@ class KubernetesResource(MutableMapping):
 
         :return: A dictionary of all annotations defined for this Resource.
         """
-        return self.get_metadata_value(self.Keys.ANNOTATIONS)
+        return self.get_metadata_value(KubernetesResourceKeys.ANNOTATIONS)
 
     def get_annotation(self, annotation: Text) -> Optional[Any]:
         """
@@ -613,7 +734,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This resource's component name, or None if the 'sas.com/component-name' annotation doesn't exist.
         """
-        return self.get_annotation(self.Keys.ANNOTATION_COMPONENT_NAME)
+        return self.get_annotation(KubernetesResourceKeys.ANNOTATION_COMPONENT_NAME)
 
     def get_sas_component_version(self) -> Optional[AnyStr]:
         """
@@ -622,7 +743,7 @@ class KubernetesResource(MutableMapping):
         :return: This resource's component version, or None if the 'sas.com/component-version' annotation doesn't
                  exist.
         """
-        return self.get_annotation(self.Keys.ANNOTATION_COMPONENT_VERSION)
+        return self.get_annotation(KubernetesResourceKeys.ANNOTATION_COMPONENT_VERSION)
 
     def get_sas_version(self) -> Optional[AnyStr]:
         """
@@ -630,7 +751,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This resource's version, or None if the 'sas.com/version' annotation doesn't exist.
         """
-        return self.get_annotation(self.Keys.ANNOTATION_VERSION)
+        return self.get_annotation(KubernetesResourceKeys.ANNOTATION_VERSION)
 
     def get_creation_timestamp(self) -> Optional[AnyStr]:
         """
@@ -638,7 +759,15 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'metadata.creationTimestamp' value.
         """
-        return self.get_metadata_value(self.Keys.CREATION_TIMESTAMP)
+        return self.get_metadata_value(KubernetesResourceKeys.CREATION_TIMESTAMP)
+
+    def get_data(self) -> Optional[Dict]:
+        """
+        Returns the 'data' dictionary for this Resource.
+
+        :return: This Resource's 'data' dictionary.
+        """
+        return self._resource.get(KubernetesResourceKeys.DATA)
 
     def get_generation(self) -> Optional[int]:
         """
@@ -646,7 +775,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'metadata.generation' value.
         """
-        return self.get_metadata_value(self.Keys.GENERATION)
+        return self.get_metadata_value(KubernetesResourceKeys.GENERATION)
 
     def get_labels(self) -> Optional[Dict]:
         """
@@ -654,7 +783,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This resource's metadata labels.
         """
-        return self.get_metadata_value(self.Keys.LABELS)
+        return self.get_metadata_value(KubernetesResourceKeys.LABELS)
 
     def get_label(self, label_key: Text) -> Optional[Any]:
         """
@@ -676,7 +805,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'metadata.name' value.
         """
-        return self.get_metadata_value(self.Keys.NAME)
+        return self.get_metadata_value(KubernetesResourceKeys.NAME)
 
     def get_namespace(self) -> Optional[AnyStr]:
         """
@@ -684,7 +813,27 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'metadata.namespace' value.
         """
-        return self.get_metadata_value(self.Keys.NAMESPACE)
+        return self.get_metadata_value(KubernetesResourceKeys.NAMESPACE)
+
+    def get_parameter_value(self, key: Text) -> Optional[Any]:
+        """
+        Returns the given key's value from the 'parameters' dictionary.
+
+        :param key: The key of the value to return.
+        :return: The value mapped to the given key, or None if the given key doesn't exist.
+        """
+        try:
+            return self._resource[KubernetesResourceKeys.PARAMETERS][key]
+        except KeyError:
+            return None
+
+    def get_provisioner(self) -> Optional[AnyStr]:
+        """
+        Returns the 'metadata.creationTimestamp' value for this Resource.
+
+        :return: This Resource's 'metadata.creationTimestamp' value.
+        """
+        return self._resource.get(KubernetesResourceKeys.PROVISIONER)
 
     def get_resource_version(self) -> Optional[AnyStr]:
         """
@@ -692,7 +841,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'metadata.resourceVersion' value.
         """
-        return self.get_metadata_value(self.Keys.RESOURCE_VERSION)
+        return self.get_metadata_value(KubernetesResourceKeys.RESOURCE_VERSION)
 
     def get_self_link(self) -> Optional[AnyStr]:
         """
@@ -700,7 +849,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'metadata.selfLink' value.
         """
-        return self.get_metadata_value(self.Keys.SELF_LINK)
+        return self.get_metadata_value(KubernetesResourceKeys.SELF_LINK)
 
     def get_uid(self) -> Optional[AnyStr]:
         """
@@ -708,7 +857,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'metadata.uid' value.
         """
-        return self.get_metadata_value(self.Keys.UID)
+        return self.get_metadata_value(KubernetesResourceKeys.UID)
 
     def get_spec(self) -> Optional[Dict]:
         """
@@ -716,7 +865,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'spec' dictionary.
         """
-        return self._resource.get(self.Keys.SPEC)
+        return self._resource.get(KubernetesResourceKeys.SPEC)
 
     def get_spec_value(self, key: Text) -> Optional[Any]:
         """
@@ -726,7 +875,7 @@ class KubernetesResource(MutableMapping):
         :return: The value mapped to the given key, or None if the given key doesn't exist.
         """
         try:
-            return self._resource[self.Keys.SPEC][key]
+            return self._resource[KubernetesResourceKeys.SPEC][key]
         except KeyError:
             return None
 
@@ -736,7 +885,7 @@ class KubernetesResource(MutableMapping):
 
         :return: This Resource's 'status' dictionary.
         """
-        return self._resource.get(self.Keys.STATUS)
+        return self._resource.get(KubernetesResourceKeys.STATUS)
 
     def get_status_value(self, key: Text) -> Optional[Any]:
         """
@@ -746,7 +895,7 @@ class KubernetesResource(MutableMapping):
         :return: The value mapped to the given key, or None if the given key doesn't exist.
         """
         try:
-            return self._resource[self.Keys.STATUS][key]
+            return self._resource[KubernetesResourceKeys.STATUS][key]
         except KeyError:
             return None
 
@@ -757,31 +906,3 @@ class KubernetesResource(MutableMapping):
         :return: A native 'dict' version of this Kubernetes resource.
         """
         return self._resource
-
-    def get_parameter_value(self, key: Text) -> Optional[Any]:
-        """
-        Returns the given key's value from the 'parameters' dictionary.
-
-        :param key: The key of the value to return.
-        :return: The value mapped to the given key, or None if the given key doesn't exist.
-        """
-        try:
-            return self._resource[self.Keys.PARAMETERS][key]
-        except KeyError:
-            return None
-
-    def get_provisioner(self) -> Optional[AnyStr]:
-        """
-        Returns the 'metadata.creationTimestamp' value for this Resource.
-
-        :return: This Resource's 'metadata.creationTimestamp' value.
-        """
-        return self._resource.get(self.Keys.PROVISIONER)
-
-    def get_data(self) -> Optional[Dict]:
-        """
-        Returns the 'data' dictionary for this Resource.
-
-        :return: This Resource's 'data' dictionary.
-        """
-        return self._resource.get(self.Keys.DATA)

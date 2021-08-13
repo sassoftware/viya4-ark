@@ -27,18 +27,19 @@
   <div class="jq-accordion">
     <h4>{{ component_name }}</h4>
     <div>
-    {% for kind_name, kind_details in component_details.items() %}
+    {% for resource_type, resource_type_details in component_details.items() %}
       <div class="jq-accordion">
-        <h5 {% if kind_details|length == 1 %}id="{{ kind_name|lower }}-{{ kind_details.keys()|list|first|replace('.','-') }}"{% endif %}>{{ kind_name }}</h5>
+        {% set kind_name = (resource_type_details.values()|list|first).resourceDefinition.kind %}
+        <h5 {% if resource_type_details|length == 1 %}id="{{ resource_type|lower|replace('.','-') }}-{{ resource_type_details.keys()|list|first|replace('.','-') }}"{% endif %}>{{ kind_name }}</h5>
         <div>
-        {% for resource_name, resource_details in kind_details.items() %}
-        {% if kind_details | length > 1 %}
+        {% for resource_name, resource_details in resource_type_details.items() %}
+        {% if resource_type_details | length > 1 %}
           <div class="jq-accordion">
-            <h6 id="{{ kind_name|lower }}-{{ resource_name|replace('.','-') }}">{{ resource_name }}</h6>
+            <h6 id="{{ resource_type|lower|replace('.','-') }}-{{ resource_name|replace('.','-') }}">{{ resource_name }}</h6>
             <div>
         {% endif %}
-              {% include [kind_name|lower + ".html.j2", "resource.html.j2"] %}
-        {% if kind_details | length > 1 %}
+              {% include [resource_type|lower + ".html.j2", "resource.html.j2"] %}
+        {% if resource_type_details | length > 1 %}
             </div>
           </div>
         {% endif %}
@@ -94,7 +95,7 @@
     </tr>
     <tr>
       <th>Cadence Version</th>
-      <td>{{ report_data.kubernetes.cadenceInfo | default("<em>could not be determined- cadinfo</em>") }}</td>
+      <td>{{ report_data.kubernetes.cadenceInfo | default("<em>could not be determined</em>") }}</td>
     </tr>
   </table>
   {# Cluster Overview: Overview Table #}
@@ -131,22 +132,20 @@
 
   {# Cluster Overview: Nodes Accordion #}
   {% if report_data.kubernetes.nodes.count > 0 %}
-
   {% set kind_name = "Node" %}
   <div class="jq-accordion">
     <h2>Nodes ({{ report_data.kubernetes.nodes.count }})</h2>
     <div>
     {% for node_name, resource_details in report_data.kubernetes.nodes['items'].items() %}
       <div class="jq-accordion">
-        <h3 id="node-{{ node_name | replace('.','-') }}">{{ node_name }}</h3>
+        <h3 id="nodes-{{ node_name | replace('.','-') }}">{{ node_name }}</h3>
         <div>
-          {% include "node.html.j2" %}
+          {% include "nodes.html.j2" %}
         </div>
       </div>
     {% endfor %}
     </div>
   </div>
-
   {% endif %}
   {# Cluster Overview: Nodes Accordion #}
 
@@ -154,7 +153,7 @@
 
   {# Components: Content #}
   <div>
-  {% if report_data.kubernetes.discoveredKinds.Pod.count == 0 %}
+  {% if report_data.kubernetes.discoveredResourceTypes.pods.count == 0 %}
 
     <div class="notification-box info-box">
       <div>
@@ -174,14 +173,16 @@
         <table>
           <tr>
             <th>Kind</th>
+            <th>Type</th>
             <th>Count</th>
             <th>SAS Custom Resource</th>
           </tr>
-        {% for discovered_kind, kind_details in report_data.kubernetes.discoveredKinds.items() %}
+        {% for discovered_type, type_details in report_data.kubernetes.discoveredResourceTypes.items() %}
           <tr>
-            <td>{{ discovered_kind }}</td>
-            <td>{{ kind_details.count }}</td>
-            <td>{{ kind_details.sasCRD }}</td>
+            <td>{{ type_details.kind }}</td>
+            <td>{{ discovered_type }}</td>
+            <td>{{ type_details.count }}</td>
+            <td>{{ type_details.sasCRD }}</td>
           </tr>
         {% endfor %}
         </table>
@@ -213,29 +214,36 @@
   </div>
   {# Components: Content #}
 
-  <h2>API</h2>
+  <h2>Kubernetes API</h2>
 
   {# API: Content #}
   <div>
     {# API: Resources Accordion  #}
+    {% set version_val = (report_data.kubernetes.apiResources.values()|list|first).version %}
     <div class="jq-accordion">
       <h4>Resources</h4>
       <div>
         <table>
           <tr>
             <th>Kind</th>
+          {% if version_val != "" %}
+            <th>Version</th>
+          {% endif %}
             <th>Name</th>
             <th>Shortname</th>
-            <th>API group</th>
+            <th>Group</th>
             <th>Namespaced</th>
             <th>Verbs</th>
           </tr>
-        {% for resource_kind, resource_attributes in report_data.kubernetes.apiResources.items() | sort %}
+        {% for resource_type, resource_attributes in report_data.kubernetes.apiResources.items() | sort %}
           <tr>
-            <td>{{ resource_kind }}</td>
+            <td>{{ resource_attributes.kind }}</td>
+          {% if version_val != "" %}
+            <td>{{ resource_attributes.version }}</td>
+          {% endif %}
             <td>{{ resource_attributes.name }}</td>
             <td>{{ resource_attributes.shortname }}</td>
-            <td>{{ resource_attributes.apiGroup }}</td>
+            <td>{{ resource_attributes.group }}</td>
             <td>{{ resource_attributes.namespaced }}</td>
             <td><ul>{% for verb in resource_attributes.verbs %}<li>{{ verb }}</li>{% endfor %}</ul></td>
           </tr>
