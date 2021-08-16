@@ -12,7 +12,7 @@ SAS recommends running the tool and resolving any reported issues before beginni
 SAS Viya ARK tools require third-party packages be installed before use. You can install all the required packages by using the provided requirements.txt file in the following command:
 
 ```commandline
-$ python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 Download the latest version of this tool and update required packages with every new software order.
