@@ -16,7 +16,7 @@ included in the report. Otherwise, un-retrievable information is omitted.
 SAS Viya ARK tools require third-party packages be installed before use. All required packages can be installed using the provided `requirements.txt`:
 
 ```commandline
-$ python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 Download the latest version of this tool and update required packages with every new software order.
@@ -35,7 +35,7 @@ deployment can be specified by including the `-n` or `--namespace` option.
 deployment.
 
 ```commandline
-$ python3 viya-ark.py deployment-report --namespace sas
+python3 viya-ark.py deployment-report --namespace sas
 ```
 
 ### Including Log Snippets for All Pods
@@ -47,7 +47,7 @@ Using this option increases the runtime of the command as well as the size of th
 deployment.
 
 ```commandline
-$ python3 viya-ark.py deployment-report -n sas --include-pod-log-snips
+python3 viya-ark.py deployment-report -n sas --include-pod-log-snips
 ```
 
 ### Including Resource Definitions for All Resources
@@ -59,7 +59,7 @@ definitions for all resources found in the deployment. Using this option increas
 deployment.
 
 ```commandline
-$ python3 viya-ark.py deployment-report -n sas --include-resource-definitions
+python3 viya-ark.py deployment-report -n sas --include-resource-definitions
 ```
 
 ### Creating the Data File Only
@@ -71,7 +71,7 @@ is omitted.
 deployment.
 
 ```commandline
-$ python3 viya-ark.py deployment-report -n sas --data-file-only
+python3 viya-ark.py deployment-report -n sas --data-file-only
 ```
 
 ### Redirecting Output
@@ -84,7 +84,7 @@ any file names.
 deployment.
 
 ```commandline
-$ python3 viya-ark.py deployment-report -n sas --output-dir="/path/to/report/"
+python3 viya-ark.py deployment-report -n sas --output-dir="/path/to/report/"
 ```
 
 ### Help with the Command
@@ -92,7 +92,7 @@ $ python3 viya-ark.py deployment-report -n sas --output-dir="/path/to/report/"
 The `-h` or `--help` option can be used to view usage information and list all options available for the report.
 
 ```commandline
-$ python3 viya-ark.py deployment-report --help
+python3 viya-ark.py deployment-report --help
 ```
 
 ## Report Output
