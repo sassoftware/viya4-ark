@@ -21,7 +21,7 @@ Each tool that is included in the resource kit provides a readme that describes 
 SAS Viya ARK tools require third-party packages be installed before use. All required packages can be installed using the provided `requirements.txt`:
 
 ```commandline
-$ python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 The Python packages are only required on the host where SAS Viya ARK tools are executed.   
 
