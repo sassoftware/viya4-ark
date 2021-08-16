@@ -27,7 +27,7 @@ SAS Viya ARK tools require third-party packages be installed before use. All req
 provided `requirements.txt`:
 
 ```commandline
-$ python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 Download the latest version of this tool and update required packages with every new software order.
@@ -37,12 +37,12 @@ Download the latest version of this tool and update required packages with every
 The following command provides usage details:
 
 ```
-$ python3 viya-ark.py ldap_validator --help
+python3 viya-ark.py ldap_validator --help
 ```
 The following example executes the LDAP Validation script against the specified sitedefault.yaml. 
 
 ```commandline
-$ python3 viya-ark.py ldap_validator -s /path/to/sitedefault.yaml
+python3 viya-ark.py ldap_validator -s /path/to/sitedefault.yaml
 ```
 
 ## Log Output
