@@ -68,8 +68,8 @@ $ export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <n
 Use the values gathered on the command line for http or https as appropriate for your deployment:
 
 ```
- -i nginx  -H $INGRESS_HOST -p $INGRESS_HTTP_PORT 
- -i nginx  -H $INGRESS_HOST -p $INGRESS_HTTPS_PORT 
+python3 viya-ark.py pre-install-report -i nginx  -H $INGRESS_HOST -p $INGRESS_HTTP_PORT 
+python3 viya-ark.py pre-install-report -i nginx  -H $INGRESS_HOST -p $INGRESS_HTTPS_PORT 
 ```
  
 ## Report Output
