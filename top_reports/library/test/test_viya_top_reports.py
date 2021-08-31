@@ -9,11 +9,9 @@
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
-import json
 import os
 import pytest
 
-from typing import Dict, List, Text
 
 from top_reports.library.viya_top_reports import ViyaTopReports
 

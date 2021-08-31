@@ -61,7 +61,7 @@ class ViyaTopReports(object):
             top_options = "--use_protocol_buffers"
 
         # mark when these details were gathered #
-        gathered: Text = datetime.datetime.now().strftime(_READABLE_TIMESTAMP_TMPL_)
+        # gathered: Text = datetime.datetime.now().strftime(_READABLE_TIMESTAMP_TMPL_)
 
         # get the top node values #
         # if Nodes cannot be listed, display a message #
