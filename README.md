@@ -21,9 +21,9 @@ Each tool that is included in the resource kit provides a readme that describes 
 SAS Viya ARK tools require third-party packages be installed before use. All required packages can be installed using the provided `requirements.txt`:
 
 ```commandline
-python3 -m pip install -r requirements.txt
+$ python3 -m pip install -r requirements.txt
 ```
-The Python packages are only required on the host where SAS Viya ARK tools are executed.   
+The Python packages are only required on the host where SAS Viya ARK tools are executed.
 
 ## Index of Tools
 Tool support for the latest release of SAS Viya:
@@ -32,6 +32,7 @@ Tool support for the latest release of SAS Viya:
 * [SAS Viya Log Download Tool](download_pod_logs)
 * [Pre-installation of SAS Viya System Requirements](pre_install_report)
 * [SAS Viya LDAP Validator](ldap_validator)
+* [SAS Viya Top Reports](top_reports)
 
 ## Contributing
 

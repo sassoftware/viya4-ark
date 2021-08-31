@@ -1,0 +1,23 @@
+usage: viya-ark.py top-reports [-h] [-k KUBECTL_GLOBAL_OPTS]
+                               [-n NAMESPACE] [-o OUTPUT_DIR] [-u]
+
+Generate top reports for a target Kubernetes environment.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -k KUBECTL_GLOBAL_OPTS, --kubectl-global-opts KUBECTL_GLOBAL_OPTS
+                        Any kubectl global options to use with all executions
+                        (excluding namespace, which should be set using -n,
+                        --namespace).
+  -n NAMESPACE, --namespace NAMESPACE
+                        Namespace to target containing SAS software, if not
+                        defined by KUBECONFIG.
+  -o OUTPUT_DIR, --output-dir OUTPUT_DIR
+                        Directory where top reports files will be written.
+                        Defaults to "./".
+  -u, --use-protocol-buffers
+                        (Optional)Use protocol-buffers to request metrics.
+                        Historically, json format has been used by the top
+                        command to get metrics. Newer Kubernetes releases will
+                        migrate to using protocol-buffers. Switch early by
+                        specifying this option.
