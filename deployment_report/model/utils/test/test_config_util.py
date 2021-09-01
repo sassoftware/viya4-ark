@@ -85,4 +85,4 @@ def test_get_db_info_none():
 
     db_dict: Dict = config_util.get_db_info(None)
 
-    assert db_dict == None
+    assert db_dict is None

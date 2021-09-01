@@ -62,6 +62,7 @@ _DBNAME_CONFIG_POSTGRES_ = "sas-postgres-config"
 _DBNAME_CPSPOSTGRES_ = "cpspostgres"
 _DBNAME_CONFIG_CPSPOSTGRES_ = "sas-planning-cpspostgres-config"
 
+
 def get_cadence_version(resource: Dict) -> Optional[Text]:
     """
     Returns the cadence version of the targeted SAS deployment.
@@ -72,7 +73,7 @@ def get_cadence_version(resource: Dict) -> Optional[Text]:
              ConfigMap does not contain the requested information.
     """
     # look for the necessary ConfigMap
-    
+
     try:
         if not resource:
             return None
@@ -126,7 +127,7 @@ def get_db_info(resource: Dict) -> Dict:
             db_dict = _get_db_info_v1(config_maps=config_maps)
 
         except KeyError:
-            db_dict[_UNSUPPORTED_DB_] = {_TYPE_KEY_: _UNSUPPORTED_DB_ }
+            db_dict[_UNSUPPORTED_DB_] = {_TYPE_KEY_: _UNSUPPORTED_DB_}
 
     return db_dict
 
@@ -175,7 +176,7 @@ def _get_db_info_v1(config_maps: Dict) -> Dict:
                         # if an expected key wasn't defined, continue
                         continue
         if dbs:
-            #convert db_name to be aligned with v2
+            # convert db_name to be aligned with v2
             if _DBNAME_CONFIG_POSTGRES_ in db_name:
                 db_name = _DBNAME_POSTGRES_
             elif _DBNAME_CONFIG_CPSPOSTGRES_ in db_name:
@@ -184,6 +185,7 @@ def _get_db_info_v1(config_maps: Dict) -> Dict:
             db_dict[db_name] = dbs
 
     return db_dict
+
 
 def _get_db_info_v2(pgclusters: Dict) -> Dict:
     """
@@ -224,10 +226,8 @@ def _get_db_info_v2(pgclusters: Dict) -> Dict:
                             _TYPE_KEY_: _EXTERNAL_DB_,
                             _PGCLUSTER_CONNECT_KEY_: _UNAVAIL_DB_
                         }
-
-
             except KeyError:
-                dbs = { _TYPE_KEY_: _UNSUPPORTED_DB_ }
+                dbs = {_TYPE_KEY_: _UNSUPPORTED_DB_}
 
             if dbs:
                 db_dict[db_name] = dbs
