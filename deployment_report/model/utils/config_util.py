@@ -108,6 +108,14 @@ def get_cadence_version(resource: Dict) -> Optional[Text]:
 
 
 def get_db_info(resource: Dict) -> Dict:
+    """
+    Returns the db information of the targeted SAS deployment.
+
+    :param resource: The api resource data.
+
+    :return: A dict representing the db information of the targeted SAS deployment, or None if 
+             no resource information
+    """
 
     db_dict: Optional[Dict] = dict()
 
