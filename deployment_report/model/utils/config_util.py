@@ -113,7 +113,7 @@ def get_db_info(resource: Dict) -> Dict:
 
     :param resource: The api resource data.
 
-    :return: A dict representing the db information of the targeted SAS deployment, or None if 
+    :return: A dict representing the db information of the targeted SAS deployment, or None if
              no resource information
     """
 
@@ -149,11 +149,13 @@ def _get_db_info_v1(config_maps: Dict) -> Dict:
     :return: A dict representing the db information of the targeted SAS deployment, or None if the given
              ConfigMap does not contain the requested information.
     """
-    # look for the necessary ConfigMap
+    # initialize the return value
     db_dict: Optional[Dict] = dict()
 
     for config_map_name, config_map_details in config_maps.items():
         dbs: Optional[Dict] = dict()
+
+        # look for the necessary ConfigMap
         if _SAS_POSTGRES_CONFIG_CONFIG_MAP_NAME_ in config_map_name:
             # get the KubernetesResource
             config_map: KubernetesResource = \
