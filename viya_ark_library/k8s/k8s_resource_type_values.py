@@ -61,6 +61,10 @@ class KubernetesResourceTypeValues(object):
     K8S_GROUP_STORAGE_K8S_IO = "storage.k8s.io"
     K8S_STORAGE_STORAGE_CLASSES = f"storageclasses.{K8S_GROUP_STORAGE_K8S_IO}"
 
+    # API: webinfdsvr.sas.com
+    SAS_GROUP_WEBINFDSVR_SAS_COM = "webinfdsvr.sas.com"
+    SAS_PGCLUSTERS = f"pgclusters.{SAS_GROUP_WEBINFDSVR_SAS_COM}"
+
     ##############################
     # Third-Party Resources
     ##############################
