@@ -228,7 +228,7 @@ def test_get_nested_millicores_nodes_info():
         assert global_data[3]['aggregate_memory_failures'] in 'Current: 63.48 Gi, Expected: 156G,' \
                                                               ' Issues Found: 2'
         total_calc_memoryG = vpc.get_calculated_aggregate_memory()
-        assert str(round(total_calc_memoryG.to("G"), 2)) == '68.16 G' # 68.16113098752
+        assert str(round(total_calc_memoryG.to("G"), 2)) == '68.16 G'  # 68.16113098752
         assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 2.'
 
     template_render(global_data, configs_data, storage_data, 'nested_millicores_nodes_info.html')
