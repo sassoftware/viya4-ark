@@ -136,12 +136,12 @@
     <h2>Storage</h2>
     <div>
       {% for db, info in report_data.kubernetes.dbInfo.items() %}
-      <h7>Database({{db}})</h7>
+      <h7>Database({{ db }})</h7>
       <table>
       {% for key, value in info.items() %}
         <tr>
-          <th>{{key}}</th>
-          <td>{{value}}</td>
+          <th>{{ key }}</th>
+          <td>{{ value }}</td>
         </tr>
       {% endfor %}
       </table>
