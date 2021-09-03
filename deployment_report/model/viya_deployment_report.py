@@ -245,9 +245,9 @@ class ViyaDeploymentReport(object):
         #######################################################################
         # Create a cadence/db information                                     #
         #######################################################################
-        cadence_info: Optional[Text] = config_util.get_cadence_version(resource_cache)
+        cadence_info: Optional[Text] = config_util.get_cadence_version(resource_cache=resource_cache)
 
-        db_dict: Optional[Dict] = config_util.get_db_info(resource_cache)
+        db_dict: Optional[Dict] = config_util.get_db_info(resource_cache=resource_cache)
 
         #######################################################################
         # Check whether pod resources were found (resources exist)            #

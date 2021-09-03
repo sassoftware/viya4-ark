@@ -41,13 +41,6 @@ _PGCLUSTER_NAME_KEY_ = "database"
 _PGCLUSTER_SSL_KEY_ = "ssl"
 _PGCLUSTER_CONNECT_KEY_ = "connection"
 
-# database info keys
-_HOST_KEY_ = "Host"
-_NAME_KEY_ = "Name"
-_PORT_KEY_ = "Port"
-_TYPE_KEY_ = "Type"
-_SSLENABLED_KEY_ = "SSL_Enabled"
-
 # database info values
 _EXTERNAL_DB_ = "External"
 _INTERNAL_DB_ = "Internal"
@@ -63,11 +56,11 @@ _DBNAME_CPSPOSTGRES_ = "cpspostgres"
 _DBNAME_CONFIG_CPSPOSTGRES_ = "sas-planning-cpspostgres-config"
 
 
-def get_cadence_version(resource: Dict) -> Optional[Text]:
+def get_cadence_version(resource_cache: Dict) -> Optional[Text]:
     """
     Returns the cadence version of the targeted SAS deployment.
 
-    :param config_maps: The ConfigMap resources to evaluate.
+    :param resource_cache: The dictionary of resources gathered from the k8s deployment.
 
     :return: A string representing the cadence version of the targeted SAS deployment, or None if the given
              ConfigMap does not contain the requested information.
@@ -75,10 +68,10 @@ def get_cadence_version(resource: Dict) -> Optional[Text]:
     # look for the necessary ConfigMap
 
     try:
-        if not resource:
+        if not resource_cache:
             return None
 
-        config_maps: Dict = resource[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY]
+        config_maps: Dict = resource_cache[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY]
 
         for config_map_name, config_map_details in config_maps.items():
             if _SAS_DEPLOYMENT_METADATA_CONFIG_MAP_NAME_ in config_map_name:
@@ -107,23 +100,23 @@ def get_cadence_version(resource: Dict) -> Optional[Text]:
         return None
 
 
-def get_db_info(resource: Dict) -> Dict:
+def get_db_info(resource_cache: Dict) -> Dict:
     """
     Returns the db information of the targeted SAS deployment.
 
-    :param resource: The api resource data.
+    :param resource_cache: The dictionary of resources gathered from the k8s deployment.
 
     :return: A dict representing the db information of the targeted SAS deployment, or None if
-             no resource information
+             no resource information was cached.
     """
 
-    db_dict: Optional[Dict] = dict()
+    db_dict: Dict = dict()
 
-    if not resource:
+    if not resource_cache:
         return None
 
     try:
-        pgclusters: Dict = resource[ResourceTypeValues.SAS_PGCLUSTERS][ITEMS_KEY]
+        pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_PGCLUSTERS][ITEMS_KEY]
         db_dict = _get_db_info_v2(pgclusters)
 
     except KeyError:
@@ -131,11 +124,11 @@ def get_db_info(resource: Dict) -> Dict:
 
     if not db_dict:
         try:
-            config_maps: Dict = resource[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY]
+            config_maps: Dict = resource_cache[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY]
             db_dict = _get_db_info_v1(config_maps=config_maps)
 
         except KeyError:
-            db_dict[_UNSUPPORTED_DB_] = {_TYPE_KEY_: _UNSUPPORTED_DB_}
+            db_dict[_UNSUPPORTED_DB_] = {Keys.DatabaseDetails.DBTYPE: _UNSUPPORTED_DB_}
 
     return db_dict
 
@@ -146,14 +139,14 @@ def _get_db_info_v1(config_maps: Dict) -> Dict:
 
     :param config_maps: The ConfigMap resources to evaluate. This is before data server operator change.
 
-    :return: A dict representing the db information of the targeted SAS deployment, or None if the given
-             ConfigMap does not contain the requested information.
+    :return: A dictionary representing the db information of the targeted SAS deployment,
+             or None if the given ConfigMap does not contain the requested information.
     """
     # initialize the return value
-    db_dict: Optional[Dict] = dict()
+    db_dict: Dict = dict()
 
     for config_map_name, config_map_details in config_maps.items():
-        dbs: Optional[Dict] = dict()
+        dbs: Dict = dict()
 
         # look for the necessary ConfigMap
         if _SAS_POSTGRES_CONFIG_CONFIG_MAP_NAME_ in config_map_name:
@@ -168,20 +161,20 @@ def _get_db_info_v1(config_maps: Dict) -> Dict:
                 try:
                     # check whether the db configuration is external
                     if db_data[_EXTERNAL_DATABASE_KEY_] == "false":
-                        dbs = {_TYPE_KEY_: _INTERNAL_DB_}
+                        dbs = {Keys.DatabaseDetails.DBTYPE: _INTERNAL_DB_}
                     else:
                         # if external, create the dict of all relevant info
                         dbs = {
-                            _TYPE_KEY_: _EXTERNAL_DB_,
-                            _HOST_KEY_: db_data[_DATABASE_HOST_KEY_],
-                            _PORT_KEY_: db_data[_DATABASE_PORT_KEY_],
-                            _NAME_KEY_: db_data[_DATABASE_NAME_KEY_],
-                            _SSLENABLED_KEY_: db_data[_DATABASE_SSL_ENABLED_KEY_]
+                            Keys.DatabaseDetails.DBTYPE: _EXTERNAL_DB_,
+                            Keys.DatabaseDetails.DBHOST: db_data[_DATABASE_HOST_KEY_],
+                            Keys.DatabaseDetails.DBPORT: db_data[_DATABASE_PORT_KEY_],
+                            Keys.DatabaseDetails.DBNAME: db_data[_DATABASE_NAME_KEY_],
+                            Keys.DatabaseDetails.DBSSL: db_data[_DATABASE_SSL_ENABLED_KEY_]
                         }
                 except KeyError:
                     try:
                         if _CRUNCH_DB_ in db_data[_ALT_DB_]:
-                            dbs = {_TYPE_KEY_: _INTERNAL_DB_}
+                            dbs = {Keys.DatabaseDetails.DBTYPE: _INTERNAL_DB_}
                     except KeyError:
                         # if an expected key wasn't defined, continue
                         continue
@@ -201,11 +194,11 @@ def _get_db_info_v2(pgclusters: Dict) -> Dict:
     """
     Returns the db information of the targeted SAS deployment.
 
-    :param pgclusters: The pgclusters resource to evaluate. (RDCHANGE-434)
-    :return: A list of dictionary representing the db information of the targeted SAS deployment.
+    :param pgclusters: The pgclusters resource to evaluate.
+    :return: A dictionary representing the db information of the targeted SAS deployment.
     """
     # initialize the return value
-    db_dict: Optional[Dict] = dict()
+    db_dict: Dict = dict()
 
     for key in pgclusters:
         try:
@@ -214,30 +207,30 @@ def _get_db_info_v2(pgclusters: Dict) -> Dict:
             db_name: Optional[Text] = resource_definition.get_name()
             db_data: Optional[Dict] = resource_definition.get_spec()
 
-            dbs: Optional[Dict] = dict()
+            dbs: Dict = dict()
 
             if not db_data:
                 continue
 
             try:
                 if bool(db_data['internal']):
-                    dbs = {_TYPE_KEY_: _INTERNAL_DB_}
+                    dbs = {Keys.DatabaseDetails.DBTYPE: _INTERNAL_DB_}
                 else:
                     try:
                         dbs = {
-                            _TYPE_KEY_: _EXTERNAL_DB_,
-                            _HOST_KEY_: db_data[_PGCLUSTER_CONNECT_KEY_][_PGCLUSTER_HOST_KEY_],
-                            _PORT_KEY_: db_data[_PGCLUSTER_CONNECT_KEY_][_PGCLUSTER_PORT_KEY_],
-                            _NAME_KEY_: db_data[_PGCLUSTER_NAME_KEY_],
-                            _SSLENABLED_KEY_: db_data[_PGCLUSTER_CONNECT_KEY_][_PGCLUSTER_SSL_KEY_]
+                            Keys.DatabaseDetails.DBTYPE: _EXTERNAL_DB_,
+                            Keys.DatabaseDetails.DBHOST: db_data[_PGCLUSTER_CONNECT_KEY_][_PGCLUSTER_HOST_KEY_],
+                            Keys.DatabaseDetails.DBPORT: db_data[_PGCLUSTER_CONNECT_KEY_][_PGCLUSTER_PORT_KEY_],
+                            Keys.DatabaseDetails.DBNAME: db_data[_PGCLUSTER_NAME_KEY_],
+                            Keys.DatabaseDetails.DBSSL: db_data[_PGCLUSTER_CONNECT_KEY_][_PGCLUSTER_SSL_KEY_]
                         }
                     except KeyError:
                         dbs = {
-                            _TYPE_KEY_: _EXTERNAL_DB_,
-                            _PGCLUSTER_CONNECT_KEY_: _UNAVAIL_DB_
+                            Keys.DatabaseDetails.DBTYPE: _EXTERNAL_DB_,
+                            Keys.DatabaseDetails.DBCONN: _UNAVAIL_DB_
                         }
             except KeyError:
-                dbs = {_TYPE_KEY_: _UNSUPPORTED_DB_}
+                dbs = {Keys.DatabaseDetails.DBTYPE: _UNSUPPORTED_DB_}
 
             if dbs:
                 db_dict[db_name] = dbs

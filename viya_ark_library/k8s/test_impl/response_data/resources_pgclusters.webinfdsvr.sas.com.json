@@ -4,7 +4,7 @@
         "kind": "Pgcluster",
         "metadata": {
             "annotations": {
-                "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"webinfdsvr.sas.com/v1\",\"kind\":\"Pgcluster\",\"metadata\":{\"annotations\":{\"sas.com/default-database\":\"true\"},\"labels\":{\"sas.com/admin\":\"cluster-local\",\"sas.com/deployment\":\"sas-viya\"},\"name\":\"postgres\",\"namespace\":\"d36363\",\"ownerReferences\":[{\"apiVersion\":\"orchestration.sas.com/v1alpha1\",\"blockOwnerDeletion\":true,\"controller\":true,\"kind\":\"SASDeployment\",\"name\":\"sas-viya\",\"uid\":\"74904415-de32-497f-9d5e-1b06c7058305\"}]},\"spec\":{\"certframe\":{\"containers\":[{\"envFrom\":[{\"configMapRef\":{\"name\":\"sas-tls-config-f8ccd48c6m\"}}],\"name\":\"ignoreMe\",\"volumeMounts\":[{\"mountPath\":\"/security\",\"name\":\"security\"}]}],\"initContainers\":[{\"env\":[{\"name\":\"KUBE_POD_NAME\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"metadata.name\"}}},{\"name\":\"SAS_CERTFRAME_TOKEN_DIR\",\"value\":\"/certframe-token\"},{\"name\":\"SAS_ADDITIONAL_CA_CERTIFICATES_DIR\",\"value\":\"/customer-provided-ca-certificates\"}],\"envFrom\":[{\"configMapRef\":{\"name\":\"sas-certframe-ingress-certificate-config-cmm2t44t88\"}},{\"configMapRef\":{\"name\":\"sas-certframe-user-config-c4ch2c59m7\"}},{\"configMapRef\":{\"name\":\"sas-certframe-config-2ch97fd95b\"}}],\"image\":\"test.sas.com/test/sas-certframe:3.17.5-20210729.1627580385314\",\"name\":\"sas-certframe\",\"resources\":{\"limits\":{\"cpu\":\"500m\",\"memory\":\"500Mi\"},\"requests\":{\"cpu\":\"50m\",\"memory\":\"50Mi\"}},\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]},\"privileged\":false,\"readOnlyRootFilesystem\":true},\"volumeMounts\":[{\"mountPath\":\"/certframe-token\",\"name\":\"certframe-token\"},{\"mountPath\":\"/security\",\"name\":\"security\"},{\"mountPath\":\"/customer-provided-ca-certificates\",\"name\":\"customer-provided-ca-certificates\"}]}],\"volumes\":[{\"name\":\"certframe-token\",\"secret\":{\"secretName\":\"sas-certframe-token\"}},{\"emptyDir\":{},\"name\":\"security\"},{\"configMap\":{\"name\":\"sas-customer-provided-ca-certificates-km44fc867t\"},\"name\":\"customer-provided-ca-certificates\"}]},\"connection\":{\"host\":\"testm1.openstack.sas.com\",\"port\":5432,\"ssl\":true},\"database\":\"SharedServices\",\"internal\":false,\"rolesecret\":\"postgres-user\"}}\n",
+                "kubectl.kubernetes.io/last-applied-configuration": "",
                 "sas.com/default-database": "true"
             },
             "creationTimestamp": "2021-08-03T18:48:53Z",
@@ -13,52 +13,8 @@
                 "sas.com/admin": "cluster-local",
                 "sas.com/deployment": "sas-viya"
             },
-            "managedFields": [
-                {
-                    "apiVersion": "webinfdsvr.sas.com/v1",
-                    "fieldsType": "FieldsV1",
-                    "fieldsV1": {
-                        "f:metadata": {
-                            "f:annotations": {
-                                ".": {},
-                                "f:kubectl.kubernetes.io/last-applied-configuration": {},
-                                "f:sas.com/default-database": {}
-                            },
-                            "f:labels": {
-                                ".": {},
-                                "f:sas.com/admin": {},
-                                "f:sas.com/deployment": {}
-                            },
-                            "f:ownerReferences": {}
-                        },
-                        "f:spec": {
-                            ".": {},
-                            "f:certframe": {
-                                ".": {},
-                                "f:containers": {},
-                                "f:initContainers": {},
-                                "f:volumes": {}
-                            },
-                            "f:connection": {
-                                ".": {},
-                                "f:host": {},
-                                "f:port": {},
-                                "f:ssl": {}
-                            },
-                            "f:database": {},
-                            "f:internal": {},
-                            "f:replicas": {},
-                            "f:rolesecret": {},
-                            "f:shutdown": {}
-                        }
-                    },
-                    "manager": "kubectl",
-                    "operation": "Update",
-                    "time": "2021-08-03T18:48:53Z"
-                }
-            ],
             "name": "postgres",
-            "namespace": "d36363",
+            "namespace": "test",
             "ownerReferences": [
                 {
                     "apiVersion": "orchestration.sas.com/v1alpha1",
@@ -188,7 +144,7 @@
                 ]
             },
             "connection": {
-                "host": "testm1.openstack.sas.com",
+                "host": "k8s-master-node.test.sas.com",
                 "port": 5432,
                 "ssl": true
             },
