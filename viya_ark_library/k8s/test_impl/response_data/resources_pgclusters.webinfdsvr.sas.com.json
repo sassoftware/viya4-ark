@@ -26,7 +26,7 @@
                 }
             ],
             "resourceVersion": "287826",
-            "selfLink": "/apis/webinfdsvr.sas.com/v1/namespaces/d36363/pgclusters/postgres",
+            "selfLink": "/apis/webinfdsvr.sas.com/v1/namespaces/test/pgclusters/postgres",
             "uid": "85f6ff07-1c31-40cd-9070-3c169144df39"
         },
         "spec": {
