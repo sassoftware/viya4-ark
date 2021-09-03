@@ -20,6 +20,8 @@ import os
 import platform
 import subprocess
 import pint
+from pint.converters import ScaleConverter
+from pint.unit import UnitDefinition
 from subprocess import CalledProcessError
 from typing import Text
 
@@ -55,9 +57,8 @@ class ViyaPreInstallCheck():
 
     The gathered data can be written to disk as an HTML report and a JSON file containing the gathered data.
     """
-    def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min, viya_min_worker_allocatable_CPU,
-                 viya_min_aggregate_worker_CPU_cores, viya_min_allocatable_worker_memory,
-                 viya_min_aggregate_worker_memory):
+    def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min, viya_generic_worker_CPU,
+                 viya_min_aggregate_worker_CPU_cores, viya_generic_worker_memory, viya_min_aggregate_worker_memory):
         """
         Constructor for ViyaPreInstallCheck object.
         """
@@ -67,11 +68,11 @@ class ViyaPreInstallCheck():
         self.logger = self.sas_logger.get_logger()
         self._min_kubelet_version: tuple = ()
         self._viya_kubelet_version_min = viya_kubelet_version_min
-        self._viya_min_worker_allocatable_CPU: Text = viya_min_worker_allocatable_CPU
+        self._viya_min_worker_capacity_CPU: Text = viya_generic_worker_CPU
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
-        self._viya_min_allocatable_worker_memory: Text = viya_min_allocatable_worker_memory
+        self._viya_min_capacity_worker_memory: Text = viya_generic_worker_memory
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
-        self._calculated_aggregate_allocatable_memory = None
+        self._calculated_aggregate_memory = None
         self._workers = 0
         self._aggregate_nodeStatus_failures = 0
 
@@ -520,12 +521,12 @@ class ViyaPreInstallCheck():
         self.logger.debug("global data{} time{}".format(pprint.pformat(global_data), time_string))
         return global_data
 
-    def _check_cpu_errors(self, global_data, total_alloc_cpu_cores: float, aggregate_cpu_failures):
+    def _check_cpu_errors(self, global_data, total_capacity_cpu_cores: float, aggregate_cpu_failures):
         """
-        Check if the aggregate allocatable CPUs across all worker nodes meets SAS total cpu requirements
+        Check if the aggregate CPUs across all worker nodes meets SAS total cpu requirements
 
         global_data: list with global data about worker nodes retrieved
-        total_alloc_cpu_cores:  total cpu cores across all worker nodes calculated
+        total_capacity_cpu_cores:  total cpu cores across all worker nodes calculated
         aggregate_cpu_failures:  count of cpu failures
         """
         aggregate_cpu_data = {}
@@ -533,18 +534,18 @@ class ViyaPreInstallCheck():
         error_msg = ""
         info_msg = str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_CPU_cores + \
-            ', Calculated: ' + str(round(total_alloc_cpu_cores,  2))
+            ', Calculated: ' + str(round(total_capacity_cpu_cores, 2))
 
         min_aggr_worker_cpu_core = self._get_cpu(self._viya_min_aggregate_worker_CPU_cores,
                                                  "VIYA_MIN_AGGREGATE_WORKER_CPU_CORES")
 
-        if total_alloc_cpu_cores < min_aggr_worker_cpu_core:
+        if total_capacity_cpu_cores < min_aggr_worker_cpu_core:
             aggregate_cpu_failures += 1
             # Check for combined cpu_core capacity of the Kubernetes nodes in cluster
         error_msg = viya_constants.SET + ': ' + \
-            str(round(total_alloc_cpu_cores, 2)) + ', ' + \
-            str(viya_constants.EXPECTED) + ': ' + \
-            self._viya_min_aggregate_worker_CPU_cores
+                    str(round(total_capacity_cpu_cores, 2)) + ', ' + \
+                    str(viya_constants.EXPECTED) + ': ' + \
+                    self._viya_min_aggregate_worker_CPU_cores
         if aggregate_cpu_failures > 0:
             msg = error_msg
         else:
@@ -555,31 +556,31 @@ class ViyaPreInstallCheck():
 
         return global_data
 
-    def _check_memory_errors(self, global_data, total_allocatable_memory, quantity_, aggregate_memory_failures):
+    def _check_memory_errors(self, global_data, total_capacity_memory, quantity_, aggregate_memory_failures):
         """
-        Check aggregate allocatable memory across all worker nodes against SAS total memory requirement in worker nodes
+        Check aggregate memory across all worker nodes against SAS total memory requirement in worker nodes
 
         global_data: list with global data about worker nodes retrieved
-        total_allocatable_memory:  total allocatable memory calculated across all worker nodes calculated
+        total_capacity_memory:  total memory calculated across all worker nodes calculated
         aggregate_memory_failures:  count of memory failures
         """
         aggregate_memory_data = {}
         error_msg = ""
         msg = ''
-        total_allocatable_memory_toG = total_allocatable_memory.to('G')
+        total_capacity_memory_toGi = total_capacity_memory.to('Gi')
         info_msg = str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_memory + \
-            ', Calculated: ' + str(round(total_allocatable_memory_toG, 2))
-        self._calculated_aggregate_allocatable_memory = total_allocatable_memory.to('Gi')
+            ', Calculated: ' + str(round(total_capacity_memory_toGi, 2))
+        self._calculated_aggregate_memory = total_capacity_memory.to('Gi')
 
         min_aggr_worker_memory = self._get_memory(self._viya_min_aggregate_worker_memory,
-                                                  "VIYA_MIN_AGGREGATE_WORKER_MEMORY", quantity_)
+                                                  "VIYA_GENERIC_WORKER_MEMORY", quantity_)
 
-        if total_allocatable_memory < min_aggr_worker_memory:
+        if total_capacity_memory < min_aggr_worker_memory:
             aggregate_memory_failures += 1
             # Check for combined cpu_core capacity of the Kubernetes nodes in cluster
         error_msg = viya_constants.SET + ': ' + \
-            str(round(total_allocatable_memory_toG, 2)) + ', ' + \
+            str(round(total_capacity_memory_toGi, 2)) + ', ' + \
             str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_memory
 
@@ -710,27 +711,24 @@ class ViyaPreInstallCheck():
         aggregate_memory_failures = int(0)
         aggregate_kubelet_failures = int(0)
         total_cpu_cores = float(0)
-        total_memory = quantity_("0Ki")
-        total_allocatable_memory = quantity_("0Ki")
-        self.logger.info("VIYA_MIN_WORKER_ALLOCATABLE_CPU {}"
-                         .format(str(self._viya_min_worker_allocatable_CPU)))
+
+        total_capacity_memory = quantity_("0Ki")
+        self.logger.info("VIYA_GENEIC_WORKER_CPU {}"
+                         .format(str(self._viya_min_worker_capacity_CPU)))
+        # register percetage unit with Pintt
+        ureg = pint.UnitRegistry()
+        Q = ureg.Quantity
+        ureg.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1 / 100.0)))
 
         for node in nodes_data:
             self.logger.info("processing node " + pprint.pformat(node))
-            try:
-                alloc_cpu_cores = float(node['allocatablecpu'])
-                self.logger.info("alloc_cpu_cores " + str(alloc_cpu_cores))
-            except ValueError:
-                # CPU is measured in units called millicores. Each node in the cluster introspects the operating system
-                # to determine the amount of CPU cores on the node and then multiples that value by 1000 to express
-                # its total capacity.
-                alloc_cpu_cores = float(str(node['allocatablecpu']).rstrip('m'))/1000
-                self.logger.info("alloc_cpu_cores {}".format(str(alloc_cpu_cores)))
-            # Node is identified as worker node
+            capacity_cpu_cores = self._get_cpu_units(node, 'cpu')
+            alloc_cpu_cores = self._get_cpu_units(node, 'allocatablecpu')
+
             kubeletversion = str(node['kubeletversion'])
-            alloc_memory = str(node['allocatableMemory'])
-            total_memory = total_memory + quantity_(str(node['memory']))
-            total_allocatable_memory = total_allocatable_memory + quantity_(alloc_memory)
+            capacity_memory = str(node['memory'])
+            allocatable_memory = str(node['allocatableMemory'])
+            total_capacity_memory = total_capacity_memory + quantity_(capacity_memory)
 
             try:
                 nodeReady = str(node['Ready'])
@@ -742,36 +740,39 @@ class ViyaPreInstallCheck():
                 node['Ready'] = viya_constants.KEY_NOT_FOUND
 
             if node['worker']:
-                total_cpu_cores = total_cpu_cores + alloc_cpu_cores
+                total_cpu_cores = total_cpu_cores + capacity_cpu_cores
                 self.logger.info("worker total_cpu_cores {}".format(str(total_cpu_cores)))
-                self.logger.info("worker alloc_cpu_cores {}".format(str(alloc_cpu_cores)))
+                self.logger.info("worker capacity_cpu_cores {}".format(str(capacity_cpu_cores)))
 
-                input_min_worker_alloctable_cpu = self._get_cpu(self._viya_min_worker_allocatable_CPU,
-                                                                "VIYA_MIN_WORKER_ALLOCATABLE_CPU")
-                if alloc_cpu_cores >= input_min_worker_alloctable_cpu:
+                input_min_worker_capacity_cpu = self._get_cpu(self._viya_min_worker_capacity_CPU,
+                                                                "VIYA_GENEIC_WORKER_CPU")
+
+                alloc_cpu_float = float(alloc_cpu_cores / capacity_cpu_cores  * 100)
+                alloc_cpu_percent = Q(float(alloc_cpu_float), 'pct')
+                node.update({'allocatablecpu': str(round(alloc_cpu_percent, 2))})
+
+                if capacity_cpu_cores >= input_min_worker_capacity_cpu:
                     self._set_status(0, node, 'cpu')
+                    node['error']['cpu'] = "See below."
                 else:
-                    # may be master node
                     self._set_status(1, node, 'cpu')
-                    # aggregate_all_failures += 1
                     aggregate_cpu_failures += 1
-                    # TBD Check for minimum cpu_core per worked node.. What is mimimum? Set to 2 for now.
-                    node['error']['cpu'] = viya_constants.SET + ': ' + \
-                        str(alloc_cpu_cores) + ', ' + \
-                        str(viya_constants.EXPECTED) + ': ' + \
-                        str(self._viya_min_worker_allocatable_CPU)
+                    node['error']['cpu'] = "Low vCPU. Check recommendations below."
 
-                input_min_worker_allocatble_memory = \
-                    self._get_memory(self._viya_min_allocatable_worker_memory,
-                                     "VIYA_MIN_ALLOCATABLE_WORKER_MEMORY", quantity_)
-                if quantity_(alloc_memory) >= input_min_worker_allocatble_memory:
-                    self._set_status(0, node, 'allocatableMemory')
+                input_min_worker_capacity_memory = \
+                    self._get_memory(self._viya_min_capacity_worker_memory,
+                                     "VIYA_GENERIC_WORKER_MEMORY", quantity_)
+
+                percentAlloc = float(quantity_(allocatable_memory).to('Ki') / quantity_(capacity_memory).to('Ki')  * 100)
+                allocstr = Q(float(percentAlloc), 'pct')
+                node.update({'allocatableMemory': str(round(allocstr, 2))})
+
+                if quantity_(capacity_memory).to('Gi') >= input_min_worker_capacity_memory * .75:
+                    self._set_status(0, node, 'capacityMemory')
+                    node['error']['capacityMemory'] = "See below."
                 else:
-                    self._set_status(1, node, 'allocatableMemory')
-                    node['error']['allocatableMemory'] = viya_constants.SET + \
-                        ': ' + str(alloc_memory) + ', ' + \
-                        str(viya_constants.EXPECTED) + ': ' + \
-                        self._viya_min_allocatable_worker_memory
+                    self._set_status(1, node, 'capacityMemory')
+                    node['error']['capacityMemory'] = "Low Memory. Check recommendations below."
                     aggregate_memory_failures += 1
 
             if self._release_in_range(kubeletversion):
@@ -789,7 +790,7 @@ class ViyaPreInstallCheck():
         global_data = self._check_workers(global_data, nodes_data)
         global_data = self._set_time(global_data)
         global_data = self._check_cpu_errors(global_data, total_cpu_cores, aggregate_cpu_failures)
-        global_data = self._check_memory_errors(global_data, total_allocatable_memory, quantity_,
+        global_data = self._check_memory_errors(global_data, total_capacity_memory, quantity_,
                                                 aggregate_memory_failures)
 
         global_data = self._check_kubelet_errors(global_data, aggregate_kubelet_failures)
@@ -797,6 +798,23 @@ class ViyaPreInstallCheck():
         global_data.append(nodes_data)
         self.logger.debug("nodes_data {}".format(pprint.pformat(nodes_data)))
         return global_data
+
+    def _get_cpu_units(self, node, key):
+        """ Calculate the CPU cores if it has been expressed in millicores
+            node: node dictionary object
+            return:  value of vCPU
+        """
+        try:
+            # ## Switch to capacity cpu core
+            cpu_cores = float(node[key])
+        except ValueError:
+            # CPU is measured in units called millicores. Each node in the cluster introspects the operating system
+            # to determine the amount of CPU cores on the node and then multiples that value by 1000 to express
+            # its total capacity.
+            cpu_cores = float(str(node[key]).rstrip('m')) / 1000
+
+        self.logger.info("cpu_cores {} {}".format(key, str(cpu_cores)))
+        return cpu_cores
 
     def _set_status(self, status, node, key):
         """Set the status flag on dictionary object with node details - to indicate compliance with
@@ -861,6 +879,15 @@ class ViyaPreInstallCheck():
 
                 except KeyError:
                     node_data['taint'] = viya_constants.KEY_NOT_FOUND
+                try:
+                    node_data['agentpool'] = (node['metadata']['labels']['agentpool'])
+                except KeyError:
+                    node_data['agentpool'] = viya_constants.KEY_NOT_FOUND
+                try:
+                    node_data['instance'] = (node['metadata']['labels']['node.kubernetes.io/instance-type'])
+                except KeyError:
+                    node_data['instance'] = viya_constants.KEY_NOT_FOUND
+
                 addr_len = len(address_type)
                 for j in range(addr_len):
                     addr_t = str(address_type[j][0])
@@ -938,7 +965,7 @@ class ViyaPreInstallCheck():
 
         :param:  limit - value set in viya_cluster_settings
         :param:  key used viya_cluster_settings (VIYA_MIN_AGGREGATE_WORKER_MEMORY
-                 VIYA_MIN_ALLOCATABLE_WORKER_MEMORY)
+                 VIYA_GENERIC_WORKER_MEMORY)
         :param   quantity_ is the Pint quantities object
         """
         try:
@@ -956,7 +983,7 @@ class ViyaPreInstallCheck():
 
         :param:  limit - value set in viya_cluster_settings
         :param:  key used viya_cluster_settings (VIYA_MIN_AGGREGATE_WORKER_CPU_CORES,
-                 VIYA_MIN_WORKER_ALLOCATABLE_CPU)
+                 VIYA_GENEIC_WORKER_CPU)
         :return   cpu value as float
         """
         try:
@@ -991,7 +1018,7 @@ class ViyaPreInstallCheck():
         return configs_data
 
     def get_calculated_aggregate_memory(self):
-        return self._calculated_aggregate_allocatable_memory
+        return self._calculated_aggregate_memory
 
     def generate_report(self,
                         global_data,

@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -236,9 +236,11 @@ def main(argv):
     with LRPIndicator(enter_message="Gathering facts"):
         sas_pre_check_report: ViyaPreInstallCheck = \
             ViyaPreInstallCheck(sas_logger, check_limits["VIYA_KUBELET_VERSION_MIN"],
-                                check_limits["VIYA_MIN_WORKER_ALLOCATABLE_CPU"],
+                                check_limits["VIYA_GENERIC_WORKER_CPU"],
+
                                 check_limits["VIYA_MIN_AGGREGATE_WORKER_CPU_CORES"],
-                                check_limits["VIYA_MIN_ALLOCATABLE_WORKER_MEMORY"],
+                                check_limits["VIYA_GENERIC_WORKER_MEMORY"],
+
                                 check_limits["VIYA_MIN_AGGREGATE_WORKER_MEMORY"])
     # gather the details for the report
     try:

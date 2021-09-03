@@ -19,6 +19,7 @@ NUMBER_OF_MASTER_NODES = 1
 NUMBER_OF_WORKER_NODES = 1
 SET = 'Current'
 EXPECTED = 'Expected'
+REVIEW_REQ = 'Review'
 KEY_NOT_FOUND = 'Not Found'
 INSUFFICIENT_PERMS = "Insufficient"
 ADEQUATE_PERMS = "Adequate"
