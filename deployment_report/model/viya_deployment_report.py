@@ -245,9 +245,9 @@ class ViyaDeploymentReport(object):
         #######################################################################
         # Create a cadence/db information                                     #
         #######################################################################
-        cadence_info: Optional[Text] = config_util.get_cadence_version(resource_cache=resource_cache)
+        cadence_info: Text = config_util.get_cadence_version(resource_cache=resource_cache)
 
-        db_dict: Optional[Dict] = config_util.get_db_info(resource_cache=resource_cache)
+        db_dict: Dict = config_util.get_db_info(resource_cache=resource_cache)
 
         #######################################################################
         # Check whether pod resources were found (resources exist)            #
@@ -357,7 +357,7 @@ class ViyaDeploymentReport(object):
         k8s_details_dict[Keys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT]: Dict = dict()
 
         # create a key to hold the cadence version information: str|None
-        k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Optional[Text] = cadence_info
+        k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Text = cadence_info
 
         # create a key to hold the Viya db information: dict
         k8s_details_dict[Keys.Kubernetes.DB_INFO]: Dict = db_dict
