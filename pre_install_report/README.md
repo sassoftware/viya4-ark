@@ -1,8 +1,50 @@
 # Pre-Installation Check of SAS Viya System Requirements
+## Overview
+This tool compares your Kubernetes environment to the SAS Viya system requirements.  It evaluates a   
+number of items, such as memory, CPU cores, software versions, and permissions. The output is a web-viewable,  
+HTML report with the results. SAS recommends running the tool and resolving any reported issues before   
+beginning a SAS Viya deployment in a Kubernetes cluster.  
 
-This tool compares your Kubernetes environment to the SAS Viya system requirements. It evaluates a number of items, such as memory, CPU cores, software versions, and permissions. The output is a web-viewable, HTML report with the results. 
+Memory and vCPU Check
+The tool calculates the aggregate Memory and aggregate vCPUs of all the nodes that must be active and running. The   
+Memory and vCPUs depend on the instance type used for the node.
+  
+This calculated aggregate Memory and aggregate number of vCPUs must equal or exceed the required aggregate Memory and aggregate number 
+of vCPUs for your deployment offering.  The requirements per offering are detailed in the _Hardware and Resource Requirements_ section of the SAS VIYA Operations document. 
 
-SAS recommends running the tool and resolving any reported issues before beginning a SAS Viya deployment in a Kubernetes cluster.  
+Your required aggregates must be specified in the following file  
+<tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini, example:
+```
+# Total Memory of all worker Nodes in Gib. Sum of the Memory on all active node required to deploy a specific offering.
+# Set value for required for offering
+VIYA_MIN_AGGREGATE_WORKER_MEMORY=72Gi
+# Total CPU of all worker Nodes in millicores.  Sum of the vCPUs on all active node required to deploy a specific offering.
+# Minimum allowed value = '.001'. 
+VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=14
+```
+
+If calculated aggregate memory is less than VIYA_MIN_AGGREGATE_WORKER_MEMORY then it the tool will flag a memory issue.
+If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then it the tool will flag a CPU issue.
+
+Note:  Currently the tool cannot evaluate the requirements for a single node.  
+
+The IaC porject can provision a “minimal” deployment environment with scripts and configuration files in the SAS Viya Infrastructure  
+as Code(IaC) projects.  The environment is provisioned with the sample-input-minimal.tfvars. The "minimal" deployment   
+uses the least number of node and cost effective instance types.
+
+**Example**: Set the required aggregate Memory and vCPU for “minimal” deployments in the   
+<tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini
+
+| Orders                    | Generic Node(s)          | CAS Node(s)  | System Node(s)  |
+| ------------------------- |-------------          | --------- | -------------|
+| Data Science Programming  |  Node 1 <br> vCPU 8 <br>Memory 32 | Node 1 <br> vCPU 4 <br>Memory 32 | Node 1 <br> vCPU 2 <br>Memory 8 |
+| Visual Data Science <br> Decisioning   |  Nodes 3 <br> vCPU 8 <br>Memory 32 | Node 1 <br> vCPU 4 <br>Memory 32 | Node 1 <br> vCPU 2 <br>Memory 8 |
+| Visual Analytics, <br> Visual Statistics, <br> Visual Machine Learning,<br>Visual Data Science<br> |   Nodes ? <br> vCPU 8 <br>Memory 32 | Node 1<br> vCPU 4 <br>Memory 32 | Node 1<br> vCPU 2 <br>Memory 8 |
+VIYA_MIN_AGGREGATE_WORKER_MEMORY = 
+(Generic Node Memory * Number of Generic nodes) + (CAS Node Memory * Number of CAS Nodes) + (System Node Memory ) 
+VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=
+(Generic Node vCPU * Num of Generic nodes) + (CAS node vCPU * Number of CAS nodes) + System Node vCPU 
+
 
 ## Prerequisites 
 - The tool should be run on a machine from which the Kubernetes command-line interface, `kubectl`, can access the Kubernetes cluster. 
@@ -78,7 +120,7 @@ The tool generates the pre-install check report,`viya_pre_install_report_<timest
 
 ## Modify CPU, Memory, and Version Settings
 
-You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_check_limit.properties file to alter the minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
+You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini file to alter the minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
 
 ## Known Issues
 

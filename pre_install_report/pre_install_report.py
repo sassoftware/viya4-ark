@@ -56,13 +56,6 @@ def _read_config_file(filename):
         try:
             config = configparser.ConfigParser()
             config.read(datafile)
-            # check_limits = {k: v for k, v in config.items('items')}
-            for x, y in config.items('items'):
-                print(x)
-                print(y)
-            print(str(config['items']['viya_generic_worker_memory']))
-
-            print(str(config['items']['VIYA_GENERIC_WORKER_MEMORY']))
             return config
         except OSError as e:
             print(viya_messages.EXCEPTION_MESSAGE.format(e))
