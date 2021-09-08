@@ -84,9 +84,9 @@ class ViyaDeploymentReportKeys(object):
         Class defining static references to keys in Database details dictionaries in resulting
         ViyaDeploymentReport data structure.
         """
-        DBHOST = "Host"
-        DBNAME = "Name"
-        DBPORT = "Port"
-        DBTYPE = "Type"
-        DBSSL = "SSL_Enabled"
-        DBCONN = "Connection"
+        DBHOST = "host"
+        DBNAME = "name"
+        DBPORT = "port"
+        DBTYPE = "type"
+        DBSSL = "sslEnabled"
+        DBCONN = "connection"

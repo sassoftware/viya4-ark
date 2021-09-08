@@ -136,11 +136,15 @@
     <h2>Storage</h2>
     <div>
       {% for db, info in report_data.kubernetes.dbInfo.items() %}
-      <h7>Database({{ db }})</h7>
+      <h7>Database ({{ db }})</h7>
       <table>
       {% for key, value in info.items() %}
         <tr>
-          <th>{{ key }}</th>
+          {% if key == "sslEnabled" %}
+          <th>{{ "SSL_Enabled" }}</th>
+          {% else %}
+          <th>{{ key | title }}</th>
+          {% endif %}
           <td>{{ value }}</td>
         </tr>
       {% endfor %}
