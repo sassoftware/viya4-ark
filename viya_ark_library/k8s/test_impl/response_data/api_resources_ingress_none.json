@@ -201,5 +201,23 @@
             "watch"
         ],
         "version": "v1"
+    },
+    "pgclusters.webinfdsvr.sas.com": {
+        "group": "webinfdsvr.sas.com",
+        "kind": "Pgclusters",
+        "name": "pgclusters",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ],
+        "version": "v1"
     }
 }

@@ -78,3 +78,15 @@ class ViyaDeploymentReportKeys(object):
                 """
                 RESOURCE_NAME = "resourceName"
                 RESOURCE_TYPE = "resourceType"
+
+    class DatabaseDetails(object):
+        """
+        Class defining static references to keys in Database details dictionaries in resulting
+        ViyaDeploymentReport data structure.
+        """
+        DBHOST = "host"
+        DBNAME = "name"
+        DBPORT = "port"
+        DBTYPE = "type"
+        DBSSL = "sslEnabled"
+        DBCONN = "connection"

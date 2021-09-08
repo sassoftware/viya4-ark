@@ -130,6 +130,30 @@
   </div>
   {# Cluster Overview: Kubernetes Versions Accordion #}
 
+  {# Cluster Overview: Storage Accordion #}
+  {% set kind_name = "Storage" %}
+  <div class="jq-accordion">
+    <h2>Storage</h2>
+    <div>
+      {% for db, info in report_data.kubernetes.dbInfo.items() %}
+      <h7>Database ({{ db }})</h7>
+      <table>
+      {% for key, value in info.items() %}
+        <tr>
+          {% if key == "sslEnabled" %}
+          <th>{{ "SSL Enabled" }}</th>
+          {% else %}
+          <th>{{ key | title }}</th>
+          {% endif %}
+          <td>{{ value }}</td>
+        </tr>
+      {% endfor %}
+      </table>
+      {% endfor %}
+    </div>
+  </div>
+  {# Cluster Overview: Storage Accordion #}
+
   {# Cluster Overview: Nodes Accordion #}
   {% if report_data.kubernetes.nodes.count > 0 %}
   {% set kind_name = "Node" %}

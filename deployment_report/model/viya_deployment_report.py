@@ -243,14 +243,11 @@ class ViyaDeploymentReport(object):
                                                            sas_custom_resource_types=sas_custom_resource_types)
 
         #######################################################################
-        # Get configuration values from ConfigMaps                            #
+        # Create a cadence/db information                                     #
         #######################################################################
-        # get the ConfigMap resources that were cached above
-        config_maps: Dict = resource_cache[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY]
+        cadence_info: Text = config_util.get_cadence_version(resource_cache=resource_cache)
 
-        # get the report values from ConfigMap resources
-        cadence_info: Optional[Text] = config_util.get_cadence_version(config_maps=config_maps)
-        db_dict: Optional[Dict] = config_util.get_db_info(config_maps=config_maps)
+        db_dict: Dict = config_util.get_db_info(resource_cache=resource_cache)
 
         #######################################################################
         # Check whether pod resources were found (resources exist)            #
@@ -360,7 +357,7 @@ class ViyaDeploymentReport(object):
         k8s_details_dict[Keys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT]: Dict = dict()
 
         # create a key to hold the cadence version information: str|None
-        k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Optional[Text] = cadence_info
+        k8s_details_dict[Keys.Kubernetes.CADENCE_INFO]: Text = cadence_info
 
         # create a key to hold the Viya db information: dict
         k8s_details_dict[Keys.Kubernetes.DB_INFO]: Dict = db_dict
