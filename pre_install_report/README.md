@@ -25,25 +25,23 @@ VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=14
 
 If calculated aggregate memory is less than VIYA_MIN_AGGREGATE_WORKER_MEMORY then it the tool will flag a memory issue.
 If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then it the tool will flag a CPU issue.
+ 
+SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster for Microsoft Azure, AWS,   
+or GCP
 
-Note:  Currently the tool cannot evaluate the requirements for a single node.  
 
-The IaC porject can provision a “minimal” deployment environment with scripts and configuration files in the SAS Viya Infrastructure  
-as Code(IaC) projects.  The environment is provisioned with the sample-input-minimal.tfvars. The "minimal" deployment   
-uses the least number of node and cost effective instance types.
+**Example**: Setting for aggregate Memory and vCPU for deployment based on documentation in SAS Viya Operations under 
+System Requirements in the Hardware and Resource Requirements section.  See Sizing Recommendations for Microsoft Azure.
 
-**Example**: Set the required aggregate Memory and vCPU for “minimal” deployments in the   
-<tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini
 
-| Orders                    | Generic Node(s)          | CAS Node(s)  | System Node(s)  |
+| Offering                  | CAS Node(s)          | System Node  | Nodes in User Node Pool(s)  |
 | ------------------------- |-------------          | --------- | -------------|
-| Data Science Programming  |  Node 1 <br> vCPU 8 <br>Memory 32 | Node 1 <br> vCPU 4 <br>Memory 32 | Node 1 <br> vCPU 2 <br>Memory 8 |
-| Visual Data Science <br> Decisioning   |  Nodes 3 <br> vCPU 8 <br>Memory 32 | Node 1 <br> vCPU 4 <br>Memory 32 | Node 1 <br> vCPU 2 <br>Memory 8 |
-| Visual Analytics, <br> Visual Statistics, <br> Visual Machine Learning,<br>Visual Data Science<br> |   Nodes ? <br> vCPU 8 <br>Memory 32 | Node 1<br> vCPU 4 <br>Memory 32 | Node 1<br> vCPU 2 <br>Memory 8 |
+| SAS Visual Analytics and SAS Data Preparation  |  Num of Node: Node 1, CPU: 16, Memory, 128 | Num. of Nodes: 1, CPU: 8,  Memory: 64 | Num of Node: 1 per Node User Node Pool,  CPU: 8 Memory 64 |
+
 VIYA_MIN_AGGREGATE_WORKER_MEMORY = 
-(Generic Node Memory * Number of Generic nodes) + (CAS Node Memory * Number of CAS Nodes) + (System Node Memory ) 
+CAS Node Memory + System Node Memory + (User Nodes Memory * 4) 
 VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=
-(Generic Node vCPU * Num of Generic nodes) + (CAS node vCPU * Number of CAS nodes) + System Node vCPU 
+CAS node CPU  + System Node CPU + (User Node CPU * 4)
 
 
 ## Prerequisites 

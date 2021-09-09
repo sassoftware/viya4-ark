@@ -56,8 +56,11 @@ class ViyaPreInstallCheck():
     The gathered data can be written to disk as an HTML report and a JSON file containing the gathered data.
     """
 
-    def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min, viya_generic_worker_CPU,
-                 viya_min_aggregate_worker_CPU_cores, viya_generic_worker_memory, viya_min_aggregate_worker_memory):
+    def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min,
+                 # viya_generic_worker_CPU,
+                 viya_min_aggregate_worker_CPU_cores,
+                 # viya_generic_worker_memory,
+                 viya_min_aggregate_worker_memory):
         """
         Constructor for ViyaPreInstallCheck object.
         """
@@ -67,9 +70,9 @@ class ViyaPreInstallCheck():
         self.logger = self.sas_logger.get_logger()
         self._min_kubelet_version: tuple = ()
         self._viya_kubelet_version_min = viya_kubelet_version_min
-        self._viya_min_worker_capacity_CPU: Text = viya_generic_worker_CPU
+        # self._viya_min_worker_capacity_CPU: Text = viya_generic_worker_CPU
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
-        self._viya_min_capacity_worker_memory: Text = viya_generic_worker_memory
+        # self._viya_min_capacity_worker_memory: Text = viya_generic_worker_memory
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
         self._calculated_aggregate_memory = None
         self._workers = 0
@@ -704,9 +707,7 @@ class ViyaPreInstallCheck():
         total_cpu_cores = float(0)
 
         total_capacity_memory = quantity_("0Ki")
-        self.logger.info("VIYA_GENEIC_WORKER_CPU {}"
-                         .format(str(self._viya_min_worker_capacity_CPU)))
-        # register percetage unit with Pintt
+        # register percetage unit with Pint
         ureg = pint.UnitRegistry()
         Q = ureg.Quantity
         ureg.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1 / 100.0)))
@@ -733,38 +734,20 @@ class ViyaPreInstallCheck():
             if node['worker']:
                 total_cpu_cores = total_cpu_cores + capacity_cpu_cores
                 self.logger.info("worker total_cpu_cores {}".format(str(total_cpu_cores)))
-                self.logger.info("worker capacity_cpu_cores {}".format(str(capacity_cpu_cores)))
-
-                input_min_worker_capacity_cpu = self._get_cpu(self._viya_min_worker_capacity_CPU,
-                                                              "VIYA_GENEIC_WORKER_CPU")
 
                 alloc_cpu_float = float(alloc_cpu_cores / capacity_cpu_cores * 100)
                 alloc_cpu_percent = Q(float(alloc_cpu_float), 'pct')
                 node.update({'allocatablecpu': str(round(alloc_cpu_percent, 2))})
 
-                if capacity_cpu_cores >= input_min_worker_capacity_cpu:
-                    self._set_status(0, node, 'cpu')
-                    node['error']['cpu'] = "See below."
-                else:
-                    self._set_status(1, node, 'cpu')
-                    aggregate_cpu_failures += 1
-                    node['error']['cpu'] = "Low vCPU. Check recommendations below."
-
-                input_min_worker_capacity_memory = \
-                    self._get_memory(self._viya_min_capacity_worker_memory,
-                                     "VIYA_GENERIC_WORKER_MEMORY", quantity_)
+                self._set_status(0, node, 'cpu')
+                node['error']['cpu'] = "See below."
 
                 percentAlloc = float(quantity_(allocatable_memory).to('Ki') / quantity_(capacity_memory).to('Ki') * 100)
                 allocstr = Q(float(percentAlloc), 'pct')
                 node.update({'allocatableMemory': str(round(allocstr, 2))})
 
-                if quantity_(capacity_memory).to('Gi') >= input_min_worker_capacity_memory * .75:
-                    self._set_status(0, node, 'capacityMemory')
-                    node['error']['capacityMemory'] = "See below."
-                else:
-                    self._set_status(1, node, 'capacityMemory')
-                    node['error']['capacityMemory'] = "Low Memory. Check recommendations below."
-                    aggregate_memory_failures += 1
+                self._set_status(0, node, 'capacityMemory')
+                node['error']['capacityMemory'] = "See below."
 
             if self._release_in_range(kubeletversion):
                 self._set_status(0, node, 'kubeletversion')
