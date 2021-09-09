@@ -5,12 +5,12 @@ number of items, such as memory, CPU cores, software versions, and permissions. 
 HTML report with the results. SAS recommends running the tool and resolving any reported issues before   
 beginning a SAS Viya deployment in a Kubernetes cluster.  
 
-Memory and vCPU Check
+### Memory and vCPU Check
 The tool calculates the aggregate Memory and aggregate vCPUs of all the nodes that must be active and running. The   
 Memory and vCPUs depend on the instance type used for the node.
   
 This calculated aggregate Memory and aggregate number of vCPUs must equal or exceed the required aggregate Memory and aggregate number 
-of vCPUs for your deployment offering.  The requirements per offering are detailed in the _Hardware and Resource Requirements_ section of the SAS VIYA Operations document. 
+of vCPUs for your deployment offering.  The requirements per offering are detailed in the _Hardware and Resource Requirements_ section of the SAS Viya Operations document. 
 
 Your required aggregates must be specified in the following file  
 <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini, example:
