@@ -57,9 +57,7 @@ class ViyaPreInstallCheck():
     """
 
     def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min,
-                 # viya_generic_worker_CPU,
                  viya_min_aggregate_worker_CPU_cores,
-                 # viya_generic_worker_memory,
                  viya_min_aggregate_worker_memory):
         """
         Constructor for ViyaPreInstallCheck object.
@@ -70,9 +68,7 @@ class ViyaPreInstallCheck():
         self.logger = self.sas_logger.get_logger()
         self._min_kubelet_version: tuple = ()
         self._viya_kubelet_version_min = viya_kubelet_version_min
-        # self._viya_min_worker_capacity_CPU: Text = viya_generic_worker_CPU
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
-        # self._viya_min_capacity_worker_memory: Text = viya_generic_worker_memory
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
         self._calculated_aggregate_memory = None
         self._workers = 0
