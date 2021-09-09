@@ -9,8 +9,9 @@ beginning a SAS Viya deployment in a Kubernetes cluster.
 The tool calculates the aggregate Memory and aggregate vCPUs of all the nodes that must be active and running. The   
 Memory and vCPUs depend on the instance type used for the node.
   
-This calculated aggregate Memory and aggregate number of vCPUs must equal or exceed the required aggregate Memory and aggregate number 
-of vCPUs for your deployment offering.  The requirements per offering are detailed in the _Hardware and Resource Requirements_ section of the SAS Viya Operations document. 
+This calculated aggregate Memory and aggregate number of vCPUs must equal or exceed the required aggregate Memory   
+and aggregate number of vCPUs for your deployment offering.  The requirements per offering are detailed in the   
+_Hardware and Resource Requirements_ section of the SAS Viya Operations document. 
 
 Your required aggregates must be specified in the following file  
 <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini, example:
@@ -23,33 +24,36 @@ VIYA_MIN_AGGREGATE_WORKER_MEMORY=72Gi
 VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=14
 ```
 
-If calculated aggregate memory is less than VIYA_MIN_AGGREGATE_WORKER_MEMORY then it the tool will flag a memory issue.
+If calculated aggregate memory is less than VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  
 If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then it the tool will flag a CPU issue.
  
 SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster for Microsoft Azure, AWS,   
 or GCP
 
 
-**Example**: Setting for aggregate Memory and vCPU for deployment based on documentation in SAS Viya Operations under 
-System Requirements in the Hardware and Resource Requirements section.  See Sizing Recommendations for Microsoft Azure.
+**Example**: Setting for aggregate Memory and vCPU for deployment based on documentation in SAS Viya Operations under System Requirements   
+in the Hardware and Resource Requirements section.  See Sizing Recommendations for Microsoft Azure.
 
 
 | Offering                  | CAS Node(s)          | System Node  | Nodes in User Node Pool(s)  |
 | ------------------------- |-------------          | --------- | -------------|
 | SAS Visual Analytics and SAS Data Preparation  |  Num of Node: Node 1, CPU: 16, Memory, 128 | Num. of Nodes: 1, CPU: 8,  Memory: 64 | Num of Node: 1 per Node User Node Pool,  CPU: 8 Memory 64 |
 
-VIYA_MIN_AGGREGATE_WORKER_MEMORY = 
-CAS Node Memory + System Node Memory + (User Nodes Memory * 4) 
-VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=
+VIYA_MIN_AGGREGATE_WORKER_MEMORY =  
+CAS Node Memory + System Node Memory + (User Nodes Memory * 4)  
+fl
+VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=  
 CAS node CPU  + System Node CPU + (User Node CPU * 4)
 
 
 ## Prerequisites 
-- The tool should be run on a machine from which the Kubernetes command-line interface, `kubectl`, can access the Kubernetes cluster. 
+- The tool should be run on a machine from which the Kubernetes command-line interface, `kubectl`,   
+can access the Kubernetes cluster. 
 - The tool requires Python 3.6 or higher.  
 
 ### Required Python Packages
-SAS Viya ARK tools require third-party packages be installed before use. You can install all the required packages by using the provided requirements.txt file in the following command:
+SAS Viya ARK tools require third-party packages be installed before use. You can install all the required packages by   
+using the provided requirements.txt file in the following command:
 
 ```commandline
 python3 -m pip install -r requirements.txt
@@ -59,8 +63,10 @@ Download the latest version of this tool and update required packages with every
 
 ## Usage
 
-**Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights in the namespace where you intend to deploy your SAS Viya software.
-To obtain a complete report use a `KUBECONFIG`  with administrator rights in the cluster.
+**Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights in the   
+namespace where you intend to deploy your SAS Viya software.
+To obtain a complete report use a `KUBECONFIG`   
+with administrator rights in the cluster.
 
 Create the namespace where you plan to deploy SAS Viya.  You must specify the namespace when you run the tool. 
 
@@ -76,8 +82,9 @@ python3 viya-ark.py pre-install-report -h
 
 ### Hints
 
-The values for the Ingress Host and Ingress Port options can be determined with kubectl commands. 
-The following section provides hints for a NGINX Ingress controller of Type LoadBalancer. The following commands 
+The values for the Ingress Host and Ingress Port options can be determined with kubectl commands.   
+The following section provides hints for a NGINX Ingress controller of Type LoadBalancer.   
+The following commands 
 may need to be modified to suit your Ingress controller deployment.  
 
 You must specify the namespace where the Ingress controller is available as well as the Ingress controller name:
@@ -114,19 +121,22 @@ python3 viya-ark.py pre-install-report -i nginx  -H $INGRESS_HOST -p $INGRESS_HT
  
 ## Report Output
 
-The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html`. The report is in a web-viewable, HTML format.
+The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html.  The report is in a   
+web-viewable, HTML format.
 
 ## Modify CPU, Memory, and Version Settings
 
-You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini file to alter the minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
+You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini file to alter the   
+minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
 
 ## Known Issues
 
 The following issue may impact the performance and expected results of this tool.
 - All Nodes in a cluster must be in the READY state before running the tool.
-- If all the Nodes are not in the READY state, the tool takes longer to run. Wait for it to complete.
-  Also, the tool may not be able to clean up the pods and replicaset created in the specified namespace as shown in the example output below. If that happens, the pods and replicaset must be manually deleted.
-  They will look similar to the resources shown below:
+- If all the Nodes are not in the READY state, the tool takes longer to run. Wait for it to complete.  
+Also, the tool may not be able to clean up the pods and replicaset created in the specified namespace as shown in   
+  the example output below. If that happens, the pods and replicaset must be manually deleted.  
+They will look similar to the resources shown below:
 ```    
     NAME                               READY   STATUS    RESTARTS   AGE
     pod/hello-world-6665cf748b-5x2jq   0/1     Pending   0          115m
