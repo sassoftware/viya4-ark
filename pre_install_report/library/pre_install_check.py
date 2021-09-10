@@ -20,7 +20,6 @@ import os
 import platform
 import subprocess
 import pint
-from pint.converters import ScaleConverter
 from pint.unit import UnitDefinition
 from subprocess import CalledProcessError
 from typing import Text
