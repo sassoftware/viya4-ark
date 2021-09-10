@@ -11,8 +11,8 @@ be considered a snapshot in time.
 The tool calculates the aggregate Memory and aggregate vCPUs of your cluster. The aggregate Memory is the sum 
 of the Memory capacity on all the active and running nodes. The aggregate CPU is calculated similarly.
   
-There will be some percentage of Memory on each node in the cluster that is consumed by the OS, Kubelet and such and therefore
-not be available for SAS Viya.   This tool assumes that 85% of the calculated aggregate Memory is available for SAS Viya, 
+There will be some percentage of Memory on each node in the cluster that is considered "overhead" (consumed by the OS, Kubelet, etc)
+and therefore not be available for SAS Viya.   This tool assumes that 85% of the calculated aggregate Memory is available for SAS Viya, 
 and the memory sizes in the report reflect this.  
 
 The calculated aggregate number of vCPUs must equal or exceed the required aggregate number of vCPUs for your deployment offering. 
