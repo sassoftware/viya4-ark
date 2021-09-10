@@ -712,18 +712,18 @@ class ViyaPreInstallCheck():
 
         total_capacity_memory = quantity_("0Ki")
         # register percetage unit with Pint
-        ureg = pint.UnitRegistry()
-        Q = ureg.Quantity
-        ureg.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1 / 100.0)))
+        # ureg = pint.UnitRegistry()
+        # Q = ureg.Quantity
+        # ureg.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1 / 100.0)))
 
         for node in nodes_data:
             self.logger.info("processing node " + pprint.pformat(node))
             capacity_cpu_cores = self._get_cpu_units(node, 'cpu')
-            alloc_cpu_cores = self._get_cpu_units(node, 'allocatablecpu')
+            # alloc_cpu_cores = self._get_cpu_units(node, 'allocatablecpu')
 
             kubeletversion = str(node['kubeletversion'])
             capacity_memory = str(node['memory'])
-            allocatable_memory = str(node['allocatableMemory'])
+            # allocatable_memory = str(node['allocatableMemory'])
             total_capacity_memory = total_capacity_memory + quantity_(capacity_memory)
 
             try:
