@@ -56,8 +56,7 @@ class ViyaPreInstallCheck():
 
     def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min,
                  viya_min_aggregate_worker_CPU_cores,
-                 viya_min_aggregate_worker_memory,
-                 viya_percentage_of_instance):
+                 viya_min_aggregate_worker_memory):
         """
         Constructor for ViyaPreInstallCheck object.
         """
@@ -69,7 +68,6 @@ class ViyaPreInstallCheck():
         self._viya_kubelet_version_min = viya_kubelet_version_min
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
-        self._viya_percentage_of_instance: Text = viya_percentage_of_instance
         self._calculated_aggregate_memory = None
         self._workers = 0
         self._aggregate_nodeStatus_failures = 0
@@ -560,31 +558,32 @@ class ViyaPreInstallCheck():
         error_msg = ""
         msg = ''
 
-        total_capacity_memory_toGi = total_capacity_memory.to('Gi')
+        total_capacity_memory_toGB = total_capacity_memory.to('G')
 
         info_msg = str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_memory + \
-            ', Calculated: ' + str(round(total_capacity_memory_toGi, 2))
-        self._calculated_aggregate_memory = total_capacity_memory_toGi
+            ', Calculated: ' + str(round(total_capacity_memory_toGB, 2))
+        self._calculated_aggregate_memory = total_capacity_memory_toGB
 
         min_aggr_worker_memory = self._get_memory(self._viya_min_aggregate_worker_memory,
                                                   "VIYA_GENERIC_WORKER_MEMORY", quantity_)
-
         self.logger.info("percent {} percent of instance {} total capacity {}".format
-                         (str(self._viya_percentage_of_instance),
-                          str(min_aggr_worker_memory * (int(self._viya_percentage_of_instance) / 100)),
-                          str(total_capacity_memory_toGi)))
-        if total_capacity_memory_toGi < min_aggr_worker_memory * (int(self._viya_percentage_of_instance) / 100):
+                         (str(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE),
+                          str(min_aggr_worker_memory * (int(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE) / 100)),
+                          str(total_capacity_memory_toGB)))
+        if total_capacity_memory_toGB < \
+                (min_aggr_worker_memory.to('G')) * (int(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE) / 100):
+
             aggregate_memory_failures += 1
             # Check for combined cpu_core capacity of the Kubernetes nodes in cluster
         error_msg = viya_constants.SET + ': ' + \
-            str(round(total_capacity_memory_toGi, 2)) + ', ' + \
+            str(round(total_capacity_memory_toGB, 2)) + ', ' + \
             str(viya_constants.EXPECTED) + ': ' + self._viya_min_aggregate_worker_memory
 
         if aggregate_memory_failures > 0:
             msg = error_msg
         else:
-            msg = info_msg
+            msg = info_msg + "," + viya_constants.MEMORY_WITHIN_RANGE
 
         aggregate_memory_data.update({'aggregate_memory_failures': msg +
                                      ', Issues Found: ' + str(aggregate_memory_failures)})
@@ -708,7 +707,7 @@ class ViyaPreInstallCheck():
         aggregate_kubelet_failures = int(0)
         total_cpu_cores = float(0)
 
-        total_capacity_memory = quantity_("0Ki")
+        total_capacity_memory = quantity_("0G")
         # register percetage unit with Pint
         # ureg = pint.UnitRegistry()
         # Q = ureg.Quantity
@@ -722,7 +721,7 @@ class ViyaPreInstallCheck():
             kubeletversion = str(node['kubeletversion'])
             capacity_memory = str(node['memory'])
             # allocatable_memory = str(node['allocatableMemory'])
-            total_capacity_memory = total_capacity_memory + quantity_(capacity_memory)
+            total_capacity_memory = total_capacity_memory + quantity_(capacity_memory).to('G')
 
             try:
                 nodeReady = str(node['Ready'])

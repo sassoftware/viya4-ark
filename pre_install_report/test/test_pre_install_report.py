@@ -39,7 +39,6 @@ _RUNTIME_ERROR_RC_ = 7
 viya_kubelet_version_min = 'v1.14.0'
 viya_min_aggregate_worker_CPU_cores = '12'
 viya_min_aggregate_worker_memory = '56G'
-viya_percent = 85
 
 # setup sys.path for import of viya_constants
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
@@ -50,8 +49,7 @@ sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.NOTSET, logg
 def test_get_storage_classes_json():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/multi_storage_classes.json')
@@ -70,8 +68,7 @@ def test_get_storage_classes_json():
 def test_read_cluster_info_output():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
     cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n" + \
                    "KubeDNS is running at " + \
                    "https://0.0.0.0:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy\n"
@@ -83,8 +80,7 @@ def test_read_cluster_info_output():
 def test_delete_temp_file():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     file_name = "temp_cluster_info_test.txt"
     data = "Some data"
@@ -99,8 +95,8 @@ def test_delete_temp_file():
 def test_get_master_nodes_json():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
+
     cluster_info = "Kubernetes master is running at https://0.0.0.0:6443\n" + \
                    "KubeDNS is running at " + \
                    "https://0.0.0.0:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy\n"
@@ -113,8 +109,7 @@ def test_get_master_nodes_json():
 def test_ranchersingle_get_master_nodes_json():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     cluster_info = "Kubernetes master is running at https://127.0.0.1:6443\n" + \
         "CoreDNS is running at " + \
@@ -133,8 +128,7 @@ def test_ranchersingle_get_master_nodes_json():
 def test_ranchermulti_get_master_nodes_json():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     cluster_info = "Kubernetes master is running at https://node3:6443\n" + \
         "CoreDNS is running at https://node3:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy\n" + \
@@ -151,8 +145,7 @@ def test_get_nested_nodes_info():
     viya_min_aggregate_worker_CPU_cores = '20'
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/nodes_info.json')
@@ -174,7 +167,8 @@ def test_get_nested_nodes_info():
     for nodes in global_data:
         assert global_data[0]['totalWorkers'] in '3: Current: 3, Expected: Minimum 1'
         assert global_data[2]['aggregate_cpu_failures'] in 'Current: 18.0, Expected: 20, Issues Found: 1'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 62.52 Gi,' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 67.13 G,' \
+                                                              ' Memory within Range,' \
                                                               ' Issues Found: 0'
 
         total_aggregate_memoryG = vpc.get_calculated_aggregate_memory()  # quantity_("62.3276481628418 Gi").to('G')
@@ -191,8 +185,7 @@ def test_get_nested_millicores_nodes_info():
     viya_min_aggregate_worker_memory = '156G'
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
     # Register Python Package Pint definitions
     quantity_ = register_pint()
 
@@ -215,7 +208,7 @@ def test_get_nested_millicores_nodes_info():
         assert global_data[0]['totalWorkers'] in '3: Current: 3, Expected: Minimum 1'
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Current: 2.5, Expected: 20, Issues Found: 1'
-        assert global_data[3]['aggregate_memory_failures'] in 'Current: 63.48 Gi, Expected: 156G,' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Current: 68.16 G, Expected: 156G,' \
                                                               ' Issues Found: 1'
         total_calc_memoryG = vpc.get_calculated_aggregate_memory()
         assert str(round(total_calc_memoryG.to("G"), 2)) == '68.16 G'  # 68.16113098752
@@ -227,8 +220,7 @@ def test_get_nested_millicores_nodes_info():
 def test_ranchersingle_get_nested_nodes_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
     quantity_ = register_pint()
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -247,8 +239,9 @@ def test_ranchersingle_get_nested_nodes_info():
     pprint.pprint(global_data)
     for nodes in global_data:
         assert global_data[2]['aggregate_cpu_failures'] in 'Current: 8.0, Expected: 12, Issues Found: 1'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 62.76 Gi, ' \
-                                                              'Issues Found: 0'
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 67.39 G,' \
+                                                              ' Memory within Range,' \
+                                                              ' Issues Found: 0'
         total_calc_memoryG = vpc.get_calculated_aggregate_memory()
         assert str(round(total_calc_memoryG.to("G"), 2)) == '67.39 G'
         assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
@@ -259,8 +252,7 @@ def test_ranchersingle_get_nested_nodes_info():
 def test_ranchermulti_get_nested_nodes_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
     quantity_ = register_pint()
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -280,8 +272,9 @@ def test_ranchermulti_get_nested_nodes_info():
     for nodes in global_data:
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Expected: 12, Calculated: 40.0, Issues Found: 0'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 313.8 Gi, ' \
-                                                              'Issues Found: 0'
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 336.94 G,' \
+                                                              ' Memory within Range,' \
+                                                              ' Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
 
     template_render(global_data, configs_data, storage_data, 'ranchermulti_nested_nodes_info.html')
@@ -290,8 +283,7 @@ def test_ranchermulti_get_nested_nodes_info():
 def test_get_no_config_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/no_config_info.json')
     with open(datafile) as f:
@@ -305,8 +297,7 @@ def test_get_no_config_info():
 def test_get_config_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/config_info.json')
     with open(datafile) as f:
@@ -339,8 +330,7 @@ def test_get_config_info():
 def test_ranchersingle_test_get_config_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/ranchersingle_config_info.json')
     with open(datafile) as f:
@@ -364,8 +354,7 @@ def test_ranchersingle_test_get_config_info():
 def test_ranchermulti_test_get_config_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/ranchermulti_config_info.json')
     with open(datafile) as f:
@@ -392,8 +381,7 @@ def test_ranchermulti_test_get_config_info():
 def test_azure_terrform_multi_nodes_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     quantity_ = register_pint()
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -413,7 +401,8 @@ def test_azure_terrform_multi_nodes_info():
     for nodes in global_data:
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Expected: 12, Calculated: 39.1, Issues Found: 0'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 156.97 Gi,' \
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 168.54 G,' \
+                                                              ' Memory within Range,' \
                                                               ' Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
 
@@ -424,8 +413,7 @@ def test_azure_multi_get_nested_nodes_info():
 
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     quantity_ = register_pint()
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -448,8 +436,9 @@ def test_azure_multi_get_nested_nodes_info():
     for nodes in global_data:
 
         assert global_data[2]['aggregate_cpu_failures'] in 'Expected: 12, Calculated: 32.0, Issues Found: 0'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 109.82 Gi, ' \
-                                                              'Issues Found: 0'
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 117.92 G,' \
+                                                              ' Memory within Range,' \
+                                                              ' Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in '0, Check Kubelet Version on nodes.'
 
     template_render(global_data, configs_data, storage_data, 'azure_multi_nested_nodes_info.html')
@@ -459,8 +448,7 @@ def test_azure_worker_nodes():
     viya_kubelet_version_min = 'v1.17.0'
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     quantity_ = register_pint()
     current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -481,8 +469,9 @@ def test_azure_worker_nodes():
     for nodes in global_data:
         assert global_data[2]['aggregate_cpu_failures'] in \
                'Expected: 12, Calculated: 143.74, Issues Found: 0'
-        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 747.18 Gi, ' \
-                                                              'Issues Found: 0'
+        assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 802.28 G,' \
+                                                              ' Memory within Range,' \
+                                                              ' Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 10. ' \
                                                                'Check Node(s). All Nodes NOT in Ready Status. ' \
                                                                'Issues Found: ' + str(issues_found)
@@ -516,14 +505,12 @@ def register_pint():
 
 def createViyaPreInstallCheck(viya_kubelet_version_min,
                               viya_min_aggregate_worker_CPU_cores,
-                              viya_min_aggregate_worker_memory,
-                              viya_percent):
+                              viya_min_aggregate_worker_memory):
 
     sas_pre_check_report: ViyaPreInstallCheck = ViyaPreInstallCheck(sas_logger,
                                                                     viya_kubelet_version_min,
                                                                     viya_min_aggregate_worker_CPU_cores,
-                                                                    viya_min_aggregate_worker_memory,
-                                                                    viya_percent)
+                                                                    viya_min_aggregate_worker_memory)
 
     return sas_pre_check_report
 
@@ -532,8 +519,7 @@ def test_get_calculated_aggregate_memory():
 
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
-                                    viya_min_aggregate_worker_memory,
-                                    viya_percent)
+                                    viya_min_aggregate_worker_memory)
 
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/nodes_info.json')
@@ -550,8 +536,7 @@ def test_get_calculated_aggregate_memory():
     global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
 
     total_calc_memoryGi = vpc.get_calculated_aggregate_memory()
-    assert str(total_calc_memoryGi) == '62.5229606628418 Gi'
-
+    assert str(round(total_calc_memoryGi.to('Gi'),13)) == '62.5229606628418 Gi'
 
 def test_kubconfig_file():
     old_kubeconfig = os.environ.get('KUBECONFIG')  # /Users/cat/doc

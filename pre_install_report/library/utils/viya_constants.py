@@ -13,7 +13,7 @@
 DISK_PRESSURE = 'False'
 MEMORY_PRESSURE = 'False'
 PID_PRESSURE = 'False'
-WORKER_MEMORY = '32779828Ki'
+# WORKER_MEMORY = '32779828Ki'
 OS_IMAGE = 'CentOS Linux 7 (Core)'
 NUMBER_OF_MASTER_NODES = 1
 NUMBER_OF_WORKER_NODES = 1
@@ -54,3 +54,6 @@ PERM_ROLEBINDING = "RoleBinding"
 PERM_SA = "Service Account"
 PERM_CLASS = "PreInstallUtils"
 PERM_CR_RBAC = "Custom Resource with RBAC "
+# Check cluster capacity for Memory against Percentage of Memory set in the viya_deployment_settings.ini
+VIYA_PERCENTAGE_OF_INSTANCE = "85"
+MEMORY_WITHIN_RANGE = " Memory within Range"
