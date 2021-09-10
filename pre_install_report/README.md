@@ -2,7 +2,7 @@
 ## Overview
 This tool compares your Kubernetes environment to the SAS Viya system requirements.  It evaluates a   
 number of items, such as memory, CPU cores, software versions, and permissions. The output is a web-viewable,  
-HTML report with the results. SAS recommends running the tool and resolving any reported issues before   
+HTML report with the results. SAS recommends running the tool and resolving any reported issues _before_   
 beginning a SAS Viya deployment in a Kubernetes cluster.  The tool cannot account for the dynamic resource 
 allocations that Kubernetes may orchestrate once Viya is deployed.  The report and the information therein must
 be considered a snapshot in time.  
