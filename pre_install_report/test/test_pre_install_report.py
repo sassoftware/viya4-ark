@@ -536,7 +536,8 @@ def test_get_calculated_aggregate_memory():
     global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
 
     total_calc_memoryGi = vpc.get_calculated_aggregate_memory()
-    assert str(round(total_calc_memoryGi.to('Gi'),13)) == '62.5229606628418 Gi'
+    assert str(round(total_calc_memoryGi.to('Gi'), 13)) == '62.5229606628418 Gi'
+
 
 def test_kubconfig_file():
     old_kubeconfig = os.environ.get('KUBECONFIG')  # /Users/cat/doc
