@@ -3,13 +3,15 @@
 This tool compares your Kubernetes environment to the SAS Viya system requirements.  It evaluates a   
 number of items, such as memory, CPU cores, software versions, and permissions. The output is a web-viewable,  
 HTML report with the results. SAS recommends running the tool and resolving any reported issues before   
-beginning a SAS Viya deployment in a Kubernetes cluster.  
+beginning a SAS Viya deployment in a Kubernetes cluster.  The tool cannot account for the dynamic resource 
+allocations that Kubernetes may orchestrate once you deploy Viya, so the results of each generated report must be
+considered a snapshot in time.  
 
 ### Memory and vCPU Check
-The tool calculates the aggregate Memory and aggregate vCPUs of all the nodes that must be active and running. The aggregate
-Memory is the sum of the Memory capacity on all the running nodes. The aggregate CPU is calculated similarly.
+The tool calculates the aggregate Memory and aggregate vCPUs of your cluster. The aggregate Memory is the sum 
+of the Memory capacity on all the active and running nodes. The aggregate CPU is calculated similarly.
   
-This calculated aggregate Memory must equal or exceed a percentage(85%) of required aggregate Memory.  The calculated   
+There will be some percentage of Memory on each node in the cluster that is allocated for This calculated aggregate Memory must equal or exceed a percentage(85%) of required aggregate Memory.  The calculated   
 aggregate number of vCPUs must equal or exceed the required aggregate number of vCPUs for your deployment offering. The   
 requirements per offering are detailed in the _Hardware and Resource Requirements_ section of the SAS Viya Operations   
 document. The required Memory and vCPUs sizes depend on the instance type used for the node.  
