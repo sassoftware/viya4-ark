@@ -7,7 +7,7 @@ beginning a SAS Viya deployment in a Kubernetes cluster.
 
 ### Memory and vCPU Check
 The tool calculates the aggregate Memory and aggregate vCPUs of all the nodes that must be active and running. The aggregate
-Memory is the sum the Memory capacity on all the running nodes. The aggregate CPU is calculated similarly.
+Memory is the sum of the Memory capacity on all the running nodes. The aggregate CPU is calculated similarly.
   
 This calculated aggregate Memory must equal or exceed a percentage(85%) of required aggregate Memory.  The calculated   
 aggregate number of vCPUs must equal or exceed the required aggregate number of vCPUs for your deployment offering. The   
@@ -25,7 +25,7 @@ VIYA_MIN_AGGREGATE_WORKER_MEMORY=448Gi
 VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=56
 ```
 
-If calculated aggregate memory is less than VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  
+If calculated aggregate memory is less than a percentage (85%) of VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  
 If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then it the tool will flag a CPU issue.
  
 SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster for Microsoft Azure, AWS,   
