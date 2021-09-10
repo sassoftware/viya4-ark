@@ -6,22 +6,23 @@ HTML report with the results. SAS recommends running the tool and resolving any 
 beginning a SAS Viya deployment in a Kubernetes cluster.  
 
 ### Memory and vCPU Check
-The tool calculates the aggregate Memory and aggregate vCPUs of all the nodes that must be active and running. The   
-Memory and vCPUs depend on the instance type used for the node.
+The tool calculates the aggregate Memory and aggregate vCPUs of all the nodes that must be active and running. The aggregate
+Memory is the sum the Memory capacity on all the running nodes. The aggregate CPU is calculated similarly.
   
-This calculated aggregate Memory and aggregate number of vCPUs must equal or exceed the required aggregate Memory   
-and aggregate number of vCPUs for your deployment offering.  The requirements per offering are detailed in the   
-_Hardware and Resource Requirements_ section of the SAS Viya Operations document. 
+This calculated aggregate Memory must equal or exceed a percentage(85%) of required aggregate Memory.  The calculated   
+aggregate number of vCPUs must equal or exceed the required aggregate number of vCPUs for your deployment offering. The   
+requirements per offering are detailed in the _Hardware and Resource Requirements_ section of the SAS Viya Operations   
+document. The required Memory and vCPUs sizes depend on the instance type used for the node.  
 
 Your required aggregates must be specified in the following file  
 <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini, example:
 ```
 # Total Memory of all worker Nodes in Gib. Sum of the Memory on all active node required to deploy a specific offering.
 # Set value for required for offering
-VIYA_MIN_AGGREGATE_WORKER_MEMORY=72Gi
+VIYA_MIN_AGGREGATE_WORKER_MEMORY=448Gi
 # Total CPU of all worker Nodes in millicores.  Sum of the vCPUs on all active node required to deploy a specific offering.
 # Minimum allowed value = '.001'. 
-VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=14
+VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=56
 ```
 
 If calculated aggregate memory is less than VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  

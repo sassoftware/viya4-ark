@@ -58,7 +58,8 @@ class ViyaPreInstallCheck():
 
     def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min,
                  viya_min_aggregate_worker_CPU_cores,
-                 viya_min_aggregate_worker_memory):
+                 viya_min_aggregate_worker_memory,
+                 viya_percentage_of_instance):
         """
         Constructor for ViyaPreInstallCheck object.
         """
@@ -70,6 +71,7 @@ class ViyaPreInstallCheck():
         self._viya_kubelet_version_min = viya_kubelet_version_min
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
+        self._viya_percentage_of_instance: Text = viya_percentage_of_instance
         self._calculated_aggregate_memory = None
         self._workers = 0
         self._aggregate_nodeStatus_failures = 0
@@ -559,16 +561,22 @@ class ViyaPreInstallCheck():
         aggregate_memory_data = {}
         error_msg = ""
         msg = ''
+
         total_capacity_memory_toGi = total_capacity_memory.to('Gi')
+
         info_msg = str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_memory + \
             ', Calculated: ' + str(round(total_capacity_memory_toGi, 2))
-        self._calculated_aggregate_memory = total_capacity_memory.to('Gi')
+        self._calculated_aggregate_memory = total_capacity_memory_toGi
 
         min_aggr_worker_memory = self._get_memory(self._viya_min_aggregate_worker_memory,
                                                   "VIYA_GENERIC_WORKER_MEMORY", quantity_)
 
-        if total_capacity_memory < min_aggr_worker_memory:
+        self.logger.info("percent {} percent of instance {} total capacity {}".format
+                         (str(self._viya_percentage_of_instance),
+                          str(min_aggr_worker_memory * (int(self._viya_percentage_of_instance) / 100)),
+                          str(total_capacity_memory_toGi)))
+        if total_capacity_memory_toGi < min_aggr_worker_memory * (int(self._viya_percentage_of_instance) / 100):
             aggregate_memory_failures += 1
             # Check for combined cpu_core capacity of the Kubernetes nodes in cluster
         error_msg = viya_constants.SET + ': ' + \
@@ -731,16 +739,8 @@ class ViyaPreInstallCheck():
                 total_cpu_cores = total_cpu_cores + capacity_cpu_cores
                 self.logger.info("worker total_cpu_cores {}".format(str(total_cpu_cores)))
 
-                alloc_cpu_float = float(alloc_cpu_cores / capacity_cpu_cores * 100)
-                alloc_cpu_percent = Q(float(alloc_cpu_float), 'pct')
-                node.update({'allocatablecpu': str(round(alloc_cpu_percent, 2))})
-
                 self._set_status(0, node, 'cpu')
                 node['error']['cpu'] = "See below."
-
-                percentAlloc = float(quantity_(allocatable_memory).to('Ki') / quantity_(capacity_memory).to('Ki') * 100)
-                allocstr = Q(float(percentAlloc), 'pct')
-                node.update({'allocatableMemory': str(round(allocstr, 2))})
 
                 self._set_status(0, node, 'capacityMemory')
                 node['error']['capacityMemory'] = "See below."

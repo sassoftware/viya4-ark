@@ -247,7 +247,8 @@ def main(argv):
         sas_pre_check_report: ViyaPreInstallCheck = \
             ViyaPreInstallCheck(sas_logger, check_limits['items']['VIYA_KUBELET_VERSION_MIN'],
                                 check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_CPU_CORES'],
-                                check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_MEMORY'])
+                                check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_MEMORY'],
+                                check_limits['items']['VIYA_PERTCENTAGE_OF_INSTANCE'])
     # gather the details for the report
     try:
         print()
