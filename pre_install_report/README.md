@@ -24,9 +24,9 @@ The required Memory and vCPUs sizes depend on the instance type used for the nod
 Your required aggregates must be specified in the following file  
 <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini, example:
 ```
-# Total Memory of all worker Nodes in Gib. Sum of the Memory on all active node required to deploy a specific offering.
+# Total Memory of all worker Nodes in GB. Sum of the Memory on all active node required to deploy a specific offering.
 # Set value for required for offering
-VIYA_MIN_AGGREGATE_WORKER_MEMORY=448Gi
+VIYA_MIN_AGGREGATE_WORKER_MEMORY=448G
 # Total CPU of all worker Nodes in millicores.  Sum of the vCPUs on all active node required to deploy a specific offering.
 # Minimum allowed value = '.001'. 
 VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=56
@@ -35,8 +35,8 @@ VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=56
 If calculated aggregate memory is less than a percentage (85%) of VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  
 If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then it the tool will flag a CPU issue.
  
-SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster for Microsoft Azure, AWS,   
-or GCP
+SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster for [Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure),   
+[AWS](https://github.com/sassoftware/viya4-iac-aws]), or [GCP](https://github.com/sassoftware/viya4-iac-gcp)
 
 
 **Example**: Setting for aggregate Memory and vCPU for deployment based on documentation in SAS Viya Operations under System Requirements   

@@ -720,7 +720,6 @@ class ViyaPreInstallCheck():
 
             kubeletversion = str(node['kubeletversion'])
             capacity_memory = str(node['memory'])
-            # allocatable_memory = str(node['allocatableMemory'])
             total_capacity_memory = total_capacity_memory + quantity_(capacity_memory).to('G')
 
             try:
