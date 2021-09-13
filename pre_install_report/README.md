@@ -49,7 +49,7 @@ in the Hardware and Resource Requirements section.  See Sizing Recommendations f
 
 VIYA_MIN_AGGREGATE_WORKER_MEMORY =  
 CAS Node Memory + System Node Memory + (User Nodes Memory * 4)  
-fl
+
 VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=  
 CAS node CPU  + System Node CPU + (User Node CPU * 4)
 
