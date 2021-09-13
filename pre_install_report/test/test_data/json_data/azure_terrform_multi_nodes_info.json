@@ -58,7 +58,7 @@
                 },
                 "capacity": {
                     "attachable-volumes-azure-disk": "16",
-                    "cpu": "8",
+                    "cpu": "7820m",
                     "ephemeral-storage": "101445900Ki",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",
@@ -538,7 +538,7 @@
                 },
                 "capacity": {
                     "attachable-volumes-azure-disk": "16",
-                    "cpu": "8",
+                    "cpu": "7820m",
                     "ephemeral-storage": "101445900Ki",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",
@@ -1018,7 +1018,7 @@
                 },
                 "capacity": {
                     "attachable-volumes-azure-disk": "16",
-                    "cpu": "8",
+                    "cpu": "7820m",
                     "ephemeral-storage": "101445900Ki",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",
@@ -1498,7 +1498,7 @@
                 },
                 "capacity": {
                     "attachable-volumes-azure-disk": "16",
-                    "cpu": "8",
+                    "cpu": "7820m",
                     "ephemeral-storage": "101445900Ki",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",
@@ -1978,7 +1978,7 @@
                 },
                 "capacity": {
                     "attachable-volumes-azure-disk": "16",
-                    "cpu": "8",
+                    "cpu": "7820m",
                     "ephemeral-storage": "101445900Ki",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",

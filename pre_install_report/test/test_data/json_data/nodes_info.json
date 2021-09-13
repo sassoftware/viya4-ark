@@ -718,7 +718,7 @@
                     "ephemeral-storage": "157275116Ki",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",
-                    "memory": "32779828Ki",
+                    "memory": "420Ki",
                     "pods": "110"
                 },
                 "conditions": [

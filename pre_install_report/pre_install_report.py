@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -18,6 +18,7 @@ import sys
 import os
 import logging
 import getopt
+import configparser
 
 from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.utils import viya_messages
@@ -43,24 +44,32 @@ file_timestamp = datetime.datetime.now().strftime(_FILE_TIMESTAMP_TMPL_)
 ##############################################
 
 
-def _read_properties_file():
+def _read_config_file(filename):
     """
-    This method reads the externalized properties file viya_cluster_settings.properties
+    This method reads the externalized config file viya_cluster_settings.ini
 
     :returns dict object with key/value pairs read.
     """
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    datafile = os.path.join(current_dir, 'viya_cluster_settings.properties')
+    datafile = os.path.join(current_dir, filename)
     if os.path.exists(datafile):
         try:
-            check_limits: dict = dict(line.strip().split('=')
-                                      for line in open(datafile) if not line.strip().startswith('#'))
-            return check_limits
+            config = configparser.ConfigParser()
+            config.read(datafile)
+            return config
         except OSError as e:
             print(viya_messages.EXCEPTION_MESSAGE.format(e))
             print()
             sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
+        except KeyError as e:
+            print(viya_messages.EXCEPTION_MESSAGE.format(e))
+            print()
+            sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
         except ValueError as e:
+            print(viya_messages.EXCEPTION_MESSAGE.format(e))
+            print()
+            sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
+        except configparser.DuplicateOptionError as e:
             print(viya_messages.EXCEPTION_MESSAGE.format(e))
             print()
             sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
@@ -232,14 +241,13 @@ def main(argv):
         print()
         sys.exit(viya_messages.NAMESPACE_NOT_FOUND_RC_)
 
-    check_limits = _read_properties_file()
+    check_limits = _read_config_file('viya_deployment_settings.ini')
+
     with LRPIndicator(enter_message="Gathering facts"):
         sas_pre_check_report: ViyaPreInstallCheck = \
-            ViyaPreInstallCheck(sas_logger, check_limits["VIYA_KUBELET_VERSION_MIN"],
-                                check_limits["VIYA_MIN_WORKER_ALLOCATABLE_CPU"],
-                                check_limits["VIYA_MIN_AGGREGATE_WORKER_CPU_CORES"],
-                                check_limits["VIYA_MIN_ALLOCATABLE_WORKER_MEMORY"],
-                                check_limits["VIYA_MIN_AGGREGATE_WORKER_MEMORY"])
+            ViyaPreInstallCheck(sas_logger, check_limits['items']['VIYA_KUBELET_VERSION_MIN'],
+                                check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_CPU_CORES'],
+                                check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_MEMORY'])
     # gather the details for the report
     try:
         print()
