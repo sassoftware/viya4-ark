@@ -571,6 +571,7 @@ class ViyaPreInstallCheck():
                          (str(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE),
                           str(min_aggr_worker_memory * (int(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE) / 100)),
                           str(total_capacity_memory_toGB)))
+        self.logger.info("input memory converted to G {}".format(str(min_aggr_worker_memory.to('G'))))
         if total_capacity_memory_toGB < \
                 (min_aggr_worker_memory.to('G')) * (int(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE) / 100):
 
@@ -907,19 +908,20 @@ class ViyaPreInstallCheck():
 
         try:
             current = tuple(kubeletversion.split("."))
-        except ValueError:
-            return False
-        self.logger.info("current: " + pprint.pformat(current)
-                         + ", min: " + pprint.pformat(self._min_kubelet_version))
 
-        if int(current[0][1:]) > int(self._min_kubelet_version[0][1:]):
-            return True
-        if int(current[0][1:]) < int(self._min_kubelet_version[0][1:]):
+            if int(current[0][1:]) > int(self._min_kubelet_version[0][1:]):
+                return True
+            if int(current[0][1:]) < int(self._min_kubelet_version[0][1:]):
+                return False
+            if int(current[0][1:]) == int(self._min_kubelet_version[0][1:]) and \
+                    (int(current[1]) >= int(self._min_kubelet_version[1])):
+                return True
             return False
-        if int(current[0][1:]) == int(self._min_kubelet_version[0][1:]) and \
-                (int(current[1]) >= int(self._min_kubelet_version[1])):
-            return True
-        return False
+        except ValueError:
+            print(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN", str(self._min_kubelet_version)))
+            self.logger.exception(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN", str(self._min_kubelet_version)))
+            sys.exit(viya_messages.BAD_OPT_RC_)
+
 
     def _get_memory(self, limit, key, quantity_):
         """
@@ -953,9 +955,9 @@ class ViyaPreInstallCheck():
             input_cpu = float(limit)
             return input_cpu
         except ValueError:
-            print(viya_messages.CPU_ERROR.format(key,
+            print(viya_messages.LIMIT_ERROR.format(key,
                                                  str(limit)))
-            self.logger.exception(viya_messages.CPU_ERROR.format(key, str(limit)))
+            self.logger.exception(viya_messages.LIMIT_ERROR.format(key, str(limit)))
             sys.exit(viya_messages.BAD_OPT_RC_)
 
     def get_config_info(self):
