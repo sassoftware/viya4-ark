@@ -919,9 +919,9 @@ class ViyaPreInstallCheck():
             return False
         except ValueError:
             print(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN", str(self._min_kubelet_version)))
-            self.logger.exception(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN", str(self._min_kubelet_version)))
+            self.logger.exception(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN",
+                                                                   str(self._min_kubelet_version)))
             sys.exit(viya_messages.BAD_OPT_RC_)
-
 
     def _get_memory(self, limit, key, quantity_):
         """
@@ -955,8 +955,7 @@ class ViyaPreInstallCheck():
             input_cpu = float(limit)
             return input_cpu
         except ValueError:
-            print(viya_messages.LIMIT_ERROR.format(key,
-                                                 str(limit)))
+            print(viya_messages.LIMIT_ERROR.format(key, str(limit)))
             self.logger.exception(viya_messages.LIMIT_ERROR.format(key, str(limit)))
             sys.exit(viya_messages.BAD_OPT_RC_)
 
