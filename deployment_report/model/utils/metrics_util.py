@@ -27,7 +27,7 @@ def get_pod_metrics(kubectl: KubectlInterface, pods: Dict) -> None:
     :param pods: The Pod resources gathered in the Kubernetes cluster.
     """
     # get Pod metrics if Pods are defined
-    if pods[ReportKeys.KindDetails.COUNT] > 0:
+    if pods[ReportKeys.ResourceTypeDetails.COUNT] > 0:
         try:
             # get Pod metrics
             pod_metrics: Dict = kubectl.top_pods().as_dict()
@@ -54,7 +54,7 @@ def get_node_metrics(kubectl: KubectlInterface, nodes: Dict) -> None:
     :param nodes: The Node resources gathered in the Kubernetes cluster.
     """
     # get Node metrics if Nodes are defined
-    if nodes[ReportKeys.KindDetails.COUNT] > 0:
+    if nodes[ReportKeys.ResourceTypeDetails.COUNT] > 0:
         try:
             # get Node metrics
             node_metrics: Dict = kubectl.top_nodes().as_dict()

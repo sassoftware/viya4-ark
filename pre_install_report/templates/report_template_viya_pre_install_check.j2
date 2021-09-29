@@ -113,7 +113,7 @@
 
     {% if loop.index == 3 %}
                 <div class="jq-accordion">
-                   <h2>Total Allocatable CPU Cores - {{nodes_data.aggregate_cpu_failures}}</h2>
+                   <h2>Total CPU Cores - {{nodes_data.aggregate_cpu_failures}}</h2>
                 <div>
     {% endif %}
 
@@ -139,16 +139,25 @@
                      <TH> Node Name </TH>
                      <TH> CPUs Cores </TH>
                      <TH> Allocatable CPU Cores </TH>
-                     <TH> Issues</TH>
+                     <TH> Instance Type </TH>
+                     <TH> Recommended vCPUs </TH>
                    </TR>
                    {% for node in nodes_data %}
                    <TR>
                      <TD>{{node.nodeName}}</TD>
                      <TD>{{node.cpu}}</TD>
                      <TD>{{node.allocatablecpu}}</TD>
+                     <TD>{{node.instance}}</TD>
                      <TD>{{node.error.cpu}}</TD>
                    </TR>
                    {% endfor %}
+                </table>
+                <table>
+                <TR>
+                  <TH> <p>** SAS recommends using the IaC tools to create the cluster. See SAS Viya 4 Infrastructure as Code (IaC) project for Microsoft Azure, AWS, and GCP</>
+                       <p>** Also refer to SAS Viya Documentation for Sizing Recommendations for Microsoft Azure, AWS and GCP</p>
+                  </TH>
+                </TR>
                 </table>
         {% endif %}
         </div>
@@ -215,7 +224,7 @@
 {% for nodes_data in global_data %}
     {% if loop.index == 4 %}
                 <div class="jq-accordion">
-                    <h2>Total Allocatable Memory - {{nodes_data.aggregate_memory_failures}}</h2>
+                    <h2>Total Memory - {{nodes_data.aggregate_memory_failures}}</h2>
                 <div>
     {% endif %}
     {% if loop.index == 6 %}
@@ -241,20 +250,27 @@
                      <TH> Node Name </TH>
                      <TH> Memory </TH>
                      <TH> Allocatable Memory </TH>
-                     <TH> Allocatable Ephemeral Storage </TH>
-                     <TH> Pods Capacity </TH>
-                     <TH> Issues </TH>
+                     <TH> Current Memory Pressure </TH>
+                     <TH> Instance Type </TH>
+                     <TH> Recommended Memory </TH>
                    </TR>
                    {% for node in nodes_data %}
                    <TR>
                      <TD>{{node.nodeName}}</TD>
                      <TD>{{node.memory}}</TD>
                      <TD>{{node.allocatableMemory}}</TD>
-                     <TD>{{node.allocatableephemeral}}</TD>
-                     <TD>{{node.podscapacity}}</TD>
-                     <TD>{{node.error.allocatableMemory}}</TD>
+                     <TD>{{node.MemoryPressure}}</TD>
+                     <TD>{{node.instance}}</TD>
+                     <TD>{{node.error.capacityMemory}}</TD>
                    </TR>
                    {% endfor %}
+                </table>
+                <table>
+                <TR>
+                  <TH> <p>** SAS recommends using the IaC tools to create the cluster. See SAS Viya 4 Infrastructure as Code (IaC) project for Microsoft Azure, AWS, and GCP</>
+                       <p>** Also refer to SAS Viya Documentation for Sizing Recommendations for Microsoft Azure, AWS and GCP</p>
+                  </TH>
+                </TR>
                 </table>
         {% endif %}
         </div>

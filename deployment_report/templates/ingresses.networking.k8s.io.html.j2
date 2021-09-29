@@ -1,5 +1,5 @@
 {# ----------------------------------------------------------- #}
-{# route.html.j2                                               #}
+{# ingresses.networking.k8s.io.html.j2                         #}
 {# ----------------------------------------------------------- #}
 {# Author: SAS Institute Inc.                                  #}
 {# ----------------------------------------------------------- #}
@@ -8,16 +8,23 @@
 {# SPDX-License-Identifier: Apache-2.0                         #}
 {# ----------------------------------------------------------- #}
 
-{# Route (OpenShift) Template #}
+{# Ingress Template #}
 {% extends "resource.html.j2" %}
 
 {% block additional_resource_details %}
-{% if resource_details.resourceDefinition.spec.path|default("") != "" %}
-<h7>Path</h7>
+{% if resource_details.resourceDefinition.spec.rules|default([]) | length > 0 %}
+<h7>HTTP Paths</h7>
 <table>
+{% for rule in resource_details.resourceDefinition.spec.rules %}
+{% for path in rule.http.paths %}
   <tr>
-    <td>{{ resource_details.resourceDefinition.spec.path }}</td>
+    <td>{{ path.path }}</td>
+  {% if path.pathType is defined %}
+    <td>{{ path.pathType }}</td>
+  {% endif %}
   </tr>
+{% endfor %}
+{% endfor %}
 </table>
 {% endif %}
 {% endblock %}

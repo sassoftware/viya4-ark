@@ -16,7 +16,8 @@ from enum import Enum
 from subprocess import CalledProcessError
 from typing import AnyStr, Dict, List, Text, Union, Optional
 
-from viya_ark_library.k8s.sas_k8s_objects import KubernetesApiResources, KubernetesMetrics, KubernetesResource
+from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues
+from viya_ark_library.k8s.sas_k8s_objects import KubernetesAvailableResourceTypes, KubernetesMetrics, KubernetesResource
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 
 _API_RESOURCES_All_INGRESSES_DATA_ = "api_resources_ingress_all.json"
@@ -49,31 +50,31 @@ class KubectlTest(KubectlInterface):
         Enumerated class representing the various ingress controller simulations that can be specified for the
         KubectlTest implementation.
         """
-        # No ingress kinds will be included in the resources returned by api_resources()
+        # No ingress resource types will be included in the resources returned by api_resources()
         NONE = 0
 
-        # All resource kinds will be returned by api_resources() but only Contour HTTPProxy objects will be found
+        # All resource types will be returned by api_resources() but only Contour HTTPProxy objects will be found
         ALL_CONTOUR_USED = 1
 
-        # All resource kinds will be returned by api_resources() but only Istio VirtualService objects will be found
+        # All resource types will be returned by api_resources() but only Istio VirtualService objects will be found
         ALL_ISTIO_USED = 2
 
-        # All resource kinds will be returned by api_resources() but only Ingress objects will be found
+        # All resource types will be returned by api_resources() but only Ingress objects will be found
         ALL_NGINX_USED = 3
 
-        # All resource kinds will be returned by api_resources() but only OpenShift Route objects will be found
+        # All resource types will be returned by api_resources() but only OpenShift Route objects will be found
         ALL_OPENSHIFT_USED = 4
 
-        # Only the Contour HTTPProxy kind will be included in the resources returned by api_resources()
+        # Only the Contour HTTPProxy type will be included in the resources returned by api_resources()
         ONLY_CONTOUR = 5
 
-        # Only the Istio VirtualService kind will be included in the resources returned by api_resources()
+        # Only the Istio VirtualService type will be included in the resources returned by api_resources()
         ONLY_ISTIO = 6
 
-        # Only the Ingress kind will be included in the resources returned by api_resources()
+        # Only the Ingress type will be included in the resources returned by api_resources()
         ONLY_NGINX = 7
 
-        # Only the OpenShift Route kind will be included in the resources returned by api_resources()
+        # Only the OpenShift Route type will be included in the resources returned by api_resources()
         ONLY_OPENSHIFT = 8
 
     ################################################################
@@ -85,7 +86,8 @@ class KubectlTest(KubectlInterface):
         """
         NAMESPACE: Text = "test"
         CADENCEINFO: Text = "Fast R/TR 2020 (20201214.1607958443388)"
-        DBINFO: Text = "Internal"
+        DB_External: Text = "External"
+        DB_Internal: Text = "Internal"
 
         # Component: prometheus
         COMPONENT_PROMETHEUS_DEPLOYMENT_NAME: Text = "pushgateway-test-prometheus-pushgateway"
@@ -95,10 +97,10 @@ class KubectlTest(KubectlInterface):
 
         COMPONENT_PROMETHEUS_NAME: Text = "pushgateway-test-prometheus-pushgateway"
         COMPONENT_PROMETHEUS_RESOURCES_DICT: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.DEPLOYMENT: [COMPONENT_PROMETHEUS_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_PROMETHEUS_POD_NAME],
-            KubernetesResource.Kinds.REPLICA_SET: [COMPONENT_PROMETHEUS_REPLICA_SET_NAME],
-            KubernetesResource.Kinds.SERVICE: [COMPONENT_PROMETHEUS_SERVICE_NAME]
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS: [COMPONENT_PROMETHEUS_DEPLOYMENT_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_PROMETHEUS_POD_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS: [COMPONENT_PROMETHEUS_REPLICA_SET_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [COMPONENT_PROMETHEUS_SERVICE_NAME]
         }
         COMPONENT_PROMETHEUS_RESOURCE_COUNT: int = len(COMPONENT_PROMETHEUS_RESOURCES_DICT)
 
@@ -117,54 +119,54 @@ class KubectlTest(KubectlInterface):
 
         # Component: sas-annotations - No Ingress
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_NO_INGRESS: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.DEPLOYMENT: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
-            KubernetesResource.Kinds.REPLICA_SET: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
-            KubernetesResource.Kinds.SERVICE: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME]
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME]
         }
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_COUNT_NO_INGRESS: int = \
             len(COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_NO_INGRESS)
 
         # Component: sas-annotations - Contour
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_CONTOUR: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.DEPLOYMENT: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
-            KubernetesResource.Kinds.REPLICA_SET: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
-            KubernetesResource.Kinds.SERVICE: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
-            KubernetesResource.Kinds.CONTOUR_HTTPPROXY: [COMPONENT_SAS_ANNOTATIONS_CONTOUR_HTTPPROXY_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
+            KubernetesResourceTypeValues.CONTOUR_HTTP_PROXIES: [COMPONENT_SAS_ANNOTATIONS_CONTOUR_HTTPPROXY_NAME],
         }
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_COUNT_CONTOUR: int = len(COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_CONTOUR)
 
         # Component: sas-annotations - Istio
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_ISTIO: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.DEPLOYMENT: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
-            KubernetesResource.Kinds.REPLICA_SET: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
-            KubernetesResource.Kinds.SERVICE: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
-            KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE: [COMPONENT_SAS_ANNOTATIONS_VIRTUAL_SERVICE_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
+            KubernetesResourceTypeValues.ISTIO_VIRTUAL_SERVICES: [COMPONENT_SAS_ANNOTATIONS_VIRTUAL_SERVICE_NAME],
         }
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_COUNT_ISTIO: int = len(COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_ISTIO)
 
         # Component: sas-annotations - NGINX
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_NGINX: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.DEPLOYMENT: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
-            KubernetesResource.Kinds.REPLICA_SET: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
-            KubernetesResource.Kinds.SERVICE: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
-            KubernetesResource.Kinds.INGRESS: [
-                COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME,
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
+            KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES: [
                 COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME_DEPRECATED_DEFINITION
             ],
+            KubernetesResourceTypeValues.K8S_NETWORKING_INGRESSES: [COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME]
         }
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_COUNT_NGINX: int = len(COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_NGINX)
 
         # Component: sas-annotations - OpenShift
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_OPENSHIFT: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.DEPLOYMENT: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
-            KubernetesResource.Kinds.REPLICA_SET: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
-            KubernetesResource.Kinds.SERVICE: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
-            KubernetesResource.Kinds.OPENSHIFT_ROUTE: [COMPONENT_SAS_ANNOTATIONS_OPENSHIFT_ROUTE_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS: [COMPONENT_SAS_ANNOTATIONS_DEPLOYMENT_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_ANNOTATIONS_POD_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS: [COMPONENT_SAS_ANNOTATIONS_REPLICA_SET_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [COMPONENT_SAS_ANNOTATIONS_SERVICE_NAME],
+            KubernetesResourceTypeValues.OPENSHIFT_ROUTES: [COMPONENT_SAS_ANNOTATIONS_OPENSHIFT_ROUTE_NAME],
         }
         COMPONENT_SAS_ANNOTATIONS_RESOURCE_COUNT_OPENSHIFT: int = len(COMPONENT_SAS_ANNOTATIONS_RESOURCE_DICT_OPENSHIFT)
 
@@ -175,9 +177,9 @@ class KubectlTest(KubectlInterface):
 
         COMPONENT_SAS_CACHE_SERVER_NAME: Text = "sas-cacheserver"
         COMPONENT_SAS_CACHE_SERVER_RESOURCE_DICT: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_CACHE_SERVER_POD_NAME],
-            KubernetesResource.Kinds.SERVICE: [COMPONENT_SAS_CACHE_SERVER_SERVICE_NAME],
-            KubernetesResource.Kinds.STATEFUL_SET: [COMPONENT_SAS_CACHE_SERVER_STATEFUL_SET_NAME]
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_CACHE_SERVER_POD_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [COMPONENT_SAS_CACHE_SERVER_SERVICE_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS: [COMPONENT_SAS_CACHE_SERVER_STATEFUL_SET_NAME]
         }
         COMPONENT_SAS_CACHE_SERVER_RESOURCE_COUNT: int = len(COMPONENT_SAS_CACHE_SERVER_RESOURCE_DICT)
 
@@ -189,10 +191,10 @@ class KubectlTest(KubectlInterface):
 
         COMPONENT_SAS_CAS_OPERATOR_NAME: Text = "sas-cas-operator"
         COMPONENT_SAS_CAS_OPERATOR_RESOURCE_DICT: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.DEPLOYMENT: [COMPONENT_SAS_CAS_OPERATOR_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_CAS_OPERATOR_POD_NAME],
-            KubernetesResource.Kinds.REPLICA_SET: [COMPONENT_SAS_CAS_OPERATOR_REPLICA_SET_NAME],
-            KubernetesResource.Kinds.SERVICE: [COMPONENT_SAS_CAS_OPERATOR_SERVICE_NAME]
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS: [COMPONENT_SAS_CAS_OPERATOR_DEPLOYMENT_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_CAS_OPERATOR_POD_NAME],
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS: [COMPONENT_SAS_CAS_OPERATOR_REPLICA_SET_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [COMPONENT_SAS_CAS_OPERATOR_SERVICE_NAME]
         }
         COMPONENT_SAS_CAS_OPERATOR_RESOURCE_COUNT: int = len(COMPONENT_SAS_CAS_OPERATOR_RESOURCE_DICT)
 
@@ -204,9 +206,9 @@ class KubectlTest(KubectlInterface):
 
         COMPONENT_SAS_CAS_SERVER_NAME: Text = COMPONENT_SAS_CAS_OPERATOR_NAME
         COMPONENT_SAS_CAS_SERVER_RESOURCE_DICT: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.CAS_DEPLOYMENT: [COMPONENT_SAS_CAS_SERVER_CAS_DEPLOYMENT_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_CAS_SERVER_POD_NAME],
-            KubernetesResource.Kinds.SERVICE: [
+            KubernetesResourceTypeValues.SAS_CAS_DEPLOYMENTS: [COMPONENT_SAS_CAS_SERVER_CAS_DEPLOYMENT_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_CAS_SERVER_POD_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES: [
                 COMPONENT_SAS_CAS_SERVER_SERVICE_NAME,
                 COMPONENT_SAS_CAS_SERVER_EXTNP_SERVICE_NAME
             ]
@@ -220,9 +222,9 @@ class KubectlTest(KubectlInterface):
 
         COMPONENT_SAS_SCHEDULED_BACKUP_JOB_NAME: Text = "sas-backup-job"
         COMPONENT_SAS_SCHEDULED_BACKUP_JOB_RESOURCE_DICT: Dict[Text, List[Text]] = {
-            KubernetesResource.Kinds.CRON_JOB: [COMPONENT_SAS_SCHEDULED_BACKUP_JOB_CRON_JOB_NAME],
-            KubernetesResource.Kinds.JOB: [COMPONENT_SAS_SCHEDULED_BACKUP_JOB_JOB_NAME],
-            KubernetesResource.Kinds.POD: [COMPONENT_SAS_SCHEDULED_BACKUP_JOB_POD_NAME]
+            KubernetesResourceTypeValues.K8S_BATCH_CRON_JOBS: [COMPONENT_SAS_SCHEDULED_BACKUP_JOB_CRON_JOB_NAME],
+            KubernetesResourceTypeValues.K8S_BATCH_JOBS: [COMPONENT_SAS_SCHEDULED_BACKUP_JOB_JOB_NAME],
+            KubernetesResourceTypeValues.K8S_CORE_PODS: [COMPONENT_SAS_SCHEDULED_BACKUP_JOB_POD_NAME]
         }
         COMPONENT_SAS_SCHEDULED_BACKUP_JOB_RESOURCE_COUNT: int = len(COMPONENT_SAS_SCHEDULED_BACKUP_JOB_RESOURCE_DICT)
 
@@ -238,94 +240,86 @@ class KubectlTest(KubectlInterface):
 
         # Resource: All
         RESOURCE_LIST_ALL: List[Text] = [
-            KubernetesResource.Kinds.CAS_DEPLOYMENT,
-            KubernetesResource.Kinds.CONFIGMAP,
-            KubernetesResource.Kinds.CONTOUR_HTTPPROXY,
-            KubernetesResource.Kinds.CRON_JOB,
-            KubernetesResource.Kinds.DEPLOYMENT,
-            KubernetesResource.Kinds.INGRESS,
-            KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE,
-            KubernetesResource.Kinds.JOB,
-            KubernetesResource.Kinds.NODE,
-            KubernetesResource.Kinds.NODE_METRICS,
-            KubernetesResource.Kinds.OPENSHIFT_ROUTE,
-            KubernetesResource.Kinds.POD,
-            KubernetesResource.Kinds.POD_METRICS,
-            KubernetesResource.Kinds.REPLICA_SET,
-            KubernetesResource.Kinds.SERVICE,
-            KubernetesResource.Kinds.STATEFUL_SET
+            KubernetesResourceTypeValues.SAS_CAS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_CORE_CONFIG_MAPS,
+            KubernetesResourceTypeValues.K8S_BATCH_CRON_JOBS,
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_BATCH_JOBS,
+            KubernetesResourceTypeValues.K8S_CORE_NODES,
+            KubernetesResourceTypeValues.CONTOUR_HTTP_PROXIES,
+            KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES,
+            KubernetesResourceTypeValues.K8S_NETWORKING_INGRESSES,
+            KubernetesResourceTypeValues.ISTIO_VIRTUAL_SERVICES,
+            KubernetesResourceTypeValues.OPENSHIFT_ROUTES,
+            KubernetesResourceTypeValues.K8S_CORE_PODS,
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES,
+            KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
         RESOURCE_LIST_ALL_COUNT: int = len(RESOURCE_LIST_ALL)
 
         # Resource: Contour Ingress
         RESOURCE_LIST_CONTOUR: List[Text] = [
-            KubernetesResource.Kinds.CAS_DEPLOYMENT,
-            KubernetesResource.Kinds.CONFIGMAP,
-            KubernetesResource.Kinds.CONTOUR_HTTPPROXY,
-            KubernetesResource.Kinds.CRON_JOB,
-            KubernetesResource.Kinds.DEPLOYMENT,
-            KubernetesResource.Kinds.JOB,
-            KubernetesResource.Kinds.NODE,
-            KubernetesResource.Kinds.NODE_METRICS,
-            KubernetesResource.Kinds.POD,
-            KubernetesResource.Kinds.POD_METRICS,
-            KubernetesResource.Kinds.REPLICA_SET,
-            KubernetesResource.Kinds.SERVICE,
-            KubernetesResource.Kinds.STATEFUL_SET
+            KubernetesResourceTypeValues.SAS_CAS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_CORE_CONFIG_MAPS,
+            KubernetesResourceTypeValues.CONTOUR_HTTP_PROXIES,
+            KubernetesResourceTypeValues.K8S_BATCH_CRON_JOBS,
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_BATCH_JOBS,
+            KubernetesResourceTypeValues.K8S_CORE_NODES,
+            KubernetesResourceTypeValues.K8S_CORE_PODS,
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES,
+            KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
         RESOURCE_LIST_CONTOUR_COUNT: int = len(RESOURCE_LIST_CONTOUR)
 
         # Resource: Istio Ingress
         RESOURCE_LIST_ISTIO: List[Text] = [
-            KubernetesResource.Kinds.CAS_DEPLOYMENT,
-            KubernetesResource.Kinds.CONFIGMAP,
-            KubernetesResource.Kinds.CRON_JOB,
-            KubernetesResource.Kinds.DEPLOYMENT,
-            KubernetesResource.Kinds.ISTIO_VIRTUAL_SERVICE,
-            KubernetesResource.Kinds.JOB,
-            KubernetesResource.Kinds.NODE,
-            KubernetesResource.Kinds.NODE_METRICS,
-            KubernetesResource.Kinds.POD,
-            KubernetesResource.Kinds.POD_METRICS,
-            KubernetesResource.Kinds.REPLICA_SET,
-            KubernetesResource.Kinds.SERVICE,
-            KubernetesResource.Kinds.STATEFUL_SET
+            KubernetesResourceTypeValues.SAS_CAS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_CORE_CONFIG_MAPS,
+            KubernetesResourceTypeValues.K8S_BATCH_CRON_JOBS,
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.ISTIO_VIRTUAL_SERVICES,
+            KubernetesResourceTypeValues.K8S_BATCH_JOBS,
+            KubernetesResourceTypeValues.K8S_CORE_NODES,
+            KubernetesResourceTypeValues.K8S_CORE_PODS,
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES,
+            KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
         RESOURCE_LIST_ISTIO_COUNT: int = len(RESOURCE_LIST_ISTIO)
 
         # Resource: NGINX Ingress
         RESOURCE_LIST_NGINX: List[Text] = [
-            KubernetesResource.Kinds.CAS_DEPLOYMENT,
-            KubernetesResource.Kinds.CONFIGMAP,
-            KubernetesResource.Kinds.CRON_JOB,
-            KubernetesResource.Kinds.DEPLOYMENT,
-            KubernetesResource.Kinds.INGRESS,
-            KubernetesResource.Kinds.JOB,
-            KubernetesResource.Kinds.NODE,
-            KubernetesResource.Kinds.NODE_METRICS,
-            KubernetesResource.Kinds.POD,
-            KubernetesResource.Kinds.POD_METRICS,
-            KubernetesResource.Kinds.REPLICA_SET,
-            KubernetesResource.Kinds.SERVICE,
-            KubernetesResource.Kinds.STATEFUL_SET
+            KubernetesResourceTypeValues.SAS_CAS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_CORE_CONFIG_MAPS,
+            KubernetesResourceTypeValues.K8S_BATCH_CRON_JOBS,
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES,
+            KubernetesResourceTypeValues.K8S_NETWORKING_INGRESSES,
+            KubernetesResourceTypeValues.K8S_BATCH_JOBS,
+            KubernetesResourceTypeValues.K8S_CORE_NODES,
+            KubernetesResourceTypeValues.K8S_CORE_PODS,
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES,
+            KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
         RESOURCE_LIST_NGINX_COUNT: int = len(RESOURCE_LIST_NGINX)
 
         # Resource: OpenShift Ingress
         RESOURCE_LIST_OPENSHIFT: List[Text] = [
-            KubernetesResource.Kinds.CAS_DEPLOYMENT,
-            KubernetesResource.Kinds.CONFIGMAP,
-            KubernetesResource.Kinds.CRON_JOB,
-            KubernetesResource.Kinds.DEPLOYMENT,
-            KubernetesResource.Kinds.JOB,
-            KubernetesResource.Kinds.NODE,
-            KubernetesResource.Kinds.NODE_METRICS,
-            KubernetesResource.Kinds.OPENSHIFT_ROUTE,
-            KubernetesResource.Kinds.POD,
-            KubernetesResource.Kinds.POD_METRICS,
-            KubernetesResource.Kinds.REPLICA_SET,
-            KubernetesResource.Kinds.SERVICE,
-            KubernetesResource.Kinds.STATEFUL_SET
+            KubernetesResourceTypeValues.SAS_CAS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_CORE_CONFIG_MAPS,
+            KubernetesResourceTypeValues.K8S_BATCH_CRON_JOBS,
+            KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS,
+            KubernetesResourceTypeValues.K8S_BATCH_JOBS,
+            KubernetesResourceTypeValues.K8S_CORE_NODES,
+            KubernetesResourceTypeValues.OPENSHIFT_ROUTES,
+            KubernetesResourceTypeValues.K8S_CORE_PODS,
+            KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SERVICES,
+            KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
         RESOURCE_LIST_OPENSHIFT_COUNT: int = len(RESOURCE_LIST_OPENSHIFT)
 
@@ -354,12 +348,17 @@ class KubectlTest(KubectlInterface):
             COMPONENT_SAS_CAS_OPERATOR_DEPLOYMENT_NAME]
         RESOURCE_DEPLOYMENT_COUNT: int = len(RESOURCE_DEPLOYMENT_LIST)
 
-        # Resource: Ingress
-        RESOURCE_INGRESS_LIST: List[Text] = [
-            COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME,
+        # Resource: Ingress (extensions)
+        RESOURCE_EXTENSIONS_INGRESS_LIST: List[Text] = [
             COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME_DEPRECATED_DEFINITION
         ]
-        RESOURCE_INGRESS_COUNT: int = len(RESOURCE_INGRESS_LIST)
+        RESOURCE_EXTENSIONS_INGRESS_COUNT: int = len(RESOURCE_EXTENSIONS_INGRESS_LIST)
+
+        # Resource: Ingress (networking.k8s.io)
+        RESOURCE_NETWORKING_INGRESS_LIST: List[Text] = [
+            COMPONENT_SAS_ANNOTATIONS_INGRESS_NAME
+        ]
+        RESOURCE_NETWORKING_INGRESS_COUNT: int = len(RESOURCE_NETWORKING_INGRESS_LIST)
 
         # Resource: Istio VirtualService
         RESOURCE_VIRTUAL_SERVICE_LIST: List[Text] = [
@@ -455,7 +454,7 @@ class KubectlTest(KubectlInterface):
     def do(self, command: Text, ignore_errors: bool = False, success_rcs: Optional[List[int]] = None) -> AnyStr:
         return "Not functional in testing implementation"
 
-    def api_resources(self, ignore_errors: bool = False) -> KubernetesApiResources:
+    def api_resources(self, ignore_errors: bool = False) -> KubernetesAvailableResourceTypes:
         api_resources_data: Dict = dict()
 
         # check for ingress simulation to determine which API resources should be returned
@@ -483,7 +482,7 @@ class KubectlTest(KubectlInterface):
         elif self.ingress_simulator == self.IngressSimulator.ONLY_OPENSHIFT:
             api_resources_data = KubectlTest._load_response_data(_API_RESOURCES_OPENSHIFT_ONLY_DATA_)
 
-        return KubernetesApiResources(api_resources_data)
+        return KubernetesAvailableResourceTypes(api_resources_data)
 
     def api_versions(self, ignore_errors: bool = False) -> List:
         return KubectlTest._load_response_data(_API_VERSIONS_DATA_)
@@ -493,22 +492,20 @@ class KubectlTest(KubectlInterface):
         return False
 
     def cluster_info(self) -> Optional[AnyStr]:
-        pass
-
-    def manage_resource(self, action: Text, file: Text, ignore_errors: bool = False, ) -> AnyStr:
+        # this method is not functional in the testing implementation
         pass
 
     def config_view(self, raw: bool = False, ignore_errors: bool = False) -> Dict:
         return KubectlTest._load_response_data(_CONFIG_VIEW_DATA_)
 
-    def get_resources(self, k8s_api_resource: Text, raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+    def get_resources(self, type_version_group: Text, raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
         # if the resource name is None, raise a CalledProcessError
-        if k8s_api_resource is None:
-            raise CalledProcessError(1, f"kubectl get {k8s_api_resource} -o json")
+        if type_version_group is None:
+            raise CalledProcessError(1, f"kubectl get {type_version_group} -o json")
 
         # if the expected namespace isn't set, raise a CalledProcessError
         if self.namespace != self.Values.NAMESPACE:
-            raise CalledProcessError(1, f"kubectl -n {self.namespace} get {k8s_api_resource.lower()} -o json")
+            raise CalledProcessError(1, f"kubectl -n {self.namespace} get {type_version_group} -o json")
 
         # return an empty list if simulating an empty deployment
         if self.simulate_empty_deployment:
@@ -516,36 +513,38 @@ class KubectlTest(KubectlInterface):
 
         # handle any ingress simulation - this logic covers scenarios where no resources would be returned
         # Contour
-        if k8s_api_resource.lower() == "httpproxy" and \
+        if type_version_group.lower() == KubernetesResourceTypeValues.CONTOUR_HTTP_PROXIES and \
                 self.ingress_simulator != self.IngressSimulator.ALL_CONTOUR_USED and \
                 self.ingress_simulator != self.IngressSimulator.ONLY_CONTOUR:
             return list()
 
         # Istio
-        elif k8s_api_resource.lower() == "virtualservices" and \
+        elif type_version_group.lower() == KubernetesResourceTypeValues.ISTIO_VIRTUAL_SERVICES and \
                 self.ingress_simulator != self.IngressSimulator.ALL_ISTIO_USED and \
                 self.ingress_simulator != self.IngressSimulator.ONLY_ISTIO:
             return list()
 
         # NGINX
-        elif k8s_api_resource.lower() == "ingresses" and \
+
+        elif (type_version_group.lower() == KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES or
+              type_version_group.lower() == KubernetesResourceTypeValues.K8S_NETWORKING_INGRESSES) and \
                 self.ingress_simulator != self.IngressSimulator.ALL_NGINX_USED and \
                 self.ingress_simulator != self.IngressSimulator.ONLY_NGINX:
             return list()
 
         # OpenShift
-        elif k8s_api_resource.lower() == "routes" and \
+        elif type_version_group.lower() == KubernetesResourceTypeValues.OPENSHIFT_ROUTES and \
                 self.ingress_simulator != self.IngressSimulator.ALL_OPENSHIFT_USED and \
                 self.ingress_simulator != self.IngressSimulator.ONLY_OPENSHIFT:
             return list()
 
         # handle non-namespaced resources
-        if not self.include_non_namespaced_resources and (k8s_api_resource.lower() == "nodes" or
-                                                          k8s_api_resource.lower() == "namespaces"):
-            raise CalledProcessError(1, f"kubectl get {k8s_api_resource.lower()} -o json")
+        if not self.include_non_namespaced_resources and (type_version_group.lower() == "nodes" or
+                                                          type_version_group.lower() == "namespaces"):
+            raise CalledProcessError(1, f"kubectl get {type_version_group} -o json")
 
         # if the resource should not be represented as unavailable, load the response from the file
-        resources_dict: Dict = KubectlTest._load_response_data(f"resources_{k8s_api_resource.lower()}.json")
+        resources_dict: Dict = KubectlTest._load_response_data(f"resources_{type_version_group.lower()}.json")
 
         # convert the raw JSON to KubernetesResource objects
         resources: List[KubernetesResource] = list()
@@ -554,58 +553,59 @@ class KubectlTest(KubectlInterface):
 
         return resources
 
-    def get_resource(self, k8s_api_resource: Text, resource_name: Text, raw: bool = False, ignore_errors: bool = False)\
-            -> Union[AnyStr, KubernetesResource]:
+    def get_resource(self, type_version_group: Text, resource_name: Text, raw: bool = False,
+                     ignore_errors: bool = False) -> Union[AnyStr, KubernetesResource]:
         # if the resource name is None, raise a CalledProcessError
-        if k8s_api_resource is None:
-            raise CalledProcessError(1, f"kubectl get {k8s_api_resource} {resource_name} -o json")
+        if type_version_group is None:
+            raise CalledProcessError(1, f"kubectl get {type_version_group} {resource_name} -o json")
 
         # raise a CalledProcessError if an unexpected namespace is given
         if self.namespace != self.Values.NAMESPACE:
-            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {k8s_api_resource.lower()} {resource_name} "
+            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {type_version_group} {resource_name} "
                                      "-o json")
 
         # throw an error if simulating an empty deployment
         if self.simulate_empty_deployment:
-            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {k8s_api_resource.lower()} {resource_name} "
+            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {type_version_group} {resource_name} "
                                      "-o json")
 
         # handle any ingress simulation - this logic covers scenarios where no resources would be returned
         # Contour
-        if k8s_api_resource.lower() == "httpproxy" and \
+        if type_version_group.lower() == KubernetesResourceTypeValues.CONTOUR_HTTP_PROXIES and \
                 self.ingress_simulator != self.IngressSimulator.ALL_CONTOUR_USED and \
                 self.ingress_simulator != self.IngressSimulator.ONLY_CONTOUR:
-            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {k8s_api_resource.lower()} {resource_name} "
+            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {type_version_group} {resource_name} "
                                         "-o json")
 
         # Istio
-        elif k8s_api_resource.lower() == "virtualservices" and \
+        elif type_version_group.lower() == KubernetesResourceTypeValues.ISTIO_VIRTUAL_SERVICES and \
                 self.ingress_simulator != self.IngressSimulator.ALL_ISTIO_USED and \
                 self.ingress_simulator != self.IngressSimulator.ONLY_ISTIO:
-            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {k8s_api_resource.lower()} {resource_name} "
+            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {type_version_group} {resource_name} "
                                         "-o json")
 
         # NGINX
-        elif k8s_api_resource.lower() == "ingresses" and \
+        elif (type_version_group.lower() == KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES or
+              type_version_group.lower() == KubernetesResourceTypeValues.K8S_NETWORKING_INGRESSES) and \
                 self.ingress_simulator != self.IngressSimulator.ALL_NGINX_USED and \
                 self.ingress_simulator != self.IngressSimulator.ONLY_NGINX:
-            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {k8s_api_resource.lower()} {resource_name} "
+            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {type_version_group} {resource_name} "
                                         "-o json")
 
         # OpenShift
-        elif k8s_api_resource.lower() == "routes" and \
+        elif type_version_group.lower() == KubernetesResourceTypeValues.OPENSHIFT_ROUTES and \
                 self.ingress_simulator != self.IngressSimulator.ALL_OPENSHIFT_USED and \
                 self.ingress_simulator != self.IngressSimulator.ONLY_OPENSHIFT:
-            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {k8s_api_resource.lower()} {resource_name} "
+            raise CalledProcessError(1, f"kubectl get -n {self.namespace} {type_version_group} {resource_name} "
                                         "-o json")
 
         # handle non-namespaced resources
-        if not self.include_non_namespaced_resources and (k8s_api_resource.lower() == "nodes" or
-                                                          k8s_api_resource.lower() == "namespaces"):
-            raise CalledProcessError(1, f"kubectl get {k8s_api_resource.lower()} {resource_name} -o json")
+        if not self.include_non_namespaced_resources and (type_version_group.lower() == "nodes" or
+                                                          type_version_group.lower() == "namespaces"):
+            raise CalledProcessError(1, f"kubectl get {type_version_group} {resource_name} -o json")
 
         # if the resource should not be represented as unavailable, load it from the file
-        raw_resources_dict: Dict = KubectlTest._load_response_data(f"resources_{k8s_api_resource.lower()}.json")
+        raw_resources_dict: Dict = KubectlTest._load_response_data(f"resources_{type_version_group.lower()}.json")
 
         # iterate to find the requested resource
         for raw_resource in raw_resources_dict:
@@ -615,7 +615,7 @@ class KubectlTest(KubectlInterface):
                 return resource
 
         # if the resource isn't found by name, raise a CalledProcessError
-        raise CalledProcessError(1, f"kubectl get {k8s_api_resource.lower()} {resource_name} -o json")
+        raise CalledProcessError(1, f"kubectl get {type_version_group} {resource_name} -o json")
 
     def logs(self, pod_name: Text, container_name: Optional[Text] = None, prefix: bool = True, tail: int = 10,
              ignore_errors: bool = False) -> List:
@@ -639,6 +639,10 @@ class KubectlTest(KubectlInterface):
             "test log line 9",
             "test log line 10"
         ]
+
+    def manage_resource(self, action: Text, file: Text, ignore_errors: bool = False) -> AnyStr:
+        # this method is not functional in the testing implementation
+        pass
 
     def top_nodes(self, ignore_errors: bool = False) -> KubernetesMetrics:
         # raise a CalledProcessError if an unexpected namespace is given

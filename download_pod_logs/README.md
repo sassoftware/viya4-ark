@@ -14,7 +14,7 @@ information available for the pod container when the tool is executed.
 SAS Viya ARK tools require that third-party packages be installed before use. You can install all the required packages by using the provided requirements.txt file in the following command:
 
 ```commandline
-$ python3 -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 Download the latest version of this tool and update the required packages with every new software order.
@@ -33,7 +33,7 @@ Viya deployment should be specified by including the `-n` or `--namespace` optio
 deployment.
 
 ```commandline
-$ python3 viya-ark.py download-pod-logs --namespace sas
+python3 viya-ark.py download-pod-logs --namespace sas
 ```
 
 ### Controlling Log Size
@@ -45,7 +45,7 @@ The following example limits the returned log lines to 1000.
 deployment.
 
 ```commandline
-$ python3 viya-ark.py download-pod-logs --namespace sas --tail 1000
+python3 viya-ark.py download-pod-logs --namespace sas --tail 1000
 ```
 
 ### Selecting SAS Component Pods
@@ -60,7 +60,7 @@ The following example returns logs from the sas-visual-analytics-app and sas-con
 deployment.
 
 ```commandline
-$ python3 viya-ark.py download-pod-logs --namespace sas --tail 100 sas-visual-analytics-app sas-consul-server
+python3 viya-ark.py download-pod-logs --namespace sas --tail 100 sas-visual-analytics-app sas-consul-server
 ```
 
 ### Redirecting Output
@@ -73,7 +73,7 @@ timestamped directory inside of the `output-dir` location to allow for multiple 
 deployment.
 
 ```commandline
-$ python3 viya-ark.py download-pod-logs -n sas --output-dir="/path/to/report/"
+python3 viya-ark.py download-pod-logs -n sas --output-dir="/path/to/report/"
 ```
 
 ### Help with the Command
@@ -81,5 +81,5 @@ $ python3 viya-ark.py download-pod-logs -n sas --output-dir="/path/to/report/"
 The `-h` or `--help` option can be used to view usage information and list all options available for this tool.
 
 ```commandline
-$ python3 viya-ark.py download-pod-logs --help
+python3 viya-ark.py download-pod-logs --help
 ```

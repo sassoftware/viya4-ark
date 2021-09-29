@@ -23,7 +23,6 @@ import pint
 from subprocess import CalledProcessError
 from typing import Text
 
-
 # import pint to add, compare memory
 from pint import UnitRegistry
 
@@ -34,7 +33,6 @@ from pre_install_report.library.pre_install_utils import PreCheckUtils
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
 from viya_ark_library.logging import ViyaARKLogger
-
 
 PRP = pprint.PrettyPrinter(indent=4)
 # templates for output file names #
@@ -55,8 +53,9 @@ class ViyaPreInstallCheck():
 
     The gathered data can be written to disk as an HTML report and a JSON file containing the gathered data.
     """
-    def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min, viya_min_worker_allocatable_CPU,
-                 viya_min_aggregate_worker_CPU_cores, viya_min_allocatable_worker_memory,
+
+    def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min,
+                 viya_min_aggregate_worker_CPU_cores,
                  viya_min_aggregate_worker_memory):
         """
         Constructor for ViyaPreInstallCheck object.
@@ -67,11 +66,9 @@ class ViyaPreInstallCheck():
         self.logger = self.sas_logger.get_logger()
         self._min_kubelet_version: tuple = ()
         self._viya_kubelet_version_min = viya_kubelet_version_min
-        self._viya_min_worker_allocatable_CPU: Text = viya_min_worker_allocatable_CPU
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
-        self._viya_min_allocatable_worker_memory: Text = viya_min_allocatable_worker_memory
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
-        self._calculated_aggregate_allocatable_memory = None
+        self._calculated_aggregate_memory = None
         self._workers = 0
         self._aggregate_nodeStatus_failures = 0
 
@@ -325,18 +322,9 @@ class ViyaPreInstallCheck():
         if storage_json:
             for node in storage_json['items']:
                 node_data = {}
-                node_data['storageClassNameName'] = node['metadata']['name']
-                node_data['provisioner'] = node['provisioner']
-
                 try:
-                    annotated_lines = node['metadata']['annotations']
-                    for line in annotated_lines:
-                        if "storageclass.beta.kubernetes.io/is-default-class" in line:
-                            # node['metadata']['annotations']['storageclass.beta.kubernetes.io/is-default-class']
-                            node_data['default'] = "true"
-                            default_cnt += 1
-                        else:
-                            node_data['default'] = "false"
+                    node_data['storageClassNameName'] = node['metadata']['name']
+                    node_data['provisioner'] = node['provisioner']
                     storage_nodes.append(node_data)
                 except KeyError as e:
                     self.logger.exception("KeyError {}".format(str(e)))
@@ -458,10 +446,8 @@ class ViyaPreInstallCheck():
                 if cluster_strings[0]:
                     master_nodes.update({'firstFailure': str(no_color)})
         else:
-            master_nodes.update({'totalMasters': str(viya_constants.SET) + ': 0, ' +
-                                 str(viya_constants.EXPECTED) +
-                                 ': Minimum ' +
-                                 str(viya_constants.NUMBER_OF_MASTER_NODES)})
+            master_nodes.update({'totalMasters': str(viya_constants.SET) + ': 0, ' + str(viya_constants.EXPECTED) +
+                                ': Minimum ' + str(viya_constants.NUMBER_OF_MASTER_NODES)})
             master_nodes.update({'status': 1})
             master_nodes.update({'issue': master_nodes['totalMasters'] + ', ' + 'Issues Found: ' + str(1)})
             master_nodes.update({'firstFailure': 'Cluster information not available. Check permissions.'})
@@ -482,33 +468,31 @@ class ViyaPreInstallCheck():
         global_nodes = {}
         workers = self._workers
 
-        global_nodes.update({'totalWorkers': str(workers) + ': ' +
-                             str(viya_constants.SET + ': ' +
-                             str(workers) + ', ' +
-                             str(viya_constants.EXPECTED) +
-                                 ': Minimum ' +
-                                 str(viya_constants.NUMBER_OF_WORKER_NODES))})
+        global_nodes.update({'totalWorkers': str(workers) + ': ' + str(viya_constants.SET + ': ' + str(workers) +
+                                                                       ', ' + str(viya_constants.EXPECTED) +
+                                                                       ': Minimum ' +
+                                                                       str(viya_constants.NUMBER_OF_WORKER_NODES))})
 
         if workers < viya_constants.NUMBER_OF_WORKER_NODES:
             global_nodes.update({'status': 1})
             global_nodes.update({'issue': 'Issues Found: ' + str(1)})
             global_nodes.update({'firstFailure':
-                                 str(viya_constants.SET + ': ' +
-                                     str(workers) + ', ' +
-                                     str(viya_constants.EXPECTED) +
-                                     ': Minimum ' +
-                                     str(viya_constants.NUMBER_OF_WORKER_NODES) +
-                                     " \nCheck SAS Viya Documentation")})
+                                str(viya_constants.SET + ': ' +
+                                    str(workers) + ', ' +
+                                    str(viya_constants.EXPECTED) +
+                                    ': Minimum ' +
+                                    str(viya_constants.NUMBER_OF_WORKER_NODES) +
+                                    " \nCheck SAS Viya Documentation")})
 
         else:
             global_nodes.update({'status': 0})
             global_nodes.update({'issue': 'Issues Found: ' + str(0)})
             global_nodes.update(
-                {'firstFailure': str(viya_constants.SET +
-                                     ': ' + str(workers)
-                                     + ', ' + str(viya_constants.EXPECTED)
-                                     + ': ' +
-                                     str(viya_constants.NUMBER_OF_WORKER_NODES))})
+                    {'firstFailure': str(viya_constants.SET +
+                                         ': ' + str(workers)
+                                         + ', ' + str(viya_constants.EXPECTED)
+                                         + ': ' +
+                                         str(viya_constants.NUMBER_OF_WORKER_NODES))})
         global_data.append(global_nodes)
         self.logger.debug("global_nodes: {}".format(pprint.pformat(global_nodes)))
         return global_data
@@ -529,12 +513,12 @@ class ViyaPreInstallCheck():
         self.logger.debug("global data{} time{}".format(pprint.pformat(global_data), time_string))
         return global_data
 
-    def _check_cpu_errors(self, global_data, total_alloc_cpu_cores: float, aggregate_cpu_failures):
+    def _check_cpu_errors(self, global_data, total_capacity_cpu_cores: float, aggregate_cpu_failures):
         """
-        Check if the aggregate allocatable CPUs across all worker nodes meets SAS total cpu requirements
+        Check if the aggregate CPUs across all worker nodes meets SAS total cpu requirements
 
         global_data: list with global data about worker nodes retrieved
-        total_alloc_cpu_cores:  total cpu cores across all worker nodes calculated
+        total_capacity_cpu_cores:  total cpu cores across all worker nodes calculated
         aggregate_cpu_failures:  count of cpu failures
         """
         aggregate_cpu_data = {}
@@ -542,18 +526,16 @@ class ViyaPreInstallCheck():
         error_msg = ""
         info_msg = str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_CPU_cores + \
-            ', Calculated: ' + str(round(total_alloc_cpu_cores,  2))
+            ', Calculated: ' + str(round(total_capacity_cpu_cores, 2))
 
         min_aggr_worker_cpu_core = self._get_cpu(self._viya_min_aggregate_worker_CPU_cores,
                                                  "VIYA_MIN_AGGREGATE_WORKER_CPU_CORES")
 
-        if total_alloc_cpu_cores < min_aggr_worker_cpu_core:
+        if total_capacity_cpu_cores < min_aggr_worker_cpu_core:
             aggregate_cpu_failures += 1
             # Check for combined cpu_core capacity of the Kubernetes nodes in cluster
-        error_msg = viya_constants.SET + ': ' + \
-            str(round(total_alloc_cpu_cores, 2)) + ', ' + \
-            str(viya_constants.EXPECTED) + ': ' + \
-            self._viya_min_aggregate_worker_CPU_cores
+        error_msg = viya_constants.SET + ': ' + str(round(total_capacity_cpu_cores, 2)) + \
+            ', ' + str(viya_constants.EXPECTED) + ': ' + self._viya_min_aggregate_worker_CPU_cores
         if aggregate_cpu_failures > 0:
             msg = error_msg
         else:
@@ -564,41 +546,48 @@ class ViyaPreInstallCheck():
 
         return global_data
 
-    def _check_memory_errors(self, global_data, total_allocatable_memory, quantity_, aggregate_memory_failures):
+    def _check_memory_errors(self, global_data, total_capacity_memory, quantity_, aggregate_memory_failures):
         """
-        Check aggregate allocatable memory across all worker nodes against SAS total memory requirement in worker nodes
+        Check aggregate memory across all worker nodes against SAS total memory requirement in worker nodes
 
         global_data: list with global data about worker nodes retrieved
-        total_allocatable_memory:  total allocatable memory calculated across all worker nodes calculated
+        total_capacity_memory:  total memory calculated across all worker nodes calculated
         aggregate_memory_failures:  count of memory failures
         """
         aggregate_memory_data = {}
         error_msg = ""
         msg = ''
-        total_allocatable_memory_toG = total_allocatable_memory.to('G')
+
+        total_capacity_memory_toGB = total_capacity_memory.to('G')
+
         info_msg = str(viya_constants.EXPECTED) + ': ' + \
             self._viya_min_aggregate_worker_memory + \
-            ', Calculated: ' + str(round(total_allocatable_memory_toG, 2))
-        self._calculated_aggregate_allocatable_memory = total_allocatable_memory.to('Gi')
+            ', Calculated: ' + str(round(total_capacity_memory_toGB, 2))
+        self._calculated_aggregate_memory = total_capacity_memory_toGB
 
         min_aggr_worker_memory = self._get_memory(self._viya_min_aggregate_worker_memory,
-                                                  "VIYA_MIN_AGGREGATE_WORKER_MEMORY", quantity_)
+                                                  "VIYA_GENERIC_WORKER_MEMORY", quantity_)
+        self.logger.info("percent {} percent of instance {} total capacity {}".format
+                         (str(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE),
+                          str(min_aggr_worker_memory * (int(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE) / 100)),
+                          str(total_capacity_memory_toGB)))
+        self.logger.info("input memory converted to G {}".format(str(min_aggr_worker_memory.to('G'))))
+        if total_capacity_memory_toGB < \
+                (min_aggr_worker_memory.to('G')) * (int(viya_constants.VIYA_PERCENTAGE_OF_INSTANCE) / 100):
 
-        if total_allocatable_memory < min_aggr_worker_memory:
             aggregate_memory_failures += 1
             # Check for combined cpu_core capacity of the Kubernetes nodes in cluster
         error_msg = viya_constants.SET + ': ' + \
-            str(round(total_allocatable_memory_toG, 2)) + ', ' + \
-            str(viya_constants.EXPECTED) + ': ' + \
-            self._viya_min_aggregate_worker_memory
+            str(round(total_capacity_memory_toGB, 2)) + ', ' + \
+            str(viya_constants.EXPECTED) + ': ' + self._viya_min_aggregate_worker_memory
 
         if aggregate_memory_failures > 0:
             msg = error_msg
         else:
-            msg = info_msg
+            msg = info_msg + "," + viya_constants.MEMORY_WITHIN_RANGE
 
         aggregate_memory_data.update({'aggregate_memory_failures': msg +
-                                      ', Issues Found: ' + str(aggregate_memory_failures)})
+                                     ', Issues Found: ' + str(aggregate_memory_failures)})
         global_data.append(aggregate_memory_data)
         return global_data
 
@@ -619,7 +608,8 @@ class ViyaPreInstallCheck():
         if aggregate_kubelet_failures > 0:
             aggregate_kubelet_data.update({'aggregate_kubelet_failures':
                                            'Check Kubelet Version on nodes.' +
-                                           ' Issues Found: ' + str(aggregate_kubelet_failures) + '.' + node_status_msg})
+                                           ' Issues Found: ' + str(aggregate_kubelet_failures) +
+                                           '.' + node_status_msg})
         global_data.append(aggregate_kubelet_data)
 
         return global_data
@@ -680,10 +670,8 @@ class ViyaPreInstallCheck():
                 aggregate_storage_failures += 1
                 node.update({'status': 1})
                 node.update({'issue': 'Issues Found: ' + str(1)})
-                node.update(dict(firstFailure=viya_constants.SET
-                                 + ': Multiple Default Storage Class found, '
-                                 + str(viya_constants.EXPECTED)
-                                 + ": Minimum 1"))
+                node.update(dict(firstFailure=viya_constants.SET + ': Multiple Default Storage Class found, ' +
+                            str(viya_constants.EXPECTED) + ": Minimum 1"))
             else:
                 node.update({'status': 0})
                 node.update({'issue': 'Issues Found: ' + str(0)})
@@ -698,7 +686,7 @@ class ViyaPreInstallCheck():
             ': ' + str(len(storage_nodes)) + ', ' + \
             str(viya_constants.EXPECTED) + \
             ': Minimum 1' + ', ' \
-            'Issues Found: ' + str(aggregate_storage_failures)
+                            'Issues Found: ' + str(aggregate_storage_failures)
         storage_global.append(storage_issue_data)
         storage_global.append(storage_nodes)
 
@@ -719,27 +707,21 @@ class ViyaPreInstallCheck():
         aggregate_memory_failures = int(0)
         aggregate_kubelet_failures = int(0)
         total_cpu_cores = float(0)
-        total_memory = quantity_("0Ki")
-        total_allocatable_memory = quantity_("0Ki")
-        self.logger.info("VIYA_MIN_WORKER_ALLOCATABLE_CPU {}"
-                         .format(str(self._viya_min_worker_allocatable_CPU)))
+
+        total_capacity_memory = quantity_("0G")
+        # register percetage unit with Pint
+        # ureg = pint.UnitRegistry()
+        # Q = ureg.Quantity
+        # ureg.define(UnitDefinition('percent', 'pct', (), ScaleConverter(1 / 100.0)))
 
         for node in nodes_data:
             self.logger.info("processing node " + pprint.pformat(node))
-            try:
-                alloc_cpu_cores = float(node['allocatablecpu'])
-                self.logger.info("alloc_cpu_cores " + str(alloc_cpu_cores))
-            except ValueError:
-                # CPU is measured in units called millicores. Each node in the cluster introspects the operating system
-                # to determine the amount of CPU cores on the node and then multiples that value by 1000 to express
-                # its total capacity.
-                alloc_cpu_cores = float(str(node['allocatablecpu']).rstrip('m'))/1000
-                self.logger.info("alloc_cpu_cores {}".format(str(alloc_cpu_cores)))
-            # Node is identified as worker node
+            capacity_cpu_cores = self._get_cpu_units(node, 'cpu')
+            # alloc_cpu_cores = self._get_cpu_units(node, 'allocatablecpu')
+
             kubeletversion = str(node['kubeletversion'])
-            alloc_memory = str(node['allocatableMemory'])
-            total_memory = total_memory + quantity_(str(node['memory']))
-            total_allocatable_memory = total_allocatable_memory + quantity_(alloc_memory)
+            capacity_memory = str(node['memory'])
+            total_capacity_memory = total_capacity_memory + quantity_(capacity_memory).to('G')
 
             try:
                 nodeReady = str(node['Ready'])
@@ -751,54 +733,28 @@ class ViyaPreInstallCheck():
                 node['Ready'] = viya_constants.KEY_NOT_FOUND
 
             if node['worker']:
-                total_cpu_cores = total_cpu_cores + alloc_cpu_cores
+                total_cpu_cores = total_cpu_cores + capacity_cpu_cores
                 self.logger.info("worker total_cpu_cores {}".format(str(total_cpu_cores)))
-                self.logger.info("worker alloc_cpu_cores {}".format(str(alloc_cpu_cores)))
 
-                input_min_worker_alloctable_cpu = self._get_cpu(self._viya_min_worker_allocatable_CPU,
-                                                                "VIYA_MIN_WORKER_ALLOCATABLE_CPU")
-                if alloc_cpu_cores >= input_min_worker_alloctable_cpu:
-                    self._set_status(0, node, 'cpu')
-                else:
-                    # may be master node
-                    self._set_status(1, node, 'cpu')
-                    # aggregate_all_failures += 1
-                    aggregate_cpu_failures += 1
-                    # TBD Check for minimum cpu_core per worked node.. What is mimimum? Set to 2 for now.
-                    node['error']['cpu'] = viya_constants.SET + ': ' + \
-                        str(alloc_cpu_cores) + ', ' + \
-                        str(viya_constants.EXPECTED) + ': ' + \
-                        str(self._viya_min_worker_allocatable_CPU)
+                self._set_status(0, node, 'cpu')
+                node['error']['cpu'] = "See below."
 
-                input_min_worker_allocatble_memory = \
-                    self._get_memory(self._viya_min_allocatable_worker_memory,
-                                     "VIYA_MIN_ALLOCATABLE_WORKER_MEMORY", quantity_)
-                if quantity_(alloc_memory) >= input_min_worker_allocatble_memory:
-                    self._set_status(0, node, 'allocatableMemory')
-                else:
-                    self._set_status(1, node, 'allocatableMemory')
-                    node['error']['allocatableMemory'] = viya_constants.SET + \
-                        ': ' + str(alloc_memory) + ', ' + \
-                        str(viya_constants.EXPECTED) + ': ' + \
-                        self._viya_min_allocatable_worker_memory
-                    aggregate_memory_failures += 1
+                self._set_status(0, node, 'capacityMemory')
+                node['error']['capacityMemory'] = "See below."
 
             if self._release_in_range(kubeletversion):
                 self._set_status(0, node, 'kubeletversion')
             else:
                 self._set_status(1, node, 'kubeletversion')
-                node['error']['kubeletversion'] = viya_constants.SET + ': ' + \
-                    kubeletversion + ', ' + \
-                    str(viya_constants.EXPECTED) + ': ' + \
-                    self._viya_kubelet_version_min \
-                    + ' or later '
+                node['error']['kubeletversion'] = viya_constants.SET + ': ' + kubeletversion + ', ' + \
+                    str(viya_constants.EXPECTED) + ': ' + self._viya_kubelet_version_min + ' or later '
 
                 aggregate_kubelet_failures += 1
                 self.logger.debug("node {} ".format(pprint.pformat(node)))
         global_data = self._check_workers(global_data, nodes_data)
         global_data = self._set_time(global_data)
         global_data = self._check_cpu_errors(global_data, total_cpu_cores, aggregate_cpu_failures)
-        global_data = self._check_memory_errors(global_data, total_allocatable_memory, quantity_,
+        global_data = self._check_memory_errors(global_data, total_capacity_memory, quantity_,
                                                 aggregate_memory_failures)
 
         global_data = self._check_kubelet_errors(global_data, aggregate_kubelet_failures)
@@ -806,6 +762,23 @@ class ViyaPreInstallCheck():
         global_data.append(nodes_data)
         self.logger.debug("nodes_data {}".format(pprint.pformat(nodes_data)))
         return global_data
+
+    def _get_cpu_units(self, node, key):
+        """ Calculate the CPU cores if it has been expressed in millicores
+            node: node dictionary object
+            return:  value of vCPU
+        """
+        try:
+            # ## Switch to capacity cpu core
+            cpu_cores = float(node[key])
+        except ValueError:
+            # CPU is measured in units called millicores. Each node in the cluster introspects the operating system
+            # to determine the amount of CPU cores on the node and then multiples that value by 1000 to express
+            # its total capacity.
+            cpu_cores = float(str(node[key]).rstrip('m')) / 1000
+
+        self.logger.info("cpu_cores {} {}".format(key, str(cpu_cores)))
+        return cpu_cores
 
     def _set_status(self, status, node, key):
         """Set the status flag on dictionary object with node details - to indicate compliance with
@@ -870,6 +843,15 @@ class ViyaPreInstallCheck():
 
                 except KeyError:
                     node_data['taint'] = viya_constants.KEY_NOT_FOUND
+                try:
+                    node_data['agentpool'] = (node['metadata']['labels']['agentpool'])
+                except KeyError:
+                    node_data['agentpool'] = viya_constants.KEY_NOT_FOUND
+                try:
+                    node_data['instance'] = (node['metadata']['labels']['node.kubernetes.io/instance-type'])
+                except KeyError:
+                    node_data['instance'] = viya_constants.KEY_NOT_FOUND
+
                 addr_len = len(address_type)
                 for j in range(addr_len):
                     addr_t = str(address_type[j][0])
@@ -926,19 +908,20 @@ class ViyaPreInstallCheck():
 
         try:
             current = tuple(kubeletversion.split("."))
-        except ValueError:
-            return False
-        self.logger.info("current: " + pprint.pformat(current)
-                         + ", min: " + pprint.pformat(self._min_kubelet_version))
 
-        if int(current[0][1:]) > int(self._min_kubelet_version[0][1:]):
-            return True
-        if int(current[0][1:]) < int(self._min_kubelet_version[0][1:]):
+            if int(current[0][1:]) > int(self._min_kubelet_version[0][1:]):
+                return True
+            if int(current[0][1:]) < int(self._min_kubelet_version[0][1:]):
+                return False
+            if int(current[0][1:]) == int(self._min_kubelet_version[0][1:]) and \
+                    (int(current[1]) >= int(self._min_kubelet_version[1])):
+                return True
             return False
-        if int(current[0][1:]) == int(self._min_kubelet_version[0][1:]) and \
-                (int(current[1]) >= int(self._min_kubelet_version[1])):
-            return True
-        return False
+        except ValueError:
+            print(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN", str(self._min_kubelet_version)))
+            self.logger.exception(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN",
+                                                                   str(self._min_kubelet_version)))
+            sys.exit(viya_messages.BAD_OPT_RC_)
 
     def _get_memory(self, limit, key, quantity_):
         """
@@ -947,7 +930,7 @@ class ViyaPreInstallCheck():
 
         :param:  limit - value set in viya_cluster_settings
         :param:  key used viya_cluster_settings (VIYA_MIN_AGGREGATE_WORKER_MEMORY
-                 VIYA_MIN_ALLOCATABLE_WORKER_MEMORY)
+                 VIYA_GENERIC_WORKER_MEMORY)
         :param   quantity_ is the Pint quantities object
         """
         try:
@@ -965,16 +948,15 @@ class ViyaPreInstallCheck():
 
         :param:  limit - value set in viya_cluster_settings
         :param:  key used viya_cluster_settings (VIYA_MIN_AGGREGATE_WORKER_CPU_CORES,
-                 VIYA_MIN_WORKER_ALLOCATABLE_CPU)
+                 VIYA_GENEIC_WORKER_CPU)
         :return   cpu value as float
         """
         try:
             input_cpu = float(limit)
             return input_cpu
         except ValueError:
-            print(viya_messages.CPU_ERROR.format(key,
-                                                 str(limit)))
-            self.logger.exception(viya_messages.CPU_ERROR.format(key, str(limit)))
+            print(viya_messages.LIMIT_ERROR.format(key, str(limit)))
+            self.logger.exception(viya_messages.LIMIT_ERROR.format(key, str(limit)))
             sys.exit(viya_messages.BAD_OPT_RC_)
 
     def get_config_info(self):
@@ -1000,7 +982,7 @@ class ViyaPreInstallCheck():
         return configs_data
 
     def get_calculated_aggregate_memory(self):
-        return self._calculated_aggregate_allocatable_memory
+        return self._calculated_aggregate_memory
 
     def generate_report(self,
                         global_data,
@@ -1023,24 +1005,23 @@ class ViyaPreInstallCheck():
         if output_directory != "" and not output_directory.endswith(os.sep):
             output_directory = output_directory + os.sep
         report_file_path = output_directory + _REPORT_FILE_NAME_TMPL_.format(file_timestamp)
-        templates_dir = os.path.dirname(os.path.realpath(__file__)) + os.sep + ".." \
-            + os.sep + "templates" + os.sep
+        templates_dir = os.path.dirname(os.path.realpath(__file__)) + os.sep + ".." + os.sep + "templates" + os.sep
 
         template_renderer = Jinja2TemplateRenderer(templates_dir=templates_dir)
         report_file_path = \
             template_renderer.as_html(
-                                   "report_template_viya_pre_install_check.j2",
-                                   report_file_path,
-                                   trim_blocks=True, lstrip_blocks=True,
-                                   global_data=global_data, master_data=master_data,
-                                   configs_data=configs_data,
-                                   storage_data=storage_data,
-                                   namespace_data=namespace_data,
-                                   cluster_admin_permission_data=cluster_admin_permission_data.items(),
-                                   namespace_admin_permission_data=namespace_admin_permission_data.items(),
-                                   ingress_data=ingress_data.items(),
-                                   namespace_admin_permission_aggregate=ns_admin_permission_aggregate['Permissions'],
-                                   cluster_admin_permission_aggregate=cluster_admin_permission_aggregate['Permissions'])
+                    "report_template_viya_pre_install_check.j2",
+                    report_file_path,
+                    trim_blocks=True, lstrip_blocks=True,
+                    global_data=global_data, master_data=master_data,
+                    configs_data=configs_data,
+                    storage_data=storage_data,
+                    namespace_data=namespace_data,
+                    cluster_admin_permission_data=cluster_admin_permission_data.items(),
+                    namespace_admin_permission_data=namespace_admin_permission_data.items(),
+                    ingress_data=ingress_data.items(),
+                    namespace_admin_permission_aggregate=ns_admin_permission_aggregate['Permissions'],
+                    cluster_admin_permission_aggregate=cluster_admin_permission_aggregate['Permissions'])
 
         print("Created: {}".format(report_file_path))
         print("Created: {}".format(output_directory + _REPORT_LOG_NAME_TMPL_.format(file_timestamp)))

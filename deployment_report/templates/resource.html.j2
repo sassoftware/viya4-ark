@@ -10,6 +10,18 @@
 
 {# Generic Resource Template #}
 
+{# Resource Attributes #}
+<h7>Kubernetes Attributes</h7>
+<table>
+  {{ add_vert_header_table_row(label="Resource Name",
+                               desc="The name of this " + kind_name + " as defined in the Kubernetes cluster",
+                               value=resource_details.resourceDefinition.metadata.name) }}
+  {{ add_vert_header_table_row(label="Resource API Version",
+                               desc="The Kubernetes API group and version under which this " + kind_name + " is defined",
+                               value=resource_details.resourceDefinition.apiVersion) }}
+</table>
+{# Resource Attributes #}
+
 {# Resource Status #}
 <h7>Status</h7>
 <table>

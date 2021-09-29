@@ -1,9 +1,9 @@
 {# ----------------------------------------------------------- #}
-{# node.html.j2                                                #}
+{# nodes.html.j2                                               #}
 {# ----------------------------------------------------------- #}
 {# Author: SAS Institute Inc.                                  #}
 {# ----------------------------------------------------------- #}
-{# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.      #}
+{# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.      #}
 {# All Rights Reserved.                                        #}
 {# SPDX-License-Identifier: Apache-2.0                         #}
 {# ----------------------------------------------------------- #}
@@ -83,7 +83,7 @@
       <tr>
         <td>
           <a class="nested-accordions-rel-link"
-             href="#pod-{{ pod.name | replace('.','-') }}">{{ pod.name }}</a>
+             href="#{{pod.resourceType}}-{{ pod.resourceName | replace('.','-') }}">{{ pod.resourceName }}</a>
         </td>
       </tr>
     {% endfor %}

@@ -67,7 +67,7 @@
                 },
                 "capacity": {
                     "attachable-volumes-azure-disk": "32",
-                    "cpu": "16",
+                    "cpu": "15740m",
                     "ephemeral-storage": "203071140Ki",
                     "hugepages-1Gi": "0",
                     "hugepages-2Mi": "0",

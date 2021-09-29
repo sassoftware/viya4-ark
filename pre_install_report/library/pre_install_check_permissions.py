@@ -21,6 +21,7 @@ import semantic_version
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from pre_install_report.library.utils import viya_constants, viya_messages
 from pre_install_report.library.pre_install_utils import PreCheckUtils
+from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues
 from viya_ark_library.logging import ViyaARKLogger
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 
@@ -274,7 +275,7 @@ class PreCheckPermissions(object):
          Uses viyaARK_library common library to retrieve kubernetes resources kind=storage class
          return k8s_resource: List of Kubernetes resources
         """
-        self._storage_class_sc = self.utils.get_resources(KubernetesResource.Kinds.STORAGECLASS)
+        self._storage_class_sc = self.utils.get_resources(KubernetesResourceTypeValues.K8S_STORAGE_STORAGE_CLASSES)
         if not self._storage_class_sc:
             self.cluster_admin_permission_data[viya_constants.PERM_GET + viya_constants.PERM_STORAGE_CLASS] = \
                 viya_constants.INSUFFICIENT_PERMS

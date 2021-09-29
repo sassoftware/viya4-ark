@@ -27,13 +27,14 @@ class ViyaDeploymentReportKeys(object):
     SAS_COMPONENTS_DICT = "sasComponents"
     UNAVAILABLE_RESOURCES_LIST = "_unavailableResources"
 
-    class KindDetails(object):
+    class ResourceTypeDetails(object):
         """
-        Class defining static references to keys in kind detail dictionaries in resulting ViyaDeploymentReport data
-        structure.
+        Class defining static references to keys in resource type details dictionaries in resulting
+        ViyaDeploymentReport data structure.
         """
         AVAILABLE = "available"
         COUNT = "count"
+        KIND = "kind"
         SAS_CRD = "sasCRD"
 
     class Kubernetes(object):
@@ -45,7 +46,7 @@ class ViyaDeploymentReportKeys(object):
         API_VERSIONS_LIST = "apiVersions"
         CADENCE_INFO = "cadenceInfo"
         DB_INFO = "dbInfo"
-        DISCOVERED_KINDS_DICT = "discoveredKinds"
+        DISCOVERED_RESOURCE_TYPES_DICT = "discoveredResourceTypes"
         INGRESS_CTRL = "ingressController"
         NAMESPACE = "namespace"
         NODES_DICT = "nodes"
@@ -53,7 +54,7 @@ class ViyaDeploymentReportKeys(object):
 
     class ResourceDetails(object):
         """
-        Class defining static references to keys in resource detail dictionaries in the resulting ViyaDeploymentReport
+        Class defining static references to keys in resource details dictionaries in the resulting ViyaDeploymentReport
         data structure.
         """
         EXT_DICT = "ext"
@@ -68,11 +69,24 @@ class ViyaDeploymentReportKeys(object):
             LOG_SNIP_LIST = "logSnip"
             METRICS_DICT = "metrics"
             RELATIONSHIPS_LIST = "relationships"
+            RESOURCE_TYPE = "resourceType"
 
             class Relationship(object):
                 """
                 Class defining static references to keys in resource's ext.relationships list in the resulting
                 ViyaDeploymentReport data structure.
                 """
-                KIND = "kind"
-                NAME = "name"
+                RESOURCE_NAME = "resourceName"
+                RESOURCE_TYPE = "resourceType"
+
+    class DatabaseDetails(object):
+        """
+        Class defining static references to keys in Database details dictionaries in resulting
+        ViyaDeploymentReport data structure.
+        """
+        DBHOST = "host"
+        DBNAME = "name"
+        DBPORT = "port"
+        DBTYPE = "type"
+        DBSSL = "sslEnabled"
+        DBCONN = "connection"

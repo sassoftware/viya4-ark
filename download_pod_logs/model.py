@@ -17,6 +17,7 @@ from multiprocessing.pool import ApplyResult
 from subprocess import CalledProcessError
 from typing import Any, AnyStr, Dict, List, Optional, Text, Tuple
 
+from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
@@ -109,7 +110,7 @@ class PodLogDownloader(object):
 
                 # check if the pod has a container with a name in the selected components list
                 else:
-                    containers: List[Dict] = pod.get_spec_value(KubernetesResource.Keys.CONTAINERS)
+                    containers: List[Dict] = pod.get_spec_value(KubernetesResourceKeys.CONTAINERS)
                     for container in containers:
                         name: Text = container.get("name")
 
@@ -175,7 +176,7 @@ class PodLogDownloader(object):
             return
 
         # get the containerStatuses for this pod
-        container_statuses: List[Dict] = pod.get_status_value(KubernetesResource.Keys.CONTAINER_STATUSES)
+        container_statuses: List[Dict] = pod.get_status_value(KubernetesResourceKeys.CONTAINER_STATUSES)
 
         # create list of tuples to hold information about failed containers/pods
         err_info: List[Tuple[Optional[Text], Text]] = list()
@@ -231,7 +232,7 @@ class PodLogDownloader(object):
                     if container_err.stderr:
                         log += str(container_err.stderr.decode()).splitlines()
 
-                    initcontainers: Optional[List[Dict]] = pod.get_spec_value(KubernetesResource.Keys.INIT_CONTAINERS)
+                    initcontainers: Optional[List[Dict]] = pod.get_spec_value(KubernetesResourceKeys.INIT_CONTAINERS)
                     if initcontainers:
                         for initcontainer in initcontainers:
                             container_name: Optional[Text] = initcontainer.get("name")
@@ -325,7 +326,7 @@ class _ContainerStatus(object):
 
         :return: The containerStatus.image value
         """
-        return self._get_value(KubernetesResource.Keys.IMAGE)
+        return self._get_value(KubernetesResourceKeys.IMAGE)
 
     def get_name(self) -> Text:
         """
@@ -333,7 +334,7 @@ class _ContainerStatus(object):
 
         :return: The containerStatus.name value
         """
-        return self._get_value(KubernetesResource.Keys.NAME)
+        return self._get_value(KubernetesResourceKeys.NAME)
 
     def is_ready(self) -> Text:
         """
@@ -341,7 +342,7 @@ class _ContainerStatus(object):
 
         :return: The containerStatus.ready value.
         """
-        return str(self._get_value(KubernetesResource.Keys.READY))
+        return str(self._get_value(KubernetesResourceKeys.READY))
 
     def get_restart_count(self) -> Text:
         """
@@ -349,7 +350,7 @@ class _ContainerStatus(object):
 
         :return: The containerStatus.restartCount value.
         """
-        return str(self._get_value(KubernetesResource.Keys.RESTART_COUNT))
+        return str(self._get_value(KubernetesResourceKeys.RESTART_COUNT))
 
     def is_started(self) -> Text:
         """
@@ -357,7 +358,7 @@ class _ContainerStatus(object):
 
         :return: The containerStatus.started value.
         """
-        return str(self._get_value(KubernetesResource.Keys.STARTED))
+        return str(self._get_value(KubernetesResourceKeys.STARTED))
 
     def get_state_dict(self) -> Dict[Text, Text]:
         """
@@ -367,7 +368,7 @@ class _ContainerStatus(object):
         :return: A flattened containerStatus.state dictionary.
         """
         # get the containerStatus.state dict
-        container_state: Dict = self._container_status_dict.get(KubernetesResource.Keys.STATE)
+        container_state: Dict = self._container_status_dict.get(KubernetesResourceKeys.STATE)
 
         # create a dictionary to hold the state values
         state_dict: Dict = dict()
