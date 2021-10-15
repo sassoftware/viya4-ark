@@ -93,7 +93,7 @@
         "group": "",
         "kind": "Node",
         "name": "nodes",
-        "namespaced": true,
+        "namespaced": false,
         "shortname": "no",
         "verbs": [
             "create",

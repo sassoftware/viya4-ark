@@ -73,7 +73,7 @@ def test_gather_details_basic_user_valid_namespace_from_command_line() -> None:
     """
     try:
         report: ViyaDeploymentReport = ViyaDeploymentReport()
-        report.gather_details(kubectl=KubectlTest(include_non_namespaced_resources=False,
+        report.gather_details(kubectl=KubectlTest(include_non_namespaced_resources=True,
                                                   namespace="test"))
     except KubectlRequestForbiddenError as e:
         pytest.fail(f"An unexpected error was raised: {e}")
