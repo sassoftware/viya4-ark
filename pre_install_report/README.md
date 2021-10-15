@@ -85,18 +85,20 @@ The following command provides usage details:
 python3 viya-ark.py pre-install-report -h
 ```
 
-**Supported Ingress values:** The tool currently supports an nginx or openshift-ingress Ingress controller.    
-Other Ingress controllers are not evaluated.  Select openshift-ingress with if you are deploying on Red Hat OpenShift.
+**Supported Ingress values:** The tool currently supports an NGINX or openshift-ingress ingress controller.    
+Other ingress controllers are not evaluated.  Select openshift-ingress if you are deploying on Red Hat OpenShift.
 
 ### Hints
 **Note:**  The values for the Ingress Host and Port values are not required if you specify an ingress value   
-of _openshift-ingress_. The Ingress Host and Port values must be specified for if you specify an ingress  
-value of _nginx_.
-The values for the Ingress Host and Ingress Port options can be determined with kubectl commands.   
-The following section provides hints for a _nginx_ Ingress controller of Type LoadBalancer.   
-The following commands may need to be modified to suit your Ingress controller deployment.  
+of _openshift-ingress_.  The Ingress Host and Port values must be specified if you specify an ingress
+value of _nginx_.  
 
-You must specify the namespace where the Ingress controller is available as well as the Ingress controller name:
+The values for the Ingress Host and Ingress Port options can be determined with kubectl commands.   
+
+The following section provides hints for a _nginx_ ingress controller of Type LoadBalancer.
+The following commands may need to be modified to suit your ingress controller deployment. 
+
+You must specify the namespace where the ingress controller is available as well as the ingress controller name:
 
 ```
 kubectl -n <nginx-ingress-namespace> get svc <nginx-ingress-controller-name> 
