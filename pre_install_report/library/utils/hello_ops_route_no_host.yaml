@@ -1,0 +1,21 @@
+####################################################################
+####   hello_ops_route_no_host.yaml                                        ####
+####################################################################
+####################################################################
+#### Author: SAS Institute Inc.                                                                                       ####
+####                                                                                                                                           ####
+####################################################################
+####################################################################
+#
+# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: no-route-hello-world
+spec:
+  to:
+    kind: Service
+    name: hello-world

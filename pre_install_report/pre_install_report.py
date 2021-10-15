@@ -133,12 +133,13 @@ def usage(exit_code: int):
     :param exit_code: The exit code to return when exiting the program.
     """
     print()
-    print("Usage: viya-ark.py pre_install_report <-i|--ingress> <-H|--host> <-p|--port> [<options>]")
+    print("Usage: viya-ark.py pre_install_report <-i|--ingress> [<options>]")
     print()
     print("Options:")
-    print("    -i  --ingress=nginx           (Required)Kubernetes ingress controller used for Viya deployment")
-    print("    -H  --host                    (Required)Ingress host used for Viya deployment")
-    print("    -p  --port=xxxxx or \"\"        (Required)Ingress port used for Viya deployment")
+    print("    -i  --ingress                 (Required)Kubernetes ingress controller: "
+          "select nginx or openshift-ingress")
+    print("    -H  --host                    (Optional)Ingress host used for Viya deployment")
+    print("    -p  --port=xxxxx or \"\"        (Optional)Ingress port used for Viya deployment")
     print("    -h  --help                    (Optional)Show this usage message")
     print("    -n  --namespace               (Optional)Kubernetes namespace used for Viya deployment")
     print("    -o, --output-dir=\"<dir>\"      (Optional)Write the report and log files to the provided directory")
@@ -170,6 +171,7 @@ def main(argv):
     found_ingress_port: bool = False
     output_dir: Optional[Text] = ""
     ingress_port: Optional[Text] = ""
+    ingress_host: Optional[Text] = ""
     name_space: Optional[Text] = None
     logging_level: int = logging.INFO
 
@@ -216,14 +218,20 @@ def main(argv):
     logger = sas_logger.get_logger()
     read_environment_var('KUBECONFIG')
 
-    if not found_ingress_controller or not found_ingress_host or not found_ingress_port:
+    if not found_ingress_controller:
         logger.error(viya_messages.OPTION_VALUES_ERROR)
         print(viya_messages.OPTION_VALUES_ERROR)
         usage(viya_messages.BAD_OPT_RC_)
 
-    if not(str(ingress_controller) == viya_constants.INGRESS_NGINX):
+    if not(str(ingress_controller) == viya_constants.INGRESS_NGINX) and \
+            not(str(ingress_controller) == viya_constants.OPENSHIFT_INGRESS):
         logger.error(viya_messages.INGRESS_CONTROLLER_ERROR)
         print(viya_messages.INGRESS_CONTROLLER_ERROR)
+        usage(viya_messages.BAD_OPT_RC_)
+
+    if (str(ingress_controller) == viya_constants.INGRESS_NGINX) and not found_ingress_host and not found_ingress_port:
+        logger.error(viya_messages.OPTION_VALUES_ERROR)
+        print(viya_messages.OPTION_VALUES_ERROR)
         usage(viya_messages.BAD_OPT_RC_)
 
     try:
