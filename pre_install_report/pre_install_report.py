@@ -137,7 +137,7 @@ def usage(exit_code: int):
     print()
     print("Options:")
     print("    -i  --ingress                 (Required)Kubernetes ingress controller: "
-          "select nginx or openshift-ingress")
+          "{} or {}".format(viya_constants.INGRESS_NGINX, viya_constants.OPENSHIFT_INGRESS))
     print("    -H  --host                    (Optional)Ingress host used for Viya deployment")
     print("    -p  --port=xxxxx or \"\"        (Optional)Ingress port used for Viya deployment")
     print("    -h  --help                    (Optional)Show this usage message")

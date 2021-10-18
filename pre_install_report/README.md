@@ -85,12 +85,12 @@ The following command provides usage details:
 python3 viya-ark.py pre-install-report -h
 ```
 
-**Supported Ingress values:** The tool currently supports an NGINX or openshift-ingress ingress controller.    
-Other ingress controllers are not evaluated.  Select openshift-ingress if you are deploying on Red Hat OpenShift.
+**Supported Ingress values:** The tool currently supports the following ingress controllers: _nginx, openshift_.    
+Other ingress controllers are not evaluated.  Select _openshift_ if you are deploying on Red Hat OpenShift.
 
 ### Hints
 **Note:**  The values for the Ingress Host and Port values are not required if you specify an ingress value   
-of _openshift-ingress_.  The Ingress Host and Port values must be specified if you specify an ingress
+of _openshift_.  The Ingress Host and Port values must be specified if you specify an ingress
 value of _nginx_.  
 
 The values for the Ingress Host and Ingress Port options can be determined with kubectl commands.   
