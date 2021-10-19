@@ -73,8 +73,7 @@ Download the latest version of this tool and update required packages with every
 
 **Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights in the   
 namespace where you intend to deploy your SAS Viya software.
-To obtain a complete report use a `KUBECONFIG`   
-with administrator rights in the cluster.
+To obtain a complete report use a `KUBECONFIG` with administrator rights in the cluster.
 
 Create the namespace where you plan to deploy SAS Viya.  You must specify the namespace when you run the tool. 
 
@@ -86,20 +85,26 @@ The following command provides usage details:
 python3 viya-ark.py pre-install-report -h
 ```
 
-**Note:** The tool currently expects an NGINX Ingress controller.  Other Ingress controllers are not evaluated.
+### Supported Ingress Values   
+The tool currently supports the following ingress controllers: _nginx, openshift_.    
+Other ingress controllers are not evaluated.  Select _openshift_ if you are deploying on Red Hat OpenShift.
 
 ### Hints
+**Note:**  The values for the Ingress Host and Port values are not required if you specify an ingress value   
+of _openshift_.  The Ingress Host and Port values must be specified if you specify an ingress
+value of _nginx_.  
 
 The values for the Ingress Host and Ingress Port options can be determined with kubectl commands.   
-The following section provides hints for a NGINX Ingress controller of Type LoadBalancer.   
-The following commands 
-may need to be modified to suit your Ingress controller deployment.  
 
-You must specify the namespace where the Ingress controller is available as well as the Ingress controller name:
+The following section provides hints for a _nginx_ ingress controller of Type LoadBalancer.
+The following commands may need to be modified to suit your ingress controller deployment. 
+
+You must specify the namespace where the ingress controller is available as well as the ingress controller name:
 
 ```
 kubectl -n <nginx-ingress-namespace> get svc <nginx-ingress-controller-name> 
 ```
+
   
 Here is sample output from the command: 
 

@@ -49,6 +49,10 @@ PROVISIONER_AWS_EBS = "kubernetes.io/aws-ebs"
 INGRESS_V1BETA1_REL_EQ = '==1.18'
 INGRESS_UNSUPPORTED_REL_LT = '<1.18'
 
+OPS_ROUTE_NAME = "no-route-hello-world"
+OPS_ROUTE_KEY = "host"
+OPS_ROUTE_KIND = "route"
+
 
 class PreCheckPermissions(object):
     """
@@ -84,6 +88,8 @@ class PreCheckPermissions(object):
         self._sample_deployment = 0
         self._sample_output = ""
         self._k8s_git_version = None
+        self._openshift_host_port = viya_constants.NO_HOST_FOUND
+        self._route_k8s_resource: KubernetesResource = None
 
     def _set_results_cluster_admin(self, resource_key, rc):
         """
@@ -136,8 +142,6 @@ class PreCheckPermissions(object):
                 viya_constants.INSUFFICIENT_PERMS + ". Check Logs."
         else:
             self.namespace_admin_permission_data[resource_key] = viya_constants.ADEQUATE_PERMS
-            # self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
-            #    viya_constants.ADEQUATE_PERMS
 
     def _get_pvc(self, pvc_name, key):
         """
@@ -363,7 +367,7 @@ class PreCheckPermissions(object):
 
     def check_sample_application(self):
         """
-        Deploy hello-world in specified namespace and set the permissiions status in the
+        Deploy hello-world in specified namespace and set the permissions status
 
         """
 
@@ -397,6 +401,80 @@ class PreCheckPermissions(object):
             self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
             return 1
+
+    def check_openshift_route(self):
+
+        rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
+                                             'hello_ops_route_no_host.yaml')
+
+        if rc == 0:
+            self._set_results_namespace_admin(viya_constants.PERM_DEPLOYMENT, rc)
+            self._set_results_namespace_admin(viya_constants.PERM_ROUTER, rc)
+        else:
+            self._sample_deployment = 1
+            self._set_results_namespace_admin(viya_constants.PERM_DEPLOYMENT, rc)
+            self._set_results_namespace_admin(viya_constants.PERM_ROUTER, rc)
+            return 1
+
+    def get_openshift_route_details(self):
+        """
+        Get host/port of deployed route name
+
+        action:  issue kubectl command to get host/port value in route
+
+        """
+        self._route_k8s_resource: KubernetesResource = self.utils.get_resource(OPS_ROUTE_KIND, OPS_ROUTE_NAME)
+        self.logger.info("route json{}".format(pprint.pformat(self._route_k8s_resource.as_dict())))
+
+    def check_delete_openshift_route(self):
+        """
+        Delete hello-world Kubernetes Service in specified namespace. Set the
+        permissions status in the namespace_admin_permission_data dict object.
+
+        """
+        rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_DELETE,
+                                             'hello_ops_route_no_host.yaml')
+        self._set_results_namespace_admin(viya_constants.PERM_DELETE + viya_constants.PERM_ROUTER, rc)
+
+    def set_route_k8s_resource(self, route: KubernetesResource):
+        """
+        Set the route information as KubernetesResource
+        Mainly used for pytest
+        """
+        self._route_k8s_resource: KubernetesResource = route
+
+    def get_route_host(self):
+        """
+        Get the route host/port retrieved from route: KubernetesResource
+        Mainly used for pytest
+        """
+        return str(self._openshift_host_port)
+
+    def get_ingress_controller(self):
+        """
+        Get the current ingress_controller
+
+        """
+        return str(self.ingress_controller)
+
+    def check_openshift_route_host_port(self):
+        """
+        Get host/port of deployed route name = "no-route-hello-world"
+
+        action:  issue kubectl command to get host/port value in route
+
+        """
+        ingress = self._route_k8s_resource.get_status_value("ingress")
+
+        for dic in ingress:
+            for ingress_key, val in dic.items():
+                # print(f'{ingress_key} is {val}')
+                if ingress_key == OPS_ROUTE_KEY:
+                    self._openshift_host_port = val
+                    self.logger.info("host_port {}".format(pprint.pformat(self._openshift_host_port)))
+
+        if self._openshift_host_port == viya_constants.NO_HOST_FOUND:
+            self.logger.error("host_port {}".format(pprint.pformat(self._openshift_host_port)))
 
     def check_sample_service(self):
         """
@@ -468,7 +546,11 @@ class PreCheckPermissions(object):
         if self.ingress_port is not None:
             port = ":" + self.ingress_port
         host_port_app = str(self.ingress_host) + str(port) + "/hello-world"
+
         url_string = "http://" + host_port_app
+        if self.ingress_controller == viya_constants.OPENSHIFT_INGRESS:
+            url_string = "http://" + str(self._openshift_host_port) + "/hello-world"
+
         self.logger.info("url {}".format(url_string))
         response = self._request_url(url_string, True)
         if response is not None:
@@ -478,26 +560,29 @@ class PreCheckPermissions(object):
                                                                         "  " + str(response.text)
                 self.logger.info("url {} response status code {}".format(url_string, str(response.status_code)))
             else:
-                # attempt the request again with https and verify=False option, suppress InsecureRequestWarning
-                url_string = "https://" + host_port_app
-                response = self._request_url(url_string, False)
-                if response is not None:
-                    response.encoding = 'utf-8'
-                    if response.status_code == 200:
-                        self.namespace_admin_permission_data[viya_constants.PERM_SAMPLE_STATUS] = \
-                            str(response.status_code) + "  " + str(response.text)
-                        self.logger.info("url {} response status code {}".format(url_string, str(response.status_code)))
-                    else:
-                        self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
-                            viya_constants.INSUFFICIENT_PERMS
+                if self.ingress_controller != viya_constants.OPENSHIFT_INGRESS:
 
-                        self.namespace_admin_permission_data['Sample HTTP Failed'] = "Status Code " + \
-                                                                                     str(response.status_code) + \
-                                                                                     ": " + str(url_string)
-                        self.logger.info("url {} status {} text {}".format(url_string,
-                                                                           response.status_code, response.text))
-                else:
-                    self.logger.error("Retry as https failed url {}".format(url_string))
+                    # attempt the request again with https and verify=False option, suppress InsecureRequestWarning
+                    url_string = "https://" + host_port_app
+                    response = self._request_url(url_string, False)
+                    if response is not None:
+                        response.encoding = 'utf-8'
+                        if response.status_code == 200:
+                            self.namespace_admin_permission_data[viya_constants.PERM_SAMPLE_STATUS] = \
+                                str(response.status_code) + "  " + str(response.text)
+                            self.logger.info("url {} response status code {}".format(url_string,
+                                                                                     str(response.status_code)))
+                        else:
+                            self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = \
+                                viya_constants.INSUFFICIENT_PERMS
+
+                            self.namespace_admin_permission_data['Sample HTTP Failed'] = "Status Code " + \
+                                                                                         str(response.status_code) + \
+                                                                                         ": " + str(url_string)
+                            self.logger.info("url {} status {} text {}".format(url_string,
+                                                                               response.status_code, response.text))
+                    else:
+                        self.logger.error("Retry as https failed url {}".format(url_string))
 
     def _request_url(self, url_string, verify_cert=True):
         """
