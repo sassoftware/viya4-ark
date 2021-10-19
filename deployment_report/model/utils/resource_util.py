@@ -60,7 +60,6 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
         else:
             # note that this resource was not available
             resource_type_available = False
-            return
 
     # cache the resources by type
     resource_cache[resource_type]: Dict = dict()
