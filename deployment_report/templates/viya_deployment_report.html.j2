@@ -202,12 +202,14 @@
             <th>SAS Custom Resource</th>
           </tr>
         {% for discovered_type, type_details in report_data.kubernetes.discoveredResourceTypes.items() %}
+          {% if type_details.kind | lower != "none" %}
           <tr>
             <td>{{ type_details.kind }}</td>
             <td>{{ discovered_type }}</td>
             <td>{{ type_details.count }}</td>
             <td>{{ type_details.sasCRD }}</td>
           </tr>
+          {% endif %}
         {% endfor %}
         </table>
       </div>
