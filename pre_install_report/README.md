@@ -136,7 +136,7 @@ python3 viya-ark.py pre-install-report -i nginx  -H $INGRESS_HOST -p $INGRESS_HT
  
 ## Report Output
 
-The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html.  The report is in a   
+The tool generates the pre-install check report, viya_pre_install_report_<timestamp>.html.  The report is in a   
 web-viewable, HTML format.
 
 ## Modify CPU, Memory, and Version Settings
