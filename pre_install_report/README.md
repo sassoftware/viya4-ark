@@ -35,9 +35,9 @@ VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=56
 If calculated aggregate memory is less than a percentage (85%) of VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  
 If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then it the tool will flag a CPU issue.
  
-SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster for [Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure),   
-[AWS](https://github.com/sassoftware/viya4-iac-aws]), or [GCP](https://github.com/sassoftware/viya4-iac-gcp)
-
+SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster.  
+Refer to the following IaC repositories for [Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure), [AWS](https://github.com/sassoftware/viya4-iac-aws]) or [GCP](https://github.com/sassoftware/viya4-iac-gcp).   
+For OpenShift refer to the documentation in SAS® Viya® Operations [OpenShift](https://go.documentation.sas.com/doc/en/itopscdc/v_019/itopssr/n1ika6zxghgsoqn1mq4bck9dx695.htm#p1c8bxlbu0gzuvn1e75nck1yozcn)
 
 **Example**: Setting for aggregate Memory and vCPU for deployment based on documentation in SAS Viya Operations under System Requirements   
 in the Hardware and Resource Requirements section.  See Sizing Recommendations for Microsoft Azure.
@@ -71,9 +71,11 @@ Download the latest version of this tool and update required packages with every
 
 ## Usage
 
-**Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights in the   
-namespace where you intend to deploy your SAS Viya software.
-To obtain a complete report use a `KUBECONFIG` with administrator rights in the cluster.
+**Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights to the   
+cluster where you intend to deploy your SAS Viya software.
+To obtain a complete report use a `KUBECONFIG` with administrator rights in the cluster.  Otherwise, the report will   
+not be able to evaluate items such as memory, CPU cores, software versions and other node details. It is not useful   
+for determining if you are ready to deploy your SAS Viya software.
 
 Create the namespace where you plan to deploy SAS Viya.  You must specify the namespace when you run the tool. 
 

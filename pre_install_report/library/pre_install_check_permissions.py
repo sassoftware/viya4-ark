@@ -424,7 +424,11 @@ class PreCheckPermissions(object):
 
         """
         self._route_k8s_resource: KubernetesResource = self.utils.get_resource(OPS_ROUTE_KIND, OPS_ROUTE_NAME)
-        self.logger.info("route json{}".format(pprint.pformat(self._route_k8s_resource.as_dict())))
+
+        if self._route_k8s_resource is not None:
+            self.logger.info("route json{}".format(pprint.pformat(self._route_k8s_resource.as_dict())))
+        else:
+            self.logger.info("route is {}".format(pprint.pformat(str(type(self._route_k8s_resource)))))
 
     def check_delete_openshift_route(self):
         """
@@ -464,14 +468,16 @@ class PreCheckPermissions(object):
         action:  issue kubectl command to get host/port value in route
 
         """
-        ingress = self._route_k8s_resource.get_status_value("ingress")
+        if self._route_k8s_resource is not None:
 
-        for dic in ingress:
-            for ingress_key, val in dic.items():
-                # print(f'{ingress_key} is {val}')
-                if ingress_key == OPS_ROUTE_KEY:
-                    self._openshift_host_port = val
-                    self.logger.info("host_port {}".format(pprint.pformat(self._openshift_host_port)))
+            ingress = self._route_k8s_resource.get_status_value("ingress")
+
+            for dic in ingress:
+                for ingress_key, val in dic.items():
+                    # print(f'{ingress_key} is {val}')
+                    if ingress_key == OPS_ROUTE_KEY:
+                        self._openshift_host_port = val
+                        self.logger.info("host_port {}".format(pprint.pformat(self._openshift_host_port)))
 
         if self._openshift_host_port == viya_constants.NO_HOST_FOUND:
             self.logger.error("host_port {}".format(pprint.pformat(self._openshift_host_port)))
