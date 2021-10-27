@@ -77,7 +77,7 @@ To obtain a complete report use a `KUBECONFIG` with administrator rights in the 
 not be able to evaluate items such as memory, CPU cores, software versions and other node details. It is not useful   
 for determining if you are ready to deploy your SAS Viya software.
 
-Create the namespace where you plan to deploy SAS Viya.  You can specify the namespace option when you run the tool.  If a namespace is not provided, the tool will check the current context for a namespace.  A namespace must be available when the tools runs.   
+Create the namespace where you plan to deploy SAS Viya.  A namespace is required to run this tool. Specify the namespace where you plan to deploy SAS Viya using the namespace option. If a namespace is not provided, the tool will check the current context for a namespace. Ensure that you are running with the correct namespace.   
 
 After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya4-ark`. 
 
