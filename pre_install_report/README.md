@@ -35,9 +35,9 @@ VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=56
 If calculated aggregate memory is less than a percentage (85%) of VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  
 If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then it the tool will flag a CPU issue.
  
-SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster for [Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure),   
-[AWS](https://github.com/sassoftware/viya4-iac-aws]), or [GCP](https://github.com/sassoftware/viya4-iac-gcp)
-
+SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster.  
+Refer to the following IaC repositories for [Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure), [AWS](https://github.com/sassoftware/viya4-iac-aws]) or [GCP](https://github.com/sassoftware/viya4-iac-gcp).   
+For OpenShift refer to the documentation in SAS® Viya® Operations [OpenShift](https://go.documentation.sas.com/doc/en/itopscdc/v_019/itopssr/n1ika6zxghgsoqn1mq4bck9dx695.htm#p1c8bxlbu0gzuvn1e75nck1yozcn)
 
 **Example**: Setting for aggregate Memory and vCPU for deployment based on documentation in SAS Viya Operations under System Requirements   
 in the Hardware and Resource Requirements section.  See Sizing Recommendations for Microsoft Azure.
@@ -71,12 +71,13 @@ Download the latest version of this tool and update required packages with every
 
 ## Usage
 
-**Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights in the   
-namespace where you intend to deploy your SAS Viya software.
-To obtain a complete report use a `KUBECONFIG`   
-with administrator rights in the cluster.
+**Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights to the   
+cluster where you intend to deploy your SAS Viya software.
+To obtain a complete report use a `KUBECONFIG` with administrator rights in the cluster.  Otherwise, the report will   
+not be able to evaluate items such as memory, CPU cores, software versions and other node details. It is not useful   
+for determining if you are ready to deploy your SAS Viya software.
 
-Create the namespace where you plan to deploy SAS Viya.  You must specify the namespace when you run the tool. 
+Create the namespace where you plan to deploy SAS Viya.  A namespace is required to run this tool. Specify the namespace where you plan to deploy SAS Viya using the namespace option. If a namespace is not provided, the tool will check the current context for a namespace. Ensure that you are running with the correct namespace.   
 
 After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya4-ark`. 
 
@@ -86,20 +87,26 @@ The following command provides usage details:
 python3 viya-ark.py pre-install-report -h
 ```
 
-**Note:** The tool currently expects an NGINX Ingress controller.  Other Ingress controllers are not evaluated.
+### Supported Ingress Values   
+The tool currently supports the following ingress controllers: _nginx, openshift_.    
+Other ingress controllers are not evaluated.  Select _openshift_ if you are deploying on Red Hat OpenShift.
 
 ### Hints
+**Note:**  The values for the Ingress Host and Port values are not required if you specify an ingress value   
+of _openshift_.  The Ingress Host and Port values must be specified if you specify an ingress
+value of _nginx_.  
 
 The values for the Ingress Host and Ingress Port options can be determined with kubectl commands.   
-The following section provides hints for a NGINX Ingress controller of Type LoadBalancer.   
-The following commands 
-may need to be modified to suit your Ingress controller deployment.  
 
-You must specify the namespace where the Ingress controller is available as well as the Ingress controller name:
+The following section provides hints for a _nginx_ ingress controller of Type LoadBalancer.
+The following commands may need to be modified to suit your ingress controller deployment. 
+
+You must specify the namespace where the ingress controller is available as well as the ingress controller name:
 
 ```
 kubectl -n <nginx-ingress-namespace> get svc <nginx-ingress-controller-name> 
 ```
+
   
 Here is sample output from the command: 
 
@@ -129,7 +136,7 @@ python3 viya-ark.py pre-install-report -i nginx  -H $INGRESS_HOST -p $INGRESS_HT
  
 ## Report Output
 
-The tool generates the pre-install check report,`viya_pre_install_report_<timestamp>.html.  The report is in a   
+The tool generates the pre-install check report, viya_pre_install_report_<timestamp>.html.  The report is in a   
 web-viewable, HTML format.
 
 ## Modify CPU, Memory, and Version Settings

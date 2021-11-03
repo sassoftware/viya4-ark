@@ -71,6 +71,7 @@ class ViyaPreInstallCheck():
         self._calculated_aggregate_memory = None
         self._workers = 0
         self._aggregate_nodeStatus_failures = 0
+        self._ingress_controller = None
 
     def _parse_release_info(self, release_info):
         """
@@ -92,7 +93,7 @@ class ViyaPreInstallCheck():
 
     def check_details(self, kubectl, ingress_port, ingress_host, ingress_controller,
                       output_dir):
-
+        self._ingress_controller = ingress_controller
         self._kubectl = kubectl
         name_space = kubectl.get_namespace()
         self.logger.info("names_space: {} ".format(name_space))
@@ -395,19 +396,25 @@ class ViyaPreInstallCheck():
         permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, False)
         permissions_check.check_sample_application()
         permissions_check.check_sample_ingress()
+        if self._ingress_controller == viya_constants.OPENSHIFT_INGRESS:
+            permissions_check.check_openshift_route()
         permissions_check.check_deploy_crd()
         permissions_check.check_rbac_role()
         permissions_check.check_create_custom_resource()
         permissions_check.check_get_custom_resource(namespace)
 
+        if self._ingress_controller == viya_constants.OPENSHIFT_INGRESS:
+            permissions_check.get_openshift_route_details()
+            permissions_check.check_openshift_route_host_port()
         permissions_check.check_delete_custom_resource()
         permissions_check.check_rbac_delete_role()
 
         permissions_check.check_sample_response()
-
         permissions_check.check_delete_crd()
         permissions_check.check_delete_sample_application()
         permissions_check.check_delete_sample_ingress()
+        if self._ingress_controller == viya_constants.OPENSHIFT_INGRESS:
+            permissions_check.check_delete_openshift_route()
         # Check the status of deployed PVCs
         permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, True)
         # Delete all Deployed PVCs
