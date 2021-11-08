@@ -460,7 +460,7 @@ class ViyaDeploymentReport(object):
                     misc_dict[component_name]: Dict = component[ITEMS_KEY]
 
         # build relationship configmaps to pod containers
-        refconfigmaps_dict: Dict = dict()
+        refcfgmaps_dict: Dict = dict()
         refsecrets_dict: Dict = dict()
 
         for s in sas_dict.keys():
@@ -473,10 +473,9 @@ class ViyaDeploymentReport(object):
                         for e in c[_ENVFROM_]:
                             if _CONFIGMAPREF_ in e.keys():
                                 try:
-                                    refconfigmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]].append(mypodname + "_" +
-                                                                                           c[NAME_KEY])
+                                    refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
                                 except KeyError:
-                                    refconfigmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] =  mypodname + "_" + c[NAME_KEY]]
+                                    refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] =  mypodname + "_" + c[NAME_KEY]]
 
                             elif 'secretRef' in e.keys():
                                 try:
@@ -484,8 +483,8 @@ class ViyaDeploymentReport(object):
                                 except KeyError:
                                     refsecrets_dict[e[_SECRETREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
 
-        for k in refconfigmaps_dict.keys():
-            configmaps_dict[k][_REFPC_] = refconfigmaps_dict[k]
+        for k in refcfgmaps_dict.keys():
+            configmaps_dict[k][_REFPC_] = refcfgmaps_dict[k]
 
         # assign ref secrets
         for r in refsecrets_dict.keys():
