@@ -233,7 +233,7 @@ def _get_db_info_v2(pgclusters: Dict) -> Dict:
             if dbs:
                 # convert db_name to be aligned
                 if _CRUNCHDATA_DB_ in db_name:
-                    db_name = db_name.replace(_CRUNCHDATA_DB_,"")
+                    db_name = db_name.replace(_CRUNCHDATA_DB_, "")
 
                 db_dict[db_name] = dbs
         except KeyError:
