@@ -55,6 +55,7 @@ _SECRETREF_ = "secretRef"
 _REFPC_ = "referenced_pods_containers"
 _REFLINK_ = "ref"
 
+
 class ViyaDeploymentReport(object):
     """
     A ViyaDeploymentReport object represents a summary of all SAS components currently deployed on the target Kubernetes
@@ -262,7 +263,8 @@ class ViyaDeploymentReport(object):
         configmaps_dict: Dict = config_util.get_configmaps_info(resource_cache=resource_cache)
 
         secretsnames_dict: Dict = dict()
-        secrets_dict: Dict = config_util.get_secrets_info(resource_cache=resource_cache, secretsnames_dict=secretsnames_dict)
+        secrets_dict: Dict = config_util.get_secrets_info(resource_cache=resource_cache,
+                                                          secretsnames_dict=secretsnames_dict)
 
         #######################################################################
         # Check whether pod resources were found (resources exist)            #
@@ -471,9 +473,10 @@ class ViyaDeploymentReport(object):
                         for e in c[_ENVFROM_]:
                             if _CONFIGMAPREF_ in e.keys():
                                 try:
-                                    refconfigmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
+                                    refconfigmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]].append(mypodname + "_" +
+                                                                                           c[NAME_KEY])
                                 except KeyError:
-                                    refconfigmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] = [ mypodname + "_" + c[NAME_KEY]]
+                                    refconfigmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] =  mypodname + "_" + c[NAME_KEY]]
 
                             elif 'secretRef' in e.keys():
                                 try:
