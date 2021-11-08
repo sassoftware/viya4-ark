@@ -480,7 +480,7 @@ class ViyaDeploymentReport(object):
                                     refsecrets_dict[e[_SECRETREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
                                 except KeyError:
                                     refsecrets_dict[e[_SECRETREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
-           
+
         for k in refconfigmaps_dict.keys():
             configmaps_dict[k][_REFPC_] = refconfigmaps_dict[k]
 
