@@ -475,9 +475,9 @@ class ViyaDeploymentReport(object):
                                 try:
                                     refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
                                 except KeyError:
-                                    refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] =  mypodname + "_" + c[NAME_KEY]]
+                                    refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] =  [mypodname + "_" + c[NAME_KEY]]
 
-                            elif 'secretRef' in e.keys():
+                            elif _SECRETREF_ in e.keys():
                                 try:
                                     refsecrets_dict[e[_SECRETREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
                                 except KeyError:
