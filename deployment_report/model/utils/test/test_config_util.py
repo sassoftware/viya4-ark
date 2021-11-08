@@ -86,3 +86,28 @@ def test_get_db_info_none():
     db_dict: Dict = config_util.get_db_info(None)
 
     assert db_dict is None
+
+
+@pytest.mark.usefixtures(conftest.NO_INGRESS_SIMULATION_FIXTURE)
+def test_get_configmaps_info(no_ingress_simulation_fixture: conftest.DSA):
+    """
+    This test verifies that the provided configmap data is returned when values is passed to get_configmaps_info().
+    """
+    # get the resource cache
+    resource_cache: Dict = no_ingress_simulation_fixture.resource_cache()
+
+    # test the util method
+    assert len(config_util.get_configmaps_info(resource_cache)) == 8
+
+
+@pytest.mark.usefixtures(conftest.NO_INGRESS_SIMULATION_FIXTURE)
+def test_get_secrets_info(no_ingress_simulation_fixture: conftest.DSA):
+    """
+    This test verifies that the provided secrets data is returned when values is passed to get_secrets_info().
+    """
+    # get the resource cache
+    resource_cache: Dict = no_ingress_simulation_fixture.resource_cache()
+
+    # test the util method
+    secretsnames_dict: Dict = dict()
+    assert len(config_util.get_secrets_info(resource_cache, secretsnames_dict)) == 2

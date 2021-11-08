@@ -42,6 +42,7 @@ class KubernetesResourceTypeValues(object):
     K8S_CORE_NAMESPACES = "namespaces"
     K8S_CORE_NODES = "nodes"
     K8S_CORE_PODS = "pods"
+    K8S_CORE_SECRETS = "secrets"
     K8S_CORE_SERVICES = "services"
 
     # API: extensions

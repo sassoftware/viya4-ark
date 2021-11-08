@@ -45,11 +45,13 @@ class ViyaDeploymentReportKeys(object):
         API_RESOURCES_DICT = "apiResources"
         API_VERSIONS_LIST = "apiVersions"
         CADENCE_INFO = "cadenceInfo"
+        CONFIGMAPS_DICT = "configMaps"
         DB_INFO = "dbInfo"
         DISCOVERED_RESOURCE_TYPES_DICT = "discoveredResourceTypes"
         INGRESS_CTRL = "ingressController"
         NAMESPACE = "namespace"
         NODES_DICT = "nodes"
+        SECRETS_DICT = "secrets"
         VERSIONS_DICT = "versions"
 
     class ResourceDetails(object):

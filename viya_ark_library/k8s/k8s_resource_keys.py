@@ -113,6 +113,7 @@ class KubernetesResourceKeys(object):
     TCP = "tcp"
     TO = "to"
     TEMPLATE = "template"
+    TYPE = "type"
     UID = "uid"
     URI = "uri"
     UPDATED_REPLICAS = "updatedReplicas"
