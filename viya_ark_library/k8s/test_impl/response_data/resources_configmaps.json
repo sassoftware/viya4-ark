@@ -84,16 +84,7 @@
                     "sas.com/admin": "cluster-local",
                     "sas.com/deployment": "sas-viya"
                 },
-                "managedFields": [
-                    {
-                        "apiVersion": "v1",
-                        "fieldsType": "FieldsV1",
-                        "fieldsV1": {},
-                        "manager": "kubectl",
-                        "operation": "Update",
-                        "time": "2021-08-26T16:06:30Z"
-                    }
-                ],
+                "managedFields": [],
                 "name": "sas-backup-agent-parameters-gdtd8hktkf",
                 "namespace": "test",
                 "ownerReferences": [
@@ -129,16 +120,7 @@
                     "sas.com/admin": "cluster-local",
                     "sas.com/deployment": "sas-viya"
                 },
-                "managedFields": [
-                    {
-                        "apiVersion": "v1",
-                        "fieldsType": "FieldsV1",
-                        "fieldsV1": {},
-                        "manager": "kubectl",
-                        "operation": "Update",
-                        "time": "2021-08-26T16:06:31Z"
-                    }
-                ],
+                "managedFields": [],
                 "name": "sas-go-config-256bgc697g",
                 "namespace": "test",
                 "ownerReferences": [
@@ -173,16 +155,7 @@
                     "sas.com/admin": "cluster-local",
                     "sas.com/deployment": "sas-viya"
                 },
-                "managedFields": [
-                    {
-                        "apiVersion": "v1",
-                        "fieldsType": "FieldsV1",
-                        "fieldsV1": {},
-                        "manager": "kubectl",
-                        "operation": "Update",
-                        "time": "2021-08-26T16:06:30Z"
-                    }
-                ],
+                "managedFields": [],
                 "name": "sas-backup-job-parameters-gb2b7ckggt",
                 "namespace": "test",
                 "ownerReferences": [
@@ -219,16 +192,7 @@
                     "sas.com/admin": "cluster-local",
                     "sas.com/deployment": "sas-viya"
                 },
-                "managedFields": [
-                    {
-                        "apiVersion": "v1",
-                        "fieldsType": "FieldsV1",
-                        "fieldsV1": {},
-                        "manager": "kubectl",
-                        "operation": "Update",
-                        "time": "2021-08-26T16:06:32Z"
-                    }
-                ],
+                "managedFields": [],
                 "name": "sas-shared-config-dh4f2c4mk9",
                 "namespace": "test",
                 "ownerReferences": [
@@ -261,16 +225,7 @@
                     "sas.com/admin": "cluster-local",
                     "sas.com/deployment": "sas-viya"
                 },
-                "managedFields": [
-                    {
-                        "apiVersion": "v1",
-                        "fieldsType": "FieldsV1",
-                        "fieldsV1": {},
-                        "manager": "kubectl",
-                        "operation": "Update",
-                        "time": "2021-08-26T16:06:32Z"
-                    }
-                ],
+                "managedFields": [],
                 "name": "sas-restore-job-parameters-6dh8htc9fg",
                 "namespace": "test",
                 "ownerReferences": [
@@ -312,16 +267,7 @@
                     "sas.com/admin": "cluster-local",
                     "sas.com/deployment": "sas-viya"
                 },
-                "managedFields": [
-                    {
-                        "apiVersion": "v1",
-                        "fieldsType": "FieldsV1",
-                        "fieldsV1": {},
-                        "manager": "kubectl",
-                        "operation": "Update",
-                        "time": "2021-08-26T16:06:31Z"
-                    }
-                ],
+                "managedFields": [],
                 "name": "sas-java-config-8bc8mbd5mk",
                 "namespace": "test",
                 "ownerReferences": [
