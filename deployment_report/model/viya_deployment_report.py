@@ -27,6 +27,7 @@ from deployment_report.model.utils import \
     resource_util
 
 from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
+from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
 from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
 from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
@@ -45,6 +46,14 @@ _REPORT_FILE_NAME_TMPL_ = "viya_deployment_report_{}.html"
 
 # SAS custom API resource group id
 _SAS_API_GROUP_ID_ = "sas.com"
+
+# Configuration keys
+_ENVFROM_ = "envFrom"
+_PODS_ = "pods"
+_CONFIGMAPREF_ = "configMapRef"
+_SECRETREF_ = "secretRef"
+_REFPC_ = "referenced_pods_containers"
+_REFLINK_ = "ref"
 
 
 class ViyaDeploymentReport(object):
@@ -137,11 +146,13 @@ class ViyaDeploymentReport(object):
 
         # cache values that are not owned by components but could still be included in the report, if present
         for resource_type in [ResourceTypeValues.K8S_CORE_NODES,
-                              ResourceTypeValues.K8S_CORE_CONFIG_MAPS]:
+                              ResourceTypeValues.K8S_CORE_CONFIG_MAPS,
+                              ResourceTypeValues.K8S_CORE_SECRETS]:
             try:
                 ################
                 # Nodes
                 # ConfigMaps
+                # Secrets
                 ################
                 resource_util.cache_resources(resource_type=resource_type,
                                               kubectl=kubectl,
@@ -243,11 +254,17 @@ class ViyaDeploymentReport(object):
                                                            sas_custom_resource_types=sas_custom_resource_types)
 
         #######################################################################
-        # Create a cadence/db information                                     #
+        # Create a cadence/db/configmaps/secrets information                  #
         #######################################################################
         cadence_info: Text = config_util.get_cadence_version(resource_cache=resource_cache)
 
         db_dict: Dict = config_util.get_db_info(resource_cache=resource_cache)
+
+        configmaps_dict: Dict = config_util.get_configmaps_info(resource_cache=resource_cache)
+
+        secretsnames_dict: Dict = dict()
+        secrets_dict: Dict = config_util.get_secrets_info(resource_cache=resource_cache,
+                                                          secretsnames_dict=secretsnames_dict)
 
         #######################################################################
         # Check whether pod resources were found (resources exist)            #
@@ -362,6 +379,12 @@ class ViyaDeploymentReport(object):
         # create a key to hold the Viya db information: dict
         k8s_details_dict[Keys.Kubernetes.DB_INFO]: Dict = db_dict
 
+        # create a key to hold the Viya configmaps information: dict
+        k8s_details_dict[Keys.Kubernetes.CONFIGMAPS_DICT]: Dict = configmaps_dict
+
+        # create a key to hold the Viya secrets information: dict
+        k8s_details_dict[Keys.Kubernetes.SECRETS_DICT]: Dict = secrets_dict
+
         # add the availability and count of all discovered resources
         for resource_type, resource_type_details in resource_cache.items():
             # create an entry for the resource
@@ -411,6 +434,10 @@ class ViyaDeploymentReport(object):
                         is_sas_component = \
                             (is_sas_component or
                              resource_details[Keys.ResourceDetails.RESOURCE_DEFINITION].is_sas_resource())
+                        if is_sas_component:
+                            break
+                    if is_sas_component:
+                        break
 
                 # add the component to its appropriate dictionary
                 if is_sas_component:
@@ -431,6 +458,38 @@ class ViyaDeploymentReport(object):
                 else:
                     # add this to the misc dict, it could not be treated as a SAS component
                     misc_dict[component_name]: Dict = component[ITEMS_KEY]
+
+        # build relationship configmaps to pod containers
+        refcfgmaps_dict: Dict = dict()
+        refsecrets_dict: Dict = dict()
+
+        for s in sas_dict.keys():
+            for mypod in sas_dict[s][_PODS_].keys():
+                myres = sas_dict[s][_PODS_][mypod][Keys.ResourceDetails.RESOURCE_DEFINITION]
+                mypodname = myres[KubernetesResourceKeys.METADATA][NAME_KEY]
+                myspec = myres.get_spec()
+                for c in myspec[KubernetesResourceKeys.CONTAINERS]:
+                    if _ENVFROM_ in c.keys():
+                        for e in c[_ENVFROM_]:
+                            if _CONFIGMAPREF_ in e.keys():
+                                try:
+                                    refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
+                                except KeyError:
+                                    refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
+
+                            elif _SECRETREF_ in e.keys():
+                                try:
+                                    refsecrets_dict[e[_SECRETREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
+                                except KeyError:
+                                    refsecrets_dict[e[_SECRETREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
+
+        for k in refcfgmaps_dict.keys():
+            configmaps_dict[k][_REFPC_] = refcfgmaps_dict[k]
+
+        # assign ref secrets
+        for r in refsecrets_dict.keys():
+            k = secretsnames_dict[r]
+            secrets_dict[k][r][_REFLINK_] = refsecrets_dict[r]
 
     def get_kubernetes_details(self) -> Optional[Dict]:
         """

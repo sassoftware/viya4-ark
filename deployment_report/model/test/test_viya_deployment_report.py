@@ -89,15 +89,17 @@ def test_get_kubernetes_details(report: ViyaDeploymentReport) -> None:
     kube_details: Dict = report.get_kubernetes_details()
 
     # check for all expected entries
-    assert len(kube_details) == 9
+    assert len(kube_details) == 11
     assert ReportKeys.Kubernetes.API_RESOURCES_DICT in kube_details
     assert ReportKeys.Kubernetes.API_VERSIONS_LIST in kube_details
     assert ReportKeys.Kubernetes.CADENCE_INFO in kube_details
+    assert ReportKeys.Kubernetes.CONFIGMAPS_DICT in kube_details
     assert ReportKeys.Kubernetes.DB_INFO in kube_details
     assert ReportKeys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT in kube_details
     assert ReportKeys.Kubernetes.INGRESS_CTRL in kube_details
     assert ReportKeys.Kubernetes.NAMESPACE in kube_details
     assert ReportKeys.Kubernetes.NODES_DICT in kube_details
+    assert ReportKeys.Kubernetes.SECRETS_DICT in kube_details
     assert ReportKeys.Kubernetes.VERSIONS_DICT in kube_details
 
 
@@ -121,7 +123,7 @@ def test_get_api_resources() -> None:
     api_resources: Dict = report.get_api_resources()
 
     # check for expected attributes
-    assert len(api_resources) == 17
+    assert len(api_resources) == 18
 
     assert ResourceTypeValues.CONTOUR_HTTP_PROXIES in api_resources
     assert ResourceTypeValues.ISTIO_VIRTUAL_SERVICES
@@ -133,6 +135,7 @@ def test_get_api_resources() -> None:
     assert ResourceTypeValues.K8S_CORE_CONFIG_MAPS in api_resources
     assert ResourceTypeValues.K8S_CORE_NODES in api_resources
     assert ResourceTypeValues.K8S_CORE_PODS in api_resources
+    assert ResourceTypeValues.K8S_CORE_SECRETS in api_resources
     assert ResourceTypeValues.K8S_CORE_SERVICES in api_resources
     assert ResourceTypeValues.K8S_EXTENSIONS_INGRESSES in api_resources
     assert ResourceTypeValues.K8S_METRICS_NODES in api_resources
@@ -192,7 +195,7 @@ def test_get_discovered_resources(report: ViyaDeploymentReport) -> None:
     discovered_resources: Dict = report.get_discovered_resources()
 
     # check for expected attributes
-    assert len(discovered_resources) == 15
+    assert len(discovered_resources) == 16
     assert ResourceTypeValues.CONTOUR_HTTP_PROXIES in discovered_resources
     assert ResourceTypeValues.ISTIO_VIRTUAL_SERVICES in discovered_resources
     assert ResourceTypeValues.K8S_APPS_DEPLOYMENTS in discovered_resources
@@ -203,6 +206,7 @@ def test_get_discovered_resources(report: ViyaDeploymentReport) -> None:
     assert ResourceTypeValues.K8S_CORE_CONFIG_MAPS in discovered_resources
     assert ResourceTypeValues.K8S_CORE_NODES in discovered_resources
     assert ResourceTypeValues.K8S_CORE_PODS in discovered_resources
+    assert ResourceTypeValues.K8S_CORE_SECRETS in discovered_resources
     assert ResourceTypeValues.K8S_CORE_SERVICES in discovered_resources
     assert ResourceTypeValues.K8S_EXTENSIONS_INGRESSES in discovered_resources
     assert ResourceTypeValues.K8S_NETWORKING_INGRESSES in discovered_resources

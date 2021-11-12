@@ -253,6 +253,7 @@ class KubectlTest(KubectlInterface):
             KubernetesResourceTypeValues.OPENSHIFT_ROUTES,
             KubernetesResourceTypeValues.K8S_CORE_PODS,
             KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SECRETS,
             KubernetesResourceTypeValues.K8S_CORE_SERVICES,
             KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
@@ -269,6 +270,7 @@ class KubectlTest(KubectlInterface):
             KubernetesResourceTypeValues.K8S_CORE_NODES,
             KubernetesResourceTypeValues.K8S_CORE_PODS,
             KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SECRETS,
             KubernetesResourceTypeValues.K8S_CORE_SERVICES,
             KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
@@ -285,6 +287,7 @@ class KubectlTest(KubectlInterface):
             KubernetesResourceTypeValues.K8S_CORE_NODES,
             KubernetesResourceTypeValues.K8S_CORE_PODS,
             KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SECRETS,
             KubernetesResourceTypeValues.K8S_CORE_SERVICES,
             KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
@@ -302,6 +305,7 @@ class KubectlTest(KubectlInterface):
             KubernetesResourceTypeValues.K8S_CORE_NODES,
             KubernetesResourceTypeValues.K8S_CORE_PODS,
             KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SECRETS,
             KubernetesResourceTypeValues.K8S_CORE_SERVICES,
             KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]
@@ -318,6 +322,7 @@ class KubectlTest(KubectlInterface):
             KubernetesResourceTypeValues.OPENSHIFT_ROUTES,
             KubernetesResourceTypeValues.K8S_CORE_PODS,
             KubernetesResourceTypeValues.K8S_APPS_REPLICA_SETS,
+            KubernetesResourceTypeValues.K8S_CORE_SECRETS,
             KubernetesResourceTypeValues.K8S_CORE_SERVICES,
             KubernetesResourceTypeValues.K8S_APPS_STATEFUL_SETS
         ]

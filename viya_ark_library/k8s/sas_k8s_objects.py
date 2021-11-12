@@ -899,6 +899,14 @@ class KubernetesResource(MutableMapping):
         except KeyError:
             return None
 
+    def get_type(self) -> Optional[AnyStr]:
+        """
+        Returns the 'type' dictionary for this Resource.
+
+        :return: This Resource's 'type' value.
+        """
+        return self._resource.get(KubernetesResourceKeys.TYPE)
+
     def as_dict(self) -> Dict:
         """
         Returns this KubernetesResource as a native 'dict' object.
