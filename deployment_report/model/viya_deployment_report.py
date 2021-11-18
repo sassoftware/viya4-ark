@@ -459,37 +459,38 @@ class ViyaDeploymentReport(object):
                     # add this to the misc dict, it could not be treated as a SAS component
                     misc_dict[component_name]: Dict = component[ITEMS_KEY]
 
-        # build relationship configmaps to pod containers
-        refcfgmaps_dict: Dict = dict()
-        refsecrets_dict: Dict = dict()
+            # build relationship configmaps to pod containers
+            refcfgmaps_dict: Dict = dict()
+            refsecrets_dict: Dict = dict()
 
-        for s in sas_dict.keys():
-            for mypod in sas_dict[s][_PODS_].keys():
-                myres = sas_dict[s][_PODS_][mypod][Keys.ResourceDetails.RESOURCE_DEFINITION]
-                mypodname = myres[KubernetesResourceKeys.METADATA][NAME_KEY]
-                myspec = myres.get_spec()
-                for c in myspec[KubernetesResourceKeys.CONTAINERS]:
-                    if _ENVFROM_ in c.keys():
-                        for e in c[_ENVFROM_]:
-                            if _CONFIGMAPREF_ in e.keys():
-                                try:
-                                    refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
-                                except KeyError:
-                                    refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
+            for s in sas_dict.keys():
+                for mypod in sas_dict[s][_PODS_].keys():
+                    myres = sas_dict[s][_PODS_][mypod][Keys.ResourceDetails.RESOURCE_DEFINITION]
+                    mypodname = myres[KubernetesResourceKeys.METADATA][NAME_KEY]
+                    myspec = myres.get_spec()
+                    for c in myspec[KubernetesResourceKeys.CONTAINERS]:
+                        if _ENVFROM_ in c.keys():
+                            for e in c[_ENVFROM_]:
+                                if _CONFIGMAPREF_ in e.keys():
+                                    try:
+                                        refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]].append(
+                                            mypodname + "_" + c[NAME_KEY])
+                                    except KeyError:
+                                        refcfgmaps_dict[e[_CONFIGMAPREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
 
-                            elif _SECRETREF_ in e.keys():
-                                try:
-                                    refsecrets_dict[e[_SECRETREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
-                                except KeyError:
-                                    refsecrets_dict[e[_SECRETREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
+                                elif _SECRETREF_ in e.keys():
+                                    try:
+                                        refsecrets_dict[e[_SECRETREF_][NAME_KEY]].append(mypodname + "_" + c[NAME_KEY])
+                                    except KeyError:
+                                        refsecrets_dict[e[_SECRETREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
 
-        for k in refcfgmaps_dict.keys():
-            configmaps_dict[k][_REFPC_] = refcfgmaps_dict[k]
+            for k in refcfgmaps_dict.keys():
+                configmaps_dict[k][_REFPC_] = refcfgmaps_dict[k]
 
-        # assign ref secrets
-        for r in refsecrets_dict.keys():
-            k = secretsnames_dict[r]
-            secrets_dict[k][r][_REFLINK_] = refsecrets_dict[r]
+            # assign ref secrets
+            for r in refsecrets_dict.keys():
+                k = secretsnames_dict[r]
+                secrets_dict[k][r][_REFLINK_] = refsecrets_dict[r]
 
     def get_kubernetes_details(self) -> Optional[Dict]:
         """
