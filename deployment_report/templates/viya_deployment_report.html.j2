@@ -135,6 +135,7 @@
   <div class="jq-accordion">
     <h2>Storage</h2>
     <div>
+    {% if report_data.kubernetes.dbInfo|length > 0 %}
       {% for db, info in report_data.kubernetes.dbInfo.items() %}
       <h7>Database ({{ db }})</h7>
       <table>
@@ -150,6 +151,14 @@
       {% endfor %}
       </table>
       {% endfor %}
+    {% else %}
+      <div class="notification-box info-box">
+        <i class="fa fa-info-circle notification-box-icon" aria-hidden="true"></i>
+        <div class="notification-box-text margin-block-end-1em">
+          No databases were found in namespace [{{ report_data.kubernetes.namespace }}].
+        </div>
+      </div>
+    {% endif %}
     </div>
   </div>
   {# Cluster Overview: Storage Accordion #}
@@ -299,14 +308,22 @@
   <h2>Configurations</h2>
   {# Configurations: Content #}
 
-  {# Cluster Overview: Configmaps Accordion #}
-  {% set kind_name = "Configmaps" %}
   <div class="jq-accordion">
-    <h2>Configmaps</h2>
-    <div>
-      {% for name, info in report_data.kubernetes.configMaps.items() %}
+  {# Configurations: Configmaps Accordion #}
+  <h2>Configmaps</h2>
+  <div>
+  {% set kind_name = "Configmaps" %}
+  {% if report_data.kubernetes.configMaps|length == 0 %}
+    <div class="notification-box info-box">
+      <i class="fa fa-info-circle notification-box-icon" aria-hidden="true"></i>
+      <div class="notification-box-text margin-block-end-1em">
+        No configMaps were found in namespace [{{ report_data.kubernetes.namespace }}].
+      </div>
+    </div>
+  {% else %}
+    {% for name, info in report_data.kubernetes.configMaps.items() %}
       <div class="jq-accordion">
-      <h7 id="configmap-{{ name|lower|replace('.','-') }}">{{ name }}</h7>
+        <h7 id="configmap-{{ name|lower|replace('.','-') }}">{{ name }}</h7>
         <div>
           <table>
           <tr>
@@ -335,61 +352,76 @@
           {% endif %}
         </div>
       </div>
-      {% endfor %}
-    </div>
+    {% endfor %}
+  {% endif %}
   </div>
-  {# Cluster Overview: Configmaps Accordion #}
+  </div>
+  {# Configurations: Configmaps Accordion #}
 
-  {# Cluster Overview: Secrets Accordion #}
-  {% set kind_name = "Secrets" %}
+  {# Configurations: Secrets Accordion #}
   <div class="jq-accordion">
-    <h2>Secrets</h2>
+  <h2>Secrets</h2>
+  {% set kind_name = "Secrets" %}
+  <div>
+  {% if report_data.kubernetes.secrets|length == 0 %}
     <div>
-      {% for type, info in report_data.kubernetes.secrets.items() %}
-      <div class="jq-accordion">
-        <h7>{{ type }}</h7>
-        <div>
-          {% set ns = namespace() %}
-          {% for key, value in info.items() %}
-            {% set ns.keyrefurl = '' %}
-            {% set ns.keylist = '' %}
-            {% for key2, value2 in value.items() %}
-              {% if key2 == "name" %}
-                {% set ns.keylist = ns.keylist ~ "<tr><th>Keys</th></tr>" %}
-                {% for i in value2 %}
-                  {% set ns.keylist = ns.keylist ~ "<tr><td>" ~ i ~ "</th></tr>" %}
-                {% endfor %}
-              {% else %}
-                {% set mybr = '</br>' %}
-                {% set ns.secretvalue = '' %}
-                {% for i in value2 %}
-                  {% set ns.secretvalue = ns.secretvalue ~ '<a class="nested-accordions-rel-link" href="#pod-secrets_' ~ i ~ '">' ~ mybr ~ '&bull; ' ~ i ~ '</a>' %}
-                {% endfor %}
-                {% if ns.secretvalue != '' %}
-                  {% set ns.keyrefurl = ns.keyrefurl ~ mybr ~ "Referenced pods containers:" ~ ns.secretvalue ~ mybr ~ mybr %}
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-            <div class="jq-accordion">
-            <h8 id="secret-{{ key|lower|replace('.','-') }}">{{ key }}</h8>
-            <div>
-            <table width="100%"> <col style="width:40%">
-            {{ ns.keylist }}
-            </table>
-            {% if ns.keyrefurl != '' %}
-              {{ ns.keyrefurl }}
-            {% endif %}
-            </div>
-            </div>
-            {% set ns.keylist = '' %}
-            {% set ns.keyrefurl = '' %}
-          {% endfor %}
+      <div class="notification-box info-box">
+        <i class="fa fa-info-circle notification-box-icon" aria-hidden="true"></i>
+        <div class="notification-box-text margin-block-end-1em">
+          No secrets were found in namespace [{{ report_data.kubernetes.namespace }}].
         </div>
       </div>
-      {% endfor %}
     </div>
+  {% else %}
+    <div>
+        {% for type, info in report_data.kubernetes.secrets.items() %}
+        <div class="jq-accordion">
+          <h7>{{ type }}</h7>
+          <div>
+            {% set ns = namespace() %}
+            {% for key, value in info.items() %}
+              {% set ns.keyrefurl = '' %}
+              {% set ns.keylist = '' %}
+              {% for key2, value2 in value.items() %}
+                {% if key2 == "name" %}
+                  {% set ns.keylist = ns.keylist ~ "<tr><th>Keys</th></tr>" %}
+                  {% for i in value2 %}
+                    {% set ns.keylist = ns.keylist ~ "<tr><td>" ~ i ~ "</td></tr>" %}
+                  {% endfor %}
+                {% else %}
+                  {% set mybr = '</br>' %}
+                  {% set ns.secretvalue = '' %}
+                  {% for i in value2 %}
+                    {% set ns.secretvalue = ns.secretvalue ~ '<a class="nested-accordions-rel-link" href="#pod-secrets_' ~ i ~ '">' ~ mybr ~ '&bull; ' ~ i ~ '</a>' %}
+                  {% endfor %}
+                  {% if ns.secretvalue != '' %}
+                    {% set ns.keyrefurl = ns.keyrefurl ~ mybr ~ "Referenced pods containers:" ~ ns.secretvalue ~ mybr ~ mybr %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              <div class="jq-accordion">
+                <h8 id="secret-{{ key|lower|replace('.','-') }}">{{ key }}</h8>
+                <div>
+                <table width="100%"> <col style="width:40%">
+                {{ ns.keylist }}
+                </table>
+                {% if ns.keyrefurl != '' %}
+                  {{ ns.keyrefurl }}
+                {% endif %}
+                </div>
+              </div>
+              {% set ns.keylist = '' %}
+              {% set ns.keyrefurl = '' %}
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
   </div>
-  {# Cluster Overview: Secrets Accordion #}
+  </div>
+  {# Configurations: Secrets Accordion #}
 
   {# Configurations: Content #}
 
