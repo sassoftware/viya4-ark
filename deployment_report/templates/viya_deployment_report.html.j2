@@ -309,15 +309,15 @@
   {# Configurations: Content #}
 
   <div class="jq-accordion">
-  {# Configurations: Configmaps Accordion #}
-  <h2>Configmaps</h2>
+  {# Configurations: ConfigMaps Accordion #}
+  <h2>ConfigMaps</h2>
   <div>
-  {% set kind_name = "Configmaps" %}
+  {# {% set kind_name = "Configmaps" %} #}
   {% if report_data.kubernetes.configMaps|length == 0 %}
     <div class="notification-box info-box">
       <i class="fa fa-info-circle notification-box-icon" aria-hidden="true"></i>
       <div class="notification-box-text margin-block-end-1em">
-        No configMaps were found in namespace [{{ report_data.kubernetes.namespace }}].
+        No ConfigMaps were found in namespace [{{ report_data.kubernetes.namespace }}].
       </div>
     </div>
   {% else %}
@@ -356,19 +356,19 @@
   {% endif %}
   </div>
   </div>
-  {# Configurations: Configmaps Accordion #}
+  {# Configurations: ConfigMaps Accordion #}
 
   {# Configurations: Secrets Accordion #}
   <div class="jq-accordion">
   <h2>Secrets</h2>
-  {% set kind_name = "Secrets" %}
+  {# {% set kind_name = "Secrets" %} #}
   <div>
   {% if report_data.kubernetes.secrets|length == 0 %}
     <div>
       <div class="notification-box info-box">
         <i class="fa fa-info-circle notification-box-icon" aria-hidden="true"></i>
         <div class="notification-box-text margin-block-end-1em">
-          No secrets were found in namespace [{{ report_data.kubernetes.namespace }}].
+          No Secrets were found in namespace [{{ report_data.kubernetes.namespace }}].
         </div>
       </div>
     </div>
