@@ -59,10 +59,15 @@
 
     {% for item in container.envFrom %}
       {% if "configMapRef" in item.keys() %}
-        {% set astr = '<a class="nested-accordions-rel-link"' %}
-        {% set astr = astr ~ ' href="#configmap-' ~ item["configMapRef"]["name"] ~ '">' %}
-        {% set astr = astr ~ item["configMapRef"]["name"] ~ '</a>' %}
-        {% set ns.configmapstr = ns.configmapstr ~ astr ~ ',' %}
+        {% if item["configMapRef"]["name"] in report_data.kubernetes.configMaps.keys() %}
+            {% set astr = '<a class="nested-accordions-rel-link"' %}
+            {% set astr = astr ~ ' href="#configmap-' ~ item["configMapRef"]["name"] ~ '">' %}
+            {% set astr = astr ~ item["configMapRef"]["name"] ~ '</a>' %}
+            {% set ns.configmapstr = ns.configmapstr ~ astr ~ ',' %}
+        {% else %}
+            {% set astr = item["configMapRef"]["name"] %}
+            {% set ns.configmapstr = ns.configmapstr ~ astr ~ ',' %}
+        {% endif %}
       {% elif "secretRef" in item.keys() %}
         {% set astr = '<a class="nested-accordions-rel-link"' %}
         {% set astr = astr ~ ' href="#secret-' ~ item["secretRef"]["name"] ~ '">' %}

@@ -485,12 +485,18 @@ class ViyaDeploymentReport(object):
                                         refsecrets_dict[e[_SECRETREF_][NAME_KEY]] = [mypodname + "_" + c[NAME_KEY]]
 
             for k in refcfgmaps_dict.keys():
-                configmaps_dict[k][_REFPC_] = refcfgmaps_dict[k]
+                try:
+                    configmaps_dict[k][_REFPC_] = refcfgmaps_dict[k]
+                except KeyError:
+                    continue
 
             # assign ref secrets
             for r in refsecrets_dict.keys():
-                k = secretsnames_dict[r]
-                secrets_dict[k][r][_REFLINK_] = refsecrets_dict[r]
+                try:
+                    k = secretsnames_dict[r]
+                    secrets_dict[k][r][_REFLINK_] = refsecrets_dict[r]
+                except KeyError:
+                    continue
 
     def get_kubernetes_details(self) -> Optional[Dict]:
         """
