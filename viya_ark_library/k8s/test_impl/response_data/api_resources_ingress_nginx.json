@@ -17,6 +17,24 @@
         ],
         "version": "v1alpha1"
     },
+    "secrets": {
+        "group": "",
+        "kind": "Secret",
+        "name": "secrets",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ],
+        "version": "v1"
+    },
     "configmaps": {
         "group": "",
         "kind": "ConfigMap",

@@ -114,6 +114,10 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
         # create a key under which the resource definition will be stored: KubernetesResource
         resource_details[Keys.ResourceDetails.RESOURCE_DEFINITION]: KubernetesResource = resource
 
+        # skip ownerReferences for secret and configmap
+        if resource_type == "configmaps" or resource_type == "secrets":
+            continue
+
         # see if this resource defines any 'ownerReferences'
         owner_references: Optional[List[Dict]] = resource.get_metadata_value(KubernetesResourceKeys.OWNER_REFERENCES)
 

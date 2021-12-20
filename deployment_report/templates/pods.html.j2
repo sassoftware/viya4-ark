@@ -44,6 +44,54 @@
                              value=resource_details.resourceDefinition.status.podIP) }}
 {% endblock %}
 
+{% macro container_config_accordion(container) %}
+  {% if container.envFrom is defined %}
+    {# 
+    {% set configmapstr = '' %}
+    {% set secretstr = '' %}
+    #}
+    {# {% set ns = namespace(configmapstr='') %}
+    {% set ns = namespace(secretstr='') %}
+    #}
+    {% set ns = namespace() %}
+    {% set ns.configmapstr = '' %}
+    {% set ns.secretstr = '' %}
+
+    {% for item in container.envFrom %}
+      {% if "configMapRef" in item.keys() %}
+        {% if item["configMapRef"]["name"] in report_data.kubernetes.configMaps.keys() %}
+            {% set astr = '<a class="nested-accordions-rel-link"' %}
+            {% set astr = astr ~ ' href="#configmap-' ~ item["configMapRef"]["name"] ~ '">' %}
+            {% set astr = astr ~ item["configMapRef"]["name"] ~ '</a>' %}
+            {% set ns.configmapstr = ns.configmapstr ~ astr ~ ',' %}
+        {% else %}
+            {% set astr = item["configMapRef"]["name"] %}
+            {% set ns.configmapstr = ns.configmapstr ~ astr ~ ',' %}
+        {% endif %}
+      {% elif "secretRef" in item.keys() %}
+        {% set astr = '<a class="nested-accordions-rel-link"' %}
+        {% set astr = astr ~ ' href="#secret-' ~ item["secretRef"]["name"] ~ '">' %}
+        {% set astr = astr ~ item["secretRef"]["name"] ~ '</a>' %}
+        {% set ns.secretstr = ns.secretstr ~ astr ~ ',' %}
+      {% endif %}
+    {% endfor %}
+    {% if ns.configmapstr != '' %}
+      {% set idstr = 'id="pod-configmaps_' ~ resource_details.resourceDefinition.metadata.name ~ '_' ~ container.name ~ '"' %}
+      <tr>
+        <th title="ConfigMapRef">ConfigMapRef</th>
+        <td {{ idstr }}>{{ ns.configmapstr[:-1] }}</td>
+      </tr>
+    {% endif %}
+    {% if ns.secretstr != '' %}
+      {% set idstr = 'id="pod-secrets_' ~ resource_details.resourceDefinition.metadata.name ~ '_' ~ container.name ~ '"' %}
+      <tr>
+        <th title="SecretRef">SecretRef</th>
+        <td {{ idstr }}>{{ ns.secretstr[:-1] }}</td>
+      </tr>
+    {% endif %}
+  {% endif %}
+{% endmacro %}
+
 {% macro container_status_accordion(container) %}
 <div class="jq-accordion">
   <h8>{{ container.name }}</h8>
@@ -98,6 +146,20 @@
       {{ add_vert_header_table_row(label="Restart Count",
                                    desc="The number of times this container has restarted",
                                    value=container.restartCount) }}
+
+    {# configMapRef/secretRef #}
+    {% if resource_details.resourceDefinition.spec.containers is defined %}
+      {#
+      {% set ns = namespace(secretstr='') %}
+      {% set ns = namespace(configmapstr='') %}
+      #}
+      {% for config_container in resource_details.resourceDefinition.spec.containers %}
+        {% if config_container.name == container.name %}
+          {{ container_config_accordion(config_container) }}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
     </table>
   </div>
 </div>

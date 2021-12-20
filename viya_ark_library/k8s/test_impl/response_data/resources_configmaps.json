@@ -62,5 +62,227 @@
             "selfLink": "/api/v1/namespaces/test/configmaps/sas-postgres-config-5dt8fm92c7",
             "uid": "9924c601-602f-404a-b113-7b6671f0e88f"
         }
-    }
+    },
+        {
+            "apiVersion": "v1",
+            "data": {
+                "SAS_CONTEXT_PATH": "backupagent",
+                "SAS_DU_NAME": "sas-backup-agent",
+                "SAS_SERVICE_NAME": "sas-backup-agent",
+                "SAS_TOOL_RETRY_LIMIT": "100",
+                "SAS_TOOL_RETRY_PERIOD": "1m",
+                "SG_PROJECT": "backup-agent",
+                "SG_STATIC": "false"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": ""
+                },
+                "creationTimestamp": "2021-08-26T16:06:30Z",
+                "labels": {
+                    "sas.com/admin": "cluster-local",
+                    "sas.com/deployment": "sas-viya"
+                },
+                "managedFields": [],
+                "name": "sas-backup-agent-parameters-gdtd8hktkf",
+                "namespace": "test",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "orchestration.sas.com/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "SASDeployment",
+                        "name": "sas-viya",
+                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
+                    }
+                ],
+                "resourceVersion": "12975216",
+                "selfLink": "/api/v1/namespaces/test/configmaps/sas-backup-agent-parameters-gdtd8hktkf",
+                "uid": "0312d7cc-0a70-4e48-b031-29b6e34618e2"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "data": {
+                "CONSUL_HTTP_ADDR": "https://sas-consul-server:8500",
+                "SAS_BOOTSTRAP_HTTP_CLIENT_TIMEOUT_REQUEST": "5m",
+                "SAS_RECONCILER_SERVICES_ENABLED": "true",
+                "SAS_REGISTRY_REGISTER_ENABLED": "false"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": ""
+                },
+                "creationTimestamp": "2021-08-26T16:06:31Z",
+                "labels": {
+                    "sas.com/admin": "cluster-local",
+                    "sas.com/deployment": "sas-viya"
+                },
+                "managedFields": [],
+                "name": "sas-go-config-256bgc697g",
+                "namespace": "test",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "orchestration.sas.com/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "SASDeployment",
+                        "name": "sas-viya",
+                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
+                    }
+                ],
+                "resourceVersion": "12975289",
+                "selfLink": "/api/v1/namespaces/test/configmaps/sas-go-config-256bgc697g",
+                "uid": "950766aa-10b1-4e77-9842-05e0ec81122f"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "data": {
+                "JOB_TIME_OUT": "600",
+                "RETENTION_PERIOD": "30",
+                "SAS_BACKUP_JOB_DU_NAME": "sas-backup-job"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": ""
+                },
+                "creationTimestamp": "2021-08-26T16:06:30Z",
+                "labels": {
+                    "sas.com/admin": "cluster-local",
+                    "sas.com/deployment": "sas-viya"
+                },
+                "managedFields": [],
+                "name": "sas-backup-job-parameters-gb2b7ckggt",
+                "namespace": "test",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "orchestration.sas.com/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "SASDeployment",
+                        "name": "sas-viya",
+                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
+                    }
+                ],
+                "resourceVersion": "12975217",
+                "selfLink": "/api/v1/namespaces/test/configmaps/sas-backup-job-parameters-gb2b7ckggt",
+                "uid": "101353dd-6337-4ae9-8387-06fcdb1ae0f0"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "data": {
+                "SAS_ALLOW_ADMIN_SCRIPTS": "false",
+                "SAS_MULTI_TENANCY_ENABLED": "false",
+                "SAS_SERVICES_URL": "https://k8s-master-node.test.sas.com:443",
+                "SAS_URL_SERVICE_SCHEME": "https",
+                "SAS_URL_SERVICE_TEMPLATE": "https://@k8s.service.name@"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": ""
+                },
+                "creationTimestamp": "2021-08-26T16:06:32Z",
+                "labels": {
+                    "sas.com/admin": "cluster-local",
+                    "sas.com/deployment": "sas-viya"
+                },
+                "managedFields": [],
+                "name": "sas-shared-config-dh4f2c4mk9",
+                "namespace": "test",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "orchestration.sas.com/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "SASDeployment",
+                        "name": "sas-viya",
+                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
+                    }
+                ],
+                "resourceVersion": "12975367",
+                "selfLink": "/api/v1/namespaces/test/configmaps/sas-shared-config-dh4f2c4mk9",
+                "uid": "7a894053-f8f4-4bb1-861c-450f9ff09704"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "data": {
+                "SAS_RESTORE_JOB_DU_NAME": "sas-restore-job"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": ""
+                },
+                "creationTimestamp": "2021-08-26T16:06:32Z",
+                "labels": {
+                    "sas.com/admin": "cluster-local",
+                    "sas.com/deployment": "sas-viya"
+                },
+                "managedFields": [],
+                "name": "sas-restore-job-parameters-6dh8htc9fg",
+                "namespace": "test",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "orchestration.sas.com/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "SASDeployment",
+                        "name": "sas-viya",
+                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
+                    }
+                ],
+                "resourceVersion": "12975359",
+                "selfLink": "/api/v1/namespaces/test/configmaps/sas-restore-job-parameters-6dh8htc9fg",
+                "uid": "518a31b2-a806-49f5-abec-3d785b127fa1"
+            }
+        },
+        {
+            "apiVersion": "v1",
+            "data": {
+                "CONSUL_HTTP_ADDR": "https://sas-consul-server:8500",
+                "JAVA_OPTION_GEODE_LOG": "-Dlogging.level.org.apache.geode.internal.net.SocketCreator=ERROR",
+                "JAVA_OPTION_SERVER_PORT": "-Dserver.port=8080",
+                "SASLOGROOT": "",
+                "SAS_LOG_FORMAT": "json",
+                "SAS_REGISTRY_REGISTER_ENABLED": "false",
+                "SAS_SERVICES_METRICS_SECURED": "false",
+                "SPRING_CLOUD_CONSUL_DISCOVERY_PREFERIPADDRESS": "true",
+                "SPRING_CLOUD_CONSUL_DISCOVERY_REGISTER": "false",
+                "SPRING_CLOUD_CONSUL_ENABLED": "true"
+            },
+            "kind": "ConfigMap",
+            "metadata": {
+                "annotations": {
+                    "kubectl.kubernetes.io/last-applied-configuration": ""
+                },
+                "creationTimestamp": "2021-08-26T16:06:31Z",
+                "labels": {
+                    "sas.com/admin": "cluster-local",
+                    "sas.com/deployment": "sas-viya"
+                },
+                "managedFields": [],
+                "name": "sas-java-config-8bc8mbd5mk",
+                "namespace": "test",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "orchestration.sas.com/v1alpha1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "SASDeployment",
+                        "name": "sas-viya",
+                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
+                    }
+                ],
+                "resourceVersion": "12975295",
+                "selfLink": "/api/v1/namespaces/test/configmaps/sas-java-config-8bc8mbd5mk",
+                "uid": "94245cd9-9d4a-4a84-939e-aa0c39ee71a5"
+            }
+        }
 ]

@@ -46,6 +46,7 @@ _EXTERNAL_DB_ = "External"
 _INTERNAL_DB_ = "Internal"
 _UNSUPPORTED_DB_ = "Unsupported"
 _CRUNCH_DB_ = "crunch"
+_CRUNCHDATA_DB_ = "sas-crunchy-data-"
 _ALT_DB_ = "sas.database.alternative.databaseServerName"
 _UNAVAIL_DB_ = "not available"
 
@@ -115,12 +116,9 @@ def get_db_info(resource_cache: Dict) -> Dict:
     if not resource_cache:
         return None
 
-    try:
+    if ResourceTypeValues.SAS_PGCLUSTERS in resource_cache.keys():
         pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_PGCLUSTERS][ITEMS_KEY]
         db_dict = _get_db_info_v2(pgclusters)
-
-    except KeyError:
-        pass
 
     if not db_dict:
         try:
@@ -230,11 +228,84 @@ def _get_db_info_v2(pgclusters: Dict) -> Dict:
                             Keys.DatabaseDetails.DBCONN: _UNAVAIL_DB_
                         }
             except KeyError:
-                dbs = {Keys.DatabaseDetails.DBTYPE: _UNSUPPORTED_DB_}
+                continue
 
             if dbs:
+                # convert db_name to be aligned
+                if _CRUNCHDATA_DB_ in db_name:
+                    db_name = db_name.replace(_CRUNCHDATA_DB_, "")
+
                 db_dict[db_name] = dbs
         except KeyError:
             continue
 
     return db_dict
+
+
+def get_configmaps_info(resource_cache: Dict) -> Optional[Dict]:
+    """
+    Returns the configmaps of the targeted SAS deployment.
+
+    :param resource_cache: The dictionary of resources gathered from the k8s deployment.
+
+    :return: A dictionary representing the configmaps information of the targeted SAS deployment.
+    """
+    configmaps_dict: Dict = dict()
+    try:
+        if not resource_cache:
+            return configmaps_dict
+
+        configmaps: Dict = resource_cache[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY]
+
+        for configmap_name, configmap_details in configmaps.items():
+
+            configmap: KubernetesResource = configmap_details[Keys.ResourceDetails.RESOURCE_DEFINITION]
+            # get the ConfigMap data
+            data: Optional[Dict] = configmap.get_data()
+
+            if data:
+                configmaps_dict[configmap_name] = data
+
+        return configmaps_dict
+
+    except KeyError:
+        return configmaps_dict
+
+
+def get_secrets_info(resource_cache: Dict, secretsnames_dict: Dict) -> Optional[Dict]:
+    """
+    Returns the secrets of the targeted SAS deployment.
+
+    :param resource_cache: The dictionary of resources gathered from the k8s deployment.
+    :param secretsnames_dict: The dictionary to store the secrets
+
+    :return: A dictionary representing the secrets by kind of the targeted SAS deployment.
+    """
+    secrets_dict: Dict = dict()
+    try:
+        if not resource_cache:
+            return secrets_dict
+
+        secrets: Dict = resource_cache[ResourceTypeValues.K8S_CORE_SECRETS][ITEMS_KEY]
+
+        for name, details in secrets.items():
+            secret: KubernetesResource = details[Keys.ResourceDetails.RESOURCE_DEFINITION]
+            data: Optional[Dict] = secret.get_data()
+
+            if data:
+                type: Optional[Text] = secret.get_type()
+
+                if type in secrets_dict.keys():
+                    if name not in secrets_dict[type].keys():
+                        secrets_dict[type][name] = {"name": list(data.keys())}
+                else:
+                    secrets_dict[type]: Dict = dict()
+                    secrets_dict[type][name]: Dict = dict()
+                    secrets_dict[type][name] = {"name": list(data.keys())}
+
+                secretsnames_dict[name] = type
+
+        return secrets_dict
+
+    except KeyError:
+        return secrets_dict
