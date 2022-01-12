@@ -10,7 +10,7 @@
 #                                                                ###
 ####################################################################
 from subprocess import CalledProcessError
-from typing import Dict, List, Optional, Text
+from typing import AnyStr, Dict, List, Optional, Text
 
 from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
@@ -130,19 +130,27 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
                 owner_kind: Text = owner_reference[KubernetesResourceKeys.KIND]
                 owner_name: Text = owner_reference[KubernetesResourceKeys.NAME]
 
-                # lookup the owner's resource type
-                owner_type: Text = kubectl.api_resources().get_type(kind=owner_kind, api_version=owner_api_version)
+                # only continue if the owner kind is available
+                if owner_kind:
+                    # lookup the owner's resource type
+                    owner_type: Optional[AnyStr] = kubectl.api_resources().get_type(kind=owner_kind,
+                                                                                    api_version=owner_api_version)
 
-                # if the owning resource type isn't in the owning resource types list, add it
-                if owner_type not in owning_resource_types:
-                    owning_resource_types.append(owner_type)
+                    # make sure the owner_type was found
+                    if not owner_type:
+                        # if not, default to the owner kind
+                        owner_type = owner_kind
 
-                # create a relationship for the owning object
-                relationship: Dict = relationship_util.create_relationship_dict(resource_name=owner_name,
-                                                                                resource_type=owner_type)
+                    # if the owning resource type isn't in the owning resource types list, add it
+                    if owner_type not in owning_resource_types:
+                        owning_resource_types.append(owner_type)
 
-                # and add it to the relationship list
-                resource_relationships.append(relationship)
+                    # create a relationship for the owning object
+                    relationship: Dict = relationship_util.create_relationship_dict(resource_name=owner_name,
+                                                                                    resource_type=owner_type)
+
+                    # and add it to the relationship list
+                    resource_relationships.append(relationship)
 
     # if more resource types have been discovered, gather them as well
     for owning_resource_type in owning_resource_types:
