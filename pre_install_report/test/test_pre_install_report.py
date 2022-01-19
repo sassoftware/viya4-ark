@@ -591,8 +591,6 @@ def test_get_k8s_version():
     # versions: Dict = self.utils.get_k8s_version()
     version_string = "1.18.9-eks-d1db3c"
     version_string2 = "1.19.0"
-    version_string3 = '1.19.a'
-    version_string4 = '1.17.1'
 
     params = {}
     params[viya_constants.INGRESS_CONTROLLER] = 'nginx'
@@ -612,6 +610,7 @@ def test_get_k8s_version():
     # current version is less then 1.19
     curr_version = semantic_version.Version(str(version_string))
     assert (curr_version in semantic_version.SimpleSpec('<1.19'))
+
 
 def test_check_permissions():
     # namespace = 'default'

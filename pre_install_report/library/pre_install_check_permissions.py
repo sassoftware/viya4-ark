@@ -11,8 +11,7 @@
 #                                                                ###
 ####################################################################
 import os
-from subprocess import CalledProcessError
-from typing import List, Dict
+from typing import List
 
 import requests
 import sys
