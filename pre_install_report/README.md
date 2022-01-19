@@ -9,6 +9,10 @@ deployment in a Kubernetes cluster.  The tool cannot account for the dynamic res
 Kubernetes may orchestrate once Viya is deployed.  The report and the information therein must
 be considered a snapshot in time.  
 
+The Kubernetes version for a planned SAS Viya deployment must meet the requirements documented in [SAS® Viya® Operations](https://go.documentation.sas.com/doc/en/itopscdc/v_022/itopssr/n1ika6zxghgsoqn1mq4bck9dx695.htm#n0mhb21pl07ohgn1hj4zsgfeq8hj)  
+Ensure that the version is within the documented range for the selected cloud provider. 
+
+
 ### Memory and vCPU Check
 The tool calculates the aggregate Memory and aggregate vCPUs of your cluster. The aggregate Memory is the sum 
 of the Memory capacity on all the active and running nodes. The aggregate CPU is calculated similarly.
@@ -38,7 +42,6 @@ If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES t
 SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster.  
 Refer to the following IaC repositories for [Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure), [AWS](https://github.com/sassoftware/viya4-iac-aws]) or [GCP](https://github.com/sassoftware/viya4-iac-gcp).   
 For OpenShift refer to the documentation in SAS® Viya® Operations [OpenShift](https://go.documentation.sas.com/doc/en/itopscdc/v_019/itopssr/n1ika6zxghgsoqn1mq4bck9dx695.htm#p1c8bxlbu0gzuvn1e75nck1yozcn)
-
 **Example**: Setting for aggregate Memory and vCPU for deployment based on documentation in SAS Viya Operations under System Requirements   
 in the Hardware and Resource Requirements section.  See Sizing Recommendations for Microsoft Azure.
 

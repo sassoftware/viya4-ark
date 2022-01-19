@@ -46,8 +46,7 @@ PROVISIONER_AZURE_FILE = "kubernetes.io/azure-file"
 PROVISIONER_AZURE_DISK = "kubernetes.io/azure-disk"
 PROVISIONER_AWS_EBS = "kubernetes.io/aws-ebs"
 
-INGRESS_V1BETA1_REL_EQ = '==1.18'
-INGRESS_UNSUPPORTED_REL_LT = '<1.18'
+INGRESS_UNSUPPORTED_MIN_REL_LT = '<1.19'
 
 OPS_ROUTE_NAME = "no-route-hello-world"
 OPS_ROUTE_KEY = "host"
@@ -87,7 +86,7 @@ class PreCheckPermissions(object):
         self._storage_class_sc: List[KubernetesResource] = None
         self._sample_deployment = 0
         self._sample_output = ""
-        self._k8s_git_version = None
+        self._k8s_git_version = params.get(viya_constants.SERVER_K8S_VERSION)
         self._openshift_host_port = viya_constants.NO_HOST_FOUND
         self._route_k8s_resource: KubernetesResource = None
 
@@ -509,7 +508,7 @@ class PreCheckPermissions(object):
             self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
             sys.exit(viya_messages.RUNTIME_ERROR_RC_)
 
-    def set_ingress_manifest_file(self):
+    def check_k8s_release(self):
         """
         Retrieve the server Kubernetes gitVersion using and compare it using
         https://pypi.org/project/semantic_version/  2.8.5 initial version
@@ -517,13 +516,7 @@ class PreCheckPermissions(object):
         try:
             curr_version = semantic_version.Version(str(self.get_k8s_git_version()))
 
-            if(curr_version in semantic_version.SimpleSpec(INGRESS_V1BETA1_REL_EQ)):
-                self._ingress_file = "hello-ingress-k8s-v118.yaml"
-                self.logger.debug("hello-ingress file deployed {} major {} minor {}"
-                                  .format(str(self._ingress_file), str(curr_version.major),
-                                          str(curr_version.minor)))
-            if(curr_version in semantic_version.SimpleSpec(INGRESS_UNSUPPORTED_REL_LT)):
-                self._ingress_file = "hello-ingress-k8s-v118.yaml"
+            if(curr_version in semantic_version.SimpleSpec(INGRESS_UNSUPPORTED_MIN_REL_LT)):
                 self.logger.error("This release of Kubernetes is not supported. major {} minor {}"
                                   .format(str(curr_version.major),
                                           str(curr_version.minor)))

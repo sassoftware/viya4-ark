@@ -21,7 +21,7 @@ import platform
 import subprocess
 import pint
 from subprocess import CalledProcessError
-from typing import Text
+from typing import Text, Dict
 
 # import pint to add, compare memory
 from pint import UnitRegistry
@@ -72,6 +72,7 @@ class ViyaPreInstallCheck():
         self._workers = 0
         self._aggregate_nodeStatus_failures = 0
         self._ingress_controller = None
+        self._k8s_server_version = None
 
     def _parse_release_info(self, release_info):
         """
@@ -91,6 +92,25 @@ class ViyaPreInstallCheck():
             print(viya_messages.KUBELET_VERSION_ERROR)
             sys.exit(viya_messages.BAD_OPT_RC_)
 
+    def _get_server_git_version(self, utils):
+        """
+        Retrieve the Kubernetes server version and validate the git version
+        """
+        try:
+            versions: Dict = utils.get_k8s_version()
+            server_version = versions.get('serverVersion')
+            git_version = server_version.get('gitVersion')
+            self.logger.info("git_version {} ".format(str(git_version)))
+
+            if git_version.startswith("v"):
+                git_version = git_version[1:]
+            self.logger.debug('Server kubectl version = {}'.format(git_version))
+            print("git_version = " + git_version)
+            return git_version
+        except CalledProcessError as cpe:
+            self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
+            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
+
     def check_details(self, kubectl, ingress_port, ingress_host, ingress_controller,
                       output_dir):
         self._ingress_controller = ingress_controller
@@ -109,6 +129,8 @@ class ViyaPreInstallCheck():
         pre_check_utils_params[viya_constants.KUBECTL] = self._kubectl
         pre_check_utils_params["logger"] = self.sas_logger
         utils = PreCheckUtils(pre_check_utils_params)
+
+        self._k8s_server_version = self._get_server_git_version(utils)
 
         configs_data = self.get_config_info()
         cluster_info = self._get_master_json()
@@ -130,6 +152,7 @@ class ViyaPreInstallCheck():
         params[viya_constants.INGRESS_HOST] = str(ingress_host)
         params[viya_constants.INGRESS_PORT] = str(ingress_port)
         params[viya_constants.PERM_CLASS] = utils
+        params[viya_constants.SERVER_K8S_VERSION] = self._k8s_server_version
         params['logger'] = self.sas_logger
 
         permissions_check = PreCheckPermissions(params)
@@ -389,8 +412,7 @@ class ViyaPreInstallCheck():
         permissions_check:  instance of PreCheckPermissions class
         """
         namespace = self._kubectl.get_namespace()
-        permissions_check.get_server_git_version()
-        permissions_check.set_ingress_manifest_file()
+        permissions_check.check_k8s_release()
         permissions_check.get_sc_resources()
 
         permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, False)
@@ -518,6 +540,20 @@ class ViyaPreInstallCheck():
         global_data.append(global_nodes)
 
         self.logger.debug("global data{} time{}".format(pprint.pformat(global_data), time_string))
+        return global_data
+
+    def _set_k8s_version(self, global_data, git_version):
+        """Set the Cluster Kubernetes Version for the report in the global data list
+
+        global_data: List to be updated
+        return:  global_data list updated with Kubernetes Version to be added to the report
+        """
+        global_nodes = {}
+
+        global_nodes.update({'k8sVersion': str(git_version)})
+        global_data.append(global_nodes)
+
+        self.logger.debug("global data{} Kubernetes Version {}".format(pprint.pformat(global_data), git_version))
         return global_data
 
     def _check_cpu_errors(self, global_data, total_capacity_cpu_cores: float, aggregate_cpu_failures):
@@ -767,6 +803,7 @@ class ViyaPreInstallCheck():
         global_data = self._check_kubelet_errors(global_data, aggregate_kubelet_failures)
 
         global_data.append(nodes_data)
+        global_data = self._set_k8s_version(global_data, self._k8s_server_version)
         self.logger.debug("nodes_data {}".format(pprint.pformat(nodes_data)))
         return global_data
 
