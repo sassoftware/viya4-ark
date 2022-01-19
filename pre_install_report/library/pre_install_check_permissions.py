@@ -491,23 +491,6 @@ class PreCheckPermissions(object):
                                              'helloworld-svc.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
-    def get_server_git_version(self):
-        """
-        Retrieve the Kubernetes server version and validate the git version
-        """
-        try:
-            versions: Dict = self.utils.get_k8s_version()
-            server_version = versions.get('serverVersion')
-            git_version = server_version.get('gitVersion')
-            self.logger.info("git_version {} ".format(str(git_version)))
-
-            if git_version.startswith("v"):
-                git_version = git_version[1:]
-            self.set_k8s_git_version(git_version)
-        except CalledProcessError as cpe:
-            self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
-            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
-
     def check_k8s_release(self):
         """
         Retrieve the server Kubernetes gitVersion using and compare it using
@@ -668,7 +651,7 @@ class PreCheckPermissions(object):
 
         """
         found = self.utils.get_rbac_group_cmd()
-        self.logger.debug("get_rbace_group_cmd found = {}, sample_deployment = {}"
+        self.logger.debug("get_rbac_group_cmd found = {}, sample_deployment = {}"
                           .format(str(found), str(self._sample_deployment)))
         if found:
             rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,

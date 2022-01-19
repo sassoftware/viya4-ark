@@ -105,7 +105,6 @@ class ViyaPreInstallCheck():
             if git_version.startswith("v"):
                 git_version = git_version[1:]
             self.logger.debug('Server kubectl version = {}'.format(git_version))
-            print("git_version = " + git_version)
             return git_version
         except CalledProcessError as cpe:
             self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
