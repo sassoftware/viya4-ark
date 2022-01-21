@@ -581,6 +581,7 @@ def test_kubconfig_file():
     finally:
         os.environ['KUBECONFIG'] = str(old_kubeconfig)
 
+
 def test_validated_k8s_server_version():
 
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,

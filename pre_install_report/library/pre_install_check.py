@@ -43,6 +43,7 @@ _FILE_TIMESTAMP_TMPL_ = "%Y-%m-%dT%H_%M_%S"
 # set timestamp for report file
 file_timestamp = datetime.datetime.now().strftime(_FILE_TIMESTAMP_TMPL_)
 
+
 class ViyaPreInstallCheck():
     """
     A ViyaPreInstallCheck object represents a summary of resources currently detected on the target Kubernetes
@@ -91,14 +92,14 @@ class ViyaPreInstallCheck():
             print(viya_messages.KUBELET_VERSION_ERROR)
             sys.exit(viya_messages.BAD_OPT_RC_)
 
-    def _validate_k8s_server_version (self, version ):
+    def _validate_k8s_server_version(self, version):
 
         version_lst = version.split('.')
         if (len(version_lst) != 3):
             self.logger.error("Kubernetes version is missing or invalid: {}".format(version))
             sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
 
-        for i in range(len(version_lst) -1):
+        for i in range(len(version_lst) - 1):
             if version_lst[0].startswith("0"):
                 self.logger.error("Kubernetes version is missing or invalid: {}".format(version))
                 sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)

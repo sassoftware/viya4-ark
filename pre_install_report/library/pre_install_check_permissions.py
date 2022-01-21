@@ -50,6 +50,7 @@ OPS_ROUTE_NAME = "no-route-hello-world"
 OPS_ROUTE_KEY = "host"
 OPS_ROUTE_KIND = "route"
 
+
 class PreCheckPermissions(object):
     """
     A PreCheckPermissions encapslates the functions and data gathered from permissions testing in a designated namespace
