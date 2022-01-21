@@ -15,16 +15,6 @@
             },
             "name": "postgres",
             "namespace": "test",
-            "ownerReferences": [
-                {
-                    "apiVersion": "orchestration.sas.com/v1alpha1",
-                    "blockOwnerDeletion": true,
-                    "controller": true,
-                    "kind": "SASDeployment",
-                    "name": "sas-viya",
-                    "uid": "74904415-de32-497f-9d5e-1b06c7058305"
-                }
-            ],
             "resourceVersion": "287826",
             "selfLink": "/apis/webinfdsvr.sas.com/v1/namespaces/test/pgclusters/postgres",
             "uid": "85f6ff07-1c31-40cd-9070-3c169144df39"

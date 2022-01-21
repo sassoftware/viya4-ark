@@ -87,16 +87,6 @@
                 "managedFields": [],
                 "name": "sas-backup-agent-parameters-gdtd8hktkf",
                 "namespace": "test",
-                "ownerReferences": [
-                    {
-                        "apiVersion": "orchestration.sas.com/v1alpha1",
-                        "blockOwnerDeletion": true,
-                        "controller": true,
-                        "kind": "SASDeployment",
-                        "name": "sas-viya",
-                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
-                    }
-                ],
                 "resourceVersion": "12975216",
                 "selfLink": "/api/v1/namespaces/test/configmaps/sas-backup-agent-parameters-gdtd8hktkf",
                 "uid": "0312d7cc-0a70-4e48-b031-29b6e34618e2"
@@ -123,16 +113,6 @@
                 "managedFields": [],
                 "name": "sas-go-config-256bgc697g",
                 "namespace": "test",
-                "ownerReferences": [
-                    {
-                        "apiVersion": "orchestration.sas.com/v1alpha1",
-                        "blockOwnerDeletion": true,
-                        "controller": true,
-                        "kind": "SASDeployment",
-                        "name": "sas-viya",
-                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
-                    }
-                ],
                 "resourceVersion": "12975289",
                 "selfLink": "/api/v1/namespaces/test/configmaps/sas-go-config-256bgc697g",
                 "uid": "950766aa-10b1-4e77-9842-05e0ec81122f"
@@ -158,16 +138,6 @@
                 "managedFields": [],
                 "name": "sas-backup-job-parameters-gb2b7ckggt",
                 "namespace": "test",
-                "ownerReferences": [
-                    {
-                        "apiVersion": "orchestration.sas.com/v1alpha1",
-                        "blockOwnerDeletion": true,
-                        "controller": true,
-                        "kind": "SASDeployment",
-                        "name": "sas-viya",
-                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
-                    }
-                ],
                 "resourceVersion": "12975217",
                 "selfLink": "/api/v1/namespaces/test/configmaps/sas-backup-job-parameters-gb2b7ckggt",
                 "uid": "101353dd-6337-4ae9-8387-06fcdb1ae0f0"
@@ -195,16 +165,6 @@
                 "managedFields": [],
                 "name": "sas-shared-config-dh4f2c4mk9",
                 "namespace": "test",
-                "ownerReferences": [
-                    {
-                        "apiVersion": "orchestration.sas.com/v1alpha1",
-                        "blockOwnerDeletion": true,
-                        "controller": true,
-                        "kind": "SASDeployment",
-                        "name": "sas-viya",
-                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
-                    }
-                ],
                 "resourceVersion": "12975367",
                 "selfLink": "/api/v1/namespaces/test/configmaps/sas-shared-config-dh4f2c4mk9",
                 "uid": "7a894053-f8f4-4bb1-861c-450f9ff09704"
@@ -228,16 +188,6 @@
                 "managedFields": [],
                 "name": "sas-restore-job-parameters-6dh8htc9fg",
                 "namespace": "test",
-                "ownerReferences": [
-                    {
-                        "apiVersion": "orchestration.sas.com/v1alpha1",
-                        "blockOwnerDeletion": true,
-                        "controller": true,
-                        "kind": "SASDeployment",
-                        "name": "sas-viya",
-                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
-                    }
-                ],
                 "resourceVersion": "12975359",
                 "selfLink": "/api/v1/namespaces/test/configmaps/sas-restore-job-parameters-6dh8htc9fg",
                 "uid": "518a31b2-a806-49f5-abec-3d785b127fa1"
@@ -270,16 +220,6 @@
                 "managedFields": [],
                 "name": "sas-java-config-8bc8mbd5mk",
                 "namespace": "test",
-                "ownerReferences": [
-                    {
-                        "apiVersion": "orchestration.sas.com/v1alpha1",
-                        "blockOwnerDeletion": true,
-                        "controller": true,
-                        "kind": "SASDeployment",
-                        "name": "sas-viya",
-                        "uid": "396aebe9-5080-4117-addb-f51ec1c254d5"
-                    }
-                ],
                 "resourceVersion": "12975295",
                 "selfLink": "/api/v1/namespaces/test/configmaps/sas-java-config-8bc8mbd5mk",
                 "uid": "94245cd9-9d4a-4a84-939e-aa0c39ee71a5"
