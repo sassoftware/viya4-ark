@@ -9,7 +9,7 @@ deployment in a Kubernetes cluster.  The tool cannot account for the dynamic res
 Kubernetes may orchestrate once Viya is deployed.  The report and the information therein must
 be considered a snapshot in time.  
 
-The Kubernetes cluster for a planned SAS Viya deployment must meet the requirements documented in [SAS® Viya® Operations](https://go.documentation.sas.com/doc/en/itopscdc/v_022/itopssr/n1ika6zxghgsoqn1mq4bck9dx695.htm#n0mhb21pl07ohgn1hj4zsgfeq8hj)  
+The Kubernetes cluster for a SAS Viya deployment must meet the requirements documented in [SAS® Viya® Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
 Ensure that the Kubernetes version is within the documented range for the selected cloud provider. 
 
 

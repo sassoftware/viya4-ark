@@ -581,6 +581,39 @@ def test_kubconfig_file():
     finally:
         os.environ['KUBECONFIG'] = str(old_kubeconfig)
 
+def test_validated_k8s_server_version():
+
+    vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
+                                    viya_min_aggregate_worker_CPU_cores,
+                                    viya_min_aggregate_worker_memory)
+    try:
+        vpc._validate_k8s_server_version("0.2.5")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    try:
+        vpc._validate_k8s_server_version("025")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    try:
+        vpc._validate_k8s_server_version("1.2.3.5")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    try:
+        vpc._validate_k8s_server_version("")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    rc: int = vpc._validate_k8s_server_version("1.21.5")
+    assert (rc == 0)
+
+    try:
+        rc: int = vpc._validate_k8s_server_version("-1.21.5")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
 
 def test_get_k8s_version():
     """
@@ -609,7 +642,7 @@ def test_get_k8s_version():
 
     # current version is less then 1.19
     curr_version = semantic_version.Version(str(version_string))
-    assert (curr_version in semantic_version.SimpleSpec('<1.19'))
+    assert (curr_version in semantic_version.SimpleSpec(viya_constants.MIN_K8S_SERVER_VERSION))
 
 
 def test_check_permissions():

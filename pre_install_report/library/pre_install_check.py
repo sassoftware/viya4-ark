@@ -43,7 +43,6 @@ _FILE_TIMESTAMP_TMPL_ = "%Y-%m-%dT%H_%M_%S"
 # set timestamp for report file
 file_timestamp = datetime.datetime.now().strftime(_FILE_TIMESTAMP_TMPL_)
 
-
 class ViyaPreInstallCheck():
     """
     A ViyaPreInstallCheck object represents a summary of resources currently detected on the target Kubernetes
@@ -92,19 +91,37 @@ class ViyaPreInstallCheck():
             print(viya_messages.KUBELET_VERSION_ERROR)
             sys.exit(viya_messages.BAD_OPT_RC_)
 
-    def _get_server_git_version(self, utils):
+    def _validate_k8s_server_version (self, version ):
+
+        version_lst = version.split('.')
+        if (len(version_lst) != 3):
+            self.logger.error("Kubernetes version is missing or invalid: {}".format(version))
+            sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
+
+        for i in range(len(version_lst) -1):
+            if version_lst[0].startswith("0"):
+                self.logger.error("Kubernetes version is missing or invalid: {}".format(version))
+                sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
+            if float(version_lst[0]) < 0:
+                self.logger.error("Kubernetes version is missing or invalid: {}".format(version))
+                sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
+        return 0
+
+    def _retrieve_k8s_server_version(self, utils):
         """
         Retrieve the Kubernetes server version and validate the git version
         """
         try:
             versions: Dict = utils.get_k8s_version()
             server_version = versions.get('serverVersion')
-            git_version = server_version.get('gitVersion')
-            self.logger.info("git_version {} ".format(str(git_version)))
-
-            if git_version.startswith("v"):
+            git_version = str(server_version.get('gitVersion'))
+            self.logger.info("git_version {} ".format(git_version))
+            # check git_version is not empty
+            if git_version and git_version.startswith("v"):
                 git_version = git_version[1:]
-            self.logger.debug('Server kubectl version = {}'.format(git_version))
+            self._validate_k8s_server_version(git_version)
+
+            self.logger.debug('Kubernetes Server version = {}'.format(git_version))
             return git_version
         except CalledProcessError as cpe:
             self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
@@ -129,7 +146,7 @@ class ViyaPreInstallCheck():
         pre_check_utils_params["logger"] = self.sas_logger
         utils = PreCheckUtils(pre_check_utils_params)
 
-        self._k8s_server_version = self._get_server_git_version(utils)
+        self._k8s_server_version = self._retrieve_k8s_server_version(utils)
 
         configs_data = self.get_config_info()
         cluster_info = self._get_master_json()
@@ -411,7 +428,7 @@ class ViyaPreInstallCheck():
         permissions_check:  instance of PreCheckPermissions class
         """
         namespace = self._kubectl.get_namespace()
-        permissions_check.check_k8s_release()
+        permissions_check.check_k8s_server_version()
         permissions_check.get_sc_resources()
 
         permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, False)

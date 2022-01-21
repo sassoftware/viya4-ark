@@ -45,12 +45,10 @@ PROVISIONER_AZURE_FILE = "kubernetes.io/azure-file"
 PROVISIONER_AZURE_DISK = "kubernetes.io/azure-disk"
 PROVISIONER_AWS_EBS = "kubernetes.io/aws-ebs"
 
-INGRESS_UNSUPPORTED_MIN_REL_LT = '<1.19'
 
 OPS_ROUTE_NAME = "no-route-hello-world"
 OPS_ROUTE_KEY = "host"
 OPS_ROUTE_KIND = "route"
-
 
 class PreCheckPermissions(object):
     """
@@ -338,7 +336,6 @@ class PreCheckPermissions(object):
                                             str(k8s_resource.get_parameter_value('storageaccounttype'))))
 
             if str(k8s_resource.get_provisioner()) == PROVISIONER_AWS_EBS and \
-                    ("/storageclasses/gp2" in str(k8s_resource.get_self_link())) and \
                     str(k8s_resource.get_parameter_value('type')) == SC_TYPE_AWS_EBS:
                 storage_classes.append((str(k8s_resource.get_name()),
                                         PVC_AWS_EBS,
@@ -490,7 +487,7 @@ class PreCheckPermissions(object):
                                              'helloworld-svc.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
-    def check_k8s_release(self):
+    def check_k8s_server_version(self):
         """
         Retrieve the server Kubernetes gitVersion using and compare it using
         https://pypi.org/project/semantic_version/  2.8.5 initial version
@@ -498,7 +495,7 @@ class PreCheckPermissions(object):
         try:
             curr_version = semantic_version.Version(str(self.get_k8s_git_version()))
 
-            if(curr_version in semantic_version.SimpleSpec(INGRESS_UNSUPPORTED_MIN_REL_LT)):
+            if(curr_version in semantic_version.SimpleSpec(viya_constants.MIN_K8S_SERVER_VERSION)):
                 self.logger.error("This release of Kubernetes is not supported. major {} minor {}"
                                   .format(str(curr_version.major),
                                           str(curr_version.minor)))

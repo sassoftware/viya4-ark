@@ -61,3 +61,6 @@ PERM_CR_RBAC = "Custom Resource with RBAC "
 VIYA_PERCENTAGE_OF_INSTANCE = "85"
 MEMORY_WITHIN_RANGE = " Memory within Range"
 SERVER_K8S_VERSION = "Server_k8s_version"
+
+# Any versions below this minimum are not supported
+MIN_K8S_SERVER_VERSION = '<1.19'
