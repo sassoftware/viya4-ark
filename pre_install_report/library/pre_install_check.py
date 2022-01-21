@@ -122,7 +122,7 @@ class ViyaPreInstallCheck():
                 git_version = git_version[1:]
             self._validate_k8s_server_version(git_version)
 
-            self.logger.debug('Kubernetes Server version = {}'.format(git_version))
+            self.logger.info('Kubernetes Server version = {}'.format(git_version))
             return git_version
         except CalledProcessError as cpe:
             self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
