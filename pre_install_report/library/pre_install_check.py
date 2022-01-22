@@ -585,7 +585,7 @@ class ViyaPreInstallCheck():
         self.logger.debug("global data{} time{}".format(pprint.pformat(global_data), time_string))
         return global_data
 
-    def _set_k8s_version(self, global_data, git_version):
+    def _update_k8s_version(self, global_data, git_version):
         """Set the Cluster Kubernetes Version for the report in the global data list
 
         global_data: List to be updated
@@ -828,14 +828,15 @@ class ViyaPreInstallCheck():
 
             if (self._k8s_server_version_min()):
                 self._set_status(0, node, 'kubeletversion')
+                self.logger.debug("node kubeletversion status 0 {} ".format(pprint.pformat(node)))
             else:
                 self._set_status(1, node, 'kubeletversion')
                 node['error']['kubeletversion'] = viya_constants.SET + ': ' + kubeletversion + ', ' + \
                     str(viya_constants.EXPECTED) + ': ' + viya_constants.MIN_K8S_SERVER_VERSION[1:] + ' or later '
 
                 aggregate_kubelet_failures += 1
-                self.logger.debug("node {} ".format(pprint.pformat(node)))
-
+                self.logger.debug("aggregate_kubelet_failures {} ".format(str(aggregate_kubelet_failures)))
+                self.logger.debug("node kubeletversion{} ".format(pprint.pformat(node)))
 
         global_data = self._check_workers(global_data, nodes_data)
         global_data = self._set_time(global_data)
@@ -846,7 +847,7 @@ class ViyaPreInstallCheck():
         global_data = self._check_kubelet_errors(global_data, aggregate_kubelet_failures)
 
         global_data.append(nodes_data)
-        global_data = self._set_k8s_version(global_data, self._k8s_server_version)
+        global_data = self._update_k8s_version(global_data, self._k8s_server_version)
         self.logger.debug("nodes_data {}".format(pprint.pformat(nodes_data)))
         return global_data
 
@@ -1044,6 +1045,9 @@ class ViyaPreInstallCheck():
 
     def get_calculated_aggregate_memory(self):
         return self._calculated_aggregate_memory
+
+    def set_k8s_version(self, version: Text):
+        self._k8s_server_version = version
 
     def generate_report(self,
                         global_data,

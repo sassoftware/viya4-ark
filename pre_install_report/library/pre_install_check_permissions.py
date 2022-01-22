@@ -14,10 +14,9 @@ import os
 from typing import List
 
 import requests
-import sys
 import pprint
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from pre_install_report.library.utils import viya_constants, viya_messages
+from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.pre_install_utils import PreCheckUtils
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues
 from viya_ark_library.logging import ViyaARKLogger

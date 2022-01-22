@@ -39,13 +39,14 @@ _NAMESPACE_NOT_FOUND_RC_ = 6
 _RUNTIME_ERROR_RC_ = 7
 
 viya_kubelet_version_min = 'v1.14.0'
+viya_kubenetes_version = "1.22.0"
 viya_min_aggregate_worker_CPU_cores = '12'
 viya_min_aggregate_worker_memory = '56G'
 
 # setup sys.path for import of viya_constants
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
 # turn off logging
-sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.NOTSET, logger_name="debug_logger")
+sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.DEBUG, logger_name="debug_logger")
 
 
 def test_get_storage_classes_json():
@@ -149,6 +150,9 @@ def test_get_nested_nodes_info():
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
 
+    # Unsupported version
+    vpc.set_k8s_version("1.16.1")
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/nodes_info.json')
     # Register Python Package Pint definitions
@@ -176,7 +180,8 @@ def test_get_nested_nodes_info():
         total_aggregate_memoryG = vpc.get_calculated_aggregate_memory()  # quantity_("62.3276481628418 Gi").to('G')
         assert str(round(total_aggregate_memoryG.to("G"), 2)) == '67.13 G'
         assert str(round(total_aggregate_memoryG.to("Gi"), 2)) == '62.52 Gi'
-        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 1.'
+        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 3.'
+        assert global_data[6]['k8sVersion'] in '1.16.1'
 
     template_render(global_data, configs_data, storage_data, 'nested_nodes_info.html')
 
@@ -188,6 +193,8 @@ def test_get_nested_millicores_nodes_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
+
+    vpc.set_k8s_version("1.13.1")
     # Register Python Package Pint definitions
     quantity_ = register_pint()
 
@@ -214,7 +221,8 @@ def test_get_nested_millicores_nodes_info():
                                                               ' Issues Found: 1'
         total_calc_memoryG = vpc.get_calculated_aggregate_memory()
         assert str(round(total_calc_memoryG.to("G"), 2)) == '68.16 G'  # 68.16113098752
-        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 2.'
+        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 3.'
+        assert global_data[6]['k8sVersion'] in '1.13.1'
 
     template_render(global_data, configs_data, storage_data, 'nested_millicores_nodes_info.html')
 
@@ -501,10 +509,9 @@ def test_azure_worker_nodes():
         assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 802.28 G,' \
                                                               ' Memory within Range,' \
                                                               ' Issues Found: 0'
-        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 10. ' \
-                                                               'Check Node(s). All Nodes NOT in Ready Status. ' \
+        assert global_data[4]['aggregate_kubelet_failures'] in ' Check Node(s). All Nodes NOT in Ready Status. ' \
                                                                'Issues Found: ' + str(issues_found)
-
+        assert global_data[6]['k8sVersion'] in '1.22.0'
     template_render(global_data, configs_data, storage_data, 'azure_nodes_no_master.html')
 
 
@@ -540,6 +547,7 @@ def createViyaPreInstallCheck(viya_kubelet_version_min,
                                                                     viya_kubelet_version_min,
                                                                     viya_min_aggregate_worker_CPU_cores,
                                                                     viya_min_aggregate_worker_memory)
+    sas_pre_check_report.set_k8s_version(viya_kubenetes_version)
 
     return sas_pre_check_report
 
@@ -589,10 +597,12 @@ def test_validated_k8s_server_version():
                                     viya_min_aggregate_worker_memory)
 
     rc = vpc._validate_k8s_server_version("1.21.6-gke.1500")
-    assert(rc ==0)
+    assert(rc == 0)
 
-    rc = vpc._validate_k8s_server_version("")
-    assert(rc ==0)
+    try:
+        rc = vpc._validate_k8s_server_version("")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
 
     try:
         vpc._validate_k8s_server_version("0.2.5")
@@ -614,11 +624,11 @@ def test_validated_k8s_server_version():
     except SystemExit as exc:
         assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
 
-    rc: int = vpc._validate_k8s_server_version("1.21.5")
+    rc = vpc._validate_k8s_server_version("1.21.5")
     assert (rc == 0)
 
     try:
-        int = vpc._validate_k8s_server_version("1.-21.5")
+        vpc._validate_k8s_server_version("1.-21.5")
     except SystemExit as exc:
         assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
 
