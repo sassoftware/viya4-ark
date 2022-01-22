@@ -587,6 +587,13 @@ def test_validated_k8s_server_version():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
+
+    rc = vpc._validate_k8s_server_version("1.21.6-gke.1500")
+    assert(rc ==0)
+
+    rc = vpc._validate_k8s_server_version("")
+    assert(rc ==0)
+
     try:
         vpc._validate_k8s_server_version("0.2.5")
     except SystemExit as exc:
@@ -611,7 +618,7 @@ def test_validated_k8s_server_version():
     assert (rc == 0)
 
     try:
-        rc: int = vpc._validate_k8s_server_version("-1.21.5")
+        int = vpc._validate_k8s_server_version("1.-21.5")
     except SystemExit as exc:
         assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
 

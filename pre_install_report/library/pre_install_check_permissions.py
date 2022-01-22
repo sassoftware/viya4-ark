@@ -16,7 +16,6 @@ from typing import List
 import requests
 import sys
 import pprint
-import semantic_version
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from pre_install_report.library.utils import viya_constants, viya_messages
 from pre_install_report.library.pre_install_utils import PreCheckUtils
@@ -487,22 +486,6 @@ class PreCheckPermissions(object):
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
                                              'helloworld-svc.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
-
-    def check_k8s_server_version(self):
-        """
-        Retrieve the server Kubernetes gitVersion using and compare it using
-        https://pypi.org/project/semantic_version/  2.8.5 initial version
-        """
-        try:
-            curr_version = semantic_version.Version(str(self.get_k8s_git_version()))
-
-            if(curr_version in semantic_version.SimpleSpec(viya_constants.MIN_K8S_SERVER_VERSION)):
-                self.logger.error("This release of Kubernetes is not supported. major {} minor {}"
-                                  .format(str(curr_version.major),
-                                          str(curr_version.minor)))
-        except ValueError as cpe:
-            self.logger.exception(viya_messages.EXCEPTION_MESSAGE.format(str(cpe)))
-            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
 
     def check_sample_ingress(self):
         """

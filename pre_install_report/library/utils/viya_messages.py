@@ -29,6 +29,7 @@ OUPUT_PATH_ERROR = "ERROR: The report output path is not valid {}. Check value o
 EXCEPTION_MESSAGE = "ERROR: {}"
 KUBECONF_FILE_ERROR = "ERROR: The file specified in the KUBECONFIG environment does not exist. " \
                       "Check that file {} exists."
+KUBERNETES_VERSION_ERROR = "Kubernetes version is missing or invalid: {}"
 
 # command line return codes #
 SUCCESS_RC_ = 0
