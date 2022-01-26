@@ -63,4 +63,4 @@ MEMORY_WITHIN_RANGE = " Memory within Range"
 SERVER_K8S_VERSION = "Server_k8s_version"
 
 # Any versions below this minimum are not supported
-MIN_K8S_SERVER_VERSION = '<1.19'
+MIN_K8S_SERVER_VERSION = '<1.20'
