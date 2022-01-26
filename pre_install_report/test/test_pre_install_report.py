@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -39,14 +39,14 @@ _NAMESPACE_NOT_FOUND_RC_ = 6
 _RUNTIME_ERROR_RC_ = 7
 
 viya_kubelet_version_min = 'v1.14.0'
-viya_kubenetes_version = "1.22.0"
+viya_kubenetes_version = "1.22.4"
 viya_min_aggregate_worker_CPU_cores = '12'
 viya_min_aggregate_worker_memory = '56G'
 
 # setup sys.path for import of viya_constants
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir)))
 # turn off logging
-sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.DEBUG, logger_name="debug_logger")
+sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.NOTSET, logger_name="debug_logger")
 
 
 def test_get_storage_classes_json():
@@ -511,7 +511,7 @@ def test_azure_worker_nodes():
                                                               ' Issues Found: 0'
         assert global_data[4]['aggregate_kubelet_failures'] in ' Check Node(s). All Nodes NOT in Ready Status. ' \
                                                                'Issues Found: ' + str(issues_found)
-        assert global_data[6]['k8sVersion'] in '1.22.0'
+        assert global_data[6]['k8sVersion'] in '1.22.4'
     template_render(global_data, configs_data, storage_data, 'azure_nodes_no_master.html')
 
 

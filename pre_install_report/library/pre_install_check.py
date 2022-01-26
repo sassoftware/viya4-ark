@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2019-2022, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -100,17 +100,13 @@ class ViyaPreInstallCheck():
         version_parts_to_validate = 2
         version_lst = version.split('.')
         if (len(version_lst) < version_parts_to_validate):
-            self.logger.error("Kubernetes version is missing or invalid: {}".format(version))
+            self.logger.error(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
             print(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
             sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
 
         for i in range(version_parts_to_validate):
-            if version_lst[i].startswith("0"):
-                self.logger.error("Kubernetes version is missing or invalid: {}".format(version))
-                print(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
-                sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
-            if float(version_lst[i]) < 0:
-                self.logger.error("Kubernetes version is missing or invalid: {}".format(version))
+            if version_lst[i].startswith("0") or float(version_lst[i]) < 0:
+                self.logger.error(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
                 print(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
                 sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
             i += 1
@@ -138,14 +134,14 @@ class ViyaPreInstallCheck():
 
     def _k8s_server_version_min(self):
         """
-        Compare Kubernetes Version using and compare it to Minimum version expecte.
+        Compare Kubernetes Version to the Minimum version expected. See
         https://pypi.org/project/semantic_version/  2.8.5 initial version
         """
         try:
             curr_version = semantic_version.Version(str(self._k8s_server_version))
 
             if(curr_version in semantic_version.SimpleSpec(viya_constants.MIN_K8S_SERVER_VERSION)):
-                self.logger.error("This release of Kubernetes is not supported. major {} minor {}"
+                self.logger.error("This release of Kubernetes is not supported {}.{}.x"
                                   .format(str(curr_version.major),
                                           str(curr_version.minor)))
                 return False
