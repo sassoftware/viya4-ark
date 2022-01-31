@@ -82,6 +82,7 @@ def ignorable_for_controller_if_unavailable(ingress_controller: Text, resource_t
     ####################
     elif ingress_controller == SupportedIngress.Controllers.NGINX and (
             resource_type == ResourceTypeValues.CONTOUR_HTTP_PROXIES or
+            resource_type == ResourceTypeValues.K8S_EXTENSIONS_INGRESSES or
             resource_type == ResourceTypeValues.OPENSHIFT_ROUTES or
             resource_type == ResourceTypeValues.ISTIO_VIRTUAL_SERVICES
     ):
