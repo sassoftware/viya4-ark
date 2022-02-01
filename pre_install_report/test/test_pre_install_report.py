@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -39,6 +39,7 @@ _NAMESPACE_NOT_FOUND_RC_ = 6
 _RUNTIME_ERROR_RC_ = 7
 
 viya_kubelet_version_min = 'v1.14.0'
+viya_kubenetes_version = "1.22.4"
 viya_min_aggregate_worker_CPU_cores = '12'
 viya_min_aggregate_worker_memory = '56G'
 
@@ -149,6 +150,9 @@ def test_get_nested_nodes_info():
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
 
+    # Unsupported version
+    vpc.set_k8s_version("1.16.1")
+
     current_dir = os.path.dirname(os.path.abspath(__file__))
     datafile = os.path.join(current_dir, 'test_data/json_data/nodes_info.json')
     # Register Python Package Pint definitions
@@ -176,7 +180,8 @@ def test_get_nested_nodes_info():
         total_aggregate_memoryG = vpc.get_calculated_aggregate_memory()  # quantity_("62.3276481628418 Gi").to('G')
         assert str(round(total_aggregate_memoryG.to("G"), 2)) == '67.13 G'
         assert str(round(total_aggregate_memoryG.to("Gi"), 2)) == '62.52 Gi'
-        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 1.'
+        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 3.'
+        assert global_data[6]['k8sVersion'] in '1.16.1'
 
     template_render(global_data, configs_data, storage_data, 'nested_nodes_info.html')
 
@@ -188,6 +193,8 @@ def test_get_nested_millicores_nodes_info():
     vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
+
+    vpc.set_k8s_version("1.13.1")
     # Register Python Package Pint definitions
     quantity_ = register_pint()
 
@@ -214,7 +221,8 @@ def test_get_nested_millicores_nodes_info():
                                                               ' Issues Found: 1'
         total_calc_memoryG = vpc.get_calculated_aggregate_memory()
         assert str(round(total_calc_memoryG.to("G"), 2)) == '68.16 G'  # 68.16113098752
-        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 2.'
+        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 3.'
+        assert global_data[6]['k8sVersion'] in '1.13.1'
 
     template_render(global_data, configs_data, storage_data, 'nested_millicores_nodes_info.html')
 
@@ -501,10 +509,9 @@ def test_azure_worker_nodes():
         assert global_data[3]['aggregate_memory_failures'] in 'Expected: 56G, Calculated: 802.28 G,' \
                                                               ' Memory within Range,' \
                                                               ' Issues Found: 0'
-        assert global_data[4]['aggregate_kubelet_failures'] in 'Check Kubelet Version on nodes. Issues Found: 10. ' \
-                                                               'Check Node(s). All Nodes NOT in Ready Status. ' \
+        assert global_data[4]['aggregate_kubelet_failures'] in ' Check Node(s). All Nodes NOT in Ready Status. ' \
                                                                'Issues Found: ' + str(issues_found)
-
+        assert global_data[6]['k8sVersion'] in '1.22.4'
     template_render(global_data, configs_data, storage_data, 'azure_nodes_no_master.html')
 
 
@@ -540,6 +547,7 @@ def createViyaPreInstallCheck(viya_kubelet_version_min,
                                                                     viya_kubelet_version_min,
                                                                     viya_min_aggregate_worker_CPU_cores,
                                                                     viya_min_aggregate_worker_memory)
+    sas_pre_check_report.set_k8s_version(viya_kubenetes_version)
 
     return sas_pre_check_report
 
@@ -582,6 +590,49 @@ def test_kubconfig_file():
         os.environ['KUBECONFIG'] = str(old_kubeconfig)
 
 
+def test_validated_k8s_server_version():
+
+    vpc = createViyaPreInstallCheck(viya_kubelet_version_min,
+                                    viya_min_aggregate_worker_CPU_cores,
+                                    viya_min_aggregate_worker_memory)
+
+    rc = vpc._validate_k8s_server_version("1.21.6-gke.1500")
+    assert(rc == 0)
+
+    try:
+        rc = vpc._validate_k8s_server_version("")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    try:
+        vpc._validate_k8s_server_version("0.2.5")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    try:
+        vpc._validate_k8s_server_version("025")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    try:
+        vpc._validate_k8s_server_version("1.2.3.5")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    try:
+        vpc._validate_k8s_server_version("")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+    rc = vpc._validate_k8s_server_version("1.21.5")
+    assert (rc == 0)
+
+    try:
+        vpc._validate_k8s_server_version("1.-21.5")
+    except SystemExit as exc:
+        assert exc.code == viya_messages.INVALID_K8S_VERSION_RC_
+
+
 def test_get_k8s_version():
     """
     Retrieve thhe server Kubernetes mjor and minor version using
@@ -591,8 +642,6 @@ def test_get_k8s_version():
     # versions: Dict = self.utils.get_k8s_version()
     version_string = "1.18.9-eks-d1db3c"
     version_string2 = "1.19.0"
-    version_string3 = '1.19.a'
-    version_string4 = '1.17.1'
 
     params = {}
     params[viya_constants.INGRESS_CONTROLLER] = 'nginx'
@@ -603,40 +652,15 @@ def test_get_k8s_version():
     # initialize the PreCheckPermissions object
     perms = PreCheckPermissions(params)
     perms.set_k8s_git_version(version_string)
-    perms.set_ingress_manifest_file()
-    # check for correct ingress manifest
-    assert(str(perms.get_ingress_file_name() in "hello-ingress-k8s-v118.yaml"))
-
-    # initialize the PreCheckPermissions object
-    perms = PreCheckPermissions(params)
-    perms.set_k8s_git_version(version_string4)
-    perms.set_ingress_manifest_file()
-    # check for correct ingress manifest
-    assert(str(perms.get_ingress_file_name() in "hello-ingress-k8s-v118.yaml"))
-
-    perms.set_k8s_git_version(version_string2)
-    perms.set_ingress_manifest_file()
-    # check for correct ingress manifest
-    assert(str(perms.get_ingress_file_name() in "hello-ingress.yaml"))
 
     # check curren version less than 1.20
     curr_version = semantic_version.Version(str(version_string2))
     assert (curr_version in semantic_version.SimpleSpec('<1.20'))
     assert (curr_version in semantic_version.SimpleSpec('==1.19'))
 
-    perms.set_k8s_git_version(version_string2)
-    perms.set_ingress_manifest_file()
-    # check for correct ingress manifest
-    assert(str(perms.get_ingress_file_name() not in "hello-ingress_invalid.yaml"))
-
-    # initialize the PreCheckPermissions object
-    perms.set_k8s_git_version(version_string3)
-    # check for system exit rc 7
-    try:
-        perms.set_ingress_manifest_file()
-    except SystemExit as exc:
-        assert exc.code == viya_messages.RUNTIME_ERROR_RC_
-        pass
+    # current version is less then 1.19
+    curr_version = semantic_version.Version(str(version_string))
+    assert (curr_version in semantic_version.SimpleSpec(viya_constants.MIN_K8S_SERVER_VERSION))
 
 
 def test_check_permissions():

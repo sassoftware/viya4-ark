@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2020-2022, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -29,6 +29,7 @@ OUPUT_PATH_ERROR = "ERROR: The report output path is not valid {}. Check value o
 EXCEPTION_MESSAGE = "ERROR: {}"
 KUBECONF_FILE_ERROR = "ERROR: The file specified in the KUBECONFIG environment does not exist. " \
                       "Check that file {} exists."
+KUBERNETES_VERSION_ERROR = "Kubernetes version is missing or invalid: {}"
 
 # command line return codes #
 SUCCESS_RC_ = 0
@@ -40,3 +41,4 @@ CONNECTION_ERROR_RC_ = 5
 NAMESPACE_NOT_FOUND_RC_ = 6
 RUNTIME_ERROR_RC_ = 7
 SET_LIMTS_ERROR_RC_ = 8
+INVALID_K8S_VERSION_RC_ = 9

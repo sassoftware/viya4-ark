@@ -3,7 +3,7 @@
 {# ----------------------------------------------------------- #}
 {# Author: SAS Institute Inc.                                  #}
 {# ----------------------------------------------------------- #}
-{# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.      #}
+{# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA. #}
 {# All Rights Reserved.                                        #}
 {# SPDX-License-Identifier: Apache-2.0                         #}
 {# ----------------------------------------------------------- #}
@@ -52,10 +52,17 @@
 {% for global_nodes in global_data %}
     {% if loop.index == 1 %}
         <!-- installed nodes jq-accordion -->
-          <h4>Worker Nodes Detected - {{global_nodes.totalWorkers}}<h4>
+          <h4>Worker Nodes Detected: {{global_nodes.totalWorkers}}<h4>
     {% endif %}
 {% endfor %}
 
+<!-- Kubernetes Version detected in Cluster  -->
+{% for global_nodes in global_data %}
+    {% if loop.index == 7 %}
+        <!-- installed nodes jq-accordion -->
+          <h4>Kubernetes Version: {{global_nodes.k8sVersion}} <h4>
+    {% endif %}
+{% endfor %}
 <!-- Configuration data -->
 {% for contexts in configs_data %}
      {% if loop.index == 2 %}

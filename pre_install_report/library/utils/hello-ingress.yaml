@@ -7,7 +7,7 @@
 ####################################################################
 ####################################################################
 #
-# Copyright (c) 2019-2021, SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
+# Copyright (c) 2019-2022 SAS Institute Inc., Cary, NC, USA.  All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 ---
@@ -15,9 +15,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hello-world
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:

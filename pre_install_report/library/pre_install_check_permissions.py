@@ -5,21 +5,18 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
 import os
-from subprocess import CalledProcessError
-from typing import List, Dict
+from typing import List
 
 import requests
-import sys
 import pprint
-import semantic_version
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from pre_install_report.library.utils import viya_constants, viya_messages
+from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.pre_install_utils import PreCheckUtils
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues
 from viya_ark_library.logging import ViyaARKLogger
@@ -46,8 +43,6 @@ PROVISIONER_AZURE_FILE = "kubernetes.io/azure-file"
 PROVISIONER_AZURE_DISK = "kubernetes.io/azure-disk"
 PROVISIONER_AWS_EBS = "kubernetes.io/aws-ebs"
 
-INGRESS_V1BETA1_REL_EQ = '==1.18'
-INGRESS_UNSUPPORTED_REL_LT = '<1.18'
 
 OPS_ROUTE_NAME = "no-route-hello-world"
 OPS_ROUTE_KEY = "host"
@@ -87,7 +82,7 @@ class PreCheckPermissions(object):
         self._storage_class_sc: List[KubernetesResource] = None
         self._sample_deployment = 0
         self._sample_output = ""
-        self._k8s_git_version = None
+        self._k8s_git_version = params.get(viya_constants.SERVER_K8S_VERSION)
         self._openshift_host_port = viya_constants.NO_HOST_FOUND
         self._route_k8s_resource: KubernetesResource = None
 
@@ -340,7 +335,6 @@ class PreCheckPermissions(object):
                                             str(k8s_resource.get_parameter_value('storageaccounttype'))))
 
             if str(k8s_resource.get_provisioner()) == PROVISIONER_AWS_EBS and \
-                    ("/storageclasses/gp2" in str(k8s_resource.get_self_link())) and \
                     str(k8s_resource.get_parameter_value('type')) == SC_TYPE_AWS_EBS:
                 storage_classes.append((str(k8s_resource.get_name()),
                                         PVC_AWS_EBS,
@@ -492,45 +486,6 @@ class PreCheckPermissions(object):
                                              'helloworld-svc.yaml')
         self._set_results_namespace_admin(viya_constants.PERM_SERVICE, rc)
 
-    def get_server_git_version(self):
-        """
-        Retrieve the Kubernetes server version and validate the git version
-        """
-        try:
-            versions: Dict = self.utils.get_k8s_version()
-            server_version = versions.get('serverVersion')
-            git_version = server_version.get('gitVersion')
-            self.logger.info("git_version {} ".format(str(git_version)))
-
-            if git_version.startswith("v"):
-                git_version = git_version[1:]
-            self.set_k8s_git_version(git_version)
-        except CalledProcessError as cpe:
-            self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
-            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
-
-    def set_ingress_manifest_file(self):
-        """
-        Retrieve the server Kubernetes gitVersion using and compare it using
-        https://pypi.org/project/semantic_version/  2.8.5 initial version
-        """
-        try:
-            curr_version = semantic_version.Version(str(self.get_k8s_git_version()))
-
-            if(curr_version in semantic_version.SimpleSpec(INGRESS_V1BETA1_REL_EQ)):
-                self._ingress_file = "hello-ingress-k8s-v118.yaml"
-                self.logger.debug("hello-ingress file deployed {} major {} minor {}"
-                                  .format(str(self._ingress_file), str(curr_version.major),
-                                          str(curr_version.minor)))
-            if(curr_version in semantic_version.SimpleSpec(INGRESS_UNSUPPORTED_REL_LT)):
-                self._ingress_file = "hello-ingress-k8s-v118.yaml"
-                self.logger.error("This release of Kubernetes is not supported. major {} minor {}"
-                                  .format(str(curr_version.major),
-                                          str(curr_version.minor)))
-        except ValueError as cpe:
-            self.logger.exception(viya_messages.EXCEPTION_MESSAGE.format(str(cpe)))
-            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
-
     def check_sample_ingress(self):
         """
         Deploy Kubernetes Ingress for hello-world appliction in the specified
@@ -675,7 +630,7 @@ class PreCheckPermissions(object):
 
         """
         found = self.utils.get_rbac_group_cmd()
-        self.logger.debug("get_rbace_group_cmd found = {}, sample_deployment = {}"
+        self.logger.debug("get_rbac_group_cmd found = {}, sample_deployment = {}"
                           .format(str(found), str(self._sample_deployment)))
         if found:
             rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,

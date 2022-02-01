@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -21,9 +21,10 @@ import platform
 import subprocess
 import pint
 from subprocess import CalledProcessError
-from typing import Text
+from typing import Text, Dict
 
 # import pint to add, compare memory
+import semantic_version
 from pint import UnitRegistry
 
 from pre_install_report.library.utils import viya_messages
@@ -64,7 +65,6 @@ class ViyaPreInstallCheck():
         self._kubectl: KubectlInterface = None
         self.sas_logger = sas_logger
         self.logger = self.sas_logger.get_logger()
-        self._min_kubelet_version: tuple = ()
         self._viya_kubelet_version_min = viya_kubelet_version_min
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
@@ -72,6 +72,7 @@ class ViyaPreInstallCheck():
         self._workers = 0
         self._aggregate_nodeStatus_failures = 0
         self._ingress_controller = None
+        self._k8s_server_version = None
 
     def _parse_release_info(self, release_info):
         """
@@ -91,6 +92,65 @@ class ViyaPreInstallCheck():
             print(viya_messages.KUBELET_VERSION_ERROR)
             sys.exit(viya_messages.BAD_OPT_RC_)
 
+    def _validate_k8s_server_version(self, version):
+        """
+        Validate the major and minor parts of the kubernetes version.  The 3rd part is not specified in the Kubernetes
+        cluster requirements
+        """
+        version_parts_to_validate = 2
+        version_lst = version.split('.')
+        if (len(version_lst) < version_parts_to_validate):
+            self.logger.error(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
+            print(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
+            sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
+
+        for i in range(version_parts_to_validate):
+            if version_lst[i].startswith("0") or float(version_lst[i]) < 0:
+                self.logger.error(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
+                print(viya_messages.KUBERNETES_VERSION_ERROR.format(version))
+                sys.exit(viya_messages.INVALID_K8S_VERSION_RC_)
+            i += 1
+        return 0
+
+    def _retrieve_k8s_server_version(self, utils):
+        """
+        Retrieve the Kubernetes server version and validate the git version
+        """
+        try:
+            versions: Dict = utils.get_k8s_version()
+            server_version = versions.get('serverVersion')
+            git_version = str(server_version.get('gitVersion'))
+            self.logger.debug("git_version {} ".format(git_version))
+            # check git_version is not empty
+            if git_version and git_version.startswith("v"):
+                git_version = git_version[1:]
+            self._validate_k8s_server_version(git_version)
+
+            self.logger.info('Kubernetes Server version = {}'.format(git_version))
+            return git_version
+        except CalledProcessError as cpe:
+            self.logger.exception('kubectl version command failed. Return code = {}'.format(str(cpe.returncode)))
+            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
+
+    def _k8s_server_version_min(self):
+        """
+        Compare Kubernetes Version to the Minimum version expected. See
+        https://pypi.org/project/semantic_version/  2.8.5 initial version
+        """
+        try:
+            curr_version = semantic_version.Version(str(self._k8s_server_version))
+
+            if(curr_version in semantic_version.SimpleSpec(viya_constants.MIN_K8S_SERVER_VERSION)):
+                self.logger.error("This release of Kubernetes is not supported {}.{}.x"
+                                  .format(str(curr_version.major),
+                                          str(curr_version.minor)))
+                return False
+            else:
+                return True
+        except ValueError as cpe:
+            self.logger.exception(viya_messages.EXCEPTION_MESSAGE.format(str(cpe)))
+            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
+
     def check_details(self, kubectl, ingress_port, ingress_host, ingress_controller,
                       output_dir):
         self._ingress_controller = ingress_controller
@@ -109,6 +169,8 @@ class ViyaPreInstallCheck():
         pre_check_utils_params[viya_constants.KUBECTL] = self._kubectl
         pre_check_utils_params["logger"] = self.sas_logger
         utils = PreCheckUtils(pre_check_utils_params)
+
+        self._k8s_server_version = self._retrieve_k8s_server_version(utils)
 
         configs_data = self.get_config_info()
         cluster_info = self._get_master_json()
@@ -130,10 +192,21 @@ class ViyaPreInstallCheck():
         params[viya_constants.INGRESS_HOST] = str(ingress_host)
         params[viya_constants.INGRESS_PORT] = str(ingress_port)
         params[viya_constants.PERM_CLASS] = utils
+        params[viya_constants.SERVER_K8S_VERSION] = self._k8s_server_version
         params['logger'] = self.sas_logger
 
         permissions_check = PreCheckPermissions(params)
         self._check_permissions(permissions_check)
+
+        test_list = [viya_constants.INSUFFICIENT_PERMS, viya_constants.PERM_SKIPPING]
+
+        # Log Summary of Permissions Issues found
+        if(any(ele in str(permissions_check.get_cluster_admin_permission_aggregate()) for ele in test_list)):
+            self.logger.warn("WARN: Review Cluster Aggregate Report")
+        if(any(ele in str(permissions_check.get_namespace_admin_permission_aggregate()) for ele in test_list)):
+            self.logger.warn("WARN: Review Namespace Aggregate Report")
+        if(any(ele in str(permissions_check.get_namespace_admin_permission_data()) for ele in test_list)):
+            self.logger.warn("WARN: Review Namespace Permissions")
 
         self.generate_report(global_data, master_data, configs_data, storage_data, namespace_data,
                              permissions_check.get_cluster_admin_permission_data(),
@@ -389,8 +462,6 @@ class ViyaPreInstallCheck():
         permissions_check:  instance of PreCheckPermissions class
         """
         namespace = self._kubectl.get_namespace()
-        permissions_check.get_server_git_version()
-        permissions_check.set_ingress_manifest_file()
         permissions_check.get_sc_resources()
 
         permissions_check.manage_pvc(viya_constants.KUBECTL_APPLY, False)
@@ -518,6 +589,20 @@ class ViyaPreInstallCheck():
         global_data.append(global_nodes)
 
         self.logger.debug("global data{} time{}".format(pprint.pformat(global_data), time_string))
+        return global_data
+
+    def _update_k8s_version(self, global_data, git_version):
+        """Set the Cluster Kubernetes Version for the report in the global data list
+
+        global_data: List to be updated
+        return:  global_data list updated with Kubernetes Version to be added to the report
+        """
+        global_nodes = {}
+
+        global_nodes.update({'k8sVersion': str(git_version)})
+        global_data.append(global_nodes)
+
+        self.logger.debug("global data{} Kubernetes Version {}".format(pprint.pformat(global_data), git_version))
         return global_data
 
     def _check_cpu_errors(self, global_data, total_capacity_cpu_cores: float, aggregate_cpu_failures):
@@ -708,8 +793,6 @@ class ViyaPreInstallCheck():
         global_data: list of dictionary object with global data for nodes
         return:  return ist of dictionary objects with updated information and status
         """
-        self._min_kubelet_version = self._parse_release_info(self._viya_kubelet_version_min)
-
         aggregate_cpu_failures = int(0)
         aggregate_memory_failures = int(0)
         aggregate_kubelet_failures = int(0)
@@ -749,15 +832,18 @@ class ViyaPreInstallCheck():
                 self._set_status(0, node, 'capacityMemory')
                 node['error']['capacityMemory'] = "See below."
 
-            if self._release_in_range(kubeletversion):
+            if (self._k8s_server_version_min()):
                 self._set_status(0, node, 'kubeletversion')
+                self.logger.debug("node kubeletversion status 0 {} ".format(pprint.pformat(node)))
             else:
                 self._set_status(1, node, 'kubeletversion')
                 node['error']['kubeletversion'] = viya_constants.SET + ': ' + kubeletversion + ', ' + \
-                    str(viya_constants.EXPECTED) + ': ' + self._viya_kubelet_version_min + ' or later '
+                    str(viya_constants.EXPECTED) + ': ' + viya_constants.MIN_K8S_SERVER_VERSION[1:] + ' or later '
 
                 aggregate_kubelet_failures += 1
-                self.logger.debug("node {} ".format(pprint.pformat(node)))
+                self.logger.debug("aggregate_kubelet_failures {} ".format(str(aggregate_kubelet_failures)))
+                self.logger.debug("node kubeletversion{} ".format(pprint.pformat(node)))
+
         global_data = self._check_workers(global_data, nodes_data)
         global_data = self._set_time(global_data)
         global_data = self._check_cpu_errors(global_data, total_cpu_cores, aggregate_cpu_failures)
@@ -767,6 +853,7 @@ class ViyaPreInstallCheck():
         global_data = self._check_kubelet_errors(global_data, aggregate_kubelet_failures)
 
         global_data.append(nodes_data)
+        global_data = self._update_k8s_version(global_data, self._k8s_server_version)
         self.logger.debug("nodes_data {}".format(pprint.pformat(nodes_data)))
         return global_data
 
@@ -904,32 +991,6 @@ class ViyaPreInstallCheck():
         self.logger.debug("config view JSON{} return_code{}".format(str(config_json), str(return_code)))
         return config_json, return_code
 
-    def _release_in_range(self, kubeletversion):
-        """
-        Check if the current kublet version retrieved from the cluster nodes is equal to or greater
-        than the major/minor version specified in the viya_cluster_settings file
-
-        :param kubeletversion - current version in cluster node
-        :return True if version is within range. If not return False
-        """
-
-        try:
-            current = tuple(kubeletversion.split("."))
-
-            if int(current[0][1:]) > int(self._min_kubelet_version[0][1:]):
-                return True
-            if int(current[0][1:]) < int(self._min_kubelet_version[0][1:]):
-                return False
-            if int(current[0][1:]) == int(self._min_kubelet_version[0][1:]) and \
-                    (int(current[1]) >= int(self._min_kubelet_version[1])):
-                return True
-            return False
-        except ValueError:
-            print(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN", str(self._min_kubelet_version)))
-            self.logger.exception(viya_messages.LIMIT_ERROR.format("VIYA_KUBELET_VERSION_MIN",
-                                                                   str(self._min_kubelet_version)))
-            sys.exit(viya_messages.BAD_OPT_RC_)
-
     def _get_memory(self, limit, key, quantity_):
         """
         Check that the memory specified in the viya_cluster_settings file is valid. Exit if
@@ -990,6 +1051,9 @@ class ViyaPreInstallCheck():
 
     def get_calculated_aggregate_memory(self):
         return self._calculated_aggregate_memory
+
+    def set_k8s_version(self, version: Text):
+        self._k8s_server_version = version
 
     def generate_report(self,
                         global_data,
