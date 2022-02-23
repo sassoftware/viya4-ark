@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -60,3 +60,7 @@ PERM_CR_RBAC = "Custom Resource with RBAC "
 # Check cluster capacity for Memory against Percentage of Memory set in the viya_deployment_settings.ini
 VIYA_PERCENTAGE_OF_INSTANCE = "85"
 MEMORY_WITHIN_RANGE = " Memory within Range"
+SERVER_K8S_VERSION = "Server_k8s_version"
+
+# Any versions below this minimum are not supported
+MIN_K8S_SERVER_VERSION = '<1.20'

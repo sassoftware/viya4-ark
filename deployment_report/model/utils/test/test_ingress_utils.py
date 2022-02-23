@@ -233,6 +233,10 @@ def test_ignorable_for_controller_if_unavailable_nginx():
     assert ingress_util.ignorable_for_controller_if_unavailable(
         ingress_controller=SupportedIngress.Controllers.NGINX,
         resource_type=ResourceTypeValues.CONTOUR_HTTP_PROXIES)
+    # Ingress (v1beta1 - deprecated)
+    assert ingress_util.ignorable_for_controller_if_unavailable(
+        ingress_controller=SupportedIngress.Controllers.NGINX,
+        resource_type=ResourceTypeValues.K8S_EXTENSIONS_INGRESSES)
     # Route
     assert ingress_util.ignorable_for_controller_if_unavailable(
         ingress_controller=SupportedIngress.Controllers.NGINX,
@@ -248,9 +252,6 @@ def test_ignorable_for_controller_if_unavailable_nginx():
         ingress_controller=SupportedIngress.Controllers.NGINX,
         resource_type=ResourceTypeValues.K8S_CORE_PODS)
     # Ingress
-    assert not ingress_util.ignorable_for_controller_if_unavailable(
-        ingress_controller=SupportedIngress.Controllers.NGINX,
-        resource_type=ResourceTypeValues.K8S_EXTENSIONS_INGRESSES)
     assert not ingress_util.ignorable_for_controller_if_unavailable(
         ingress_controller=SupportedIngress.Controllers.NGINX,
         resource_type=ResourceTypeValues.K8S_NETWORKING_INGRESSES)
