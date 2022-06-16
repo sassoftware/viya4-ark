@@ -624,36 +624,23 @@ class PreCheckPermissions(object):
 
     def check_rbac_role(self):
         """
-        Check if RBAC is enabled in specified namespace
-        Create the Role and Rolebinding for the custom resource access with specified namespace. Set the
+        Check if RBAC is enabled in specified namespace.
+        Create the Role, Rolebinding, and Serviec account in the specified namespace. Set the
         permissions status in the namespace_admin_permission_data dict object.
 
         """
-        found = self.utils.get_rbac_group_cmd()
-        self.logger.debug("get_rbac_group_cmd found = {}, sample_deployment = {}"
-                          .format(str(found), str(self._sample_deployment)))
-        if found:
-            rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                                 'viya-role.yaml')
+        rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
+                                             'viya-role.yaml')
 
-            self._set_results_cluster_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLE, rc)
+        self._set_results_cluster_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLE, rc)
 
-            rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                                 'crservice_acct.yaml')
-            self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_SA, rc)
+        rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
+                                             'crservice_acct.yaml')
+        self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_SA, rc)
 
-            rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
-                                                 'viya-rolebinding.yaml')
-            self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLEBINDING, rc)
-        else:
-            self.logger.debug("sample_deployment = {}".format(str(self._sample_deployment)))
-            self.namespace_admin_permission_aggregate["RBAC Checking"] = viya_constants.PERM_SKIPPING
-            self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLE,
-                                              int(self._sample_deployment))
-            self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_SA,
-                                              int(self._sample_deployment))
-            self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLEBINDING,
-                                              int(self._sample_deployment))
+        rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
+                                             'viya-rolebinding.yaml')
+        self._set_results_namespace_admin(viya_constants.PERM_CREATE + viya_constants.PERM_ROLEBINDING, rc)
 
     def check_rbac_delete_role(self):
         """
