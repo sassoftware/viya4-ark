@@ -25,6 +25,7 @@ from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 _NGINX_VERSION_ = "nginx version:"
 _RELEASE_ = "Release:"
 
+
 def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
     """
     Determines the ingress controller being used in the Kubernetes cluster.
@@ -153,7 +154,7 @@ def get_version(kubectl: KubectlInterface) -> Optional[Text]:
                                          " -o jsonpath=\"{.spec.containers[].env[" +
                                          "?(@.name=='RELEASE_VERSION')].value}\"")
         version = version_str.decode()
-	
+
     elif kubectl.ingress_ns == SupportedIngress.Controllers.NS_CONTOUR:
         podname: AnyStr = kubectl.do("get pods -n " +
                                      kubectl.ingress_ns +
