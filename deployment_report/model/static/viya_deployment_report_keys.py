@@ -49,6 +49,7 @@ class ViyaDeploymentReportKeys(object):
         DB_INFO = "dbInfo"
         DISCOVERED_RESOURCE_TYPES_DICT = "discoveredResourceTypes"
         INGRESS_CTRL = "ingressController"
+        INGRESS_VER = "ingressVersion"
         NAMESPACE = "namespace"
         NODES_DICT = "nodes"
         SECRETS_DICT = "secrets"

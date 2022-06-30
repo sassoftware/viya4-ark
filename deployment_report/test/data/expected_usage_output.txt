@@ -1,4 +1,6 @@
-usage: viya-ark.py deployment-report [-h] [-d] [-k KUBECTL_GLOBAL_OPTS] [-l]
+usage: viya-ark.py deployment-report [-h] [-d]
+                                     [--ingress-namespace INGRESS_NAMESPACE]
+                                     [-k KUBECTL_GLOBAL_OPTS] [-l]
                                      [-n NAMESPACE] [-o OUTPUT_DIR] [-r]
 
 Generate a deployment report of SAS components for a target Kubernetes
@@ -7,6 +9,8 @@ environment.
 optional arguments:
   -h, --help            show this help message and exit
   -d, --data-file-only  Generate only the JSON-formatted data.
+  --ingress-namespace INGRESS_NAMESPACE
+                        Ingress namespace in the target cluster.
   -k KUBECTL_GLOBAL_OPTS, --kubectl-global-opts KUBECTL_GLOBAL_OPTS
                         Any kubectl global options to use with all executions
                         (excluding namespace, which should be set using -n,
