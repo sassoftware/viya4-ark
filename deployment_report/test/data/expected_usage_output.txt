@@ -1,5 +1,4 @@
-usage: viya-ark.py deployment-report [-h] [-d]
-                                     [--ingress-namespace INGRESS_NAMESPACE]
+usage: viya-ark.py deployment-report [-h] [-d] [-i INGRESS_NAMESPACE]
                                      [-k KUBECTL_GLOBAL_OPTS] [-l]
                                      [-n NAMESPACE] [-o OUTPUT_DIR] [-r]
 
@@ -9,7 +8,7 @@ environment.
 optional arguments:
   -h, --help            show this help message and exit
   -d, --data-file-only  Generate only the JSON-formatted data.
-  --ingress-namespace INGRESS_NAMESPACE
+  -i INGRESS_NAMESPACE, --ingress-namespace INGRESS_NAMESPACE
                         Ingress namespace in the target cluster.
   -k KUBECTL_GLOBAL_OPTS, --kubectl-global-opts KUBECTL_GLOBAL_OPTS
                         Any kubectl global options to use with all executions

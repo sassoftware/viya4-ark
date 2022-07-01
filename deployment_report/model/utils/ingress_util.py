@@ -111,7 +111,7 @@ def ignorable_for_controller_if_unavailable(ingress_controller: Text, resource_t
     return False
 
 
-def get_version(kubectl: KubectlInterface) -> Optional[Text]:
+def get_ingress_version(kubectl: KubectlInterface) -> Optional[Text]:
     """
     Retrieves ingress version used in the Kubernetes cluster
 

@@ -82,7 +82,7 @@ def main(argv: List):
         help="Generate only the JSON-formatted data.")
     # ingress namespace
     arg_parser.add_argument(
-        "--ingress-namespace", type=Text, default=None, dest="ingress_namespace",
+        "-i", "--ingress-namespace", type=Text, default=None, dest="ingress_namespace",
         help="Ingress namespace in the target cluster.")
     # kubectl-global-opts
     arg_parser.add_argument(
