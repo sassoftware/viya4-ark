@@ -277,6 +277,7 @@ class ViyaDeploymentReport(object):
         #######################################################################
         # default values in-case pods were not found
         ingress_controller: Optional[Text] = None
+        ingress_version: Optional[Text] = None
         unavailable_resources: List = list()
 
         # evaluate resources that would be gathered if pods were found
@@ -284,6 +285,13 @@ class ViyaDeploymentReport(object):
             # determine the ingress controller for the deployment
             # this will help to evaluate which resources should be considered "unavailable"
             ingress_controller = ingress_util.determine_ingress_controller(resource_cache)
+            if (
+                ingress_controller == SupportedIngress.Controllers.NGINX or
+                ingress_controller == SupportedIngress.Controllers.ISTIO or
+                ingress_controller == SupportedIngress.Controllers.OPENSHIFT or
+                ingress_controller == SupportedIngress.Controllers.CONTOUR
+               ):
+                ingress_version = ingress_util.get_ingress_version(kubectl)
 
             # determine if any resource types for which caching was attempted were unavailable
             # if at least one is unavailable, a message will be displayed saying that components may not be complete
@@ -360,6 +368,9 @@ class ViyaDeploymentReport(object):
 
         # create a key to mark the determined ingress controller for the cluster: str|None
         k8s_details_dict[Keys.Kubernetes.INGRESS_CTRL]: Optional[Text] = ingress_controller
+
+        # create a key to mark the determined ingress version for the cluster: str|None
+        k8s_details_dict[Keys.Kubernetes.INGRESS_VER]: Optional[Text] = ingress_version
 
         # create a key to mark the namespace evaluated for this report: str|None
         k8s_details_dict[Keys.Kubernetes.NAMESPACE] = kubectl.get_namespace()

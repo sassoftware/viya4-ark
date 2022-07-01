@@ -27,6 +27,10 @@ class SupportedIngress(object):
         ISTIO = "Istio"
         NGINX = "NGINX"
         OPENSHIFT = "OpenShift"
+        NS_CONTOUR = "projectcontour"
+        NS_ISTIO = "istio-system"
+        NS_NGINX = "ingress-nginx"
+        NS_OPENSHIFT = "openshift-ingress-operator"
 
     @staticmethod
     def get_ingress_controller_to_resource_types_map() -> Dict[Text, List[Text]]:

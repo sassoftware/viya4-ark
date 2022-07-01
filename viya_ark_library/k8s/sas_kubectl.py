@@ -18,6 +18,7 @@ from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesAvailableResourceTypes, KubernetesMetrics, KubernetesResource
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
+from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 
 # header values used in retrieving values returned by kubectl
 _HEADER_NAME_ = "NAME"
@@ -28,6 +29,9 @@ _HEADER_NAMESPACED_ = "NAMESPACED"
 _HEADER_KIND_ = "KIND"
 _HEADER_VERBS_ = "VERBS"
 
+# constants values
+_DO_MSG_ = "command_fail_ignored"
+
 
 class Kubectl(KubectlInterface):
     """
@@ -35,7 +39,8 @@ class Kubectl(KubectlInterface):
     execute requests to a Kubernetes cluster via functionality provided by the command-line utility.
     """
 
-    def __init__(self, executable: Text = "kubectl", namespace: Text = None, global_opts: Text = "") -> None:
+    def __init__(self, executable: Text = "kubectl", namespace: Text = None, global_opts: Text = "",
+                 ingress_namespace: Text = None) -> None:
         """
         Constructor for Kubectl class.
 
@@ -72,6 +77,28 @@ class Kubectl(KubectlInterface):
             try:
                 # get the list of all namespaces
                 existing_namespaces: List[KubernetesResource] = self.get_resources("namespaces")
+
+                # initialize values
+                self.ingress_ns = None
+
+                # get ingress namespace
+                if ingress_namespace is not None:
+                    ns: AnyStr = self.do("get namespace " + ingress_namespace, ignore_errors=True, warning=False)
+                    if len(ns) > 0:
+                        raise NamespaceNotFoundError(
+                            f"The ingress namespace [{ingress_namespace}] was not found in the target environment.")
+                    self.ingress_ns = ingress_namespace
+                else:
+                    for x in range(len(existing_namespaces)):
+                        ns: AnyStr = existing_namespaces[x].get_name()
+                        if (
+                            ns == SupportedIngress.Controllers.NS_CONTOUR or
+                            ns == SupportedIngress.Controllers.NS_ISTIO or
+                            ns == SupportedIngress.Controllers.NS_NGINX or
+                            ns == SupportedIngress.Controllers.NS_OPENSHIFT
+                           ):
+                            self.ingress_ns = ns
+                            break
 
                 # loop over all existing namespaces and check for the given namespace
                 for existing_namespace in existing_namespaces:
@@ -125,8 +152,8 @@ class Kubectl(KubectlInterface):
     def get_namespace(self) -> Text:
         return self.namespace
 
-    def do(self, command: Text, ignore_errors: bool = False, success_rcs: Optional[List[int]] = None) \
-            -> AnyStr:
+    def do(self, command: Text, ignore_errors: bool = False, success_rcs: Optional[List[int]] = None,
+           warning: bool = True) -> AnyStr:
         # set default return code list if one was not provided
         if success_rcs is None:
             success_rcs = [0]
@@ -145,8 +172,12 @@ class Kubectl(KubectlInterface):
             if not ignore_errors:
                 raise CalledProcessError(returncode=rc, cmd=f"{self.exec} {command}", output=stdout, stderr=stderr)
             else:
-                print(f"WARNING: Error encountered executing: {self.exec} {command} "
-                      f"(rc: {rc} | stdout: {stdout} | stderr: {stderr})")
+                if warning:
+                    print(f"WARNING: Error encountered executing: {self.exec} {command} "
+                          f"(rc: {rc} | stdout: {stdout} | stderr: {stderr})")
+                else:
+                    if len(stdout) == 0:
+                        stdout = _DO_MSG_
 
         # return the stdout
         return stdout
