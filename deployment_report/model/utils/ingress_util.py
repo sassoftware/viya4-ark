@@ -122,7 +122,7 @@ def get_ingress_version(kubectl: KubectlInterface) -> Optional[Text]:
     version: Text = ""
     getpod_cmd: AnyStr = "get pods -n " + kubectl.ingress_ns + \
                          " --field-selector=status.phase==Running" + \
-                         " -o jsonpath='{.items[0].metadata.name}'"
+                         " -o jsonpath=\"{.items[0].metadata.name}\""
 
     if kubectl.ingress_ns == SupportedIngress.Controllers.NS_NGINX:
         podname: AnyStr = kubectl.do(getpod_cmd +
@@ -159,7 +159,7 @@ def get_ingress_version(kubectl: KubectlInterface) -> Optional[Text]:
                                      " -l app=envoy")
         version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                          " -n " + kubectl.ingress_ns +
-                                         " -o jsonpath='{.spec.containers[*].image}'")
+                                         " -o jsonpath=\"{.spec.containers[*].image}\"")
         version_list: List = version_str.decode().split(' ')
         for v in version_list:
             if version:
