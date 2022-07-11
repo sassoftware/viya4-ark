@@ -120,12 +120,13 @@ def get_ingress_version(kubectl: KubectlInterface) -> Optional[Text]:
     """
 
     version: Text = ""
+    getpod_cmd: AnyStr = "get pods -n " + kubectl.ingress_ns + \
+                         " --field-selector=status.phase==Running" + \
+                         " -o jsonpath='{.items[0].metadata.name}'"
 
     if kubectl.ingress_ns == SupportedIngress.Controllers.NS_NGINX:
-        podname: AnyStr = kubectl.do("get pods -n " +
-                                     kubectl.ingress_ns +
-                                     " -l app.kubernetes.io/component=controller" +
-                                     " -o jsonpath='{.items[0].metadata.name}'")
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l app.kubernetes.io/component=controller")
         version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
                                          " -n " + kubectl.ingress_ns +
                                          " -- /nginx-ingress-controller --version")
@@ -137,18 +138,16 @@ def get_ingress_version(kubectl: KubectlInterface) -> Optional[Text]:
                 version = version + ", " + v.split()[-1]
 
     elif kubectl.ingress_ns == SupportedIngress.Controllers.NS_ISTIO:
-        podname: AnyStr = kubectl.do("get pods -n " + kubectl.ingress_ns +
-                                     " -l  app=istiod" +
-                                     " -o jsonpath='{.items[0].metadata.name}'")
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l  app=istiod")
         version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
                                          " -n " + kubectl.ingress_ns +
                                          " -- pilot-discovery version --short")
         version = version_str.decode()
 
     elif kubectl.ingress_ns == SupportedIngress.Controllers.NS_OPENSHIFT:
-        podname: AnyStr = kubectl.do("get pods -n " + kubectl.ingress_ns +
-                                     " -l  name=ingress-operator" +
-                                     " -o jsonpath='{.items[0].metadata.name}'")
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l  name=ingress-operator")
         version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                          " -n " + kubectl.ingress_ns +
                                          " -o jsonpath=\"{.spec.containers[].env[" +
@@ -156,10 +155,8 @@ def get_ingress_version(kubectl: KubectlInterface) -> Optional[Text]:
         version = version_str.decode()
 
     elif kubectl.ingress_ns == SupportedIngress.Controllers.NS_CONTOUR:
-        podname: AnyStr = kubectl.do("get pods -n " +
-                                     kubectl.ingress_ns +
-                                     " -l app=envoy" +
-                                     " -o jsonpath='{.items[0].metadata.name}'")
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l app=envoy")
         version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                          " -n " + kubectl.ingress_ns +
                                          " -o jsonpath='{.spec.containers[*].image}'")
