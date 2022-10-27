@@ -1,0 +1,565 @@
+[
+    {
+        "apiVersion": "postgres-operator.crunchydata.com/v1beta1",
+        "kind": "PostgresCluster",
+        "metadata": {
+            "annotations": {
+                "kubectl.kubernetes.io/last-applied-configuration": ""
+            },
+            "creationTimestamp": "2022-09-29T18:07:44Z",
+            "finalizers": [
+                "postgres-operator.crunchydata.com/finalizer"
+            ],
+            "generation": 1,
+            "labels": {
+                "sas.com/admin": "namespace",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-crunchy-platform-postgres",
+            "namespace": "test",
+            "resourceVersion": "62473",
+            "uid": "2ff47dfe-bc15-4bcc-be82-9255bf5dd11e"
+        },
+        "spec": {
+            "backups": {
+                "pgbackrest": {
+                    "global": {
+                        "repo1-retention-archive": "1",
+                        "repo1-retention-archive-type": "incr",
+                        "repo1-retention-full": "1"
+                    },
+                    "image": "test.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy5-pgbackrest:1.0.2-20220901.1662054072169",
+                    "jobs": {
+                        "affinity": {
+                            "nodeAffinity": {
+                                "preferredDuringSchedulingIgnoredDuringExecution": [
+                                    {
+                                        "preference": {
+                                            "matchExpressions": [
+                                                {
+                                                    "key": "workload.sas.com/class",
+                                                    "operator": "In",
+                                                    "values": [
+                                                        "stateful"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "weight": 100
+                                    },
+                                    {
+                                        "preference": {
+                                            "matchExpressions": [
+                                                {
+                                                    "key": "workload.sas.com/class",
+                                                    "operator": "NotIn",
+                                                    "values": [
+                                                        "compute",
+                                                        "cas",
+                                                        "stateless",
+                                                        "connect"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "weight": 50
+                                    }
+                                ],
+                                "requiredDuringSchedulingIgnoredDuringExecution": {
+                                    "nodeSelectorTerms": [
+                                        {
+                                            "matchExpressions": [
+                                                {
+                                                    "key": "kubernetes.azure.com/mode",
+                                                    "operator": "NotIn",
+                                                    "values": [
+                                                        "system"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "500Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "256Mi"
+                            }
+                        },
+                        "tolerations": [
+                            {
+                                "effect": "NoSchedule",
+                                "key": "workload.sas.com/class",
+                                "operator": "Equal",
+                                "value": "stateful"
+                            },
+                            {
+                                "effect": "NoSchedule",
+                                "key": "workload.sas.com/class",
+                                "operator": "Equal",
+                                "value": "stateless"
+                            }
+                        ]
+                    },
+                    "repoHost": {
+                        "affinity": {
+                            "nodeAffinity": {
+                                "preferredDuringSchedulingIgnoredDuringExecution": [
+                                    {
+                                        "preference": {
+                                            "matchExpressions": [
+                                                {
+                                                    "key": "workload.sas.com/class",
+                                                    "operator": "In",
+                                                    "values": [
+                                                        "stateful"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "weight": 100
+                                    },
+                                    {
+                                        "preference": {
+                                            "matchExpressions": [
+                                                {
+                                                    "key": "workload.sas.com/class",
+                                                    "operator": "NotIn",
+                                                    "values": [
+                                                        "compute",
+                                                        "cas",
+                                                        "stateless",
+                                                        "connect"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "weight": 50
+                                    }
+                                ],
+                                "requiredDuringSchedulingIgnoredDuringExecution": {
+                                    "nodeSelectorTerms": [
+                                        {
+                                            "matchExpressions": [
+                                                {
+                                                    "key": "kubernetes.azure.com/mode",
+                                                    "operator": "NotIn",
+                                                    "values": [
+                                                        "system"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            }
+                        },
+                        "resources": {
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "500Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "256Mi"
+                            }
+                        },
+                        "tolerations": [
+                            {
+                                "effect": "NoSchedule",
+                                "key": "workload.sas.com/class",
+                                "operator": "Equal",
+                                "value": "stateful"
+                            },
+                            {
+                                "effect": "NoSchedule",
+                                "key": "workload.sas.com/class",
+                                "operator": "Equal",
+                                "value": "stateless"
+                            }
+                        ]
+                    },
+                    "repos": [
+                        {
+                            "name": "repo1",
+                            "schedules": {
+                                "full": "0 6 * * 0",
+                                "incremental": "0 6 * * 1-6"
+                            },
+                            "volume": {
+                                "volumeClaimSpec": {
+                                    "accessModes": [
+                                        "ReadWriteOnce"
+                                    ],
+                                    "resources": {
+                                        "requests": {
+                                            "storage": "128Gi"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    "sidecars": {
+                        "pgbackrest": {
+                            "resources": {
+                                "limits": {
+                                    "cpu": "1",
+                                    "memory": "500Mi"
+                                },
+                                "requests": {
+                                    "cpu": "100m",
+                                    "memory": "256Mi"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "customReplicationTLSSecret": {
+                "name": "sas-crunchy-platform-postgres-replication-tls-secret"
+            },
+            "customTLSSecret": {
+                "name": "sas-crunchy-platform-postgres-tls-secret"
+            },
+            "image": "test.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy5-postgres:1.0.2-20220901.1662054048918",
+            "imagePullSecrets": [
+                {
+                    "name": "sas-image-pull-secrets-f82b98k5t2"
+                }
+            ],
+            "instances": [
+                {
+                    "affinity": {
+                        "nodeAffinity": {
+                            "preferredDuringSchedulingIgnoredDuringExecution": [
+                                {
+                                    "preference": {
+                                        "matchExpressions": [
+                                            {
+                                                "key": "workload.sas.com/class",
+                                                "operator": "In",
+                                                "values": [
+                                                    "stateful"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "weight": 100
+                                },
+                                {
+                                    "preference": {
+                                        "matchExpressions": [
+                                            {
+                                                "key": "workload.sas.com/class",
+                                                "operator": "NotIn",
+                                                "values": [
+                                                    "compute",
+                                                    "cas",
+                                                    "stateless",
+                                                    "connect"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "weight": 50
+                                }
+                            ],
+                            "requiredDuringSchedulingIgnoredDuringExecution": {
+                                "nodeSelectorTerms": [
+                                    {
+                                        "matchExpressions": [
+                                            {
+                                                "key": "kubernetes.azure.com/mode",
+                                                "operator": "NotIn",
+                                                "values": [
+                                                    "system"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "dataVolumeClaimSpec": {
+                        "accessModes": [
+                            "ReadWriteOnce"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "storage": "128Gi"
+                            }
+                        }
+                    },
+                    "name": "",
+                    "replicas": 3,
+                    "resources": {
+                        "limits": {
+                            "cpu": "8",
+                            "memory": "8Gi"
+                        },
+                        "requests": {
+                            "cpu": "150m",
+                            "memory": "2Gi"
+                        }
+                    },
+                    "sidecars": {
+                        "replicaCertCopy": {
+                            "resources": {
+                                "limits": {
+                                    "cpu": "1",
+                                    "memory": "500Mi"
+                                },
+                                "requests": {
+                                    "cpu": "100m",
+                                    "memory": "256Mi"
+                                }
+                            }
+                        }
+                    },
+                    "tolerations": [
+                        {
+                            "effect": "NoSchedule",
+                            "key": "workload.sas.com/class",
+                            "operator": "Equal",
+                            "value": "stateful"
+                        },
+                        {
+                            "effect": "NoSchedule",
+                            "key": "workload.sas.com/class",
+                            "operator": "Equal",
+                            "value": "stateless"
+                        }
+                    ]
+                }
+            ],
+            "metadata": {
+                "annotations": {
+                    "seccomp.security.alpha.kubernetes.io/pod": "runtime/default"
+                },
+                "labels": {
+                    "sas.com/deployment": "sas-viya",
+                    "sas.com/zero-scale-phase": "never",
+                    "workload.sas.com/class": "stateful"
+                }
+            },
+            "monitoring": {
+                "pgmonitor": {
+                    "exporter": {
+                        "image": "test.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy5-postgres-exporter:1.0.3-20220926.1664209426020",
+                        "resources": {
+                            "limits": {
+                                "cpu": "1",
+                                "memory": "500Mi"
+                            },
+                            "requests": {
+                                "cpu": "100m",
+                                "memory": "256Mi"
+                            }
+                        }
+                    }
+                }
+            },
+            "patroni": {
+                "dynamicConfiguration": {
+                    "postgresql": {
+                        "parameters": {
+                            "log_truncate_on_rotation": true,
+                            "logging_collector": true,
+                            "maintenance_work_mem": "128MB",
+                            "max_connections": 1280,
+                            "max_prepared_transactions": 1280,
+                            "max_wal_senders": 6,
+                            "max_wal_size": "6GB",
+                            "shared_buffers": "1GB",
+                            "wal_buffers": "16MB",
+                            "wal_keep_segments": 500,
+                            "wal_level": "minimal",
+                            "wal_log_hints": true,
+                            "work_mem": "16MB"
+                        },
+                        "use_pg_rewind": true
+                    }
+                },
+                "leaderLeaseDurationSeconds": 30,
+                "port": 8008,
+                "syncPeriodSeconds": 10
+            },
+            "port": 5432,
+            "postgresVersion": 12,
+            "userInterface": {
+                "pgAdmin": {
+                    "affinity": {
+                        "nodeAffinity": {
+                            "preferredDuringSchedulingIgnoredDuringExecution": [
+                                {
+                                    "preference": {
+                                        "matchExpressions": [
+                                            {
+                                                "key": "workload.sas.com/class",
+                                                "operator": "In",
+                                                "values": [
+                                                    "stateful"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "weight": 100
+                                },
+                                {
+                                    "preference": {
+                                        "matchExpressions": [
+                                            {
+                                                "key": "workload.sas.com/class",
+                                                "operator": "NotIn",
+                                                "values": [
+                                                    "compute",
+                                                    "cas",
+                                                    "stateless",
+                                                    "connect"
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    "weight": 50
+                                }
+                            ],
+                            "requiredDuringSchedulingIgnoredDuringExecution": {
+                                "nodeSelectorTerms": [
+                                    {
+                                        "matchExpressions": [
+                                            {
+                                                "key": "kubernetes.azure.com/mode",
+                                                "operator": "NotIn",
+                                                "values": [
+                                                    "system"
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "dataVolumeClaimSpec": {
+                        "accessModes": [
+                            "ReadWriteOnce"
+                        ],
+                        "resources": {
+                            "requests": {
+                                "storage": "1Gi"
+                            }
+                        }
+                    },
+                    "image": "test.sas.com/viya-4-x64_oci_linux_2-docker-testready/sas-crunchy5-pgadmin:1.0.2-20220901.1662054069256",
+                    "replicas": 1,
+                    "resources": {
+                        "limits": {
+                            "cpu": "500m",
+                            "memory": "500Mi"
+                        },
+                        "requests": {
+                            "cpu": "50m",
+                            "memory": "50Mi"
+                        }
+                    },
+                    "tolerations": [
+                        {
+                            "effect": "NoSchedule",
+                            "key": "workload.sas.com/class",
+                            "operator": "Equal",
+                            "value": "stateful"
+                        },
+                        {
+                            "effect": "NoSchedule",
+                            "key": "workload.sas.com/class",
+                            "operator": "Equal",
+                            "value": "stateless"
+                        }
+                    ]
+                }
+            },
+            "users": [
+                {
+                    "name": "dbmsowner",
+                    "options": "CREATEDB CREATEROLE SUPERUSER",
+                    "password": {
+                        "type": "AlphaNumeric"
+                    }
+                }
+            ]
+        },
+        "status": {
+            "conditions": [
+                {
+                    "lastTransitionTime": "2022-09-29T18:15:23Z",
+                    "message": "pgBackRest dedicated repository host is ready",
+                    "observedGeneration": 1,
+                    "reason": "RepoHostReady",
+                    "status": "True",
+                    "type": "PGBackRestRepoHostReady"
+                },
+                {
+                    "lastTransitionTime": "2022-09-29T18:15:29Z",
+                    "message": "pgBackRest replica create repo is ready for backups",
+                    "observedGeneration": 1,
+                    "reason": "StanzaCreated",
+                    "status": "True",
+                    "type": "PGBackRestReplicaRepoReady"
+                },
+                {
+                    "lastTransitionTime": "2022-09-29T18:09:46Z",
+                    "message": "pgBackRest replica creation is not currently possible",
+                    "observedGeneration": 1,
+                    "reason": "RepoBackupNotComplete",
+                    "status": "False",
+                    "type": "PGBackRestReplicaCreate"
+                }
+            ],
+            "databaseRevision": "559678bf8f",
+            "instances": [
+                {
+                    "name": "00",
+                    "readyReplicas": 3,
+                    "replicas": 3,
+                    "updatedReplicas": 3
+                }
+            ],
+            "monitoring": {
+                "exporterConfiguration": "74cd546f8b"
+            },
+            "observedGeneration": 1,
+            "patroni": {
+                "systemIdentifier": "7148866271475249228"
+            },
+            "pgbackrest": {
+                "repoHost": {
+                    "apiVersion": "apps/v1",
+                    "kind": "StatefulSet",
+                    "ready": true
+                },
+                "repos": [
+                    {
+                        "bound": true,
+                        "name": "repo1",
+                        "stanzaCreated": true,
+                        "volume": "pvc-c32c11f1-3133-48a5-9e22-0760cc8ecf3f"
+                    }
+                ]
+            },
+            "proxy": {
+                "pgBouncer": {
+                    "postgresRevision": "5c9966f6bc"
+                }
+            },
+            "usersRevision": "5c65959f95"
+        }
+    }
+]

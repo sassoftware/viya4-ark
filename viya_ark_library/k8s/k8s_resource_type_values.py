@@ -66,6 +66,9 @@ class KubernetesResourceTypeValues(object):
     SAS_GROUP_WEBINFDSVR_SAS_COM = "webinfdsvr.sas.com"
     SAS_PGCLUSTERS = f"pgclusters.{SAS_GROUP_WEBINFDSVR_SAS_COM}"
 
+    SAS_GROUP_CRUNCHYDATA_COM = "postgres-operator.crunchydata.com"
+    SAS_CRUNCHYCLUSTERS = f"postgresclusters.{SAS_GROUP_CRUNCHYDATA_COM}"
+
     ##############################
     # Third-Party Resources
     ##############################
