@@ -237,5 +237,23 @@
             "watch"
         ],
         "version": "v1"
+    },
+    "postgresclusters.postgres-operator.crunchydata.com": {
+        "group": "postgres-operator.crunchydata.com",
+        "kind": "PostgresCluster",
+        "name": "postgresclusters",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ],
+        "version": "v1"
     }
 }

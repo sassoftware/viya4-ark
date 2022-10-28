@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -47,6 +47,7 @@ _INTERNAL_DB_ = "Internal"
 _UNSUPPORTED_DB_ = "Unsupported"
 _CRUNCH_DB_ = "crunch"
 _CRUNCHDATA_DB_ = "sas-crunchy-data-"
+_CRUNCH5DATA_DB_ = "sas-crunchy-platform-"
 _ALT_DB_ = "sas.database.alternative.databaseServerName"
 _UNAVAIL_DB_ = "not available"
 
@@ -116,6 +117,10 @@ def get_db_info(resource_cache: Dict) -> Dict:
     if not resource_cache:
         return None
 
+    if ResourceTypeValues.SAS_CRUNCHYCLUSTERS in resource_cache.keys():
+        pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_CRUNCHYCLUSTERS][ITEMS_KEY]
+        db_dict = _get_db_info_v3(pgclusters)
+
     if ResourceTypeValues.SAS_PGCLUSTERS in resource_cache.keys():
         pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_PGCLUSTERS][ITEMS_KEY]
         db_dict = _get_db_info_v2(pgclusters)
@@ -184,6 +189,51 @@ def _get_db_info_v1(config_maps: Dict) -> Dict:
                 db_name = _DBNAME_CPSPOSTGRES_
 
             db_dict[db_name] = dbs
+
+    return db_dict
+
+
+def _get_db_info_v3(pgclusters: Dict) -> Dict:
+    """
+    Returns the db information of the targeted SAS deployment.
+
+    :param pgclusters: The pgclusters resource to evaluate.
+    :return: A dictionary representing the db information of the targeted SAS deployment.
+    """
+    # initialize the return value
+    db_dict: Dict = dict()
+    for key in pgclusters:
+        try:
+            resource_definition = pgclusters[key][Keys.ResourceDetails.RESOURCE_DEFINITION]
+
+            db_name: Optional[Text] = resource_definition.get_name()
+            db_data: Optional[Dict] = resource_definition.get_spec()
+
+            if not db_data:
+                continue
+
+            dbs: Dict = dict()
+
+            try:
+                if (db_data['port']):
+                    dbs = {Keys.DatabaseDetails.DBTYPE: _INTERNAL_DB_}
+                else:
+                    dbs = {
+                        Keys.DatabaseDetails.DBTYPE: _EXTERNAL_DB_,
+                        Keys.DatabaseDetails.DBCONN: _UNAVAIL_DB_
+                    }
+            except KeyError:
+                continue
+
+            if dbs:
+                # convert db_name to be aligned
+                if _CRUNCH5DATA_DB_ in db_name:
+                    db_name = db_name.replace(_CRUNCH5DATA_DB_, "")
+
+                db_dict[db_name] = dbs
+
+        except KeyError:
+            continue
 
     return db_dict
 
