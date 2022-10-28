@@ -30,8 +30,11 @@ EXCEPTION_MESSAGE = "ERROR: {}"
 KUBECONF_FILE_ERROR = "ERROR: The file specified in the KUBECONFIG environment does not exist. " \
                       "Check that file {} exists."
 KUBERNETES_VERSION_ERROR = "Kubernetes version is missing or invalid: {}"
-CLUSTER_CREATION_INFO = "** SAS recommends using the IaC tools to create the cluster. See SAS Viya 4 Infrastructure as Code (IaC) project for Microsoft Azure, AWS, GCP and Open Source Kubernetes. Refer to SAS Viya Documentation for OpenShift."
-SIZINGS_INFO = "** Also refer to SAS Viya Documentation for Sizing Recommendations for Microsoft Azure, AWS, GCP, Open Source Kubernetes and OpenShift."
+CLUSTER_CREATION_INFO = "** SAS recommends using the IaC tools to create the cluster. See SAS Viya 4 " \
+                        "Infrastructure as Code (IaC) project for Microsoft Azure, AWS, GCP and " \
+                        "Open Source Kubernetes. Refer to SAS Viya Documentation for OpenShift."
+SIZINGS_INFO = "** Also refer to SAS Viya Documentation for Sizing Recommendations for Microsoft Azure, AWS, " \
+               "GCP, Open Source Kubernetes and OpenShift."
 
 # command line return codes #
 SUCCESS_RC_ = 0
