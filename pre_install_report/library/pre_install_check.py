@@ -1092,7 +1092,9 @@ class ViyaPreInstallCheck():
                     namespace_admin_permission_data=namespace_admin_permission_data.items(),
                     ingress_data=ingress_data.items(),
                     namespace_admin_permission_aggregate=ns_admin_permission_aggregate['Permissions'],
-                    cluster_admin_permission_aggregate=cluster_admin_permission_aggregate['Permissions'])
+                    cluster_admin_permission_aggregate=cluster_admin_permission_aggregate['Permissions'],
+                    cluster_creation_info=viya_messages.CLUSTER_CREATION_INFO,
+                    sizings_info=viya_messages.SIZINGS_INFO)
 
         print("Created: {}".format(report_file_path))
         print("Created: {}".format(output_directory + _REPORT_LOG_NAME_TMPL_.format(file_timestamp)))
