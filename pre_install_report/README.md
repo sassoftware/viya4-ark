@@ -10,7 +10,8 @@ Kubernetes may orchestrate once Viya is deployed.  The report and the informatio
 be considered a snapshot in time.  
 
 The Kubernetes cluster for a SAS Viya deployment must meet the requirements documented in [SAS® Viya® Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
-Ensure that the Kubernetes version is within the documented range for the selected cloud provider.  If the Kubernetes server version is below a current default minimum, a warning will be included in the report.
+Ensure that the Kubernetes version is within the documented range for the selected cloud provider.  
+If the Kubernetes server version is below the default minimum, a warning will be included in the report.
 
 
 ### Memory and vCPU Check
@@ -147,7 +148,7 @@ You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_deploym
 minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
 
 If you modify the VIYA_K8S_VERSION_MIN to a version less than the minimum Kubernetes version supported by this 
-release of the report tool, you are operatiing outside the supported capabilities of the report tool.  It is better 
+release of the report tool, you are operating outside the supported capabilities of the report tool.  It is better 
 to use a release of Viya 4 ARK tools matching the required minimum you may be working with. 
 
 ## Known Issues
