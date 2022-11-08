@@ -20,7 +20,7 @@ KUBECONF_ERROR = "ERROR: KUBECONFIG environment var must be set for the script "
                 "to access the Kubernetes cluster."
 CHECK_NAMESPACE = ' ERROR: Check available permissions in namespace and if it is valid: '
 LIMIT_ERROR = 'ERROR: The value in the viya_deployment_settings.ini file is not valid: {} = {}'
-KUBELET_VERSION_ERROR = 'ERROR: Check the VIYA_KUBELET_VERSION_MIN value ' \
+KUBELET_VERSION_ERROR = 'ERROR: Check the VIYA_K8S_VERSION_MIN value ' \
                         'specified in the pre_install_report/viya_deployment_settings.ini file'
 OPTION_ERROR = "ERROR: option {} not recognized"
 OPTION_VALUES_ERROR = "ERROR: Provide valid values for all required options. Check options -i, -p and -H."

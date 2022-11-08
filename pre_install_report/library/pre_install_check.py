@@ -55,7 +55,7 @@ class ViyaPreInstallCheck():
     The gathered data can be written to disk as an HTML report and a JSON file containing the gathered data.
     """
 
-    def __init__(self, sas_logger: ViyaARKLogger, viya_kubelet_version_min,
+    def __init__(self, sas_logger: ViyaARKLogger, viya_k8s_version_min,
                  viya_min_aggregate_worker_CPU_cores,
                  viya_min_aggregate_worker_memory):
         """
@@ -65,7 +65,8 @@ class ViyaPreInstallCheck():
         self._kubectl: KubectlInterface = None
         self.sas_logger = sas_logger
         self.logger = self.sas_logger.get_logger()
-        self._viya_kubelet_version_min = viya_kubelet_version_min
+        self._viya_k8s_version_min = viya_k8s_version_min
+        self._validated_kubernetes_version_min = None
         self._viya_min_aggregate_worker_CPU_cores: Text = viya_min_aggregate_worker_CPU_cores
         self._viya_min_aggregate_worker_memory: Text = viya_min_aggregate_worker_memory
         self._calculated_aggregate_memory = None
@@ -76,19 +77,24 @@ class ViyaPreInstallCheck():
 
     def _parse_release_info(self, release_info):
         """
-        This method checks that the format of the VIYA_KUBELET_VERSION_MIN specfied in the
-        user modifiable properies file is valid.
+        This method checks that the format of the VIYA_K8s_VERSION_MIN specified in the
+        user modifiable ini file is valid.
 
-        :param release_info: The minimum Kubelet version loaded from properties file.
-        :return tuple of major version, minor version, patch
+        :param release_info: The minimum K8s version loaded from ini file.
+        :return tuple of major version, minor version
         """
         try:
             info = tuple(release_info.split("."))
-            return info
+            if (len(info) == 2):
+                x = [int(i) for a, i in enumerate(info)]
+                self.logger.debug('release tuple to int {} '.format(x))
+                k8s_min_rel_str = ''.join(release_info)
+                self._validated_kubernetes_version_min = k8s_min_rel_str
+            else:
+                print('****' + viya_messages.KUBELET_VERSION_ERROR)
+                sys.exit(viya_messages.BAD_OPT_RC_)
+
         except ValueError:
-            print(viya_messages.KUBELET_VERSION_ERROR)
-            sys.exit(viya_messages.BAD_OPT_RC_)
-        if (len(info) != 3):
             print(viya_messages.KUBELET_VERSION_ERROR)
             sys.exit(viya_messages.BAD_OPT_RC_)
 
@@ -140,7 +146,10 @@ class ViyaPreInstallCheck():
         try:
             curr_version = semantic_version.Version(str(self._k8s_server_version))
 
-            if(curr_version in semantic_version.SimpleSpec(viya_constants.MIN_K8S_SERVER_VERSION)):
+            self._parse_release_info(self._viya_k8s_version_min)
+            min_k8s_version = "<" + self._validated_kubernetes_version_min
+
+            if(curr_version in semantic_version.SimpleSpec(min_k8s_version)):
                 self.logger.error("This release of Kubernetes is not supported {}.{}.x"
                                   .format(str(curr_version.major),
                                           str(curr_version.minor)))
@@ -683,26 +692,26 @@ class ViyaPreInstallCheck():
         global_data.append(aggregate_memory_data)
         return global_data
 
-    def _check_kubelet_errors(self, global_data, aggregate_kubelet_failures):
+    def _check_k8s_errors(self, global_data, aggregate_k8s_failures):
         """
-        Check kubelet version against SAS kubelet version requirements
+        Check Server k8s version against SAS k8s version requirements
 
         global_data: list with global data about worker nodes retrieved
-        aggregate_kubelet_failures:  count of kubelet version errors
+        aggregate_k8s_failures:  count of k8s version errors
         return: updated global data about worker nodes retrieved
         """
-        aggregate_kubelet_data = {}
+        aggregate_k8s_data = {}
         node_status_msg = ""
         if self._aggregate_nodeStatus_failures > 0:
             node_status_msg = " Check Node(s). All Nodes NOT in Ready Status." \
                               + ' Issues Found: ' + str(self._aggregate_nodeStatus_failures)
-        aggregate_kubelet_data.update({'aggregate_kubelet_failures': node_status_msg})
-        if aggregate_kubelet_failures > 0:
-            aggregate_kubelet_data.update({'aggregate_kubelet_failures':
-                                           'Check Kubelet Version on nodes.' +
-                                           ' Issues Found: ' + str(aggregate_kubelet_failures) +
-                                           '.' + node_status_msg})
-        global_data.append(aggregate_kubelet_data)
+        aggregate_k8s_data.update({'aggregate_k8s_failures': node_status_msg})
+        if aggregate_k8s_failures > 0:
+            aggregate_k8s_data.update({'aggregate_k8s_failures:':
+                                       'Check K8s Version on nodes.' +
+                                       ' Issues Found: ' + str(aggregate_k8s_failures) +
+                                       '.' + node_status_msg})
+        global_data.append(aggregate_k8s_data)
 
         return global_data
 
@@ -795,7 +804,7 @@ class ViyaPreInstallCheck():
         """
         aggregate_cpu_failures = int(0)
         aggregate_memory_failures = int(0)
-        aggregate_kubelet_failures = int(0)
+        aggregate_k8s_failures = int(0)
         total_cpu_cores = float(0)
 
         total_capacity_memory = quantity_("0G")
@@ -838,10 +847,10 @@ class ViyaPreInstallCheck():
             else:
                 self._set_status(1, node, 'kubeletversion')
                 node['error']['kubeletversion'] = viya_constants.SET + ': ' + kubeletversion + ', ' + \
-                    str(viya_constants.EXPECTED) + ': ' + viya_constants.MIN_K8S_SERVER_VERSION[1:] + ' or later '
+                    str(viya_constants.EXPECTED) + ': ' + self._validated_kubernetes_version_min + ' or later '
 
-                aggregate_kubelet_failures += 1
-                self.logger.debug("aggregate_kubelet_failures {} ".format(str(aggregate_kubelet_failures)))
+                aggregate_k8s_failures += 1
+                self.logger.debug("aggregate_k8s_failures {} ".format(str(aggregate_k8s_failures)))
                 self.logger.debug("node kubeletversion{} ".format(pprint.pformat(node)))
 
         global_data = self._check_workers(global_data, nodes_data)
@@ -850,7 +859,7 @@ class ViyaPreInstallCheck():
         global_data = self._check_memory_errors(global_data, total_capacity_memory, quantity_,
                                                 aggregate_memory_failures)
 
-        global_data = self._check_kubelet_errors(global_data, aggregate_kubelet_failures)
+        global_data = self._check_k8s_errors(global_data, aggregate_k8s_failures)
 
         global_data.append(nodes_data)
         global_data = self._update_k8s_version(global_data, self._k8s_server_version)
@@ -876,7 +885,7 @@ class ViyaPreInstallCheck():
 
     def _set_status(self, status, node, key):
         """Set the status flag on dictionary object with node details - to indicate compliance with
-        cpu, memory kubelet version requirements
+        cpu, memory k8s version requirements
 
         status: status to be set on dict objectwith node details
         node: node dictionary object
@@ -1054,6 +1063,9 @@ class ViyaPreInstallCheck():
 
     def set_k8s_version(self, version: Text):
         self._k8s_server_version = version
+
+    def set_k8s_version_min(self, version: Text):
+        self._viya_k8s_version_min = version
 
     def generate_report(self,
                         global_data,
