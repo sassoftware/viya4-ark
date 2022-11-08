@@ -10,7 +10,7 @@ Kubernetes may orchestrate once Viya is deployed.  The report and the informatio
 be considered a snapshot in time.  
 
 The Kubernetes cluster for a SAS Viya deployment must meet the requirements documented in [SAS® Viya® Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
-Ensure that the Kubernetes version is within the documented range for the selected cloud provider. 
+Ensure that the Kubernetes version is within the documented range for the selected cloud provider.  If the Kubernetes server version is below a current default minimum, a warning will be included in the report.
 
 
 ### Memory and vCPU Check
