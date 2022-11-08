@@ -148,8 +148,8 @@ You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_deploym
 minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
 
 If you modify the VIYA_K8S_VERSION_MIN to a version less than the minimum Kubernetes version supported by this 
-release of the report tool, you are operating outside the supported capabilities of the report tool.  It is better 
-to use a release of Viya 4 ARK tools matching the required minimum you are working with. 
+release of the report tool, you are operating outside the supported capabilities of the report tool.  SAS recommends 
+using a release of Viya 4 ARK tools that matches the required minimum you are working with. 
 
 ## Known Issues
 
