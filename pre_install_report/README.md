@@ -149,7 +149,7 @@ minimum and aggregate settings for CPU and memory on nodes. For more information
 
 If you modify the VIYA_K8S_VERSION_MIN to a version less than the minimum Kubernetes version supported by this 
 release of the report tool, you are operating outside the supported capabilities of the report tool.  It is better 
-to use a release of Viya 4 ARK tools matching the required minimum you may be working with. 
+to use a release of Viya 4 ARK tools matching the required minimum you are working with. 
 
 ## Known Issues
 
@@ -171,4 +171,4 @@ They will look similar to the resources shown below:
         kubectl -n <namespace> delete replicaset.apps/hello-world-6665cf748b
         kubectl -n <namespace> delete pod/hello-world-6665cf748b-5x2jq
         kubectl -n <namespace> delete pod/hello-world-6665cf748b-tkq79
-```    
+```
