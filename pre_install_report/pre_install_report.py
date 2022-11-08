@@ -254,9 +254,9 @@ def main(argv):
     with LRPIndicator(enter_message="Gathering facts"):
         try:
             sas_pre_check_report: ViyaPreInstallCheck = \
-            ViyaPreInstallCheck(sas_logger, check_limits['items']['VIYA_K8S_VERSION_MIN'],
-                                check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_CPU_CORES'],
-                                check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_MEMORY'])
+                ViyaPreInstallCheck(sas_logger, check_limits['items']['VIYA_K8S_VERSION_MIN'],
+                                    check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_CPU_CORES'],
+                                    check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_MEMORY'])
         except KeyError as e:
             print()
             print(viya_messages.EXCEPTION_MESSAGE.format(e) +
