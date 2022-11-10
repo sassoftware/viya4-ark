@@ -10,7 +10,8 @@ Kubernetes may orchestrate once Viya is deployed.  The report and the informatio
 be considered a snapshot in time.  
 
 The Kubernetes cluster for a SAS Viya deployment must meet the requirements documented in [SAS® Viya® Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
-Ensure that the Kubernetes version is within the documented range for the selected cloud provider. 
+Ensure that the Kubernetes version is within the documented range for the selected cloud provider.  
+If the Kubernetes server version is below the default minimum, a warning will be included in the report.
 
 
 ### Memory and vCPU Check
@@ -147,6 +148,10 @@ web-viewable, HTML format.
 You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini file to alter the   
 minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
 
+If you modify the VIYA_K8S_VERSION_MIN to a version less than the minimum Kubernetes version supported by this 
+release of the report tool, you are operating outside the supported capabilities of the report tool.  SAS recommends 
+using a release of Viya 4 ARK tools that matches the required minimum you are working with. 
+
 ## Known Issues
 
 The following issue may impact the performance and expected results of this tool.
@@ -167,4 +172,4 @@ They will look similar to the resources shown below:
         kubectl -n <namespace> delete replicaset.apps/hello-world-6665cf748b
         kubectl -n <namespace> delete pod/hello-world-6665cf748b-5x2jq
         kubectl -n <namespace> delete pod/hello-world-6665cf748b-tkq79
-```    
+```

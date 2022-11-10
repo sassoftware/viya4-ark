@@ -252,10 +252,18 @@ def main(argv):
     check_limits = _read_config_file('viya_deployment_settings.ini')
 
     with LRPIndicator(enter_message="Gathering facts"):
-        sas_pre_check_report: ViyaPreInstallCheck = \
-            ViyaPreInstallCheck(sas_logger, check_limits['items']['VIYA_KUBELET_VERSION_MIN'],
-                                check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_CPU_CORES'],
-                                check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_MEMORY'])
+        try:
+            sas_pre_check_report: ViyaPreInstallCheck = \
+                ViyaPreInstallCheck(sas_logger, check_limits['items']['VIYA_K8S_VERSION_MIN'],
+                                    check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_CPU_CORES'],
+                                    check_limits['items']['VIYA_MIN_AGGREGATE_WORKER_MEMORY'])
+        except KeyError as e:
+            print()
+            print(viya_messages.EXCEPTION_MESSAGE.format(e) +
+                  ' Check for missing key/value in the viya_deployment_settings.ini')
+            print()
+            sys.exit(viya_messages.RUNTIME_ERROR_RC_)
+
     # gather the details for the report
     try:
         print()
