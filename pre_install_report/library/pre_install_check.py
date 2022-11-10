@@ -77,7 +77,7 @@ class ViyaPreInstallCheck():
 
     def _parse_release_info(self, release_info):
         """
-        This method checks that the format of the VIYA_K8s_VERSION_MIN specified in the
+        This method checks that the format of the VIYA_K8S_VERSION_MIN specified in the
         user modifiable ini file is valid.
 
         :param release_info: The minimum K8s version loaded from ini file.
