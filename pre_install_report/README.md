@@ -10,7 +10,8 @@ Kubernetes may orchestrate once Viya is deployed.  The report and the informatio
 be considered a snapshot in time.  
 
 The Kubernetes cluster for a SAS Viya deployment must meet the requirements documented in [SAS® Viya® Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
-Ensure that the Kubernetes version is within the documented range for the selected cloud provider. 
+Ensure that the Kubernetes version is within the documented range for the selected cloud provider.  
+If the Kubernetes server version is below the default minimum, a warning will be included in the report.
 
 
 ### Memory and vCPU Check
@@ -25,8 +26,9 @@ The calculated aggregate number of vCPUs must equal or exceed the required aggre
 The requirements per offering are detailed in the _Hardware and Resource Requirements_ section of the SAS Viya Operations document. 
 The required Memory and vCPUs sizes depend on the instance type used for the node.  
 
-Your required aggregates must be specified in the following file  
-<tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini, example:
+Your required aggregates must be specified in the following file: 
+<tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini  
+Here is an example:
 ```
 # Total Memory of all worker Nodes in GB. Sum of the Memory on all active node required to deploy a specific offering.
 # Set value for required for offering
@@ -36,14 +38,14 @@ VIYA_MIN_AGGREGATE_WORKER_MEMORY=448G
 VIYA_MIN_AGGREGATE_WORKER_CPU_CORES=56
 ```
 
-If calculated aggregate memory is less than a percentage (85%) of VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  
-If calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then it the tool will flag a CPU issue.
+If the calculated aggregate memory is less than a percentage (85%) of VIYA_MIN_AGGREGATE_WORKER_MEMORY then the tool will flag a memory issue.  
+If the calculated aggregate vCPUs is less than VIYA_MIN_AGGREGATE_WORKER_CPU_CORES then the tool will flag a CPU issue.
  
 SAS recommends using the SAS Viya 4 Infrastructure as Code (IaC) tools to create a cluster.  
-Refer to the following IaC repositories for [Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure), [AWS](https://github.com/sassoftware/viya4-iac-aws]) or [GCP](https://github.com/sassoftware/viya4-iac-gcp).   
-For OpenShift refer to the documentation in SAS® Viya® Operations [OpenShift](https://go.documentation.sas.com/doc/en/itopscdc/v_019/itopssr/n1ika6zxghgsoqn1mq4bck9dx695.htm#p1c8bxlbu0gzuvn1e75nck1yozcn)
-**Example**: Setting for aggregate Memory and vCPU for deployment based on documentation in SAS Viya Operations under System Requirements   
-in the Hardware and Resource Requirements section.  See Sizing Recommendations for Microsoft Azure.
+Refer to the following IaC repositories for [Microsoft Azure](https://github.com/sassoftware/viya4-iac-azure), [AWS](https://github.com/sassoftware/viya4-iac-aws]), [GCP](https://github.com/sassoftware/viya4-iac-gcp) or [Open Source Kubernetes](https://github.com/sassoftware/viya4-iac-k8s)   
+For OpenShift refer to the documentation in SAS® Viya® Operations [OpenShift](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n1ika6zxghgsoqn1mq4bck9dx695.htm#p1c8bxlbu0gzuvn1e75nck1yozcn)  
+  
+Example: See Sizing Recommendations for a Microsoft Azure deployment under [Hardware and Resource Requirements](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/n0ampbltwqgkjkn1j3qogztsbbu0.htm#p1wmvm5pzezbwxn1rjjftlfqmeiu). You can use this information to calculate VIYA_MIN_AGGREGATE_WORKER_MEMORY and VIYA_MIN_AGGREGATE_WORKER_CPU_CORES.
 
 | Offering                  | CAS Node(s)          | System Node  | Nodes in User Node Pool(s)  |
 | ------------------------- |-------------          | --------- | -------------|
@@ -146,6 +148,10 @@ web-viewable, HTML format.
 You can modify the <tool-download-dir>/viya4-ark/pre_install_report/viya_deployment_settings.ini file to alter the   
 minimum and aggregate settings for CPU and memory on nodes. For more information, see the details in the file.
 
+If you modify the VIYA_K8S_VERSION_MIN to a version less than the minimum Kubernetes version supported by this 
+release of the report tool, you are operating outside the supported capabilities of the report tool.  SAS recommends 
+using a release of Viya 4 ARK tools that matches the required minimum you are working with. 
+
 ## Known Issues
 
 The following issue may impact the performance and expected results of this tool.
@@ -166,4 +172,4 @@ They will look similar to the resources shown below:
         kubectl -n <namespace> delete replicaset.apps/hello-world-6665cf748b
         kubectl -n <namespace> delete pod/hello-world-6665cf748b-5x2jq
         kubectl -n <namespace> delete pod/hello-world-6665cf748b-tkq79
-```    
+```

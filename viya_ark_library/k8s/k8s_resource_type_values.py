@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -65,6 +65,9 @@ class KubernetesResourceTypeValues(object):
     # API: webinfdsvr.sas.com
     SAS_GROUP_WEBINFDSVR_SAS_COM = "webinfdsvr.sas.com"
     SAS_PGCLUSTERS = f"pgclusters.{SAS_GROUP_WEBINFDSVR_SAS_COM}"
+
+    SAS_GROUP_CRUNCHYDATA_COM = "postgres-operator.crunchydata.com"
+    SAS_CRUNCHYCLUSTERS = f"postgresclusters.{SAS_GROUP_CRUNCHYDATA_COM}"
 
     ##############################
     # Third-Party Resources

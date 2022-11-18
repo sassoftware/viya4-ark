@@ -80,6 +80,10 @@ def main(argv: List):
     arg_parser.add_argument(
         "-d", "--data-file-only", action="store_true", dest="data_file_only",
         help="Generate only the JSON-formatted data.")
+    # ingress namespace
+    arg_parser.add_argument(
+        "-i", "--ingress-namespace", type=Text, default=None, dest="ingress_namespace",
+        help="Ingress namespace in the target cluster.")
     # kubectl-global-opts
     arg_parser.add_argument(
         "-k", "--kubectl-global-opts", type=Text, default="", dest="kubectl_global_opts",
@@ -111,7 +115,8 @@ def main(argv: List):
     # initialize the kubectl object
     # this will also verify the connection to the cluster and if the namespace is valid, if provided
     try:
-        kubectl: Kubectl = Kubectl(namespace=args.namespace, global_opts=args.kubectl_global_opts)
+        kubectl: Kubectl = Kubectl(namespace=args.namespace, global_opts=args.kubectl_global_opts,
+                                   ingress_namespace=args.ingress_namespace)
     except ConnectionError as e:
         print()
         print(f"ERROR: {e}", file=sys.stderr)

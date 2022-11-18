@@ -90,10 +90,6 @@
       <td>{{ report_data.kubernetes.namespace | default("<em>could not be determined</em>") }}</td>
     </tr>
     <tr>
-      <th>Ingress Controller</th>
-      <td>{{ report_data.kubernetes.ingressController | default("<em>could not be determined</em>") }}</td>
-    </tr>
-    <tr>
       <th>Cadence Version</th>
       <td>{{ report_data.kubernetes.cadenceInfo | default("<em>could not be determined</em>") }}</td>
     </tr>
@@ -104,6 +100,7 @@
   <div class="jq-accordion">
     <h2>Versions</h2>
     <div>
+      <h7>Kubernetes</h7>
       <table>
         <tr>
           <th></th>
@@ -124,6 +121,21 @@
           <th>Platform</th>
           <td>{{ report_data.kubernetes.versions.clientVersion.platform }}</td>
           <td>{{ report_data.kubernetes.versions.serverVersion.platform }}</td>
+        </tr>
+      </table>
+      <h7>Ingress</h7>
+      <table>
+        <tr>
+          <th>Controller</th>
+          <td>{{ report_data.kubernetes.ingressController | default("<em>could not be determined</em>") }}</td>
+        </tr>
+        <tr>
+          <th>Version</th>
+          {% if report_data.kubernetes.ingressVersion is not none and report_data.kubernetes.ingressVersion | length > 0 %}
+            <td>{{ report_data.kubernetes.ingressVersion}}</td>
+          {% else %}
+            <td>Unavailable</td>
+          {% endif %}
         </tr>
       </table>
     </div>

@@ -89,7 +89,7 @@ def test_get_kubernetes_details(report: ViyaDeploymentReport) -> None:
     kube_details: Dict = report.get_kubernetes_details()
 
     # check for all expected entries
-    assert len(kube_details) == 11
+    assert len(kube_details) == 12
     assert ReportKeys.Kubernetes.API_RESOURCES_DICT in kube_details
     assert ReportKeys.Kubernetes.API_VERSIONS_LIST in kube_details
     assert ReportKeys.Kubernetes.CADENCE_INFO in kube_details
@@ -97,6 +97,7 @@ def test_get_kubernetes_details(report: ViyaDeploymentReport) -> None:
     assert ReportKeys.Kubernetes.DB_INFO in kube_details
     assert ReportKeys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT in kube_details
     assert ReportKeys.Kubernetes.INGRESS_CTRL in kube_details
+    assert ReportKeys.Kubernetes.INGRESS_VER in kube_details
     assert ReportKeys.Kubernetes.NAMESPACE in kube_details
     assert ReportKeys.Kubernetes.NODES_DICT in kube_details
     assert ReportKeys.Kubernetes.SECRETS_DICT in kube_details

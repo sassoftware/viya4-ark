@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -60,6 +60,20 @@ def test_get_db_info_v2(no_ingress_simulation_fixture: conftest.DSA):
     db_dict: Dict = config_util._get_db_info_v2(pgclusters=pgclusters)
 
     assert db_dict[config_util._DBNAME_POSTGRES_][Keys.DatabaseDetails.DBTYPE] == KubectlTest.Values.DB_External
+
+
+@pytest.mark.usefixtures(conftest.NO_INGRESS_SIMULATION_FIXTURE)
+def test_get_db_info_v3(no_ingress_simulation_fixture: conftest.DSA):
+    """
+    This test verifies that the provided db data is returned
+    """
+    # get the resource cache
+    resource_cache: Dict = no_ingress_simulation_fixture.resource_cache()
+
+    pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_CRUNCHYCLUSTERS][ITEMS_KEY]
+    db_dict: Dict = config_util._get_db_info_v3(pgclusters=pgclusters)
+
+    assert db_dict[config_util._DBNAME_POSTGRES_][Keys.DatabaseDetails.DBTYPE] == KubectlTest.Values.DB_Internal
 
 
 @pytest.mark.usefixtures(conftest.NO_INGRESS_SIMULATION_FIXTURE)

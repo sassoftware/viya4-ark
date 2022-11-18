@@ -88,6 +88,7 @@ class KubectlTest(KubectlInterface):
         CADENCEINFO: Text = "Fast R/TR 2020 (20201214.1607958443388)"
         DB_External: Text = "External"
         DB_Internal: Text = "Internal"
+        INGRESS_NAMESPACE: Text = ""
 
         # Component: prometheus
         COMPONENT_PROMETHEUS_DEPLOYMENT_NAME: Text = "pushgateway-test-prometheus-pushgateway"
@@ -435,7 +436,8 @@ class KubectlTest(KubectlInterface):
                  include_metrics: bool = True,
                  include_non_namespaced_resources: bool = True,
                  namespace: Text = Values.NAMESPACE,
-                 simulate_empty_deployment: bool = False) -> None:
+                 simulate_empty_deployment: bool = False,
+                 ingress_ns: Text = Values.INGRESS_NAMESPACE) -> None:
         """
         Constructor for the KubectlTest implementation.
 
@@ -452,6 +454,7 @@ class KubectlTest(KubectlInterface):
         self.include_non_namespaced_resources = include_non_namespaced_resources
         self.namespace = namespace
         self.simulate_empty_deployment = simulate_empty_deployment
+        self.ingress_ns = ingress_ns
 
     def get_namespace(self) -> Text:
         return self.namespace
@@ -491,6 +494,9 @@ class KubectlTest(KubectlInterface):
 
     def api_versions(self, ignore_errors: bool = False) -> List:
         return KubectlTest._load_response_data(_API_VERSIONS_DATA_)
+
+    def ingress_version(self) -> Optional[AnyStr]:
+        pass
 
     def can_i(self, action: Text, all_namespaces: bool = False, ignore_errors: bool = False) -> bool:
         # this method is not functional in the testing implementation

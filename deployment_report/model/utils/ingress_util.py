@@ -9,7 +9,7 @@
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
-from typing import Dict, Optional, Text
+from typing import AnyStr, Dict, List, Optional, Text
 
 from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
@@ -18,6 +18,12 @@ from deployment_report.model.static.viya_deployment_report_keys import \
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
 from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
+from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
+
+
+# constants values
+_NGINX_VERSION_ = "nginx version:"
+_RELEASE_ = "Release:"
 
 
 def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
@@ -103,3 +109,62 @@ def ignorable_for_controller_if_unavailable(ingress_controller: Text, resource_t
 
     # not ignorable
     return False
+
+
+def get_ingress_version(kubectl: KubectlInterface) -> Optional[Text]:
+    """
+    Retrieves ingress version used in the Kubernetes cluster
+
+    :param kubectl: The KubectlInterface object.
+    :return: The ingress controller version used in the target cluster or Blank if it cannot be determined.
+    """
+
+    version: Text = ""
+    getpod_cmd: AnyStr = "get pods -n " + kubectl.ingress_ns + \
+                         " --field-selector=status.phase==Running" + \
+                         " -o jsonpath=\"{.items[0].metadata.name}\""
+
+    if kubectl.ingress_ns == SupportedIngress.Controllers.NS_NGINX:
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l app.kubernetes.io/component=controller")
+        version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
+                                         " -n " + kubectl.ingress_ns +
+                                         " -- /nginx-ingress-controller --version")
+        version_list: List = version_str.decode().splitlines()
+        for v in version_list:
+            if _RELEASE_ in v:
+                version = ' '.join(v.split()) + version
+            elif _NGINX_VERSION_ in v:
+                version = version + ", " + v.split()[-1]
+
+    elif kubectl.ingress_ns == SupportedIngress.Controllers.NS_ISTIO:
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l  app=istiod")
+        version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
+                                         " -n " + kubectl.ingress_ns +
+                                         " -- pilot-discovery version --short")
+        version = version_str.decode()
+
+    elif kubectl.ingress_ns == SupportedIngress.Controllers.NS_OPENSHIFT:
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l  name=ingress-operator")
+        version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
+                                         " -n " + kubectl.ingress_ns +
+                                         " -o jsonpath=\"{.spec.containers[].env[" +
+                                         "?(@.name=='RELEASE_VERSION')].value}\"")
+        version = version_str.decode()
+
+    elif kubectl.ingress_ns == SupportedIngress.Controllers.NS_CONTOUR:
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l app=envoy")
+        version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
+                                         " -n " + kubectl.ingress_ns +
+                                         " -o jsonpath=\"{.spec.containers[*].image}\"")
+        version_list: List = version_str.decode().split(' ')
+        for v in version_list:
+            if version:
+                version = version + ", " + v.split("/")[-1].capitalize()
+            else:
+                version = v.split("/")[-1].capitalize()
+
+    return version.strip()
