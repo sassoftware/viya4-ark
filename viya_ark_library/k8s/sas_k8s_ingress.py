@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -27,6 +27,7 @@ class SupportedIngress(object):
         ISTIO = "Istio"
         NGINX = "NGINX"
         OPENSHIFT = "OpenShift"
+        UNSUPPORTED = "Unsupported"
         NS_CONTOUR = "projectcontour"
         NS_ISTIO = "istio-system"
         NS_NGINX = "ingress-nginx"

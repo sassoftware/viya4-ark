@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -291,7 +291,13 @@ class ViyaDeploymentReport(object):
                 ingress_controller == SupportedIngress.Controllers.OPENSHIFT or
                 ingress_controller == SupportedIngress.Controllers.CONTOUR
                ):
-                ingress_version = ingress_util.get_ingress_version(kubectl)
+                if not kubectl.ingress_ns:
+                    ingress_version = "N/A (No default ingress namespace was found)"
+                else:
+                    ingress_version = ingress_util.get_ingress_version(kubectl=kubectl,
+                                                                       ingress_controller=ingress_controller)
+            else:
+                ingress_controller = SupportedIngress.Controllers.UNSUPPORTED
 
             # determine if any resource types for which caching was attempted were unavailable
             # if at least one is unavailable, a message will be displayed saying that components may not be complete

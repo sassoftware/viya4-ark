@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -252,7 +252,7 @@ def test_get_ingress_controller_none() -> None:
     report.gather_details(kubectl=KubectlTest(KubectlTest.IngressSimulator.NONE))
 
     # check for expected attributes
-    assert report.get_ingress_controller() is None
+    assert report.get_ingress_controller() == SupportedIngress.Controllers.UNSUPPORTED
 
 
 def test_get_ingress_controller_unpopulated() -> None:
