@@ -297,7 +297,7 @@ class ViyaDeploymentReport(object):
                     ingress_version = ingress_util.get_ingress_version(kubectl=kubectl,
                                                                        ingress_controller=ingress_controller)
             else:
-                ingress_controller = SupportedIngress.Controllers.UNSUPPORTED
+                ingress_controller = SupportedIngress.Controllers.UNKNOWN
 
             # determine if any resource types for which caching was attempted were unavailable
             # if at least one is unavailable, a message will be displayed saying that components may not be complete

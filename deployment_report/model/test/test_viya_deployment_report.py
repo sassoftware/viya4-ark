@@ -252,7 +252,7 @@ def test_get_ingress_controller_none() -> None:
     report.gather_details(kubectl=KubectlTest(KubectlTest.IngressSimulator.NONE))
 
     # check for expected attributes
-    assert report.get_ingress_controller() == SupportedIngress.Controllers.UNSUPPORTED
+    assert report.get_ingress_controller() == SupportedIngress.Controllers.UNKNOWN
 
 
 def test_get_ingress_controller_unpopulated() -> None:

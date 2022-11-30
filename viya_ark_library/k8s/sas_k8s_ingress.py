@@ -27,7 +27,7 @@ class SupportedIngress(object):
         ISTIO = "Istio"
         NGINX = "NGINX"
         OPENSHIFT = "OpenShift"
-        UNSUPPORTED = "Unknown"
+        UNKNOWN = "Unknown"
         NS_CONTOUR = "projectcontour"
         NS_ISTIO = "istio-system"
         NS_NGINX = "ingress-nginx"
