@@ -30,7 +30,7 @@ _HEADER_KIND_ = "KIND"
 _HEADER_VERBS_ = "VERBS"
 
 # constants values
-_DO_MSG_ = "command_fail_ignored"
+_NOTFOUND_ = "NotFound"
 
 
 class Kubectl(KubectlInterface):
@@ -95,7 +95,7 @@ class Kubectl(KubectlInterface):
                             break
                 else:
                     ns: AnyStr = self.do("get namespace " + ingress_namespace, ignore_errors=True, warning=False)
-                    if type(ns) is str and _DO_MSG_ in ns:
+                    if type(ns) is str and _NOTFOUND_ in ns:
                         raise NamespaceNotFoundError(
                             f"The ingress namespace [{ingress_namespace}] was not found in the target environment.")
                     else:
@@ -178,7 +178,7 @@ class Kubectl(KubectlInterface):
                           f"(rc: {rc} | stdout: {stdout} | stderr: {stderr})")
                 else:
                     if len(stdout) == 0:
-                        stdout = _DO_MSG_
+                        stdout = stderr.decode()
 
         # return the stdout
         return stdout
