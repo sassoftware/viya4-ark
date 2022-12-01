@@ -121,14 +121,15 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
 
     version: Text = ""
 
-    try:
-        getpod_cmd: AnyStr = "get pods -n " + kubectl.ingress_ns + \
-                             " --field-selector=status.phase==Running" + \
-                             " -o jsonpath=\"{.items[0].metadata.name}\""
+    getpod_cmd: AnyStr = "get pods -n " + kubectl.ingress_ns + \
+                         " --field-selector=status.phase==Running" + \
+                         " -o jsonpath=\"{.items[0].metadata.name}\""
 
-        if ingress_controller == SupportedIngress.Controllers.NGINX:
-            podname: AnyStr = kubectl.do(getpod_cmd +
-                                         " -l app.kubernetes.io/component=controller")
+    if ingress_controller == SupportedIngress.Controllers.NGINX:
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l app.kubernetes.io/component=controller")
+
+        if podname:
             version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
                                              " -- /nginx-ingress-controller --version")
@@ -139,26 +140,29 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
                 elif _NGINX_VERSION_ in v:
                     version = version + ", " + v.split()[-1]
 
-        elif ingress_controller == SupportedIngress.Controllers.ISTIO:
-            podname: AnyStr = kubectl.do(getpod_cmd +
-                                         " -l  app=istiod")
+    elif ingress_controller == SupportedIngress.Controllers.ISTIO:
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l  app=istiod")
+        if podname:
             version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
                                              " -- pilot-discovery version --short")
             version = version_str.decode()
 
-        elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT:
-            podname: AnyStr = kubectl.do(getpod_cmd +
-                                         " -l  name=ingress-operator")
+    elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT:
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l  name=ingress-operator")
+        if podname:
             version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
                                              " -o jsonpath=\"{.spec.containers[].env[" +
                                              "?(@.name=='RELEASE_VERSION')].value}\"")
             version = version_str.decode()
 
-        elif ingress_controller == SupportedIngress.Controllers.CONTOUR:
-            podname: AnyStr = kubectl.do(getpod_cmd +
-                                         " -l app=envoy")
+    elif ingress_controller == SupportedIngress.Controllers.CONTOUR:
+        podname: AnyStr = kubectl.do(getpod_cmd +
+                                     " -l app=envoy")
+        if podname:
             version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
                                              " -o jsonpath=\"{.spec.containers[*].image}\"")
@@ -169,7 +173,4 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
                 else:
                     version = v.split("/")[-1].capitalize()
 
-        return version.strip()
-
-    except Exception:
-        return "N/A (Version information cannot be retrieved)"
+    return version.strip()
