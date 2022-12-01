@@ -119,6 +119,9 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
     :return: The ingress controller version used in the target cluster or Blank if it cannot be determined.
     """
 
+    if not kubectl.ingress_ns:
+        return ""
+
     version: Text = ""
 
     getpod_cmd: AnyStr = "get pods -n " + kubectl.ingress_ns + \

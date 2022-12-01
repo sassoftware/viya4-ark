@@ -82,7 +82,7 @@ class Kubectl(KubectlInterface):
                 self.ingress_ns = None
 
                 # get ingress namespace
-                if ingress_namespace is None:
+                if not ingress_namespace:
                     for x in range(len(existing_namespaces)):
                         ns: AnyStr = existing_namespaces[x].get_name()
                         if (
