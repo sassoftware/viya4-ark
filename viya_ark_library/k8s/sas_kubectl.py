@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -30,7 +30,7 @@ _HEADER_KIND_ = "KIND"
 _HEADER_VERBS_ = "VERBS"
 
 # constants values
-_DO_MSG_ = "command_fail_ignored"
+_NOTFOUND_ = "NotFound"
 
 
 class Kubectl(KubectlInterface):
@@ -82,13 +82,7 @@ class Kubectl(KubectlInterface):
                 self.ingress_ns = None
 
                 # get ingress namespace
-                if ingress_namespace is not None:
-                    ns: AnyStr = self.do("get namespace " + ingress_namespace, ignore_errors=True, warning=False)
-                    if len(ns) > 0:
-                        raise NamespaceNotFoundError(
-                            f"The ingress namespace [{ingress_namespace}] was not found in the target environment.")
-                    self.ingress_ns = ingress_namespace
-                else:
+                if not ingress_namespace:
                     for x in range(len(existing_namespaces)):
                         ns: AnyStr = existing_namespaces[x].get_name()
                         if (
@@ -99,6 +93,13 @@ class Kubectl(KubectlInterface):
                            ):
                             self.ingress_ns = ns
                             break
+                else:
+                    ns: AnyStr = self.do("get namespace " + ingress_namespace, ignore_errors=True, warning=False)
+                    if type(ns) is str and _NOTFOUND_ in ns:
+                        raise NamespaceNotFoundError(
+                            f"The ingress namespace [{ingress_namespace}] was not found in the target environment.")
+                    else:
+                        self.ingress_ns = ingress_namespace.lower()
 
                 # loop over all existing namespaces and check for the given namespace
                 for existing_namespace in existing_namespaces:
@@ -177,7 +178,7 @@ class Kubectl(KubectlInterface):
                           f"(rc: {rc} | stdout: {stdout} | stderr: {stderr})")
                 else:
                     if len(stdout) == 0:
-                        stdout = _DO_MSG_
+                        stdout = stderr.decode()
 
         # return the stdout
         return stdout
