@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
+# Copyright (c) 2021-2023, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -569,7 +569,7 @@ class ViyaPreInstallCheck():
                                     str(viya_constants.EXPECTED) +
                                     ': Minimum ' +
                                     str(viya_constants.NUMBER_OF_WORKER_NODES) +
-                                    " \nCheck SAS Viya Documentation")})
+                                    " \nCheck SAS Viya Platform Documentation")})
 
         else:
             global_nodes.update({'status': 0})
