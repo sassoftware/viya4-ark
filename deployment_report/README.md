@@ -1,6 +1,6 @@
-# SAS Viya Deployment Report
+# SAS Viya Platform Deployment Report
 
-The SAS Viya Deployment Report generates a web-viewable summary (and JSON-formatted data file) of SAS software deployed
+The SAS Viya Platform Deployment Report generates a web-viewable summary (and JSON-formatted data file) of SAS software deployed
 in a Kubernetes cluster. The report includes a list of SAS-deployed components with application resources grouped
 together. Overview information is gathered about the Kubernetes cluster into which the SAS components are deployed. If
 the report is run with a `KUBECONFIG` capable of gathering node resources and/or pod and node metrics, they are
@@ -31,8 +31,7 @@ Download the latest version of this tool and update required packages with every
 The following example produces both the web-viewable report and JSON-formatted data. The namespace containing your SAS
 deployment can be specified by including the `-n` or `--namespace` option.
 
-**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS
-deployment.
+**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS Viya platform deployment.
 
 ```commandline
 python3 viya-ark.py deployment-report --namespace sas
@@ -43,8 +42,7 @@ python3 viya-ark.py deployment-report --namespace sas
 Including the `-l` or `--include-pod-log-snips` option yields a report with a 10-line log snippet for each pod.
 Using this option increases the runtime of the command as well as the size of the resulting files.
 
-**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS
-deployment.
+**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS Viya platform deployment.
 
 ```commandline
 python3 viya-ark.py deployment-report -n sas --include-pod-log-snips
@@ -55,8 +53,7 @@ python3 viya-ark.py deployment-report -n sas --include-pod-log-snips
 Including the `-r` or `--include-resource-definitions` option yields a report with the JSON-formatted resource
 definitions for all resources found in the deployment. Using this option increases the size of the resulting files.
 
-**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS
-deployment.
+**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS Viya platform deployment.
 
 ```commandline
 python3 viya-ark.py deployment-report -n sas --include-resource-definitions
@@ -67,8 +64,7 @@ python3 viya-ark.py deployment-report -n sas --include-resource-definitions
 Including the `-d` or `--data-file-only` option yields only the JSON-formatted data file. The web-viewable HTML report
 is omitted.
 
-**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS
-deployment.
+**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS Viya platform deployment.
 
 ```commandline
 python3 viya-ark.py deployment-report -n sas --data-file-only
@@ -80,8 +76,7 @@ By default, the output files are written to the current working directory. Inclu
 redirects the output files to the given location. The provided value should be an existing path and should not include
 any file names.
 
-**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS
-deployment.
+**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS Viya platform deployment.
 
 ```commandline
 python3 viya-ark.py deployment-report -n sas --output-dir="/path/to/report/"

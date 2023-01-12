@@ -1,4 +1,4 @@
-# SAS Viya LDAP Validator
+# SAS Viya Platform LDAP Validator
 
 This tool validates the accuracy of the LDAP properties represented in a 
 sitedefault.yaml file by connecting to the LDAP server and fetching some of the 
@@ -15,7 +15,7 @@ However, that is still not a full guarantee of success since the tool is not abl
 to check every parameter in the sitedefault.yaml file for accuracy. 
 
 **Note:** SAS recommends that you do not use the sitedefault.yaml file for the 
-initial deployment of your SAS Viya software. For more information, see [Add a sitedefault File to Your Deployment](http://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#n19f4zubzxljtdn12lo0nkv4n4cf).
+initial deployment of your SAS Viya platform software. For more information, see [Add a sitedefault File to Your Deployment](http://documentation.sas.com/?cdcId=itopscdc&cdcVersion=default&docsetId=dplyml0phy0dkr&docsetTarget=n08u2yg8tdkb4jn18u8zsi6yfv3d.htm#n19f4zubzxljtdn12lo0nkv4n4cf).
 
 ## Prerequisites
 

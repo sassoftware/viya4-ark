@@ -1,15 +1,15 @@
-# Pre-Installation Check of SAS Viya System Requirements
+# Pre-Installation Check of SAS Viya Platform System Requirements
 ## Overview
-This tool compares your Kubernetes environment to the SAS Viya system requirements.  It evaluates a   
+This tool compares your Kubernetes environment to the SAS Viya platform system requirements.  It evaluates a   
 number of items, such as memory, CPU cores, software versions, and permissions. The output is a web-viewable,  
 HTML report with the results. 
 
-SAS recommends running the tool and resolving any reported issues _before_ beginning a SAS Viya 
+SAS recommends running the tool and resolving any reported issues _before_ beginning a SAS Viya platform
 deployment in a Kubernetes cluster.  The tool cannot account for the dynamic resource allocations that 
 Kubernetes may orchestrate once Viya is deployed.  The report and the information therein must
 be considered a snapshot in time.  
 
-The Kubernetes cluster for a SAS Viya deployment must meet the requirements documented in [SAS® Viya® Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
+The Kubernetes cluster for a SAS Viya platform deployment must meet the requirements documented in [SAS® Viya® Platform Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
 Ensure that the Kubernetes version is within the documented range for the selected cloud provider.  
 If the Kubernetes server version is below the default minimum, a warning will be included in the report.
 
@@ -19,7 +19,7 @@ The tool calculates the aggregate Memory and aggregate vCPUs of your cluster. Th
 of the Memory capacity on all the active and running nodes. The aggregate CPU is calculated similarly.
   
 There will be some percentage of Memory on each node in the cluster that is considered "overhead" (consumed by the OS, Kubelet, etc)
-and therefore not be available for SAS Viya.   This tool assumes that 85% of the calculated aggregate Memory is available for SAS Viya, 
+and therefore not be available for SAS Viya.   This tool assumes that 85% of the calculated aggregate Memory is available for SAS Viya platform, 
 and the memory sizes in the report reflect this.  
 
 The calculated aggregate number of vCPUs must equal or exceed the required aggregate number of vCPUs for your deployment offering. 
@@ -76,12 +76,12 @@ Download the latest version of this tool and update required packages with every
 ## Usage
 
 **Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights to the   
-cluster where you intend to deploy your SAS Viya software.
+cluster where you intend to deploy your SAS Viya platform software.
 To obtain a complete report use a `KUBECONFIG` with administrator rights in the cluster.  Otherwise, the report will   
 not be able to evaluate items such as memory, CPU cores, software versions and other node details. It is not useful   
-for determining if you are ready to deploy your SAS Viya software.
+for determining if you are ready to deploy your SAS Viya platform software.
 
-Create the namespace where you plan to deploy SAS Viya.  A namespace is required to run this tool. Specify the namespace where you plan to deploy SAS Viya using the namespace option. If a namespace is not provided, the tool will check the current context for a namespace. Ensure that you are running with the correct namespace.   
+Create the namespace where you plan to deploy SAS Viya platform.  A namespace is required to run this tool. Specify the namespace where you plan to deploy SAS Viya platform using the namespace option. If a namespace is not provided, the tool will check the current context for a namespace. Ensure that you are running with the correct namespace.   
 
 After obtaining the latest version of this tool, cd to `<tool-download-dir>/viya4-ark`. 
 
@@ -150,7 +150,7 @@ minimum and aggregate settings for CPU and memory on nodes. For more information
 
 If you modify the VIYA_K8S_VERSION_MIN to a version less than the minimum Kubernetes version supported by this 
 release of the report tool, you are operating outside the supported capabilities of the report tool.  SAS recommends 
-using a release of Viya 4 ARK tools that matches the required minimum you are working with. 
+using a release of SAS Viya 4 ARK tools that matches the required minimum you are working with. 
 
 ## Known Issues
 
