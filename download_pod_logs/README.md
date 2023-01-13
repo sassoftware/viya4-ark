@@ -66,7 +66,7 @@ By default, the output files are written to a directory named `sas-k8s-logs` in 
 the `-o` or `--output-dir` option redirects the output files to the given location. The downloaded logs are placed in a
 timestamped directory inside of the `output-dir` location to allow for multiple executions.
 
-**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS platform deployment.
+**Note**: The `sas` namespace used in the example should be replaced with the namespace containing your SAS Viya platform deployment.
 
 ```commandline
 python3 viya-ark.py download-pod-logs -n sas --output-dir="/path/to/report/"
