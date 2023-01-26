@@ -6,7 +6,7 @@ HTML report with the results.
 
 SAS recommends running the tool and resolving any reported issues _before_ beginning a SAS Viya platform
 deployment in a Kubernetes cluster.  The tool cannot account for the dynamic resource allocations that 
-Kubernetes may orchestrate once Viya is deployed.  The report and the information therein must
+Kubernetes may orchestrate once SAS Viya is deployed.  The report and the information therein must
 be considered a snapshot in time.  
 
 The Kubernetes cluster for a SAS Viya platform deployment must meet the requirements documented in [SAS® Viya® Platform Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
@@ -19,7 +19,7 @@ The tool calculates the aggregate Memory and aggregate vCPUs of your cluster. Th
 of the Memory capacity on all the active and running nodes. The aggregate CPU is calculated similarly.
   
 There will be some percentage of Memory on each node in the cluster that is considered "overhead" (consumed by the OS, Kubelet, etc)
-and therefore not be available for SAS Viya.   This tool assumes that 85% of the calculated aggregate Memory is available for SAS Viya platform, 
+and therefore not be available for SAS Viya.   This tool assumes that 85% of the calculated aggregate Memory is available for the SAS Viya platform, 
 and the memory sizes in the report reflect this.  
 
 The calculated aggregate number of vCPUs must equal or exceed the required aggregate number of vCPUs for your deployment offering. 
