@@ -1,6 +1,6 @@
-# SAS Viya 4 Platform Administration Resource Kit
+# SAS Viya 4 Administration Resource Kit
 
-The SAS Viya Platform Administration Resource Kit (SAS Viya ARK) provides tools and utilities to help SAS customers prepare for and gather information about a SAS Viya platform deployment.
+The SAS Viya Administration Resource Kit (SAS Viya ARK) provides tools and utilities to help SAS customers prepare for and gather information about a SAS Viya platform deployment.
 
 ## Introduction
 SAS Viya ARK is a collection of resources that automate and streamline tasks that prepare an environment for a SAS Viya platform deployment. It also gathers information and generates reports about a deployment.
