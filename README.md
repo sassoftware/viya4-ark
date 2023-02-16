@@ -1,11 +1,12 @@
 # SAS Viya 4 Administration Resource Kit
 
-The SAS Viya Administration Resource Kit (SAS Viya ARK) provides tools and utilities to help SAS customers prepare for and gather information about a SAS Viya deployment.
+The SAS Viya Administration Resource Kit (SAS Viya ARK) provides tools and utilities to help SAS customers prepare for and gather information about a SAS Viya platform deployment.
 
 ## Introduction
-SAS Viya ARK is a collection of resources that automate and streamline tasks that prepare an environment for a SAS Viya deployment. It also gathers information and generates reports about a deployment.
+SAS Viya ARK is a collection of resources that automate and streamline tasks that prepare an environment for a SAS Viya platform deployment. It also gathers information and generates reports about a deployment.
 
-The main branch supports the latest release of SAS Viya. Visit the releases page for specific information about SAS Viya ARK and related SAS Viya product releases.
+The main branch supports the latest release of the SAS Viya platform. 
+Visit the releases page for specific information about SAS Viya ARK and related SAS Viya platform product releases.
 
 SAS Viya ARK provides the following types of assistance:
 
@@ -13,11 +14,13 @@ SAS Viya ARK provides the following types of assistance:
   * Post-deployment automation and utilities
 
 ## Prerequisites for SAS Viya ARK
+
 Obtain the latest version of SAS Viya ARK whenever you pull down new deployment assets or a new manifest.
 
 Each tool that is included in the resource kit provides a readme that describes its specific prerequisites and functionality.
 
 ### Required Python Packages
+
 SAS Viya ARK tools require third-party packages be installed before use. All required packages can be installed using the provided `requirements.txt`:
 
 ```commandline
@@ -26,12 +29,12 @@ python3 -m pip install -r requirements.txt
 The Python packages are only required on the host where SAS Viya ARK tools are executed.   
 
 ## Index of Tools
-Tool support for the latest release of SAS Viya:
+Tool support for the latest release of the SAS Viya platform:
 
-* [SAS Viya Deployment Report](deployment_report)
-* [SAS Viya Log Download Tool](download_pod_logs)
-* [Pre-installation of SAS Viya System Requirements](pre_install_report)
-* [SAS Viya LDAP Validator](ldap_validator)
+* [SAS Viya Platform Deployment Report](deployment_report)
+* [SAS Viya Platform Log Download Tool](download_pod_logs)
+* [Pre-installation of SAS Viya Platform System Requirements](pre_install_report)
+* [SAS Viya LDAP Platform Validator](ldap_validator)
 
 ## Contributing
 
