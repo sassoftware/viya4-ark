@@ -6,7 +6,7 @@ HTML report with the results.
 
 SAS recommends running the tool and resolving any reported issues _before_ beginning a SAS Viya platform
 deployment in a Kubernetes cluster.  The tool cannot account for the dynamic resource allocations that 
-Kubernetes may orchestrate once SAS Viya is deployed.  The report and the information therein must
+Kubernetes may orchestrate once the SAS Viya platform is deployed.  The report and the information therein must
 be considered a snapshot in time.  
 
 The Kubernetes cluster for a SAS Viya platform deployment must meet the requirements documented in [SAS® Viya® Platform Operations](https://go.documentation.sas.com/doc/en/itopscdc/default/itopssr/titlepage.htm)  
