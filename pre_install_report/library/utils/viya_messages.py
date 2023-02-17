@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020-2022, SAS Institute Inc., Cary, NC, USA.    ###
+# Copyright (c) 2020-2023, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -32,9 +32,9 @@ KUBECONF_FILE_ERROR = "ERROR: The file specified in the KUBECONFIG environment d
 KUBERNETES_VERSION_ERROR = "Kubernetes version is missing or invalid: {}"
 CLUSTER_CREATION_INFO = "** SAS recommends using the IaC tools to create the cluster. See SAS Viya 4 " \
                         "Infrastructure as Code (IaC) project for Microsoft Azure, AWS, GCP and " \
-                        "Open Source Kubernetes. Refer to SAS Viya Documentation for OpenShift."
-SIZINGS_INFO = "** Also refer to SAS Viya Documentation for Sizing Recommendations for Microsoft Azure, AWS, " \
-               "GCP, Open Source Kubernetes and OpenShift."
+                        "Open Source Kubernetes. Refer to SAS Viya Platform Documentation for OpenShift."
+SIZINGS_INFO = "** Also refer to SAS Viya Platform Documentation for Sizing Recommendations for Microsoft " \
+               "Azure, AWS, GCP, Open Source Kubernetes and OpenShift."
 
 # command line return codes #
 SUCCESS_RC_ = 0
