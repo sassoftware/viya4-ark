@@ -121,7 +121,7 @@ def get_db_info(resource_cache: Dict) -> Dict:
         pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_CRUNCHYCLUSTERS][ITEMS_KEY]
         db_dict = _get_db_info_v3(pgclusters)
 
-    if ResourceTypeValues.SAS_PGCLUSTERS in resource_cache.keys():
+    if not db_dict and ResourceTypeValues.SAS_PGCLUSTERS in resource_cache.keys():
         pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_PGCLUSTERS][ITEMS_KEY]
         db_dict = _get_db_info_v2(pgclusters)
 
