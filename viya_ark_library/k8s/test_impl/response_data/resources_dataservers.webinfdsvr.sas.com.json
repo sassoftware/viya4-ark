@@ -28,7 +28,7 @@
             "registrations": [
                 {
                     "dataServiceName": "sas-platform-postgres",
-                    "host": "my-daily-default-flexpsql.postgres.database.azure.com",
+                    "host": "my-daily-default-flexpsql.postgres.host.test",
                     "port": 5432,
                     "serviceName": "sas-platform-postgres"
                 }
@@ -40,7 +40,7 @@
                         "input": {
                             "passwordKey": "password",
                             "secretRef": {
-                                "name": "sas-crunchy-platform-postgres-pguser-dbmsowner"
+                                "name": "sas-platform-postgres-pguser-dbmsowner"
                             },
                             "usernameKey": "user"
                         }

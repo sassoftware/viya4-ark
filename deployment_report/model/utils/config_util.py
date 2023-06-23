@@ -333,7 +333,6 @@ def _get_db_info_v4(pgclusters: Dict) -> Dict:
 
             try:
                 dbs = {
-                    # Keys.DatabaseDetails.DBTYPE: _UNAVAIL_DB_,
                     Keys.DatabaseDetails.DBNAME: db_data[_DATASERVER_DATABASES_KEY_][0][_DATASERVER_NAME_KEY_],
                     Keys.DatabaseDetails.DBSSL: db_data[_PGCLUSTER_SSL_KEY_],
                     Keys.DatabaseDetails.DBHOST: db_data[_DATASERVER_REGISTRATIONS_KEY_][0][_PGCLUSTER_HOST_KEY_],
@@ -341,7 +340,6 @@ def _get_db_info_v4(pgclusters: Dict) -> Dict:
                 }
             except KeyError:
                 dbs = {
-                    # Keys.DatabaseDetails.DBTYPE: _UNAVAIL_DB_,
                     Keys.DatabaseDetails.DBCONN: _UNAVAIL_DB_
                 }
 
