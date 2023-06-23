@@ -41,6 +41,11 @@ _PGCLUSTER_NAME_KEY_ = "database"
 _PGCLUSTER_SSL_KEY_ = "ssl"
 _PGCLUSTER_CONNECT_KEY_ = "connection"
 
+# SAS postgres dataserver keys
+_DATASERVER_REGISTRATIONS_KEY_ = "registrations"
+_DATASERVER_DATABASES_KEY_ = "databases"
+_DATASERVER_NAME_KEY_ = "name"
+
 # database info values
 _EXTERNAL_DB_ = "External"
 _INTERNAL_DB_ = "Internal"
@@ -53,6 +58,7 @@ _UNAVAIL_DB_ = "not available"
 
 # database name key values
 _DBNAME_POSTGRES_ = "postgres"
+_DBNAME_DATASERVERS_POSTGRES_ = "sas-platform-postgres"
 _DBNAME_CONFIG_POSTGRES_ = "sas-postgres-config"
 _DBNAME_CPSPOSTGRES_ = "cpspostgres"
 _DBNAME_CONFIG_CPSPOSTGRES_ = "sas-planning-cpspostgres-config"
@@ -120,6 +126,10 @@ def get_db_info(resource_cache: Dict) -> Dict:
     if ResourceTypeValues.SAS_CRUNCHYCLUSTERS in resource_cache.keys():
         pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_CRUNCHYCLUSTERS][ITEMS_KEY]
         db_dict = _get_db_info_v3(pgclusters)
+
+    if not db_dict and ResourceTypeValues.SAS_DATASERVERS in resource_cache.keys():
+        dataservers: Dict = resource_cache[ResourceTypeValues.SAS_DATASERVERS][ITEMS_KEY]
+        db_dict = _get_db_info_v4(dataservers)
 
     if not db_dict and ResourceTypeValues.SAS_PGCLUSTERS in resource_cache.keys():
         pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_PGCLUSTERS][ITEMS_KEY]
@@ -285,6 +295,56 @@ def _get_db_info_v2(pgclusters: Dict) -> Dict:
                 if _CRUNCHDATA_DB_ in db_name:
                     db_name = db_name.replace(_CRUNCHDATA_DB_, "")
 
+                db_dict[db_name] = dbs
+        except KeyError:
+            continue
+
+    return db_dict
+
+
+def _get_db_info_v4(pgclusters: Dict) -> Dict:
+    """
+    Returns the db information of the targeted SAS deployment after evaluation of the dataserver
+    resources with the viya deployment
+
+    Note: A DataServer resource encapsulates the connection info & credentials for a single Postgres server,
+    which can be either internal or external.  The DataServer resource names
+    will always be either "sas-platform-postgres" or "sas-cds-postgres".
+    "sas-platform-postgres" will always exist, whereas "sas-cds-postgres" only exists if certain products
+    are included in the Viya orderable.
+
+    :param pgclusters: The dataservers resource to evaluate.
+    :return: A dictionary representing the db information of the targeted SAS deployment.
+    """
+    # initialize the return value
+    db_dict: Dict = dict()
+
+    for key in pgclusters:
+        try:
+            resource_definition = pgclusters[key][Keys.ResourceDetails.RESOURCE_DEFINITION]
+
+            db_name: Optional[Text] = resource_definition.get_name()
+            db_data: Optional[Dict] = resource_definition.get_spec()
+
+            dbs: Dict = dict()
+
+            if not db_data:
+                continue
+
+            try:
+                dbs = {
+                    Keys.DatabaseDetails.DBNAME: db_data[_DATASERVER_DATABASES_KEY_][0][_DATASERVER_NAME_KEY_],
+                    Keys.DatabaseDetails.DBSSL: db_data[_PGCLUSTER_SSL_KEY_],
+                    Keys.DatabaseDetails.DBHOST: db_data[_DATASERVER_REGISTRATIONS_KEY_][0][_PGCLUSTER_HOST_KEY_],
+                    Keys.DatabaseDetails.DBPORT: db_data[_DATASERVER_REGISTRATIONS_KEY_][0][_PGCLUSTER_PORT_KEY_],
+                }
+            except KeyError:
+                dbs = {
+                    Keys.DatabaseDetails.DBCONN: _UNAVAIL_DB_
+                }
+
+            if dbs:
+                # name is always "sas-platform-postgres" or "sas-cds-postgres".
                 db_dict[db_name] = dbs
         except KeyError:
             continue

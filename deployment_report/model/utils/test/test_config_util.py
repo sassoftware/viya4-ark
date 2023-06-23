@@ -63,6 +63,26 @@ def test_get_db_info_v2(no_ingress_simulation_fixture: conftest.DSA):
 
 
 @pytest.mark.usefixtures(conftest.NO_INGRESS_SIMULATION_FIXTURE)
+def test_get_db_info_v4(no_ingress_simulation_fixture: conftest.DSA):
+    """
+    This test verifies that the provided db data is returned when values is passed to
+    _get_db_info_v4().
+    """
+    # get the test resource cache
+    resource_cache: Dict = no_ingress_simulation_fixture.resource_cache()
+
+    pgclusters: Dict = resource_cache[ResourceTypeValues.SAS_DATASERVERS][ITEMS_KEY]
+    db_dict: Dict = config_util._get_db_info_v4(pgclusters=pgclusters)
+
+    # KeyError expected because DBTYPE is not set in db info with ResourceTypeValues.SAS_DATASERVERS
+    with pytest.raises(KeyError):
+        assert db_dict[config_util._DBNAME_DATASERVERS_POSTGRES_][Keys.DatabaseDetails.DBTYPE] == \
+            KubectlTest.Values.DB_External
+    assert db_dict[config_util._DBNAME_DATASERVERS_POSTGRES_][Keys.DatabaseDetails.DBPORT] == \
+        KubectlTest.Values.DB_DATASERVER_PORT
+
+
+@pytest.mark.usefixtures(conftest.NO_INGRESS_SIMULATION_FIXTURE)
 def test_get_db_info_v3(no_ingress_simulation_fixture: conftest.DSA):
     """
     This test verifies that the provided db data is returned
