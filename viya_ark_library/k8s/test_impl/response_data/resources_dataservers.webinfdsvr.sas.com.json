@@ -1,0 +1,53 @@
+[
+    {
+        "apiVersion": "webinfdsvr.sas.com/v1",
+        "kind": "DataServer",
+        "metadata": {
+            "annotations": {
+                "kubectl.kubernetes.io/last-applied-configuration": "",
+                "sas.com/default-database": "true"
+            },
+            "creationTimestamp": "2021-08-03T18:48:53Z",
+            "generation": 1,
+            "labels": {
+                "sas.com/admin": "cluster-local",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "sas-platform-postgres",
+            "namespace": "test",
+            "resourceVersion": "287826",
+            "selfLink": "/apis/webinfdsvr.sas.com/v1/namespaces/test/dataservers/sas-platform-postgres",
+            "uid": "85f6ff07-1c31-40cd-9070-3c169144df39"
+        },
+        "spec": {
+            "databases": [
+                {
+                    "name": "SharedServices"
+                }
+            ],
+            "registrations": [
+                {
+                    "dataServiceName": "sas-platform-postgres",
+                    "host": "my-daily-default-flexpsql.postgres.database.azure.com",
+                    "port": 5432,
+                    "serviceName": "sas-platform-postgres"
+                }
+            ],
+            "ssl": true,
+            "users": [
+                {
+                    "credentials": {
+                        "input": {
+                            "passwordKey": "password",
+                            "secretRef": {
+                                "name": "sas-crunchy-platform-postgres-pguser-dbmsowner"
+                            },
+                            "usernameKey": "user"
+                        }
+                    },
+                    "name": "dbmsowner"
+                }
+            ]
+        }
+    }
+]
