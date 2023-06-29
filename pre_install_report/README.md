@@ -95,49 +95,6 @@ python3 viya-ark.py pre-install-report -h
 The tool currently supports the following ingress controllers: _nginx, openshift_.    
 Other ingress controllers are not evaluated.  Select _openshift_ if you are deploying on Red Hat OpenShift.
 
-### Hints
-**Note:**  The values for the Ingress Host and Port values are not required if you specify an ingress value   
-of _openshift_.  The Ingress Host and Port values must be specified if you specify an ingress
-value of _nginx_.  
-
-The values for the Ingress Host and Ingress Port options can be determined with kubectl commands.   
-
-The following section provides hints for a _nginx_ ingress controller of Type LoadBalancer.
-The following commands may need to be modified to suit your ingress controller deployment. 
-
-You must specify the namespace where the ingress controller is available as well as the ingress controller name:
-
-```
-kubectl -n <nginx-ingress-namespace> get svc <nginx-ingress-controller-name> 
-```
-
-  
-Here is sample output from the command: 
-
-```
-NAME                                 TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)                      AGE
-ingress-nginx-controller             LoadBalancer   10.0.00.000   55.147.22.101   80:31254/TCP,443:31383/TCP   28d
-```
-
-Use the following commands to determine the parameter values:
-
-```
-export INGRESS_HOST=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.status.loadBalancer.ingress[*].ip}')
-export INGRESS_HTTP_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="http")].port}')
-export INGRESS_HTTPS_PORT=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.spec.ports[?(@.name=="https")].port}')
-```
-The command to determine the Ingress Host may be slightly different with Amazon Elastic Kubernetes Service(EKS):
-```
-export INGRESS_HOST=externalIP=$(kubectl -n <ingress-namespace> get service <nginx-ingress-controller-name> -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
-```
-
-Use the values gathered on the command line for http or https as appropriate for your deployment:
-
-```
-python3 viya-ark.py pre-install-report -i nginx  -H $INGRESS_HOST -p $INGRESS_HTTP_PORT 
-python3 viya-ark.py pre-install-report -i nginx  -H $INGRESS_HOST -p $INGRESS_HTTPS_PORT 
-```
- 
 ## Report Output
 
 The tool generates the pre-install check report, viya_pre_install_report_<timestamp>.html.  The report is in a   
@@ -151,25 +108,3 @@ minimum and aggregate settings for CPU and memory on nodes. For more information
 If you modify the VIYA_K8S_VERSION_MIN to a version less than the minimum Kubernetes version supported by this 
 release of the report tool, you are operating outside the supported capabilities of the report tool.  SAS recommends 
 using a release of SAS Viya 4 ARK tools that matches the required minimum you are working with. 
-
-## Known Issues
-
-The following issue may impact the performance and expected results of this tool.
-- All Nodes in a cluster must be in the READY state before running the tool.
-- If all the Nodes are not in the READY state, the tool takes longer to run. Wait for it to complete.  
-Also, the tool may not be able to clean up the pods and replicaset created in the specified namespace as shown in   
-  the example output below. If that happens, the pods and replicaset must be manually deleted.  
-They will look similar to the resources shown below:
-```    
-    NAME                               READY   STATUS    RESTARTS   AGE
-    pod/hello-world-6665cf748b-5x2jq   0/1     Pending   0          115m
-    pod/hello-world-6665cf748b-tkq79   0/1     Pending   0          115m
-
-    NAME                                     DESIRED   CURRENT   READY   AGE
-    replicaset.apps/hello-world-6665cf748b   2         2         0       115m
-
-    Suggested commands to delete resources before running the tool again:
-        kubectl -n <namespace> delete replicaset.apps/hello-world-6665cf748b
-        kubectl -n <namespace> delete pod/hello-world-6665cf748b-5x2jq
-        kubectl -n <namespace> delete pod/hello-world-6665cf748b-tkq79
-```

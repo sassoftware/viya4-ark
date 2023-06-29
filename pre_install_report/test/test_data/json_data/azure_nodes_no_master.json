@@ -1639,7 +1639,7 @@
                     },
                     {
                         "names": [
-                            "gcr.io/google-samples/node-hellofhds058d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b"
+                            "cr.io/my-samples/node-hellofhds058d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b"
                         ],
                         "sizeBytes": 643762709
                     },

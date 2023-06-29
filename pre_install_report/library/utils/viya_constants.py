@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
+# Copyright (c) 2021-2023, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -41,7 +41,6 @@ PERM_AZ_DISK = "AzureDisk Storage"
 PERM_AZ_DISK_STANDARD = "AzureDisk Standard Storage"
 PERM_AWS_EBS = "AWS EBS Storage"
 PERM_INGRESS = "Ingress"
-PERM_SAMPLE_STATUS = "Sample Status"
 PERM_CRD = "Custom Resource Definition"
 PERM_CR = "Custom Resource"
 PERM_STORAGE_CLASS = "Storage Class"

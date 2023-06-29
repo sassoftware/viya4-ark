@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
+# Copyright (c) 2021-2023, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -19,8 +19,7 @@ import logging
 import semantic_version
 
 from pint import UnitRegistry
-from pre_install_report.library.pre_install_utils import PreCheckUtils
-from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
+
 from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.pre_install_check import ViyaPreInstallCheck
 from pre_install_report.library.pre_install_check_permissions import PreCheckPermissions
@@ -302,33 +301,6 @@ def test_get_no_config_info():
     configs_data = vpc._get_config_current_context(data, configs_data)
     pprint.pprint(configs_data)
     assert configs_data == [[]]
-
-
-def test_check_route_host_port():
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    datafile = os.path.join(current_dir, 'test_data/json_data/openshift_route.json')
-    data = None
-    with open(datafile) as f:
-        data = json.load(f)
-    route_k8s: KubernetesResource = KubernetesResource(data)
-    assert route_k8s.get_kind() == "Route"
-
-    pre_check_utils_params = {}
-    pre_check_utils_params[viya_constants.KUBECTL] = None
-    pre_check_utils_params["logger"] = sas_logger
-    utils = PreCheckUtils(pre_check_utils_params)
-    params = {}
-    params[viya_constants.INGRESS_CONTROLLER] = viya_constants.OPENSHIFT_INGRESS
-    params[viya_constants.INGRESS_HOST] = ''
-    params[viya_constants.INGRESS_PORT] = ''
-    params['logger'] = sas_logger
-    params[viya_constants.PERM_CLASS] = utils
-    permissions_check = PreCheckPermissions(params)
-
-    permissions_check.set_route_k8s_resource(route_k8s)
-    permissions_check.check_openshift_route_host_port()
-    host = permissions_check.get_route_host()
-    assert host == 'no-route-hostname-lasiva.apps.ocp47vmw02.devops.rnd.sas.com'
 
 
 def test_get_config_info():

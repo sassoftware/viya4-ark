@@ -383,8 +383,8 @@
                     },
                     {
                         "names": [
-                            "gcr.io/google-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
-                            "gcr.io/google-samples/node-hello:1.0"
+                            "cr.io/my-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
+                            "cr.io/my-samples/node-hello:1.0"
                         ],
                         "sizeBytes": 643762709
                     },
@@ -819,8 +819,8 @@
                     },
                     {
                         "names": [
-                            "gcr.io/google-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
-                            "gcr.io/google-samples/node-hello:1.0"
+                            "cr.io/my-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
+                            "cr.io/my-samples/node-hello:1.0"
                         ],
                         "sizeBytes": 643762709
                     },
@@ -1810,8 +1810,8 @@
                     },
                     {
                         "names": [
-                            "gcr.io/google-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
-                            "gcr.io/google-samples/node-hello:1.0"
+                            "cr.io/my-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
+                            "cr.io/my-samples/node-hello:1.0"
                         ],
                         "sizeBytes": 643762709
                     },
