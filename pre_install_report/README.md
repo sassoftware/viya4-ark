@@ -91,10 +91,6 @@ The following command provides usage details:
 python3 viya-ark.py pre-install-report -h
 ```
 
-### Supported Ingress Values   
-The tool currently supports the following ingress controllers: _nginx, openshift_.    
-Other ingress controllers are not evaluated.  Select _openshift_ if you are deploying on Red Hat OpenShift.
-
 ## Report Output
 
 The tool generates the pre-install check report, viya_pre_install_report_<timestamp>.html.  The report is in a   

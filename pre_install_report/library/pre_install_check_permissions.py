@@ -56,8 +56,6 @@ class PreCheckPermissions(object):
 
         # the constructor initializes the following variables in the constructor #
         # variables are not used outside of the constructor                      #
-        self.ingress_controller = params.get(viya_constants.INGRESS_CONTROLLER)
-
         self.utils: PreCheckUtils = params.get(viya_constants.PERM_CLASS)
         self.sas_logger: ViyaARKLogger = params.get("logger")
         self.logger = self.sas_logger.get_logger()
@@ -68,11 +66,9 @@ class PreCheckPermissions(object):
         self.cluster_admin_permission_aggregate = {}
         self.namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = viya_constants.ADEQUATE_PERMS
         self.cluster_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] = viya_constants.ADEQUATE_PERMS
-        self.ingress_data = {}
-        self.ingress_data[viya_constants.INGRESS_CONTROLLER] = self.ingress_controller
+
         self._storage_class_sc: List[KubernetesResource] = None
         self._k8s_git_version = params.get(viya_constants.SERVER_K8S_VERSION)
-        self._route_k8s_resource: KubernetesResource = None
 
     def _set_results_cluster_admin(self, resource_key, rc):
         """
@@ -315,20 +311,6 @@ class PreCheckPermissions(object):
         else:
             self.namespace_admin_permission_data[resource_key] = viya_constants.ADEQUATE_PERMS
 
-    def set_route_k8s_resource(self, route: KubernetesResource):
-        """
-        Set the route information as KubernetesResource
-        Mainly used for pytest
-        """
-        self._route_k8s_resource: KubernetesResource = route
-
-    def get_ingress_controller(self):
-        """
-        Get the current ingress_controller
-
-        """
-        return str(self.ingress_controller)
-
     def check_create_custom_resource(self):
         """
         Create the  custome resource in specified namespace. Set the
@@ -338,8 +320,6 @@ class PreCheckPermissions(object):
         rc = self.utils.deploy_manifest_file(viya_constants.KUBECTL_APPLY,
                                              'crviya.yaml')
         self._set_results_namespace_admin_crd(viya_constants.PERM_CREATE + viya_constants.PERM_CR, rc)
-
-    #    TBD test_cmd = "kubectl get customresourcedefinition viyas.company.com -o name"
 
     def check_deploy_crd(self):
         """
@@ -447,14 +427,6 @@ class PreCheckPermissions(object):
         """
         return self.namespace_admin_permission_data
 
-    def get_ingress_data(self):
-        """
-        Return ingress data
-
-        return: dict object with ingress data
-        """
-        return self.ingress_data
-
     def get_namespace_admin_permission_aggregate(self):
         """
         Return namespace_admin_permission_aggregate
@@ -483,10 +455,3 @@ class PreCheckPermissions(object):
         return: string object
         """
         return self._k8s_git_version
-
-    def get_ingress_file_name(self):
-        """
-        Get the ingress manifest to be deployed
-        return: string object
-        """
-        return self._ingress_file

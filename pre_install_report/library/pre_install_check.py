@@ -72,7 +72,6 @@ class ViyaPreInstallCheck():
         self._calculated_aggregate_memory = None
         self._workers = 0
         self._aggregate_nodeStatus_failures = 0
-        self._ingress_controller = None
         self._k8s_server_version = None
 
     def _parse_release_info(self, release_info):
@@ -161,9 +160,7 @@ class ViyaPreInstallCheck():
             sys.exit(viya_messages.RUNTIME_ERROR_RC_)
 
     def check_details(self, kubectl,
-                      ingress_controller,
                       output_dir):
-        self._ingress_controller = ingress_controller
         self._kubectl = kubectl
         name_space = kubectl.get_namespace()
         self.logger.info("names_space: {} ".format(name_space))
@@ -198,7 +195,6 @@ class ViyaPreInstallCheck():
         global_data = self.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
 
         params = {}
-        params[viya_constants.INGRESS_CONTROLLER] = ingress_controller
         params[viya_constants.PERM_CLASS] = utils
         params[viya_constants.SERVER_K8S_VERSION] = self._k8s_server_version
         params['logger'] = self.sas_logger
@@ -223,7 +219,6 @@ class ViyaPreInstallCheck():
         self.generate_report(global_data, master_data, configs_data, storage_data, namespace_data,
                              permissions_check.get_cluster_admin_permission_data(),
                              permissions_check.get_namespace_admin_permission_data(),
-                             permissions_check.get_ingress_data(),
                              permissions_check.get_namespace_admin_permission_aggregate(),
                              permissions_check.get_cluster_admin_permission_aggregate(),
                              output_dir)
@@ -1066,7 +1061,6 @@ class ViyaPreInstallCheck():
                         namespace_data,
                         cluster_admin_permission_data,
                         namespace_admin_permission_data,
-                        ingress_data,
                         ns_admin_permission_aggregate,
                         cluster_admin_permission_aggregate,
                         output_directory=""):
@@ -1093,7 +1087,6 @@ class ViyaPreInstallCheck():
                     namespace_data=namespace_data,
                     cluster_admin_permission_data=cluster_admin_permission_data.items(),
                     namespace_admin_permission_data=namespace_admin_permission_data.items(),
-                    ingress_data=ingress_data.items(),
                     namespace_admin_permission_aggregate=ns_admin_permission_aggregate['Permissions'],
                     cluster_admin_permission_aggregate=cluster_admin_permission_aggregate['Permissions'],
                     cluster_creation_info=viya_messages.CLUSTER_CREATION_INFO,

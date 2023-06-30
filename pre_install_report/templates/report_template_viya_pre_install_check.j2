@@ -327,31 +327,6 @@
 
 <!-- Storage Class Check  End -->
 
-<!-- Ingress Setting -->
-
-    <div class="jq-accordion">
-        <h2>Ingress Controller </h2>
-    <div>
-
-    {% for key, value in ingress_data %}
-           <table class="mytable">
-             <TR>
-                 <TH> Ingress Controller </TH>
-             </TR>
-             <TR>
-                 <TD> {{value}}</TD>
-             </TR>
-           </table>
-           <style>
-            .mytable td, .mytable th { width:30%; }
-            .mytable td + td, .mytable th + th { width:70%; }
-           </style>
-    {% endfor %}
-    </div>
-    </div>
-<!-- Ingress Setting End -->
-
-
 <!-- Cluster Admin Permissions -->
     <div class="jq-accordion">
         <h2>Cluster Admin Permissions - {{ cluster_admin_permission_aggregate}} </h2>

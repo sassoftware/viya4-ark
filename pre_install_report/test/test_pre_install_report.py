@@ -616,16 +616,13 @@ def test_get_k8s_version():
     version_string2 = "1.19.0"
 
     params = {}
-    params[viya_constants.INGRESS_CONTROLLER] = 'nginx'
-    params[viya_constants.INGRESS_HOST] = '10.240.9.8'
-    params[viya_constants.INGRESS_PORT] = '80'
     params['logger'] = sas_logger
 
     # initialize the PreCheckPermissions object
     perms = PreCheckPermissions(params)
     perms.set_k8s_git_version(version_string)
 
-    # check curren version less than 1.20
+    # check current version less than 1.20
     curr_version = semantic_version.Version(str(version_string2))
     assert (curr_version in semantic_version.SimpleSpec('<1.20'))
     assert (curr_version in semantic_version.SimpleSpec('==1.19'))
@@ -639,9 +636,6 @@ def test_get_k8s_version():
 def test_check_permissions():
     # namespace = 'default'
     params = {}
-    params[viya_constants.INGRESS_CONTROLLER] = 'nginx'
-    params[viya_constants.INGRESS_HOST] = '10.240.9.8'
-    params[viya_constants.INGRESS_PORT] = '80'
     params['logger'] = sas_logger
 
     # initialize the PreCheckPermissions object
@@ -650,8 +644,7 @@ def test_check_permissions():
     assert len(cluster_permission_data) == 0
     namespace_admin_permission_data = perms.get_namespace_admin_permission_data()
     assert len(namespace_admin_permission_data) == 0
-    ingress_data = perms.get_ingress_data()
-    assert ingress_data[viya_constants.INGRESS_CONTROLLER] in 'nginx'
+
     namespace_admin_permission_aggregate = perms.get_namespace_admin_permission_aggregate()
     assert namespace_admin_permission_aggregate[viya_constants.PERM_PERMISSIONS] in viya_constants.ADEQUATE_PERMS
     cluster_admin_permission_aggregate = perms.get_cluster_admin_permission_aggregate()
@@ -659,14 +652,10 @@ def test_check_permissions():
 
     # Pytest not implemented currently.  Scaffolding TBD.  Currently requires live cluster
     # perms.check_sample_application(namespace, debug)
-    # perms.check_sample_ingress(namespace, debug)
     # perms.check_deploy_crd(namespace, debug)
     # perms.check_rbac_role(namespace, debug)
     # perms.check_create_custom_resource(namespace, debug)
     # perms.check_get_custom_resource(namespace, debug)
     # perms.check_delete_custom_resource(namespace, debug)
     # perms.check_rbac_delete_role(namespace, debug)
-    # perms.check_sample_response(debug)
     # perms.check_delete_crd(namespace, debug)
-    # perms.check_delete_sample_application(namespace, debug)
-    # perms.check_delete_sample_ingress(namespace, debug)
