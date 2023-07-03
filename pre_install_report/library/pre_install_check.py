@@ -202,18 +202,14 @@ class ViyaPreInstallCheck():
         permissions_check = PreCheckPermissions(params)
         self._check_permissions(permissions_check)
 
-        aggregate_permissions_check = [viya_constants.INSUFFICIENT_PERMS, viya_constants.PERM_SKIPPING]
-        namespace_permissions_check = [viya_constants.INSUFFICIENT_PERMS]
+        test_list = [viya_constants.INSUFFICIENT_PERMS, viya_constants.PERM_SKIPPING]
 
         # Log Summary of Permissions Issues found
-        if(any(ele in str(permissions_check.get_cluster_admin_permission_aggregate())
-               for ele in aggregate_permissions_check)):
+        if(any(ele in str(permissions_check.get_cluster_admin_permission_aggregate()) for ele in test_list)):
             self.logger.warn("WARN: Review Cluster Aggregate Report")
-        if(any(ele in str(permissions_check.get_namespace_admin_permission_aggregate())
-               for ele in aggregate_permissions_check)):
+        if(any(ele in str(permissions_check.get_namespace_admin_permission_aggregate()) for ele in test_list)):
             self.logger.warn("WARN: Review Namespace Aggregate Report")
-        if(any(ele in str(permissions_check.get_namespace_admin_permission_data())
-               for ele in namespace_permissions_check)):
+        if(any(ele in str(permissions_check.get_namespace_admin_permission_data()) for ele in test_list)):
             self.logger.warn("WARN: Review Namespace Permissions")
 
         self.generate_report(global_data, master_data, configs_data, storage_data, namespace_data,
