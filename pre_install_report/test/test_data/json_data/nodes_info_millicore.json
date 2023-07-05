@@ -172,8 +172,8 @@
                     },
                     {
                         "names": [
-                            "hello-world@sha256:9572f7cdcee8591948c2963463447a53466950b3fc15a247fcad1917ca215a2f",
-                            "hello-world:latest"
+                            "myapp-world@sha256:9572f7cdcee8591948c2963463447a53466950b3fc15a247fcad1917ca215a2f",
+                            "myapp-world:latest"
                         ],
                         "sizeBytes": 1840
                     }
@@ -383,8 +383,8 @@
                     },
                     {
                         "names": [
-                            "gcr.io/google-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
-                            "gcr.io/google-samples/node-hello:1.0"
+                            "cr.io/my-samples/node-myapp@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
+                            "cr.io/my-samples/node-myapp:1.0"
                         ],
                         "sizeBytes": 643762709
                     },
@@ -819,8 +819,8 @@
                     },
                     {
                         "names": [
-                            "gcr.io/google-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
-                            "gcr.io/google-samples/node-hello:1.0"
+                            "cr.io/my-samples/node-myapp@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
+                            "cr.io/my-samples/node-myapp:1.0"
                         ],
                         "sizeBytes": 643762709
                     },
@@ -1810,8 +1810,8 @@
                     },
                     {
                         "names": [
-                            "gcr.io/google-samples/node-hello@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
-                            "gcr.io/google-samples/node-hello:1.0"
+                            "cr.io/my-samples/node-myapp@sha256:d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b",
+                            "cr.io/my-samples/node-myapp:1.0"
                         ],
                         "sizeBytes": 643762709
                     },
