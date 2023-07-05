@@ -209,8 +209,6 @@ class ViyaPreInstallCheck():
             self.logger.warn("WARN: Review Cluster Aggregate Report")
         if(any(ele in str(permissions_check.get_namespace_admin_permission_aggregate()) for ele in test_list)):
             self.logger.warn("WARN: Review Namespace Aggregate Report")
-        if(any(ele in str(permissions_check.get_namespace_admin_permission_data()) for ele in test_list)):
-            self.logger.warn("WARN: Review Namespace Permissions")
 
         self.generate_report(global_data, master_data, configs_data, storage_data, namespace_data,
                              permissions_check.get_cluster_admin_permission_data(),
