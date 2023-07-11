@@ -21,7 +21,7 @@
                     "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
                     "kubernetes.azure.com/role": "agent",
                     "kubernetes.io/arch": "amd64",
-                    "kubernetes.io/hostname": "aks-stateful-ABCD0056-hello00001",
+                    "kubernetes.io/hostname": "aks-stateful-ABCD0056-myHost00001",
                     "kubernetes.io/os": "linux",
                     "kubernetes.io/role": "agent",
                     "node-role.kubernetes.io/agent": "",
@@ -272,7 +272,7 @@
             },
             "spec": {
                 "podCIDR": "10.244.5.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-compute-30760056-vmss/virtualMachines/0",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-compute-30760056-vmss/virtualMachines/0",
                 "taints": [
                     {
                         "effect": "NoSchedule",
@@ -424,7 +424,7 @@
             },
             "spec": {
                 "podCIDR": "10.244.7.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-connect-30760056-vmss/virtualMachines/0",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-connect-30760056-vmss/virtualMachines/0",
                 "taints": [
                     {
                         "effect": "NoSchedule",
@@ -436,7 +436,7 @@
             "status": {
                 "addresses": [
                     {
-                        "address": "aks-connect-30760056-hello000000",
+                        "address": "aks-connect-30760056-myapp000000",
                         "type": "Hostname"
                     },
                     {
@@ -575,7 +575,7 @@
             },
             "spec": {
                 "podCIDR": "10.244.8.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/0",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/0",
                 "taints": [
                     {
                         "effect": "NoSchedule",
@@ -587,7 +587,7 @@
             "status": {
                 "addresses": [
                     {
-                        "address": "aks-hellowrld-30760056-east123456",
+                        "address": "aks-myappwrld-30760056-east123456",
                         "type": "Hostname"
                     },
                     {
@@ -692,16 +692,16 @@
                 "volumesAttached": [
                     {
                         "devicePath": "0",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-26a54db7-584c-4bc2-875b-cfb4846007e3"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-26a54db7-584c-4bc2-875b-cfb4846007e3"
                     },
                     {
                         "devicePath": "1",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-5d17b557-a977-485b-88a2-e61515a5a89c"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-5d17b557-a977-485b-88a2-e61515a5a89c"
                     }
                 ],
                 "volumesInUse": [
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-26a54db7-584c-4bc2-875b-cfb4846007e3",
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-5d17b557-a977-485b-88a2-e61515a5a89c"
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-26a54db7-584c-4bc2-875b-cfb4846007e3",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-5d17b557-a977-485b-88a2-e61515a5a89c"
                 ]
             }
         },
@@ -725,7 +725,7 @@
                     "kubernetes.azure.com/node-image-version": "AKSUbuntu-1604-2020.08.19",
                     "kubernetes.azure.com/role": "agent",
                     "kubernetes.io/arch": "amd64",
-                    "kubernetes.io/hostname": "aks-stateful-ABCD0056-hello00001",
+                    "kubernetes.io/hostname": "aks-stateful-ABCD0056-myapp00001",
                     "kubernetes.io/os": "linux",
                     "kubernetes.io/role": "agent",
                     "node-role.kubernetes.io/agent": "",
@@ -733,14 +733,14 @@
                     "storagetier": "Premium_LRS",
                     "workload.sas.com/class": "stateful"
                 },
-                "name": "aks-stateful-ABCD0056-hello00001",
+                "name": "aks-stateful-ABCD0056-myapp00001",
                 "resourceVersion": "227926",
-                "selfLink": "/api/v1/nodes/aks-stateful-ABCD0056-hello00001",
+                "selfLink": "/api/v1/nodes/aks-stateful-ABCD0056-myapp00001",
                 "uid": "05899903-ac1c-45cf-9182-ca6fab6336ae"
             },
             "spec": {
                 "podCIDR": "10.244.2.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/1",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/1",
                 "taints": [
                     {
                         "effect": "NoSchedule",
@@ -752,7 +752,7 @@
             "status": {
                 "addresses": [
                     {
-                        "address": "aks-connect-ABCD0056-hello00001",
+                        "address": "aks-connect-ABCD0056-myapp00001",
                         "type": "Hostname"
                     },
                     {
@@ -864,21 +864,21 @@
                 "volumesAttached": [
                     {
                         "devicePath": "0",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-2223a925-0167-4f40-8e25-6cecdae749ab"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-2223a925-0167-4f40-8e25-6cecdae749ab"
                     },
                     {
                         "devicePath": "1",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-fdeeb59d-3e28-4cc1-8600-70f219e89eb6"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-fdeeb59d-3e28-4cc1-8600-70f219e89eb6"
                     },
                     {
                         "devicePath": "2",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-84c173df-9c28-4d84-a7c3-0ef2478e6ac5"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-84c173df-9c28-4d84-a7c3-0ef2478e6ac5"
                     }
                 ],
                 "volumesInUse": [
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-2223a925-0167-4f40-8e25-6cecdae749ab",
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-84c173df-9c28-4d84-a7c3-0ef2478e6ac5",
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-fdeeb59d-3e28-4cc1-8600-70f219e89eb6"
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-2223a925-0167-4f40-8e25-6cecdae749ab",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-84c173df-9c28-4d84-a7c3-0ef2478e6ac5",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-fdeeb59d-3e28-4cc1-8600-70f219e89eb6"
                 ]
             }
         },
@@ -917,7 +917,7 @@
             },
             "spec": {
                 "podCIDR": "10.244.3.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/2",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp1-rg_myapp1-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateful-30760056-vmss/virtualMachines/2",
                 "taints": [
                     {
                         "effect": "NoSchedule",
@@ -1041,26 +1041,26 @@
                 "volumesAttached": [
                     {
                         "devicePath": "0",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-96dd0197-f644-45dd-b53b-948c6c7e28ff"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp1-rg_myapp1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-96dd0197-f644-45dd-b53b-948c6c7e28ff"
                     },
                     {
                         "devicePath": "1",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-a7b71201-2b41-4427-9b6e-9080debfd902"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp1-rg_myapp1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-a7b71201-2b41-4427-9b6e-9080debfd902"
                     },
                     {
                         "devicePath": "2",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f16ec026-9ebb-4f36-a2a9-bee0af451df5"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp1-rg_myapp1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f16ec026-9ebb-4f36-a2a9-bee0af451df5"
                     },
                     {
                         "devicePath": "3",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f679ff40-4e0a-489d-a4c8-d273ea2e8e35"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp1-rg_myapp1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f679ff40-4e0a-489d-a4c8-d273ea2e8e35"
                     }
                 ],
                 "volumesInUse": [
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-96dd0197-f644-45dd-b53b-948c6c7e28ff",
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-a7b71201-2b41-4427-9b6e-9080debfd902",
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello1-rg_hello1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f16ec026-9ebb-4f36-a2a9-bee0af451df5",
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f679ff40-4e0a-489d-a4c8-d273ea2e8e35"
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp1-rg_myapp1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-96dd0197-f644-45dd-b53b-948c6c7e28ff",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp1-rg_myapp1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-a7b71201-2b41-4427-9b6e-9080debfd902",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp1-rg_myapp1-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f16ec026-9ebb-4f36-a2a9-bee0af451df5",
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-f679ff40-4e0a-489d-a4c8-d273ea2e8e35"
                 ]
             }
         },
@@ -1099,7 +1099,7 @@
             },
             "spec": {
                 "podCIDR": "10.244.6.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateless-30760056-vmss/virtualMachines/0",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateless-30760056-vmss/virtualMachines/0",
                 "taints": [
                     {
                         "effect": "NoSchedule",
@@ -1111,7 +1111,7 @@
             "status": {
                 "addresses": [
                     {
-                        "address": "aks-stateless-30760056-hellos0000",
+                        "address": "aks-stateless-30760056-myapps0000",
                         "type": "Hostname"
                     },
                     {
@@ -1250,7 +1250,7 @@
             },
             "spec": {
                 "podCIDR": "10.244.4.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateless-30760056-vmss/virtualMachines/1",
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-stateless-30760056-vmss/virtualMachines/1",
                 "taints": [
                     {
                         "effect": "NoSchedule",
@@ -1400,7 +1400,7 @@
             },
             "spec": {
                 "podCIDR": "10.244.0.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-system-30760056-vmss/virtualMachines/0"
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-system-30760056-vmss/virtualMachines/0"
             },
             "status": {
                 "addresses": [
@@ -1543,7 +1543,7 @@
             },
             "spec": {
                 "podCIDR": "10.244.1.0/24",
-                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-system-30760056-vmss/virtualMachines/1"
+                "providerID": "azure:///subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/virtualMachineScaleSets/aks-system-30760056-vmss/virtualMachines/1"
             },
             "status": {
                 "addresses": [
@@ -1639,7 +1639,7 @@
                     },
                     {
                         "names": [
-                            "gcr.io/google-samples/node-hellofhds058d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b"
+                            "cr.io/my-samples/node-myappfhds058d238d0ab54efb76ec0f7b1da666cefa9b40be59ef34346a761b8adc2dd45459b"
                         ],
                         "sizeBytes": 643762709
                     },
@@ -1876,11 +1876,11 @@
                 "volumesAttached": [
                     {
                         "devicePath": "0",
-                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-ce198a68-733b-4542-b21f-b35a97492b87"
+                        "name": "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-ce198a68-733b-4542-b21f-b35a97492b87"
                     }
                 ],
                 "volumesInUse": [
-                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_hello-rg_hello-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-ce198a68-733b-4542-b21f-b35a97492b87"
+                    "kubernetes.io/azure-disk//subscriptions/a8a6c1d2-0299-4e43-87b4-46761c088c31/resourceGroups/mc_myapp-rg_myapp-aks_eastus2/providers/Microsoft.Compute/disks/kubernetes-dynamic-pvc-ce198a68-733b-4542-b21f-b35a97492b87"
                 ]
             }
         }

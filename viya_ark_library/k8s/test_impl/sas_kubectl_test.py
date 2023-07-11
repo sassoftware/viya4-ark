@@ -88,6 +88,7 @@ class KubectlTest(KubectlInterface):
         CADENCEINFO: Text = "Fast R/TR 2020 (20201214.1607958443388)"
         DB_External: Text = "External"
         DB_Internal: Text = "Internal"
+        DB_DATASERVER_PORT = 5432
         INGRESS_NAMESPACE: Text = ""
 
         # Component: prometheus

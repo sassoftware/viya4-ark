@@ -5,7 +5,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021-2022, SAS Institute Inc., Cary, NC, USA.    ###
+# Copyright (c) 2021-2023, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -20,7 +20,6 @@ import logging
 import getopt
 import configparser
 
-from pre_install_report.library.utils import viya_constants
 from pre_install_report.library.utils import viya_messages
 from pre_install_report.library.pre_install_check import ViyaPreInstallCheck
 from viya_ark_library.command import Command
@@ -133,13 +132,9 @@ def usage(exit_code: int):
     :param exit_code: The exit code to return when exiting the program.
     """
     print()
-    print("Usage: viya-ark.py pre_install_report <-i|--ingress> [<options>]")
+    print("Usage: viya-ark.py pre_install_report [<options>]")
     print()
     print("Options:")
-    print("    -i  --ingress                 (Required)Kubernetes ingress controller: "
-          "{} or {}".format(viya_constants.INGRESS_NGINX, viya_constants.OPENSHIFT_INGRESS))
-    print("    -H  --host                    (Optional)Ingress host used for Viya deployment")
-    print("    -p  --port=xxxxx or \"\"        (Optional)Ingress port used for Viya deployment")
     print("    -h  --help                    (Optional)Show this usage message")
     print("    -n  --namespace               (Optional)Kubernetes namespace used for Viya deployment")
     print("    -o, --output-dir=\"<dir>\"      (Optional)Write the report and log files to the provided directory")
@@ -161,17 +156,12 @@ def main(argv):
     """
     try:
         opts, args = getopt.getopt(argv, "i:H:p:hn:o:d",
-                                   ["ingress=", "host=", "port=", "help", "namespace=", "output-dir=", "debug"])
+                                   ["help", "namespace=", "output-dir=", "debug"])
     except getopt.GetoptError as opt_error:
         print(viya_messages.EXCEPTION_MESSAGE.format(opt_error))
         usage(viya_messages.BAD_OPT_RC_)
 
-    found_ingress_controller: bool = False
-    found_ingress_host: bool = False
-    found_ingress_port: bool = False
     output_dir: Optional[Text] = ""
-    ingress_port: Optional[Text] = ""
-    ingress_host: Optional[Text] = ""
     name_space: Optional[Text] = None
     logging_level: int = logging.INFO
 
@@ -182,15 +172,7 @@ def main(argv):
             logging_level = logging.DEBUG
         elif opt in ('-n', '--namespace'):
             name_space = arg
-        elif opt in ('-i', '--ingress'):
-            ingress_controller = arg
-            found_ingress_controller = True
-        elif opt in ('-H', '--host'):
-            ingress_host = arg
-            found_ingress_host = True
-        elif opt in ('-p', '--port'):
-            found_ingress_port = True
-            ingress_port = arg
+
         elif opt in ('-o', '--output-dir'):
             output_dir = arg
         else:
@@ -217,22 +199,6 @@ def main(argv):
     sas_logger = ViyaARKLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
     logger = sas_logger.get_logger()
     read_environment_var('KUBECONFIG')
-
-    if not found_ingress_controller:
-        logger.error(viya_messages.OPTION_VALUES_ERROR)
-        print(viya_messages.OPTION_VALUES_ERROR)
-        usage(viya_messages.BAD_OPT_RC_)
-
-    if not(str(ingress_controller) == viya_constants.INGRESS_NGINX) and \
-            not(str(ingress_controller) == viya_constants.OPENSHIFT_INGRESS):
-        logger.error(viya_messages.INGRESS_CONTROLLER_ERROR)
-        print(viya_messages.INGRESS_CONTROLLER_ERROR)
-        usage(viya_messages.BAD_OPT_RC_)
-
-    if (str(ingress_controller) == viya_constants.INGRESS_NGINX) and not found_ingress_host and not found_ingress_port:
-        logger.error(viya_messages.OPTION_VALUES_ERROR)
-        print(viya_messages.OPTION_VALUES_ERROR)
-        usage(viya_messages.BAD_OPT_RC_)
 
     try:
         kubectl = Kubectl(namespace=name_space)
@@ -267,7 +233,8 @@ def main(argv):
     # gather the details for the report
     try:
         print()
-        sas_pre_check_report.check_details(kubectl, ingress_port, ingress_host, ingress_controller, output_dir)
+        sas_pre_check_report.check_details(kubectl,
+                                           output_dir)
     except RuntimeError as e:
         print()
         print(viya_messages.EXCEPTION_MESSAGE.format(e))

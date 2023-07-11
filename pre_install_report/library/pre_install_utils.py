@@ -62,10 +62,7 @@ class PreCheckUtils(object):
 
     def do_cmd(self, test_cmd):
         """
-        Run the specified kubectl command and return the output. Used to execute commands such as
-        rollout status <deployment.v1.apps/hello-world
-        scale --replicas=2 deployment/hello-world
-        wait --for=delete pod -l app=hello-world-pod
+        Run the specified kubectl command and return the output.
 
         cmd: kubectl command to be executed
         return:  kubectl rc

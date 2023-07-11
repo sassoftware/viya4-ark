@@ -238,6 +238,24 @@
         ],
         "version": "v1"
     },
+    "dataservers.webinfdsvr.sas.com": {
+        "group": "webinfdsvr.sas.com",
+        "kind": "DataServer",
+        "name": "dataservers",
+        "namespaced": true,
+        "shortname": "",
+        "verbs": [
+            "create",
+            "delete",
+            "deletecollection",
+            "get",
+            "list",
+            "patch",
+            "update",
+            "watch"
+        ],
+        "version": "v1beta1"
+    },
     "postgresclusters.postgres-operator.crunchydata.com": {
         "group": "postgres-operator.crunchydata.com",
         "kind": "PostgresCluster",
