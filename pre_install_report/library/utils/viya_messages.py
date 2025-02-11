@@ -16,8 +16,6 @@ CONFIG_ERROR = "ERROR: Unable to read configuration file. Make " \
                "sure that kubectl" \
                " is properly configured and the KUBECONFIG " \
                "environment variable has a valid value"
-KUBECONF_ERROR = "ERROR: KUBECONFIG environment var must be set for the script " \
-                "to access the Kubernetes cluster."
 CHECK_NAMESPACE = ' ERROR: Check available permissions in namespace and if it is valid: '
 LIMIT_ERROR = 'ERROR: The value in the viya_deployment_settings.ini file is not valid: {} = {}'
 KUBELET_VERSION_ERROR = 'ERROR: Check the VIYA_K8S_VERSION_MIN value ' \
