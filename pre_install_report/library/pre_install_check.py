@@ -218,21 +218,6 @@ class ViyaPreInstallCheck():
                              output_dir)
         return
 
-    def _read_environment_var(self, env_var):
-        """
-        This method verifies that the KUBECONFIG environment variable is set.
-
-        :param env_var: Environment variable to check
-        """
-        try:
-            value_env_var = os.environ[env_var]
-        except Exception:
-            self.logger.exception("CalledProcessorError")
-            print(viya_messages.KUBECONF_ERROR)
-            sys.exit(viya_messages.BAD_ENV_RC_)
-
-        return value_env_var
-
     def _get_nested_info(self, nested_nodes, extracted_nodes, search_key):
 
         try:

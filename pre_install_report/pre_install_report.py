@@ -74,24 +74,6 @@ def _read_config_file(filename):
             sys.exit(viya_messages.SET_LIMTS_ERROR_RC_)
 
 
-def read_environment_var(env_var):
-    """
-    This method verifies that the KUBECONFIG environment variable is set.
-
-    :param env_var: Environment variable to check
-    """
-    try:
-        value_env_var = os.environ[env_var]
-        # Check if specified file exists
-        if not os.path.exists(value_env_var):
-            print(viya_messages.KUBECONF_FILE_ERROR.format(value_env_var))
-            sys.exit(viya_messages.BAD_ENV_RC_)
-    except Exception:
-        print(viya_messages.KUBECONF_ERROR)
-        sys.exit(viya_messages.BAD_ENV_RC_)
-    return value_env_var
-
-
 class PreInstallReportCommand(Command):
     """
     Command implementation for the pre-install command to register
@@ -198,7 +180,6 @@ def main(argv):
 
     sas_logger = ViyaARKLogger(report_log_path, logging_level=logging_level, logger_name="pre_install_logger")
     logger = sas_logger.get_logger()
-    read_environment_var('KUBECONFIG')
 
     try:
         kubectl = Kubectl(namespace=name_space)
