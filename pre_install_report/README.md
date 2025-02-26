@@ -75,8 +75,8 @@ Download the latest version of this tool and update required packages with every
 
 ## Usage
 
-**Note:** You must set your `KUBECONFIG` environment variable. `KUBECONFIG` must have administrator rights to the   
-cluster where you intend to deploy your SAS Viya platform software.
+You may set `KUBECONFIG` environment variable.  If not set, `kubectl` will use `.kube/config` by default. 
+`KUBECONFIG` must have administrator rights to the cluster where you intend to deploy your SAS Viya platform software.
 To obtain a complete report use a `KUBECONFIG` with administrator rights in the cluster.  Otherwise, the report will   
 not be able to evaluate items such as memory, CPU cores, software versions and other node details. It is not useful   
 for determining if you are ready to deploy your SAS Viya platform software.
