@@ -37,6 +37,13 @@ deployment can be specified by including the `-n` or `--namespace` option.
 python3 viya-ark.py deployment-report --namespace sas
 ```
 
+### Specifying Ingress Controller Namespace
+
+The `-i` or `--ingress-namespace` option MUST be used to specified the namespace where the ingress controller is deployed.
+
+```commandline
+python3 viya-ark.py deployment-report --namespace sas --ingress-namespace ingress-ns
+```
 ### Including Log Snippets for All Pods
 
 Including the `-l` or `--include-pod-log-snips` option yields a report with a 10-line log snippet for each pod.
