@@ -39,7 +39,7 @@ python3 viya-ark.py deployment-report --namespace sas
 
 ### Specifying Ingress Controller Namespace
 
-The `-i` or `--ingress-namespace` option MUST be used to specified the namespace where the ingress controller is deployed.
+The `-i` or `--ingress-namespace` option MUST be used to specify the namespace where the ingress controller is deployed.
 
 ```commandline
 python3 viya-ark.py deployment-report --namespace sas --ingress-namespace ingress-ns
