@@ -306,15 +306,16 @@ class ViyaDeploymentReport(object):
                     )
                 elif not expected_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:
                     raise NamespaceNotFoundError(
-                        f"The provided ingress namespace [{kubectl.ingress_ns}] is not valid for the determined ingress "
-                        f"controller [{ingress_controller}]."
+                        f"The provided ingress namespace [{kubectl.ingress_ns}] is not valid for the "
+                        f"determined ingress controller [{ingress_controller}]."
                     )
             else:
                 kubectl.ingress_ns = expected_ns
 
             # Set ingress_version based on the determined controller and namespace
             if kubectl.ingress_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:
-                ingress_version = ingress_util.get_ingress_version(kubectl=kubectl, ingress_controller=ingress_controller)
+                ingress_version = ingress_util.get_ingress_version(kubectl=kubectl,
+                                                                   ingress_controller=ingress_controller)
             else:
                 ingress_version = "N/A (No default ingress namespace was found)"
 
