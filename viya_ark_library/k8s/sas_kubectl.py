@@ -82,18 +82,7 @@ class Kubectl(KubectlInterface):
                 self.ingress_ns = None
 
                 # get ingress namespace
-                if not ingress_namespace:
-                    for x in range(len(existing_namespaces)):
-                        ns: AnyStr = existing_namespaces[x].get_name()
-                        if (
-                            ns == SupportedIngress.Controllers.NS_CONTOUR or
-                            ns == SupportedIngress.Controllers.NS_ISTIO or
-                            ns == SupportedIngress.Controllers.NS_NGINX or
-                            ns == SupportedIngress.Controllers.NS_OPENSHIFT
-                           ):
-                            self.ingress_ns = ns
-                            break
-                else:
+                if ingress_namespace:
                     ns: AnyStr = self.do("get namespace " + ingress_namespace, ignore_errors=True, warning=False)
                     if type(ns) is str and _NOTFOUND_ in ns:
                         raise NamespaceNotFoundError(
