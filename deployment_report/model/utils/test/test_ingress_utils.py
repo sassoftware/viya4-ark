@@ -34,7 +34,7 @@ def test_determine_ingress_controller_no_ingress(
     controller: Optional[Text] = \
         ingress_util.determine_ingress_controller(no_ingress_simulation_fixture.resource_cache())
 
-    assert controller is None
+    assert controller == SupportedIngress.Controllers.UNKNOWN
 
 
 @pytest.mark.usefixtures(conftest.ALL_AVAILABLE_CONTOUR_USED_SIMULATION_FIXTURE)

@@ -295,10 +295,11 @@ class ViyaDeploymentReport(object):
             }
 
             # Determine expected ingress namespace based on the controller
-            expected_ns = controller_to_ns.get(ingress_controller, None)
+            expected_ns = controller_to_ns.get(ingress_controller,
+                                               SupportedIngress.Controllers.UNKNOWN)
 
             # If -i was provided, validate it against the expected namespace; otherwise, set it
-            if hasattr(kubectl, 'ingress_ns') and kubectl.ingress_ns is not None:
+            if hasattr(kubectl, 'ingress_ns') and kubectl.ingress_ns and kubectl.ingress_ns != "":
                 if expected_ns and kubectl.ingress_ns != expected_ns:
                     raise NamespaceNotFoundError(
                         f"The provided ingress namespace [{kubectl.ingress_ns}] does not match the expected namespace "

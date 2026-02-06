@@ -46,8 +46,8 @@ def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
                     if resource.is_sas_resource():
                         return ingress_controller
 
-    # if a controller couldn't be determined, return None
-    return None
+    # if a controller couldn't be determined, return Unknown
+    return SupportedIngress.Controllers.UNKNOWN
 
 
 def ignorable_for_controller_if_unavailable(ingress_controller: Text, resource_type: Text) -> bool:
