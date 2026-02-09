@@ -286,17 +286,8 @@ class ViyaDeploymentReport(object):
             # this will help to evaluate which resources should be considered "unavailable"
             ingress_controller = ingress_util.determine_ingress_controller(resource_cache)
 
-            # Mapping of ingress controllers to their expected namespaces
-            controller_to_ns = {
-                SupportedIngress.Controllers.CONTOUR: SupportedIngress.Controllers.NS_CONTOUR,
-                SupportedIngress.Controllers.ISTIO: SupportedIngress.Controllers.NS_ISTIO,
-                SupportedIngress.Controllers.NGINX: SupportedIngress.Controllers.NS_NGINX,
-                SupportedIngress.Controllers.OPENSHIFT: SupportedIngress.Controllers.NS_OPENSHIFT,
-            }
-
             # Determine expected ingress namespace based on the controller
-            expected_ns = controller_to_ns.get(ingress_controller,
-                                               SupportedIngress.Controllers.UNKNOWN)
+            expected_ns = ingress_util.get_namespace_for_ingress_controller(ingress_controller)
 
             # If -i was provided, validate it against the expected namespace; otherwise, set it
             if hasattr(kubectl, 'ingress_ns') and kubectl.ingress_ns and kubectl.ingress_ns != "":

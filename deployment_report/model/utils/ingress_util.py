@@ -31,7 +31,8 @@ def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
     Determines the ingress controller being used in the Kubernetes cluster.
 
     :param gathered_resources: The complete dictionary of gathered resources from the Kubernetes cluster.
-    :return: The ingress controller used in the target cluster or None if the controller cannot be determined.
+    :return: The ingress controller used in the target cluster or SupportedIngress.Controllers.UNKNOWN
+        if the controller cannot be determined.
     """
     for ingress_controller, resource_types in SupportedIngress.get_ingress_controller_to_resource_types_map().items():
         # iterate over all resource types
@@ -177,3 +178,19 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
                     version = v.split("/")[-1].capitalize()
 
     return version.strip()
+
+
+def get_namespace_for_ingress_controller(ingress_controller: Text) -> Optional[Text]:
+    """
+    Maps a given ingress controller to its associated namespace as defined by SupportedIngress.Controllers data.
+
+    :param ingress_controller: The ingress controller string (e.g., SupportedIngress.Controllers.CONTOUR).
+    :return: The namespace string for the controller, or SupportedIngress.Controllers.UNKNOWN if unsupported.
+    """
+    controller_to_ns = {
+        SupportedIngress.Controllers.CONTOUR: SupportedIngress.Controllers.NS_CONTOUR,
+        SupportedIngress.Controllers.ISTIO: SupportedIngress.Controllers.NS_ISTIO,
+        SupportedIngress.Controllers.NGINX: SupportedIngress.Controllers.NS_NGINX,
+        SupportedIngress.Controllers.OPENSHIFT: SupportedIngress.Controllers.NS_OPENSHIFT,
+    }
+    return controller_to_ns.get(ingress_controller, SupportedIngress.Controllers.UNKNOWN)
