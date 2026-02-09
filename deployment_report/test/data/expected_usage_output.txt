@@ -5,7 +5,7 @@ usage: viya-ark.py deployment-report [-h] [-d] [-i INGRESS_NAMESPACE]
 Generate a deployment report of SAS components for a target Kubernetes
 environment.
 
-options:
+optional arguments:
   -h, --help            show this help message and exit
   -d, --data-file-only  Generate only the JSON-formatted data.
   -i INGRESS_NAMESPACE, --ingress-namespace INGRESS_NAMESPACE
