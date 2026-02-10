@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2026, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -461,7 +461,7 @@ class KubectlTest(KubectlInterface):
         return self.namespace
 
     def do(self, command: Text, ignore_errors: bool = False, success_rcs: Optional[List[int]] = None) -> AnyStr:
-        return "Not functional in testing implementation"
+        return b"Not functional in testing implementation"
 
     def api_resources(self, ignore_errors: bool = False) -> KubernetesAvailableResourceTypes:
         api_resources_data: Dict = dict()

@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022-2026, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -18,7 +18,6 @@ from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.sas_k8s_errors import NamespaceNotFoundError
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesAvailableResourceTypes, KubernetesMetrics, KubernetesResource
 from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
-from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 
 # header values used in retrieving values returned by kubectl
 _HEADER_NAME_ = "NAME"
@@ -82,18 +81,7 @@ class Kubectl(KubectlInterface):
                 self.ingress_ns = None
 
                 # get ingress namespace
-                if not ingress_namespace:
-                    for x in range(len(existing_namespaces)):
-                        ns: AnyStr = existing_namespaces[x].get_name()
-                        if (
-                            ns == SupportedIngress.Controllers.NS_CONTOUR or
-                            ns == SupportedIngress.Controllers.NS_ISTIO or
-                            ns == SupportedIngress.Controllers.NS_NGINX or
-                            ns == SupportedIngress.Controllers.NS_OPENSHIFT
-                           ):
-                            self.ingress_ns = ns
-                            break
-                else:
+                if ingress_namespace:
                     ns: AnyStr = self.do("get namespace " + ingress_namespace, ignore_errors=True, warning=False)
                     if type(ns) is str and _NOTFOUND_ in ns:
                         raise NamespaceNotFoundError(

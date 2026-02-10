@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022-2026, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -29,7 +29,7 @@ from deployment_report.model.utils import \
 from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
-from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
+from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError, NamespaceNotFoundError
 from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 from viya_ark_library.k8s.sas_k8s_objects import \
     KubernetesAvailableResourceTypes, \
@@ -285,19 +285,31 @@ class ViyaDeploymentReport(object):
             # determine the ingress controller for the deployment
             # this will help to evaluate which resources should be considered "unavailable"
             ingress_controller = ingress_util.determine_ingress_controller(resource_cache)
-            if (
-                ingress_controller == SupportedIngress.Controllers.NGINX or
-                ingress_controller == SupportedIngress.Controllers.ISTIO or
-                ingress_controller == SupportedIngress.Controllers.OPENSHIFT or
-                ingress_controller == SupportedIngress.Controllers.CONTOUR
-               ):
-                if not kubectl.ingress_ns:
-                    ingress_version = "N/A (No default ingress namespace was found)"
-                else:
-                    ingress_version = ingress_util.get_ingress_version(kubectl=kubectl,
-                                                                       ingress_controller=ingress_controller)
+
+            # Determine expected ingress namespace based on the controller
+            expected_ns = ingress_util.get_namespace_for_ingress_controller(ingress_controller)
+
+            # If -i was provided, validate it against the expected namespace; otherwise, set it
+            if hasattr(kubectl, 'ingress_ns') and kubectl.ingress_ns and kubectl.ingress_ns != "":
+                if expected_ns and kubectl.ingress_ns != expected_ns:
+                    raise NamespaceNotFoundError(
+                        f"The provided ingress namespace [{kubectl.ingress_ns}] does not match the expected namespace "
+                        f"[{expected_ns}] for the determined ingress controller [{ingress_controller}]."
+                    )
+                elif not expected_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:
+                    raise NamespaceNotFoundError(
+                        f"The provided ingress namespace [{kubectl.ingress_ns}] is not valid for the "
+                        f"determined ingress controller [{ingress_controller}]."
+                    )
             else:
-                ingress_controller = SupportedIngress.Controllers.UNKNOWN
+                kubectl.ingress_ns = expected_ns
+
+            # Set ingress_version based on the determined controller and namespace
+            if kubectl.ingress_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:
+                ingress_version = ingress_util.get_ingress_version(kubectl=kubectl,
+                                                                   ingress_controller=ingress_controller)
+            else:
+                ingress_version = "N/A (No default ingress namespace was found)"
 
             # determine if any resource types for which caching was attempted were unavailable
             # if at least one is unavailable, a message will be displayed saying that components may not be complete

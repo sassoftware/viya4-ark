@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2026, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -34,7 +34,7 @@ def test_determine_ingress_controller_no_ingress(
     controller: Optional[Text] = \
         ingress_util.determine_ingress_controller(no_ingress_simulation_fixture.resource_cache())
 
-    assert controller is None
+    assert controller == SupportedIngress.Controllers.UNKNOWN
 
 
 @pytest.mark.usefixtures(conftest.ALL_AVAILABLE_CONTOUR_USED_SIMULATION_FIXTURE)
@@ -288,3 +288,28 @@ def test_ignorable_for_controller_if_unavailable_openshift():
     assert not ingress_util.ignorable_for_controller_if_unavailable(
         ingress_controller=SupportedIngress.Controllers.OPENSHIFT,
         resource_type=ResourceTypeValues.OPENSHIFT_ROUTES)
+
+
+@pytest.mark.parametrize("ingress_controller,expected_ns", [
+    (SupportedIngress.Controllers.CONTOUR, SupportedIngress.Controllers.NS_CONTOUR),
+    (SupportedIngress.Controllers.ISTIO, SupportedIngress.Controllers.NS_ISTIO),
+    (SupportedIngress.Controllers.NGINX, SupportedIngress.Controllers.NS_NGINX),
+    (SupportedIngress.Controllers.OPENSHIFT, SupportedIngress.Controllers.NS_OPENSHIFT),
+])
+def test_get_namespace_for_ingress_controller_supported(ingress_controller: Text, expected_ns: Text):
+    """
+    This test verifies that the correct namespace is returned for supported ingress controllers.
+
+    :param ingress_controller: The ingress controller to test.
+    :param expected_ns: The expected namespace.
+    """
+    result: Optional[Text] = ingress_util.get_namespace_for_ingress_controller(ingress_controller)
+    assert result == expected_ns
+
+
+def test_get_namespace_for_ingress_controller_unsupported():
+    """
+    This test verifies that UNKNOWN is returned for an unsupported ingress controller.
+    """
+    result: Optional[Text] = ingress_util.get_namespace_for_ingress_controller("invalid-controller")
+    assert result == SupportedIngress.Controllers.UNKNOWN
