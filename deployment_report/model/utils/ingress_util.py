@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022-2026, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -25,6 +25,13 @@ from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 _NGINX_VERSION_ = "nginx version:"
 _RELEASE_ = "Release:"
 
+# A map of ingress controllers to associated namespaces
+_controller_to_ns = {
+        SupportedIngress.Controllers.CONTOUR: SupportedIngress.Controllers.NS_CONTOUR,
+        SupportedIngress.Controllers.ISTIO: SupportedIngress.Controllers.NS_ISTIO,
+        SupportedIngress.Controllers.NGINX: SupportedIngress.Controllers.NS_NGINX,
+        SupportedIngress.Controllers.OPENSHIFT: SupportedIngress.Controllers.NS_OPENSHIFT,
+    }
 
 def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
     """
@@ -180,17 +187,12 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
     return version.strip()
 
 
-def get_namespace_for_ingress_controller(ingress_controller: Text) -> Optional[Text]:
+def get_namespace_for_ingress_controller(ingress_controller: Text) -> Text:
     """
     Maps a given ingress controller to its associated namespace as defined by SupportedIngress.Controllers data.
 
     :param ingress_controller: The ingress controller string (e.g., SupportedIngress.Controllers.CONTOUR).
     :return: The namespace string for the controller, or SupportedIngress.Controllers.UNKNOWN if unsupported.
     """
-    controller_to_ns = {
-        SupportedIngress.Controllers.CONTOUR: SupportedIngress.Controllers.NS_CONTOUR,
-        SupportedIngress.Controllers.ISTIO: SupportedIngress.Controllers.NS_ISTIO,
-        SupportedIngress.Controllers.NGINX: SupportedIngress.Controllers.NS_NGINX,
-        SupportedIngress.Controllers.OPENSHIFT: SupportedIngress.Controllers.NS_OPENSHIFT,
-    }
-    return controller_to_ns.get(ingress_controller, SupportedIngress.Controllers.UNKNOWN)
+
+    return _controller_to_ns.get(ingress_controller, SupportedIngress.Controllers.UNKNOWN)
