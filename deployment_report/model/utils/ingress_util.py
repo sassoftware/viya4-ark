@@ -33,6 +33,7 @@ _controller_to_ns = {
         SupportedIngress.Controllers.OPENSHIFT: SupportedIngress.Controllers.NS_OPENSHIFT,
     }
 
+
 def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
     """
     Determines the ingress controller being used in the Kubernetes cluster.
