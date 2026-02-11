@@ -173,7 +173,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
 
     elif ingress_controller == SupportedIngress.Controllers.CONTOUR:
         podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l app=envoy")
+                                     " -l controller-revision-hash")
         if podname:
             version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
