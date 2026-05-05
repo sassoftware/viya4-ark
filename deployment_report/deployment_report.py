@@ -112,6 +112,12 @@ def main(argv: List):
     # parse the args passed to this command
     args = arg_parser.parse_args(argv)
 
+    limit = sys.getrecursionlimit()
+    print(f"Current recursion limit: {limit}")
+    new_limit = 500
+    sys.setrecursionlimit(new_limit)
+    print(f"New recursion limit: {new_limit}")
+
     # initialize the kubectl object
     # this will also verify the connection to the cluster and if the namespace is valid, if provided
     try:

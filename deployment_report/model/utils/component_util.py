@@ -20,7 +20,7 @@ from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 
 
-def aggregate_resources(resource_details: Dict, component: Dict, resource_cache: Dict) -> None:
+def aggregate_resources(resource_details: Dict, component: Dict, resource_cache: Dict, visited=None, path=None) -> None:
     """
     Aggregates the various resources that comprise a SAS component deployed into the Kubernetes cluster.
 
@@ -31,6 +31,14 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
     :param component: The dictionary where the related resources comprising the component will be compiled.
     :param resource_cache: The complete dictionary of resources cached from the Kubernetes cluster.
     """
+    # debug
+    if visited is None:
+        visited = set()
+    if path is None:
+        path = []
+    print(f"\naggregate_resources(): visited ({len(visited)}), path ({len(path)})")
+
+
     # set up the component dict
     if NAME_KEY not in component:
         component[NAME_KEY]: Text = ""
@@ -47,6 +55,18 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
 
     # get the resource definition
     resource: KubernetesResource = resource_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+    # debug
+    resource_name = resource.get_name()
+    resource_id = (resource_type, resource_name)
+    path.append(resource_id)
+    print("Aggregating resource:", resource_id)
+
+    if resource_id in visited:
+        print(f"Cycle detected at: {resource_id}")
+        print("Call stack path:", " -> ".join([f"{t}:{n}" for t, n in path]))
+        path.pop()
+        return
+    visited.add(resource_id)
 
     # if a SAS component name is defined, use it since this is the most canonical value
     if resource.get_annotation(KubernetesResourceKeys.ANNOTATION_COMPONENT_NAME) is not None:
@@ -75,10 +95,31 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
 
         # aggregate the related resource
         if related_resource_details is not None:
-            aggregate_resources(resource_details=related_resource_details,
-                                component=component,
-                                resource_cache=resource_cache)
+            try:
+                # print("\n>>>> BEFORE recursive call...")
+                # print("component: ", component)
+                # print("rel_name: ", rel_name)
+                # print("rel_type: ", rel_type)
+                # print("related_resource_details:", related_resource_details)
+                aggregate_resources(resource_details=related_resource_details,
+                                    component=component,
+                                    resource_cache=resource_cache,
+                                    visited=visited,
+                                    path=path
+                )
+                # print("\n>>>> AFTER recursive call...")
+                # print("component: ", component)
+                # print("rel_name: ", rel_name)
+                # print("rel_type: ", rel_type)
+                # print("related_resource_details:", related_resource_details)
+            except RecursionError as e:
+                print("\nRecursionError caught:", e)
+                print("component: ", component)
+                print("rel_name: ", rel_name)
+                print("rel_type: ", rel_type)
+                print("related_resource_details:", related_resource_details)
 
+    path.pop()
     # if this is the last resource in the chain and the component doesn't have a name determined from an annotation,
     # set a name based on the available values
     if not component[NAME_KEY]:

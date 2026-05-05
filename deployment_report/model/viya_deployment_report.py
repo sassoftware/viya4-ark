@@ -12,6 +12,8 @@
 import datetime
 import json
 import os
+import sys
+from pydoc import visiblename
 
 from subprocess import CalledProcessError
 from typing import AnyStr, Dict, List, Optional, Text, Tuple
@@ -444,9 +446,10 @@ class ViyaDeploymentReport(object):
                 component: Dict = dict()
 
                 # aggregate all the resources related to this Pod into a component
+                print(f"\ngather_details(): pod_details: {pod_details}")
                 component_util.aggregate_resources(resource_details=pod_details,
                                                    component=component,
-                                                   resource_cache=resource_cache)
+                                                   resource_cache=resource_cache, visited=set(), path=[])
 
                 # note whether this component belongs to SAS
                 is_sas_component: bool = False
