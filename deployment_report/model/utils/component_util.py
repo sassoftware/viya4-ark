@@ -64,8 +64,8 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
     if resource_id in visited:
         print(f"Cycle detected at: {resource_id}")
         print("Call stack path:", " -> ".join([f"{t}:{n}" for t, n in path]))
-        # path.pop()
-        # return
+        path.pop()
+        return
     visited.add(resource_id)
 
     # if a SAS component name is defined, use it since this is the most canonical value
@@ -96,22 +96,12 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
         # aggregate the related resource
         if related_resource_details is not None:
             try:
-                # print("\n>>>> BEFORE recursive call...")
-                # print("component: ", component)
-                # print("rel_name: ", rel_name)
-                # print("rel_type: ", rel_type)
-                # print("related_resource_details:", related_resource_details)
                 aggregate_resources(resource_details=related_resource_details,
                                     component=component,
                                     resource_cache=resource_cache,
                                     visited=visited,
                                     path=path
                 )
-                # print("\n>>>> AFTER recursive call...")
-                # print("component: ", component)
-                # print("rel_name: ", rel_name)
-                # print("rel_type: ", rel_type)
-                # print("related_resource_details:", related_resource_details)
             except RecursionError as e:
                 print("\nRecursionError caught:", e)
                 print("component: ", component)
