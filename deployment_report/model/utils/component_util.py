@@ -64,8 +64,8 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
     if resource_id in visited:
         print(f"Cycle detected at: {resource_id}")
         print("Call stack path:", " -> ".join([f"{t}:{n}" for t, n in path]))
-        path.pop()
-        return
+        # path.pop()
+        # return
     visited.add(resource_id)
 
     # if a SAS component name is defined, use it since this is the most canonical value
