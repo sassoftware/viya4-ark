@@ -15,9 +15,26 @@ from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
     NAME_KEY, \
     ViyaDeploymentReportKeys as ReportKeys
+from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues
 
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
+
+def is_component_initialized(component: Dict) -> bool:
+    """ Checks whether the component has been initialized with any resources."""
+    return bool(component.get(ITEMS_KEY))
+
+def is_pods_present(component: Dict, pods_const: Text) -> bool:
+    """ Checks whether the component has pods resource type defined in its items."""
+    items = component.get(ITEMS_KEY)
+    # prefer passing the project's canonical constant for pods (e.g. ResourceTypeValues.K8S_CORE_PODS)
+    return bool(items and pods_const in items and items[pods_const])
+
+def get_resource_type(resource_details: Dict) -> Optional[Text]:
+    """ Gets the resource type of the provided resource details, if defined."""
+    # safe access: the resource type lives under the extension dict
+    ext = resource_details.get(ReportKeys.ResourceDetails.EXT_DICT, {})
+    return ext.get(ReportKeys.ResourceDetails.Ext.RESOURCE_TYPE)
 
 
 def aggregate_resources(resource_details: Dict, component: Dict, resource_cache: Dict) -> None:
@@ -41,6 +58,14 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
     # get the relationships extension list for this resource
     resource_ext: Dict = resource_details[ReportKeys.ResourceDetails.EXT_DICT]
     resource_relationships: List = resource_ext[ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
+
+    # if the component has already been initialized with pods and this resource is a pod,
+    # return without moving forward to avoid redundant processing and potential recursion
+    # k8s resource relationships.
+    if (is_component_initialized(component)
+            and is_pods_present(component, KubernetesResourceTypeValues.K8S_CORE_PODS)
+            and get_resource_type(resource_details) == KubernetesResourceTypeValues.K8S_CORE_PODS):
+        return
 
     # get the resource type value of this resource
     resource_type: Text = resource_ext[ReportKeys.ResourceDetails.Ext.RESOURCE_TYPE]
@@ -75,9 +100,14 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
 
         # aggregate the related resource
         if related_resource_details is not None:
-            aggregate_resources(resource_details=related_resource_details,
-                                component=component,
-                                resource_cache=resource_cache)
+            try:
+                aggregate_resources(resource_details=related_resource_details,
+                                    component=component,
+                                    resource_cache=resource_cache)
+            except RecursionError as e:
+                # minimal console output, no stack trace
+                print(f"\nRecursionError while aggregating k8s resources {rel_type}/{rel_name}. \n{e}")
+                return
 
     # if this is the last resource in the chain and the component doesn't have a name determined from an annotation,
     # set a name based on the available values
