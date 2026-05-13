@@ -15,7 +15,6 @@ from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
     NAME_KEY, \
     ViyaDeploymentReportKeys as ReportKeys
-from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues
 
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
