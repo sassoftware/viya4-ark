@@ -161,4 +161,3 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
         except RecursionError as e:
             # minimal console output, no stack trace
             print(f"\nRecursionError while caching k8s resource type {owning_resource_type}. \n{e}")
-            return

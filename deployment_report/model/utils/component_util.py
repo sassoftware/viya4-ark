@@ -87,7 +87,6 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
             except RecursionError as e:
                 # minimal console output, no stack trace
                 print(f"\nRecursionError while aggregating k8s resources: name {rel_name}, type {rel_type}. \n{e}")
-                return
 
     # if this is the last resource in the chain and the component doesn't have a name determined from an annotation,
     # set a name based on the available values
