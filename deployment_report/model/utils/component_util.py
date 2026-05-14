@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2026, SAS Institute Inc., Cary, NC, USA.         ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -65,6 +65,11 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
         rel_name: Text = relationship[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_NAME]
         rel_type: Text = relationship[ReportKeys.ResourceDetails.Ext.Relationship.RESOURCE_TYPE]
 
+        # if this exact resource has already been aggregated, skip it
+        # this also helps prevent recursion errors if a circular relationship is defined
+        if rel_name in component[ITEMS_KEY].get(rel_type, {}):
+            continue
+
         # get the details for the related resource
         try:
             related_resource_details: Optional[Dict] = resource_cache[rel_type][ITEMS_KEY][rel_name]
@@ -75,9 +80,13 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
 
         # aggregate the related resource
         if related_resource_details is not None:
-            aggregate_resources(resource_details=related_resource_details,
-                                component=component,
-                                resource_cache=resource_cache)
+            try:
+                aggregate_resources(resource_details=related_resource_details,
+                                    component=component,
+                                    resource_cache=resource_cache)
+            except RecursionError as e:
+                # minimal console output, no stack trace
+                print(f"\nRecursionError while aggregating k8s resources: name {rel_name}, type {rel_type}. \n{e}")
 
     # if this is the last resource in the chain and the component doesn't have a name determined from an annotation,
     # set a name based on the available values
