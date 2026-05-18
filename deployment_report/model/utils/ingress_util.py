@@ -24,7 +24,8 @@ from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 # constants values
 _NGINX_VERSION_ = "nginx version:"
 _RELEASE_ = "Release:"
-_INGRESS_API_VERSION = "INGRESS_APIVERSION"
+_PREFIX_INGRESS_INPUT = "ingress-input-"
+_KEY_INGRESS_API_VERSION = "INGRESS_APIVERSION"
 
 # A map of ingress controllers to associated namespaces
 _controller_to_ns = {
@@ -46,13 +47,13 @@ def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
     # locate the "ingress-input" configmap which defines the ingress used in the deployment
     for resource_name, resource_details \
             in gathered_resources[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY].items():
-        if not resource_name.startswith("ingress-input-"):
+        if not resource_name.startswith(_PREFIX_INGRESS_INPUT):
             continue
         resource: KubernetesResource = resource_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
         if not resource.is_sas_resource():
             continue
         data = resource.get_data()
-        ingress_api_version = data.get("INGRESS_APIVERSION", "")
+        ingress_api_version = data.get(_KEY_INGRESS_API_VERSION, "")
         for ingress_controller, api_group in SupportedIngress.get_ingress_controller_to_api_group_map().items():
             if ingress_api_version.startswith(api_group):
                 return ingress_controller
