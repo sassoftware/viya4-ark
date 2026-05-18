@@ -140,8 +140,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
                          " -o jsonpath=\"{.items[0].metadata.name}\""
 
     if ingress_controller == SupportedIngress.Controllers.NGINX:
-        podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l app.kubernetes.io/component=controller")
+        podname: AnyStr = kubectl.do(getpod_cmd + " -l app.kubernetes.io/component=controller", ignore_errors=True)
 
         if podname:
             version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
@@ -155,8 +154,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
                     version = version + ", " + v.split()[-1]
 
     elif ingress_controller == SupportedIngress.Controllers.ISTIO:
-        podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l  app=istiod")
+        podname: AnyStr = kubectl.do(getpod_cmd + " -l  app=istiod", ignore_errors=True)
         if podname:
             version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
@@ -164,8 +162,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
             version = version_str.decode()
 
     elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT:
-        podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l  name=ingress-operator")
+        podname: AnyStr = kubectl.do(getpod_cmd + " -l  name=ingress-operator", ignore_errors=True)
         if podname:
             version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
@@ -174,8 +171,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
             version = version_str.decode()
 
     elif ingress_controller == SupportedIngress.Controllers.CONTOUR:
-        podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l controller-revision-hash")
+        podname: AnyStr = kubectl.do(getpod_cmd + " -l controller-revision-hash", ignore_errors=True)
         if podname:
             version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
