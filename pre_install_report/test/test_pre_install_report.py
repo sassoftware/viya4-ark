@@ -47,7 +47,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__f
 sas_logger = ViyaARKLogger("test_report.log", logging_level=logging.NOTSET, logger_name="debug_logger")
 
 
-def test_get_storage_classes_json():
+def test_get_storage_classes_json(tmp_path):
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
@@ -63,7 +63,7 @@ def test_get_storage_classes_json():
     print('\r', (storage_data[1]))
     assert len(storage_data) == 2
 
-    template_render(global_data, configs_data, storage_data, 'storage_classes_info.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'storage_classes_info.html')
 
 
 def test_read_cluster_info_output():
@@ -141,7 +141,7 @@ def test_ranchermulti_get_master_nodes_json():
     assert "Kubernetes master is running at https://node3:6443" in master_data[0]['firstFailure']
 
 
-def test_get_nested_nodes_info():
+def test_get_nested_nodes_info(tmp_path):
 
     viya_min_aggregate_worker_CPU_cores = '20'
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
@@ -181,10 +181,10 @@ def test_get_nested_nodes_info():
         assert global_data[4]['aggregate_k8s_failures'] in 'Check K8s Version on nodes. Issues Found: 3.'
         assert global_data[6]['k8sVersion'] in '1.16.1'
 
-    template_render(global_data, configs_data, storage_data, 'nested_nodes_info.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'nested_nodes_info.html')
 
 
-def test_get_nested_millicores_nodes_info():
+def test_get_nested_millicores_nodes_info(tmp_path):
     viya_k8s_version_min = '1.14'
     viya_min_aggregate_worker_CPU_cores = '20'
     viya_min_aggregate_worker_memory = '156G'
@@ -210,7 +210,7 @@ def test_get_nested_millicores_nodes_info():
     cluster_info = "Kubernetes master is running at https://0.0b.0.0:6443\n"
     global_data = vpc.evaluate_nodes(nodes_data, global_data, cluster_info, quantity_)
     pprint.pprint(global_data)
-    template_render(global_data, configs_data, storage_data, 'nested_millicores_nodes_info.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'nested_millicores_nodes_info.html')
     for nodes in global_data:
         assert global_data[0]['totalWorkers'] in '3: Current: 3, Expected: Minimum 1'
 
@@ -222,10 +222,10 @@ def test_get_nested_millicores_nodes_info():
         assert global_data[4]['aggregate_k8s_failures'] in 'Check K8s Version on nodes. Issues Found: 3.'
         assert global_data[6]['k8sVersion'] in '1.13.1'
 
-    template_render(global_data, configs_data, storage_data, 'nested_millicores_nodes_info.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'nested_millicores_nodes_info.html')
 
 
-def test_ranchersingle_get_nested_nodes_info():
+def test_ranchersingle_get_nested_nodes_info(tmp_path):
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
@@ -254,10 +254,10 @@ def test_ranchersingle_get_nested_nodes_info():
         assert str(round(total_calc_memoryG.to("G"), 2)) == '67.39 G'
         assert global_data[4]['aggregate_k8s_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
 
-    template_render(global_data, configs_data, storage_data, 'ranchersingle_nested_nodes_info.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'ranchersingle_nested_nodes_info.html')
 
 
-def test_ranchermulti_get_nested_nodes_info():
+def test_ranchermulti_get_nested_nodes_info(tmp_path):
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
@@ -285,7 +285,7 @@ def test_ranchermulti_get_nested_nodes_info():
                                                               ' Issues Found: 0'
         assert global_data[4]['aggregate_k8s_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
 
-    template_render(global_data, configs_data, storage_data, 'ranchermulti_nested_nodes_info.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'ranchermulti_nested_nodes_info.html')
 
 
 def test_get_no_config_info():
@@ -302,7 +302,7 @@ def test_get_no_config_info():
     assert configs_data == [[]]
 
 
-def test_get_config_info():
+def test_get_config_info(tmp_path):
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
@@ -332,10 +332,10 @@ def test_get_config_info():
     assert(configs_data[2][0]['clustername']) == "kubernetes"
     assert(configs_data[3][0]['username']) == "kubernetes-admin"
     assert(configs_data[3][1]['username']) == "kubernetes-test"
-    template_render(global_data, configs_data, storage_data, 'config_report.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'config_report.html')
 
 
-def test_ranchersingle_test_get_config_info():
+def test_ranchersingle_test_get_config_info(tmp_path):
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
@@ -356,10 +356,10 @@ def test_ranchersingle_test_get_config_info():
     assert(configs_data[2][0]['server']) == "https://127.0.0.1:6443"
     assert(configs_data[2][0]['clustername']) == "default"
 
-    template_render(global_data, configs_data, storage_data, 'ranchersingle_config_report.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'ranchersingle_config_report.html')
 
 
-def test_ranchermulti_test_get_config_info():
+def test_ranchermulti_test_get_config_info(tmp_path):
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
@@ -383,10 +383,10 @@ def test_ranchermulti_test_get_config_info():
     assert(configs_data[2][0]['server']) == "https://node3:6443"
     assert(configs_data[2][0]['clustername']) == "gelcluster"
     assert (configs_data[3][0]['username']) == "kube-admin-gelcluster"
-    template_render(global_data, configs_data, storage_data, 'ranchermulti_config_report.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'ranchermulti_config_report.html')
 
 
-def test_azure_terrform_multi_nodes_info():
+def test_azure_terrform_multi_nodes_info(tmp_path):
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
                                     viya_min_aggregate_worker_memory)
@@ -414,10 +414,10 @@ def test_azure_terrform_multi_nodes_info():
                                                               ' Issues Found: 0'
         assert global_data[4]['aggregate_k8s_failures'] in 'Check Kubelet Version on nodes. Issues Found: 0'
 
-    template_render(global_data, configs_data, storage_data, 'azure_terrform_multi_nodes_info.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'azure_terrform_multi_nodes_info.html')
 
 
-def test_azure_multi_get_nested_nodes_info():
+def test_azure_multi_get_nested_nodes_info(tmp_path):
 
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
@@ -449,10 +449,10 @@ def test_azure_multi_get_nested_nodes_info():
                                                               ' Issues Found: 0'
         assert global_data[4]['aggregate_k8s_failures'] in '0, Check Kubelet Version on nodes.'
 
-    template_render(global_data, configs_data, storage_data, 'azure_multi_nested_nodes_info.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'azure_multi_nested_nodes_info.html')
 
 
-def test_azure_worker_nodes():
+def test_azure_worker_nodes(tmp_path):
     viya_k8s_version_min = '1.17'
     vpc = createViyaPreInstallCheck(viya_k8s_version_min,
                                     viya_min_aggregate_worker_CPU_cores,
@@ -483,7 +483,7 @@ def test_azure_worker_nodes():
         assert global_data[4]['aggregate_k8s_failures'] in ' Check Node(s). All Nodes NOT in Ready Status. ' \
                                                            'Issues Found: ' + str(issues_found)
         assert global_data[6]['k8sVersion'] in '1.22.4'
-    template_render(global_data, configs_data, storage_data, 'azure_nodes_no_master.html')
+    template_render(global_data, configs_data, storage_data, tmp_path / 'azure_nodes_no_master.html')
 
 
 def template_render(global_data, configs_data, storage_data, report):
