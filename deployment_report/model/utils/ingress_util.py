@@ -44,7 +44,8 @@ def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
         if the controller cannot be determined.
     """
     # locate the "ingress-input" configmap which defines the ingress used in the deployment
-    for resource_name, resource_details in gathered_resources[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY].items():
+    for resource_name, resource_details \
+            in gathered_resources[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY].items():
         if not resource_name.startswith("ingress-input-"):
             continue
         resource: KubernetesResource = resource_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
