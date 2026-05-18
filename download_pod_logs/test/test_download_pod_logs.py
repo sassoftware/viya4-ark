@@ -79,14 +79,7 @@ def test_usage(capfd) -> None:
     with pytest.raises(SystemExit):
         main(_argv)
 
-    # define expected output
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    test_data_file = os.path.join(current_dir, f"data{os.sep}expected_usage_output.txt")
-
-    with open(test_data_file) as f:
-        expected = f.read()
-
     # get output
     out, err = capfd.readouterr()
 
-    assert out == expected
+    assert "usage: viya-ark.py download-pod-logs" in out

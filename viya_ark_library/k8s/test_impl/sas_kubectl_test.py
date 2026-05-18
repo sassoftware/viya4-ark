@@ -556,11 +556,26 @@ class KubectlTest(KubectlInterface):
             raise CalledProcessError(1, f"kubectl get {type_version_group} -o json")
 
         # if the resource should not be represented as unavailable, load the response from the file
-        resources_dict: Dict = KubectlTest._load_response_data(f"resources_{type_version_group.lower()}.json")
+        resources_data: List = KubectlTest._load_response_data(f"resources_{type_version_group.lower()}.json")
+
+        # load extra ConfigMap resources for the ingress type
+        if type_version_group.lower() == "configmaps":
+            # Contour
+            if self.ingress_simulator in (self.IngressSimulator.ALL_CONTOUR_USED, self.IngressSimulator.ONLY_CONTOUR):
+                resources_data.extend(KubectlTest._load_response_data(f"resources_{type_version_group.lower()}_ingress_contour.json"))
+            # Istio
+            elif self.ingress_simulator in (self.IngressSimulator.ALL_ISTIO_USED, self.IngressSimulator.ONLY_ISTIO):
+                resources_data.extend(KubectlTest._load_response_data(f"resources_{type_version_group.lower()}_ingress_istio.json"))
+            # NGINX
+            elif self.ingress_simulator in (self.IngressSimulator.ALL_NGINX_USED, self.IngressSimulator.ONLY_NGINX):
+                resources_data.extend(KubectlTest._load_response_data(f"resources_{type_version_group.lower()}_ingress_nginx.json"))
+            # OpenShift
+            elif self.ingress_simulator in (self.IngressSimulator.ALL_OPENSHIFT_USED, self.IngressSimulator.ONLY_OPENSHIFT):
+                resources_data.extend(KubectlTest._load_response_data(f"resources_{type_version_group.lower()}_ingress_openshift.json"))
 
         # convert the raw JSON to KubernetesResource objects
         resources: List[KubernetesResource] = list()
-        for resource in resources_dict:
+        for resource in resources_data:
             resources.append(KubernetesResource(resource))
 
         return resources
