@@ -1,0 +1,24 @@
+[
+    {
+        "apiVersion": "v1",
+        "kind": "ConfigMap",
+        "metadata": {
+            "annotations": {},
+            "creationTimestamp": "2026-04-27T14:58:26Z",
+            "labels": {
+                "sas.com/admin": "cluster-local",
+                "sas.com/deployment": "sas-viya"
+            },
+            "name": "ingress-input-98t54m594c",
+            "namespace": "test",
+            "ownerReferences": [],
+            "resourceVersion": "9897",
+            "uid": "d94c2551-8c2f-43f9-98d4-88338bdc501a"
+        },
+        "data": {
+            "INGRESS_APIVERSION": "projectcontour.io/v1",
+            "INGRESS_HOST": "k8s-master-node.test.sas.com",
+            "INGRESS_KIND": "HTTPProxy"
+        }
+    }
+]

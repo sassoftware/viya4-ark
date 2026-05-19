@@ -34,19 +34,28 @@ class SupportedIngress(object):
         NS_OPENSHIFT = "openshift-ingress-operator"
 
     @staticmethod
+    def get_ingress_controller_to_api_group_map() -> Dict[Text, Text]:
+        """
+        Returns a dictionary mapping an ingress controller type to the k8s api group that it uses.
+        This can be used when evaluating a deployment to see which controller is used based on the presence
+        of resources/resource types defined in the cluster.
+        """
+        return {
+            SupportedIngress.Controllers.CONTOUR: KubernetesResourceTypeValues.CONTOUR_GROUP_PROJECTCONTOUR_IO,
+            SupportedIngress.Controllers.ISTIO: KubernetesResourceTypeValues.ISTIO_GROUP_NETWORKING_ISTIO_IO,
+            SupportedIngress.Controllers.OPENSHIFT: KubernetesResourceTypeValues.OPENSHIFT_GROUP_ROUTE_OPENSHIFT_IO,
+            SupportedIngress.Controllers.NGINX: KubernetesResourceTypeValues.K8S_GROUP_NETWORKING_K8S_IO,
+        }
+
+    @staticmethod
     def get_ingress_controller_to_resource_types_map() -> Dict[Text, List[Text]]:
         """
         Returns a dictionary mapping an ingress controller type to the k8s resource types that it uses.
-        This can be used when evaluating a deployment to see which controller is used based on the presence
-        of resources/resource types defined in the cluster.
         """
         return {
             SupportedIngress.Controllers.CONTOUR: [KubernetesResourceTypeValues.CONTOUR_HTTP_PROXIES],
             SupportedIngress.Controllers.ISTIO: [KubernetesResourceTypeValues.ISTIO_VIRTUAL_SERVICES],
             SupportedIngress.Controllers.OPENSHIFT: [KubernetesResourceTypeValues.OPENSHIFT_ROUTES],
-            # NGINX is placed last in the map intentionally
-            # Ingress kinds could be present in deployments using one of the above controllers
-            # If iterating over the dict, NGINX should be evaluated last to avoid false-positives
             SupportedIngress.Controllers.NGINX: [
                 KubernetesResourceTypeValues.K8S_NETWORKING_INGRESSES,
                 KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES

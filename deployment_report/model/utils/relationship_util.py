@@ -331,6 +331,8 @@ def _define_service_to_nginx_ingress_relationships(services: Dict, ingresses: Di
 
         # get the rules for this Ingress
         rules: List = ingress.get_spec_value(KubernetesResourceKeys.RULES)
+        if not rules:
+            continue
 
         # iterate over all rules to process all http paths defined
         for rule in rules:

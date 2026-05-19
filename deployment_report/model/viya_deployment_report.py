@@ -29,7 +29,7 @@ from deployment_report.model.utils import \
 from viya_ark_library.jinja2.sas_jinja2 import Jinja2TemplateRenderer
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
-from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError, NamespaceNotFoundError
+from viya_ark_library.k8s.sas_k8s_errors import KubectlRequestForbiddenError
 from viya_ark_library.k8s.sas_k8s_ingress import SupportedIngress
 from viya_ark_library.k8s.sas_k8s_objects import \
     KubernetesAvailableResourceTypes, \
@@ -286,23 +286,9 @@ class ViyaDeploymentReport(object):
             # this will help to evaluate which resources should be considered "unavailable"
             ingress_controller = ingress_util.determine_ingress_controller(resource_cache)
 
-            # Determine expected ingress namespace based on the controller
-            expected_ns = ingress_util.get_namespace_for_ingress_controller(ingress_controller)
-
-            # If -i was provided, validate it against the expected namespace; otherwise, set it
-            if hasattr(kubectl, 'ingress_ns') and kubectl.ingress_ns and kubectl.ingress_ns != "":
-                if expected_ns and kubectl.ingress_ns != expected_ns:
-                    raise NamespaceNotFoundError(
-                        f"The provided ingress namespace [{kubectl.ingress_ns}] does not match the expected namespace "
-                        f"[{expected_ns}] for the determined ingress controller [{ingress_controller}]."
-                    )
-                elif not expected_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:
-                    raise NamespaceNotFoundError(
-                        f"The provided ingress namespace [{kubectl.ingress_ns}] is not valid for the "
-                        f"determined ingress controller [{ingress_controller}]."
-                    )
-            else:
-                kubectl.ingress_ns = expected_ns
+            if not kubectl.ingress_ns:
+                # Determine expected ingress namespace based on the controller
+                kubectl.ingress_ns = ingress_util.get_namespace_for_ingress_controller(ingress_controller)
 
             # Set ingress_version based on the determined controller and namespace
             if kubectl.ingress_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:

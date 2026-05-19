@@ -423,8 +423,6 @@ def test_get_sas_components_deployment_owned(report: ViyaDeploymentReport) -> No
     # check for expected attributes
     assert TestVals.COMPONENT_SAS_ANNOTATIONS_NAME in sas_components
     assert ResourceTypeValues.K8S_APPS_DEPLOYMENTS in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
-    assert ResourceTypeValues.K8S_EXTENSIONS_INGRESSES in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
-    assert ResourceTypeValues.K8S_NETWORKING_INGRESSES in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
     assert ResourceTypeValues.K8S_CORE_PODS in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
     assert ResourceTypeValues.K8S_APPS_REPLICA_SETS in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
     assert ResourceTypeValues.K8S_CORE_SERVICES in sas_components[TestVals.COMPONENT_SAS_ANNOTATIONS_NAME]
