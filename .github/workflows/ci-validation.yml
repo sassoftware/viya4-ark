@@ -6,12 +6,12 @@ name: Viya ARK Python CI Validation
 on:
   push:
     branches:
-      - master
+      - main
       - develop
       - releases/v*
   pull_request:
     branches:
-      - master
+      - main
       - develop
       - releases/v*
   workflow_dispatch:
