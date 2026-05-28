@@ -154,6 +154,10 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
 
     # if more resource types have been discovered, gather them as well
     for owning_resource_type in owning_resource_types:
-        cache_resources(resource_type=owning_resource_type,
-                        kubectl=kubectl,
-                        resource_cache=resource_cache)
+        try:
+            cache_resources(resource_type=owning_resource_type,
+                            kubectl=kubectl,
+                            resource_cache=resource_cache)
+        except RecursionError as e:
+            # minimal console output, no stack trace
+            print(f"\nRecursionError while caching k8s resource type {owning_resource_type}. \n{e}")

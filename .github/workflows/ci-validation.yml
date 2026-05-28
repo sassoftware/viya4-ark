@@ -5,7 +5,15 @@ name: Viya ARK Python CI Validation
 
 on:
   push:
+    branches:
+      - main
+      - develop
+      - releases/v*
   pull_request:
+    branches:
+      - main
+      - develop
+      - releases/v*
   workflow_dispatch:
 
 jobs:
@@ -14,9 +22,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - name: Set up Python 3.8
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v6
       with:
         python-version: 3.8
     - name: Install dependencies
@@ -29,7 +37,7 @@ jobs:
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --max-line-length 120 --show-source --statistics --extend-ignore=E275
+        flake8 . --count --show-source --statistics
     - name: Test with pytest
       run: |
         pytest

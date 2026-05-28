@@ -24,6 +24,8 @@ from viya_ark_library.k8s.sas_kubectl_interface import KubectlInterface
 # constants values
 _NGINX_VERSION_ = "nginx version:"
 _RELEASE_ = "Release:"
+_PREFIX_INGRESS_INPUT = "ingress-input-"
+_KEY_INGRESS_API_VERSION = "INGRESS_APIVERSION"
 
 # A map of ingress controllers to associated namespaces
 _controller_to_ns = {
@@ -42,18 +44,19 @@ def determine_ingress_controller(gathered_resources: Dict) -> Optional[Text]:
     :return: The ingress controller used in the target cluster or SupportedIngress.Controllers.UNKNOWN
         if the controller cannot be determined.
     """
-    for ingress_controller, resource_types in SupportedIngress.get_ingress_controller_to_resource_types_map().items():
-        # iterate over all resource types
-        for resource_type in resource_types:
-            # check if this kind is in the dictionary of gathered resources
-            if resource_type in gathered_resources:
-                for resource_details in gathered_resources[resource_type][ITEMS_KEY].values():
-                    # get the resource definition
-                    resource: KubernetesResource = resource_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
-
-                    # check if the resource was created by SAS
-                    if resource.is_sas_resource():
-                        return ingress_controller
+    # locate the "ingress-input" configmap which defines the ingress used in the deployment
+    for resource_name, resource_details \
+            in gathered_resources[ResourceTypeValues.K8S_CORE_CONFIG_MAPS][ITEMS_KEY].items():
+        if not resource_name.startswith(_PREFIX_INGRESS_INPUT):
+            continue
+        resource: KubernetesResource = resource_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+        if not resource.is_sas_resource():
+            continue
+        data = resource.get_data()
+        ingress_api_version = data.get(_KEY_INGRESS_API_VERSION, "")
+        for ingress_controller, api_group in SupportedIngress.get_ingress_controller_to_api_group_map().items():
+            if ingress_api_version.startswith(api_group):
+                return ingress_controller
 
     # if a controller couldn't be determined, return Unknown
     return SupportedIngress.Controllers.UNKNOWN
@@ -138,8 +141,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
                          " -o jsonpath=\"{.items[0].metadata.name}\""
 
     if ingress_controller == SupportedIngress.Controllers.NGINX:
-        podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l app.kubernetes.io/component=controller")
+        podname: AnyStr = kubectl.do(getpod_cmd + " -l app.kubernetes.io/component=controller", ignore_errors=True)
 
         if podname:
             version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
@@ -153,8 +155,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
                     version = version + ", " + v.split()[-1]
 
     elif ingress_controller == SupportedIngress.Controllers.ISTIO:
-        podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l  app=istiod")
+        podname: AnyStr = kubectl.do(getpod_cmd + " -l  app=istiod", ignore_errors=True)
         if podname:
             version_str: AnyStr = kubectl.do("exec -it " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
@@ -162,8 +163,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
             version = version_str.decode()
 
     elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT:
-        podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l  name=ingress-operator")
+        podname: AnyStr = kubectl.do(getpod_cmd + " -l  name=ingress-operator", ignore_errors=True)
         if podname:
             version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
@@ -172,8 +172,7 @@ def get_ingress_version(kubectl: KubectlInterface, ingress_controller: Text) -> 
             version = version_str.decode()
 
     elif ingress_controller == SupportedIngress.Controllers.CONTOUR:
-        podname: AnyStr = kubectl.do(getpod_cmd +
-                                     " -l controller-revision-hash")
+        podname: AnyStr = kubectl.do(getpod_cmd + " -l controller-revision-hash", ignore_errors=True)
         if podname:
             version_str: AnyStr = kubectl.do("get pod " + podname.decode() +
                                              " -n " + kubectl.ingress_ns +
