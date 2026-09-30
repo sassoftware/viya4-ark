@@ -208,6 +208,21 @@ class ViyaDeploymentReport(object):
                         # continue caching other resources
                         continue
 
+        gateway_config = ingress_util.get_ingress_config(resource_cache)
+        if ingress_util.determine_ingress_controller(resource_cache) == \
+                SupportedIngress.Controllers.GATEWAY_API and \
+                gateway_config.get(KubernetesResourceKeys.GATEWAY_API_KIND) == "HTTPRoute":
+            for gateway_resource_type in (
+                    ResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES,
+                    ResourceTypeValues.GATEWAY_API_GATEWAYS,
+                    ResourceTypeValues.GATEWAY_API_HTTP_ROUTES):
+                try:
+                    resource_util.cache_resources(resource_type=gateway_resource_type,
+                                                  kubectl=kubectl,
+                                                  resource_cache=resource_cache)
+                except CalledProcessError:
+                    continue
+
         # return all discovered resources
         return resource_cache
 
@@ -277,7 +292,10 @@ class ViyaDeploymentReport(object):
         #######################################################################
         # default values in-case pods were not found
         ingress_controller: Optional[Text] = None
+        ingress_implementation: Optional[Text] = None
         ingress_version: Optional[Text] = None
+        ingress_gateway_ref: Optional[Tuple[Text, Text]] = None
+        ingress_config: Dict = dict()
         unavailable_resources: List = list()
 
         # evaluate resources that would be gathered if pods were found
@@ -286,27 +304,41 @@ class ViyaDeploymentReport(object):
             # this will help to evaluate which resources should be considered "unavailable"
             ingress_controller = ingress_util.determine_ingress_controller(resource_cache)
 
-            if not kubectl.ingress_ns:
-                # Determine expected ingress namespace based on the controller
-                kubectl.ingress_ns = ingress_util.get_namespace_for_ingress_controller(ingress_controller)
-
-            # Set ingress_version based on the determined controller and namespace
-            if kubectl.ingress_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:
-                ingress_version = ingress_util.get_ingress_version(kubectl=kubectl,
-                                                                   ingress_controller=ingress_controller)
+            if ingress_controller == SupportedIngress.Controllers.GATEWAY_API:
+                ingress_config = ingress_util.get_ingress_config(resource_cache)
+                ingress_implementation, ingress_version, ingress_gateway_ref = \
+                    ingress_util.determine_gateway_api_implementation(
+                    kubectl=kubectl,
+                    resource_cache=resource_cache,
+                    ingress_config=ingress_config)
             else:
-                ingress_version = "N/A (No default ingress namespace was found)"
+                if not kubectl.ingress_ns:
+                    # Determine expected ingress namespace based on the controller
+                    kubectl.ingress_ns = ingress_util.get_namespace_for_ingress_controller(ingress_controller)
 
-            # determine if any resource types for which caching was attempted were unavailable
-            # if at least one is unavailable, a message will be displayed saying that components may not be complete
-            # because all resources were not listable
-            for resource_type, resource_type_details in resource_cache.items():
-                # check if the resource type is unavailable
-                if not resource_type_details[Keys.ResourceTypeDetails.AVAILABLE]:
-                    # ignore any ingress resource types not related to the ingress controller
-                    if not ingress_util.ignorable_for_controller_if_unavailable(ingress_controller, resource_type):
-                        # add the resource type to the unavailable resources
-                        unavailable_resources.append(resource_type)
+                # Set ingress_version based on the determined controller and namespace
+                if kubectl.ingress_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:
+                    ingress_version = ingress_util.get_ingress_version(kubectl=kubectl,
+                                                                       ingress_controller=ingress_controller)
+                else:
+                    ingress_version = "N/A (No default ingress namespace was found)"
+        else:
+            # Gateway API mode is configured independently of whether Viya workloads are present.
+            if ingress_util.determine_ingress_controller(resource_cache) == \
+                    SupportedIngress.Controllers.GATEWAY_API:
+                ingress_controller = SupportedIngress.Controllers.GATEWAY_API
+                ingress_config = ingress_util.get_ingress_config(resource_cache)
+                ingress_implementation, ingress_version, ingress_gateway_ref = \
+                    ingress_util.determine_gateway_api_implementation(
+                        kubectl=kubectl,
+                        resource_cache=resource_cache,
+                        ingress_config=ingress_config)
+
+        # Determine whether resource listings were incomplete, regardless of whether Viya pods were present.
+        for resource_type, resource_type_details in resource_cache.items():
+            if not resource_type_details[Keys.ResourceTypeDetails.AVAILABLE] and \
+                    not ingress_util.ignorable_for_controller_if_unavailable(ingress_controller, resource_type):
+                unavailable_resources.append(resource_type)
 
         #######################################################################
         # Define relationships between resources                              #
@@ -322,6 +354,14 @@ class ViyaDeploymentReport(object):
             # define the relationship between Service and ingress controller resource types
             relationship_util.define_service_to_ingress_relationships(resource_cache=resource_cache,
                                                                       ingress_controller=ingress_controller)
+            if ingress_controller == SupportedIngress.Controllers.GATEWAY_API and ingress_gateway_ref:
+                relationship_util.define_service_to_http_route_relationships(resource_cache=resource_cache,
+                                                                             namespace=kubectl.get_namespace(),
+                                                                             gateway_name=ingress_config.get(
+                                                                                 KubernetesResourceKeys.GATEWAY_NAME),
+                                                                             gateway_namespace=ingress_gateway_ref[1],
+                                                                             configured_host=ingress_config.get(
+                                                                                 KubernetesResourceKeys.GATEWAY_API_HOST))
 
         #######################################################################
         # Get metrics                                                         #
@@ -372,6 +412,9 @@ class ViyaDeploymentReport(object):
 
         # create a key to mark the determined ingress controller for the cluster: str|None
         k8s_details_dict[Keys.Kubernetes.INGRESS_CTRL]: Optional[Text] = ingress_controller
+
+        # create a key to mark the Gateway API implementation, if determined
+        k8s_details_dict[Keys.Kubernetes.INGRESS_IMPLEMENTATION]: Optional[Text] = ingress_implementation
 
         # create a key to mark the determined ingress version for the cluster: str|None
         k8s_details_dict[Keys.Kubernetes.INGRESS_VER]: Optional[Text] = ingress_version

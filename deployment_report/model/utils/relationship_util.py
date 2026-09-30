@@ -14,6 +14,7 @@ from typing import Dict, List, Optional, Text
 from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
     ViyaDeploymentReportKeys as ReportKeys
+from deployment_report.model.utils.ingress_util import route_matches_configured_host
 
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
@@ -166,6 +167,62 @@ def define_service_to_ingress_relationships(resource_cache: Dict, ingress_contro
                         ####################
                         elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT:
                             _define_service_to_openshift_route_relationships(services, resources, resource_type)
+
+
+def define_service_to_http_route_relationships(resource_cache: Dict, namespace: Text,
+                                               gateway_name: Optional[Text] = None,
+                                               gateway_namespace: Optional[Text] = None,
+                                               configured_host: Optional[Text] = None) -> None:
+    """Connect Services to HTTPRoutes that reference them through spec.rules[].backendRefs."""
+    services = resource_cache.get(ResourceTypeValues.K8S_CORE_SERVICES, {})
+    routes = resource_cache.get(ResourceTypeValues.GATEWAY_API_HTTP_ROUTES, {})
+    if not services.get(ITEMS_KEY) or not routes.get(ITEMS_KEY):
+        return
+
+    for route_details in routes[ITEMS_KEY].values():
+        route: KubernetesResource = route_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+        route_namespace = route.get_metadata_value(KubernetesResourceKeys.NAMESPACE) or namespace
+        spec = route.get_spec() or {}
+        if not route_matches_configured_host(route, configured_host):
+            continue
+        if gateway_name:
+            matching_parent = False
+            for parent_ref in spec.get(KubernetesResourceKeys.GATEWAY_API_PARENT_REFS, []):
+                parent_namespace = parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_NAMESPACE) \
+                    or route_namespace
+                if parent_ref.get(KubernetesResourceKeys.NAME) == gateway_name and \
+                        parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_KIND, "Gateway") == "Gateway" and \
+                        parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_GROUP,
+                                       ResourceTypeValues.GATEWAY_API_GROUP) == ResourceTypeValues.GATEWAY_API_GROUP and \
+                        (gateway_namespace is None or parent_namespace == gateway_namespace):
+                    matching_parent = True
+                    break
+            if not matching_parent:
+                continue
+        for rule in spec.get(KubernetesResourceKeys.RULES, []):
+            for backend in rule.get(KubernetesResourceKeys.BACKEND_REFS, []):
+                if backend.get(KubernetesResourceKeys.KIND, "Service") != "Service" or \
+                        backend.get(KubernetesResourceKeys.API_GROUP, ""):
+                    continue
+                backend_namespace = backend.get(KubernetesResourceKeys.NAMESPACE) or route_namespace
+                if backend_namespace != namespace:
+                    continue
+                service_details = services[ITEMS_KEY].get(backend.get(KubernetesResourceKeys.NAME))
+                if not service_details:
+                    continue
+                service: KubernetesResource = service_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+                if (service.get_metadata_value(KubernetesResourceKeys.NAMESPACE) or namespace) != backend_namespace:
+                    continue
+                service_relationships = service_details[ReportKeys.ResourceDetails.EXT_DICT][
+                    ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
+                route_resource_name = route.get_name()
+                if route.get_metadata_value(KubernetesResourceKeys.NAMESPACE):
+                    route_resource_name = f"{route_namespace}/{route_resource_name}"
+                relationship = create_relationship_dict(
+                    resource_name=route_resource_name,
+                    resource_type=ResourceTypeValues.GATEWAY_API_HTTP_ROUTES)
+                if relationship not in service_relationships:
+                    service_relationships.append(relationship)
 
 
 def _define_service_to_contour_httpproxy_relationships(services: Dict, httpproxies: Dict, httpproxies_type: Text) \

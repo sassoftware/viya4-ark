@@ -46,6 +46,14 @@ python3 viya-ark.py deployment-report --namespace sas --ingress-namespace ingres
 ```
 **Note**: This option can be helpful if there are issues detecting the correct ingress controller automatically.
 
+For Gateway API deployments, the report identifies the API mode from the Viya `ingress-input-*` ConfigMap and resolves
+the implementation through HTTPRoute parent references and the referenced GatewayClass. The JSON `kubernetes` object
+continues to provide `ingressController` and `ingressVersion`; when Gateway API is active, `ingressController` is
+`"Gateway API"`, `ingressImplementation` reports a verified implementation (currently Envoy Gateway) or `"Unknown"`,
+and `ingressVersion` is the implementation workload image tag when available. For other ingress modes,
+`ingressImplementation` is `null` and the existing version semantics are unchanged. Missing permissions, unresolved
+references, and digest-only images are reported as unavailable rather than inferred from CRDs or node images.
+
 ### Including Log Snippets for All Pods
 
 Including the `-l` or `--include-pod-log-snips` option yields a report with a 10-line log snippet for each pod.
