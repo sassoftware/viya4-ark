@@ -147,6 +147,26 @@ def test_gateway_api_envoy_implementation_and_workload_version():
         assert legacy_type not in unavailable
 
 
+def test_direct_gateway_route_does_not_require_optional_listener_set_api(monkeypatch):
+    kubectl = KubectlTest(ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_ENVOY)
+    get_resources_all_namespaces = kubectl.get_resources_all_namespaces
+
+    def fail_if_listener_sets_requested(resource_type, raw=False):
+        if resource_type == ResourceTypeValues.GATEWAY_API_LISTENER_SETS:
+            pytest.fail("ListenerSets should only be listed when an HTTPRoute references one")
+        return get_resources_all_namespaces(resource_type, raw)
+
+    monkeypatch.setattr(kubectl, "get_resources_all_namespaces", fail_if_listener_sets_requested)
+    report = ViyaDeploymentReport()
+    report.gather_details(kubectl)
+    data = report.as_dict_json_encoded()
+    discovered_resources = data["kubernetes"]["discoveredResourceTypes"]
+
+    assert data["kubernetes"]["ingressImplementation"] == "Envoy Gateway"
+    assert ResourceTypeValues.GATEWAY_API_LISTENER_SETS not in discovered_resources
+    assert ResourceTypeValues.GATEWAY_API_LISTENER_SETS not in data[ReportKeys.UNAVAILABLE_RESOURCES_LIST]
+
+
 def test_gateway_api_resolves_routes_and_backends_across_namespaces():
     report = ViyaDeploymentReport()
     report.gather_details(KubectlTest(
@@ -158,6 +178,63 @@ def test_gateway_api_resolves_routes_and_backends_across_namespaces():
         "relationships"]
     assert {"resourceName": "route-system/sas-route", "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} \
         in route_relationships
+
+
+@pytest.mark.parametrize("scenario", [
+    KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET,
+    KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
+])
+def test_gateway_api_listener_set_resolves_controller_and_service_backend(scenario):
+    report = ViyaDeploymentReport()
+    report.gather_details(KubectlTest(ingress_simulator=scenario))
+    data = report.as_dict_json_encoded()
+    kubernetes = data["kubernetes"]
+
+    assert kubernetes["ingressImplementation"] == "Envoy Gateway"
+    assert kubernetes["ingressVersion"] == "v1.2.3"
+    assert ResourceTypeValues.GATEWAY_API_LISTENER_SETS in kubernetes["discoveredResourceTypes"]
+    relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
+        "relationships"]
+    assert {"resourceName": "route-system/sas-route", "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} \
+        in relationships
+
+
+def test_gateway_api_listener_set_defaults_both_parent_namespaces():
+    report = ViyaDeploymentReport()
+    report.gather_details(KubectlTest(
+        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE))
+    kubernetes = report.as_dict_json_encoded()["kubernetes"]
+
+    assert kubernetes["ingressImplementation"] == "Envoy Gateway"
+    assert kubernetes["ingressVersion"] == "v1.2.3"
+
+
+def test_gateway_api_listener_set_host_mismatch_remains_unknown():
+    report = ViyaDeploymentReport()
+    report.gather_details(KubectlTest(
+        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH))
+    data = report.as_dict_json_encoded()
+    kubernetes = data["kubernetes"]
+
+    assert kubernetes["ingressImplementation"] == "Unknown"
+    assert "ListenerSet listener matches the configured host" in kubernetes["ingressVersion"]
+    relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
+        "relationships"]
+    assert not any(relationship["resourceType"] == ResourceTypeValues.GATEWAY_API_HTTP_ROUTES
+                   for relationship in relationships)
+
+
+@pytest.mark.parametrize(("scenario", "diagnostic"), [
+    (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED, "ListenerSet access denied"),
+    (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING, "ListenerSet was not found"),
+])
+def test_gateway_api_listener_set_resolution_failures_remain_explicit(scenario, diagnostic):
+    report = ViyaDeploymentReport()
+    report.gather_details(KubectlTest(ingress_simulator=scenario))
+    kubernetes = report.as_dict_json_encoded()["kubernetes"]
+
+    assert kubernetes["ingressImplementation"] == "Unknown"
+    assert diagnostic in kubernetes["ingressVersion"]
 
 
 def test_gateway_api_ignores_unrelated_route_hosts_and_gateway_namespaces():

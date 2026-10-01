@@ -88,6 +88,12 @@ class KubectlTest(KubectlInterface):
         GATEWAY_API_AMBIGUOUS_GATEWAYS = 17
         GATEWAY_API_STALE_PARENT = 18
         GATEWAY_API_AMBIGUOUS_VERSION = 19
+        GATEWAY_API_LISTENER_SET = 20
+        GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE = 21
+        GATEWAY_API_LISTENER_SET_HOST_MISMATCH = 22
+        GATEWAY_API_LISTENER_SET_WILDCARD_HOST = 23
+        GATEWAY_API_LISTENER_SET_ACCESS_DENIED = 24
+        GATEWAY_API_LISTENER_SET_MISSING = 25
 
     ################################################################
     # ### CLASS: KubectlTest.Values
@@ -522,6 +528,11 @@ class KubectlTest(KubectlInterface):
                     "group": KubernetesResourceTypeValues.GATEWAY_API_GROUP,
                     "kind": "HTTPRoute", "name": "httproutes", "namespaced": True,
                     "shortname": "", "verbs": ["get", "list"], "version": "v1"
+                },
+                KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS: {
+                    "group": KubernetesResourceTypeValues.GATEWAY_API_GROUP,
+                    "kind": "ListenerSet", "name": "listenersets", "namespaced": True,
+                    "shortname": "", "verbs": ["get", "list"], "version": "v1"
                 }
             })
         return KubernetesAvailableResourceTypes(api_resources_data)
@@ -559,7 +570,8 @@ class KubectlTest(KubectlInterface):
         gateway_types = (
             KubernetesResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES,
             KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS,
-            KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES)
+            KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES,
+            KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS)
         if type_version_group.lower() in gateway_types:
             if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_ACCESS_DENIED and \
                     type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES:
@@ -603,6 +615,8 @@ class KubectlTest(KubectlInterface):
                         }
                     }))
                 return routes
+            if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS:
+                return []
             if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES:
                 return [self._gateway_api_class()]
             return list()
@@ -701,9 +715,36 @@ class KubectlTest(KubectlInterface):
 
     def get_resources_all_namespaces(self, type_version_group: Text,
                                      raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+        listener_set_scenarios = (
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING,
+        )
+        if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS:
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED:
+                raise CalledProcessError(1, f"kubectl get {type_version_group} --all-namespaces -o json")
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING:
+                return []
+            if self.ingress_simulator not in listener_set_scenarios:
+                return []
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE:
+                return [self._gateway_api_listener_set("test", gateway_namespace=None)]
+            listener_set = self._gateway_api_listener_set("listener-system")
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET:
+                return [listener_set, self._gateway_api_listener_set(
+                    "other-listener-system", hostname="other.example.com")]
+            return [listener_set]
         if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS:
             if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_GATEWAY_ACCESS_DENIED:
                 raise CalledProcessError(1, f"kubectl get {type_version_group} --all-namespaces -o json")
+            if self.ingress_simulator in listener_set_scenarios:
+                gateway_namespace = "test" if \
+                    self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE \
+                    else "gw-system"
+                return [self._gateway_api_gateway(gateway_namespace, "k8s-gw")]
             gateways = [self._gateway_api_gateway("gateway-system")]
             if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_AMBIGUOUS_GATEWAYS:
                 gateways.append(self._gateway_api_gateway("other-gateway-system"))
@@ -733,6 +774,15 @@ class KubectlTest(KubectlInterface):
                         {"name": "envoy-gateway", "image": "docker.io/envoyproxy/gateway:v1.1.0"}
                     ]}}}
                 }))
+            if self.ingress_simulator in listener_set_scenarios:
+                deployments.append(KubernetesResource({
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {"name": "envoy-gateway-secondary", "namespace": "envoy-gateway-system"},
+                    "spec": {"template": {"spec": {"containers": [
+                        {"name": "envoy-gateway", "image": "docker.io/envoyproxy/gateway:v1.2.3"}
+                    ]}}}
+                }))
             return deployments
         return []
 
@@ -747,14 +797,17 @@ class KubectlTest(KubectlInterface):
         if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS and \
                 resource_name == "sas-gateway" and namespace == "gateway-system":
             return self._gateway_api_gateway(namespace)
+        if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS and \
+                resource_name == "k8s-gw" and namespace in ("gw-system", "test"):
+            return self._gateway_api_gateway(namespace, resource_name)
         raise CalledProcessError(1, f"kubectl get {type_version_group} {resource_name} -n {namespace} -o json")
 
     @staticmethod
-    def _gateway_api_gateway(namespace: Text) -> KubernetesResource:
+    def _gateway_api_gateway(namespace: Text, name: Text = "sas-gateway") -> KubernetesResource:
         return KubernetesResource({
             "apiVersion": "gateway.networking.k8s.io/v1",
             "kind": "Gateway",
-            "metadata": {"name": "sas-gateway", "namespace": namespace},
+            "metadata": {"name": name, "namespace": namespace},
             "spec": {"gatewayClassName": "envoy-gateway-class"}
         })
 
@@ -775,6 +828,34 @@ class KubectlTest(KubectlInterface):
         if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_CROSS_NAMESPACE_ROUTE:
             route_namespace = "route-system"
             backend_namespace = self.namespace
+        listener_set_scenarios = (
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING,
+        )
+        if self.ingress_simulator in listener_set_scenarios:
+            default_namespace_case = self.ingress_simulator == \
+                self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE
+            parent_ref = {"kind": "ListenerSet", "name": "sas-listenerset"}
+            if not default_namespace_case:
+                parent_ref["namespace"] = "listener-system"
+                route_namespace = "route-system"
+            else:
+                route_namespace = "test"
+            return KubernetesResource({
+                "apiVersion": "gateway.networking.k8s.io/v1",
+                "kind": "HTTPRoute",
+                "metadata": {"name": "sas-route", "namespace": route_namespace},
+                "spec": {
+                    "parentRefs": [parent_ref],
+                    "hostnames": [],
+                    "rules": [{"backendRefs": [{"kind": "Service", "name": "sas-annotations",
+                                                "namespace": self.namespace, "port": 80}]}]
+                }
+            })
         backend_ref = {"kind": "Service", "name": "sas-annotations", "port": 80}
         if backend_namespace:
             backend_ref["namespace"] = backend_namespace
@@ -791,6 +872,28 @@ class KubectlTest(KubectlInterface):
                 }],
                 "hostnames": ["k8s-master-node.test.sas.com"],
                 "rules": [{"backendRefs": [backend_ref]}]
+            }
+        })
+
+    def _gateway_api_listener_set(self, namespace: Text, gateway_namespace: Optional[Text] = "gw-system",
+                                  hostname: Optional[Text] = None) -> KubernetesResource:
+        if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH:
+            hostname = "unrelated.example.com"
+        elif self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST:
+            hostname = "*.test.sas.com"
+        else:
+            hostname = hostname or "k8s-master-node.test.sas.com"
+        parent_ref = {"group": "gateway.networking.k8s.io", "kind": "Gateway", "name": "k8s-gw"}
+        if gateway_namespace:
+            parent_ref["namespace"] = gateway_namespace
+        return KubernetesResource({
+            "apiVersion": "gateway.networking.k8s.io/v1",
+            "kind": "ListenerSet",
+            "metadata": {"name": "sas-listenerset", "namespace": namespace},
+            "spec": {
+                "parentRef": parent_ref,
+                "listeners": [{"name": "https", "hostname": hostname,
+                               "port": 443, "protocol": "HTTPS"}]
             }
         })
 

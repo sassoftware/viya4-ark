@@ -87,24 +87,109 @@ def get_ingress_config(gathered_resources: Dict) -> Dict:
     return {}
 
 
+def gateway_api_uses_listener_sets(resource_cache: Dict) -> bool:
+    """Return whether any cached HTTPRoute explicitly references a Gateway API ListenerSet."""
+    routes = resource_cache.get(ResourceTypeValues.GATEWAY_API_HTTP_ROUTES, {}).get(ITEMS_KEY, {})
+    for route_details in routes.values():
+        route: KubernetesResource = route_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+        for parent_ref in route.get_spec_value(KubernetesResourceKeys.GATEWAY_API_PARENT_REFS) or []:
+            if parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_GROUP,
+                              ResourceTypeValues.GATEWAY_API_GROUP) == ResourceTypeValues.GATEWAY_API_GROUP and \
+                    parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_KIND, "Gateway") == "ListenerSet":
+                return True
+    return False
+
+
 def route_matches_configured_host(route: KubernetesResource, configured_host: Optional[Text]) -> bool:
     """Return whether an HTTPRoute can serve the configured Viya host."""
     if not configured_host:
         return True
 
-    host = configured_host.lower().rstrip(".")
     hostnames = route.get_spec_value(KubernetesResourceKeys.HOSTNAMES) or []
     if not hostnames:
         return True
 
-    for hostname in hostnames:
-        hostname = hostname.lower().rstrip(".")
-        if hostname == host:
-            return True
-        if hostname.startswith("*.") and host.endswith(hostname[1:]) and \
-                host.count(".") == hostname.count("."):
-            return True
-    return False
+    return any(_hostname_matches(hostname, configured_host) for hostname in hostnames)
+
+
+def _hostname_matches(hostname: Text, configured_host: Text) -> bool:
+    hostname = hostname.lower().rstrip(".")
+    host = configured_host.lower().rstrip(".")
+    if hostname == host:
+        return True
+    return hostname.startswith("*.") and host.endswith(hostname[1:]) and \
+        host.count(".") == hostname.count(".")
+
+
+def _get_cached_resource(resource_type: Dict, name: Text, namespace: Text,
+                         default_namespace: Text) -> Optional[KubernetesResource]:
+    """Find a namespaced resource by its actual metadata, never by an unqualified name alone."""
+    for details in resource_type.get(ITEMS_KEY, {}).values():
+        resource: KubernetesResource = details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+        resource_namespace = resource.get_metadata_value(KubernetesResourceKeys.NAMESPACE) or default_namespace
+        if resource.get_name() == name and resource_namespace == namespace:
+            return resource
+    return None
+
+
+def _route_parent_gateway_refs(resource_cache: Dict, route: KubernetesResource,
+                               route_namespace: Text, configured_host: Optional[Text],
+                               default_namespace: Text) -> Tuple[set, List[Text]]:
+    """Resolve direct Gateway and ListenerSet HTTPRoute parents to namespaced Gateway references."""
+    refs = set()
+    issues = []
+    if not route_matches_configured_host(route, configured_host):
+        return refs, issues
+
+    listener_sets = resource_cache.get(ResourceTypeValues.GATEWAY_API_LISTENER_SETS, {})
+    for parent_ref in route.get_spec_value(KubernetesResourceKeys.GATEWAY_API_PARENT_REFS) or []:
+        if parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_GROUP,
+                          ResourceTypeValues.GATEWAY_API_GROUP) != ResourceTypeValues.GATEWAY_API_GROUP:
+            continue
+        parent_kind = parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_KIND, "Gateway")
+        parent_name = parent_ref.get(KubernetesResourceKeys.NAME)
+        if not parent_name:
+            continue
+        parent_namespace = parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_NAMESPACE) or route_namespace
+        if parent_kind == "Gateway":
+            refs.add((parent_name, parent_namespace))
+            continue
+        if parent_kind != "ListenerSet":
+            continue
+
+        listener_set = _get_cached_resource(listener_sets, parent_name, parent_namespace, default_namespace)
+        if listener_set is None:
+            if listener_sets.get(ReportKeys.ResourceTypeDetails.AVAILABLE) is False:
+                issues.append("ListenerSet access denied; references could not be verified")
+            else:
+                issues.append("referenced ListenerSet was not found")
+            continue
+
+        listeners = listener_set.get_spec_value(KubernetesResourceKeys.GATEWAY_API_LISTENERS) or []
+        if configured_host:
+            matching_listener = any(
+                not listener.get(KubernetesResourceKeys.GATEWAY_API_LISTENER_HOSTNAME) or
+                _hostname_matches(listener[KubernetesResourceKeys.GATEWAY_API_LISTENER_HOSTNAME], configured_host)
+                for listener in listeners
+            )
+            if not matching_listener:
+                issues.append("no ListenerSet listener matches the configured host")
+                continue
+
+        gateway_parent = listener_set.get_spec_value(KubernetesResourceKeys.GATEWAY_API_PARENT_REF) or {}
+        if gateway_parent.get(KubernetesResourceKeys.GATEWAY_API_PARENT_GROUP,
+                              ResourceTypeValues.GATEWAY_API_GROUP) != ResourceTypeValues.GATEWAY_API_GROUP or \
+                gateway_parent.get(KubernetesResourceKeys.GATEWAY_API_PARENT_KIND, "Gateway") != "Gateway":
+            issues.append("ListenerSet parent reference does not reference a Gateway")
+            continue
+        gateway_name = gateway_parent.get(KubernetesResourceKeys.NAME)
+        if not gateway_name:
+            issues.append("ListenerSet parent reference could not be resolved")
+            continue
+        gateway_namespace = gateway_parent.get(KubernetesResourceKeys.GATEWAY_API_PARENT_NAMESPACE) \
+            or parent_namespace
+        refs.add((gateway_name, gateway_namespace))
+    return refs, issues
 
 
 def determine_gateway_api_implementation(kubectl: KubectlInterface, resource_cache: Dict,
@@ -115,33 +200,34 @@ def determine_gateway_api_implementation(kubectl: KubectlInterface, resource_cac
     ingress_kind = ingress_config.get(KubernetesResourceKeys.GATEWAY_API_KIND)
     if ingress_kind != "HTTPRoute":
         return unknown, f"{unavailable} (unsupported Gateway API route kind: {ingress_kind or 'unknown'})", None
-    gateway_name = ingress_config.get(KubernetesResourceKeys.GATEWAY_NAME)
     routes = resource_cache.get(ResourceTypeValues.GATEWAY_API_HTTP_ROUTES, {})
-    if not gateway_name or not routes.get(ITEMS_KEY):
+    if not routes.get(ITEMS_KEY):
         return unknown, f"{unavailable} (Gateway API parent reference could not be resolved)", None
 
     matched_gateway_refs = set()
+    resolution_issues = []
+    matching_host_routes = 0
     for route_details in routes[ITEMS_KEY].values():
         route: KubernetesResource = route_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
-        if not route_matches_configured_host(
-                route, ingress_config.get(KubernetesResourceKeys.GATEWAY_API_HOST)):
-            continue
         route_namespace = route.get_metadata_value(KubernetesResourceKeys.NAMESPACE) or kubectl.get_namespace()
-        for parent_ref in route.get_spec_value(KubernetesResourceKeys.GATEWAY_API_PARENT_REFS) or []:
-            if parent_ref.get(KubernetesResourceKeys.NAME) != gateway_name:
-                continue
-            if parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_KIND, "Gateway") != "Gateway":
-                continue
-            if parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_GROUP,
-                              ResourceTypeValues.GATEWAY_API_GROUP) != ResourceTypeValues.GATEWAY_API_GROUP:
-                continue
-            matched_gateway_refs.add((
-                gateway_name,
-                parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_NAMESPACE) or route_namespace,
-            ))
+        if route_matches_configured_host(route, ingress_config.get(KubernetesResourceKeys.GATEWAY_API_HOST)):
+            matching_host_routes += 1
+        refs, issues = _route_parent_gateway_refs(
+            resource_cache, route, route_namespace,
+            ingress_config.get(KubernetesResourceKeys.GATEWAY_API_HOST), kubectl.get_namespace())
+        matched_gateway_refs.update(refs)
+        resolution_issues.extend(issues)
 
+    critical_issues = [issue for issue in resolution_issues
+                       if issue != "no ListenerSet listener matches the configured host"]
+    if matched_gateway_refs and critical_issues:
+        return unknown, f"{unavailable} ({critical_issues[0]})", None
     if not matched_gateway_refs:
-        return unknown, f"{unavailable} (configured Gateway is not referenced by an HTTPRoute)", None
+        if resolution_issues:
+            return unknown, f"{unavailable} ({resolution_issues[0]})", None
+        if not matching_host_routes:
+            return unknown, f"{unavailable} (no HTTPRoute matches the configured host)", None
+        return unknown, f"{unavailable} (no matching HTTPRoute parent chain was found)", None
 
     gateway_type = resource_cache.get(ResourceTypeValues.GATEWAY_API_GATEWAYS, {})
     cached_gateways = gateway_type.get(ITEMS_KEY, {})

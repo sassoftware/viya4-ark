@@ -63,6 +63,7 @@ class KubernetesResourceTypeValues(object):
     GATEWAY_API_GATEWAY_CLASSES = f"gatewayclasses.{GATEWAY_API_GROUP}"
     GATEWAY_API_GATEWAYS = f"gateways.{GATEWAY_API_GROUP}"
     GATEWAY_API_HTTP_ROUTES = f"httproutes.{GATEWAY_API_GROUP}"
+    GATEWAY_API_LISTENER_SETS = f"listenersets.{GATEWAY_API_GROUP}"
 
     # API: storage.k8s.io
     K8S_GROUP_STORAGE_K8S_IO = "storage.k8s.io"

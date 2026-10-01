@@ -55,12 +55,9 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
                 resources = kubectl.get_resources_cluster_scoped(resource_type)
             except NotImplementedError:
                 resources = kubectl.get_resources(resource_type)
-        elif resource_type == KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES:
-            try:
-                resources = kubectl.get_resources_all_namespaces(resource_type)
-            except NotImplementedError:
-                resources = kubectl.get_resources(resource_type)
-        elif resource_type == KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS:
+        elif resource_type in (KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES,
+                               KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS,
+                               KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS):
             try:
                 resources = kubectl.get_resources_all_namespaces(resource_type)
             except NotImplementedError:
@@ -114,7 +111,8 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
         # create a dict keyed by the name of the resource, under which all resource details will be stored: dict
         resource_key = resource.get_name()
         if resource_type in (KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS,
-                             KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES):
+                             KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES,
+                             KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS):
             resource_namespace = resource.get_metadata_value(KubernetesResourceKeys.NAMESPACE)
             if resource_namespace:
                 resource_key = f"{resource_namespace}/{resource_key}"

@@ -9,12 +9,14 @@
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
-from typing import Dict, List, Optional, Text
+from typing import Dict, List, Optional, Text, Tuple
 
 from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
     ViyaDeploymentReportKeys as ReportKeys
-from deployment_report.model.utils.ingress_util import route_matches_configured_host
+from deployment_report.model.utils.ingress_util import \
+    _route_parent_gateway_refs, \
+    route_matches_configured_host
 
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
@@ -170,8 +172,7 @@ def define_service_to_ingress_relationships(resource_cache: Dict, ingress_contro
 
 
 def define_service_to_http_route_relationships(resource_cache: Dict, namespace: Text,
-                                               gateway_name: Optional[Text] = None,
-                                               gateway_namespace: Optional[Text] = None,
+                                               gateway_ref: Optional[Tuple[Text, Text]] = None,
                                                configured_host: Optional[Text] = None) -> None:
     """Connect Services to HTTPRoutes that reference them through spec.rules[].backendRefs."""
     services = resource_cache.get(ResourceTypeValues.K8S_CORE_SERVICES, {})
@@ -185,23 +186,10 @@ def define_service_to_http_route_relationships(resource_cache: Dict, namespace: 
         spec = route.get_spec() or {}
         if not route_matches_configured_host(route, configured_host):
             continue
-        if gateway_name:
-            matching_parent = False
-            for parent_ref in spec.get(KubernetesResourceKeys.GATEWAY_API_PARENT_REFS, []):
-                parent_namespace = parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_NAMESPACE) \
-                    or route_namespace
-                if (
-                    parent_ref.get(KubernetesResourceKeys.NAME) == gateway_name
-                    and parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_KIND, "Gateway") == "Gateway"
-                    and parent_ref.get(
-                        KubernetesResourceKeys.GATEWAY_API_PARENT_GROUP,
-                        ResourceTypeValues.GATEWAY_API_GROUP,
-                    ) == ResourceTypeValues.GATEWAY_API_GROUP
-                    and (gateway_namespace is None or parent_namespace == gateway_namespace)
-                ):
-                    matching_parent = True
-                    break
-            if not matching_parent:
+        if gateway_ref:
+            gateway_refs, _ = _route_parent_gateway_refs(
+                resource_cache, route, route_namespace, configured_host, namespace)
+            if gateway_ref not in gateway_refs:
                 continue
         for rule in spec.get(KubernetesResourceKeys.RULES, []):
             for backend in rule.get(KubernetesResourceKeys.BACKEND_REFS, []):

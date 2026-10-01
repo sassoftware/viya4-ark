@@ -223,6 +223,12 @@ class ViyaDeploymentReport(object):
                 except CalledProcessError:
                     continue
 
+            if ingress_util.gateway_api_uses_listener_sets(resource_cache):
+                resource_util.cache_resources(
+                    resource_type=ResourceTypeValues.GATEWAY_API_LISTENER_SETS,
+                    kubectl=kubectl,
+                    resource_cache=resource_cache)
+
         # return all discovered resources
         return resource_cache
 
@@ -358,8 +364,7 @@ class ViyaDeploymentReport(object):
                 relationship_util.define_service_to_http_route_relationships(
                     resource_cache=resource_cache,
                     namespace=kubectl.get_namespace(),
-                    gateway_name=ingress_config.get(KubernetesResourceKeys.GATEWAY_NAME),
-                    gateway_namespace=ingress_gateway_ref[1],
+                    gateway_ref=ingress_gateway_ref,
                     configured_host=ingress_config.get(KubernetesResourceKeys.GATEWAY_API_HOST))
 
         #######################################################################
