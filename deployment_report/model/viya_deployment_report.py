@@ -308,9 +308,9 @@ class ViyaDeploymentReport(object):
                 ingress_config = ingress_util.get_ingress_config(resource_cache)
                 ingress_implementation, ingress_version, ingress_gateway_ref = \
                     ingress_util.determine_gateway_api_implementation(
-                    kubectl=kubectl,
-                    resource_cache=resource_cache,
-                    ingress_config=ingress_config)
+                        kubectl=kubectl,
+                        resource_cache=resource_cache,
+                        ingress_config=ingress_config)
             else:
                 if not kubectl.ingress_ns:
                     # Determine expected ingress namespace based on the controller
@@ -355,13 +355,12 @@ class ViyaDeploymentReport(object):
             relationship_util.define_service_to_ingress_relationships(resource_cache=resource_cache,
                                                                       ingress_controller=ingress_controller)
             if ingress_controller == SupportedIngress.Controllers.GATEWAY_API and ingress_gateway_ref:
-                relationship_util.define_service_to_http_route_relationships(resource_cache=resource_cache,
-                                                                             namespace=kubectl.get_namespace(),
-                                                                             gateway_name=ingress_config.get(
-                                                                                 KubernetesResourceKeys.GATEWAY_NAME),
-                                                                             gateway_namespace=ingress_gateway_ref[1],
-                                                                             configured_host=ingress_config.get(
-                                                                                 KubernetesResourceKeys.GATEWAY_API_HOST))
+                relationship_util.define_service_to_http_route_relationships(
+                    resource_cache=resource_cache,
+                    namespace=kubectl.get_namespace(),
+                    gateway_name=ingress_config.get(KubernetesResourceKeys.GATEWAY_NAME),
+                    gateway_namespace=ingress_gateway_ref[1],
+                    configured_host=ingress_config.get(KubernetesResourceKeys.GATEWAY_API_HOST))
 
         #######################################################################
         # Get metrics                                                         #

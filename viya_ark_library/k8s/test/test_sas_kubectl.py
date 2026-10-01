@@ -60,6 +60,7 @@ def test_gateway_collection_scopes_do_not_use_configured_namespace():
         "kind": "Gateway",
         "metadata": {"name": "sas-gateway", "namespace": "gateway-system"}
     }
+
     def fake_namespace_do(command, *args, **kwargs):
         captured["exec"] = kubectl.exec
         captured["command"] = command

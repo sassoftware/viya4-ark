@@ -190,11 +190,15 @@ def define_service_to_http_route_relationships(resource_cache: Dict, namespace: 
             for parent_ref in spec.get(KubernetesResourceKeys.GATEWAY_API_PARENT_REFS, []):
                 parent_namespace = parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_NAMESPACE) \
                     or route_namespace
-                if parent_ref.get(KubernetesResourceKeys.NAME) == gateway_name and \
-                        parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_KIND, "Gateway") == "Gateway" and \
-                        parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_GROUP,
-                                       ResourceTypeValues.GATEWAY_API_GROUP) == ResourceTypeValues.GATEWAY_API_GROUP and \
-                        (gateway_namespace is None or parent_namespace == gateway_namespace):
+                if (
+                    parent_ref.get(KubernetesResourceKeys.NAME) == gateway_name
+                    and parent_ref.get(KubernetesResourceKeys.GATEWAY_API_PARENT_KIND, "Gateway") == "Gateway"
+                    and parent_ref.get(
+                        KubernetesResourceKeys.GATEWAY_API_PARENT_GROUP,
+                        ResourceTypeValues.GATEWAY_API_GROUP,
+                    ) == ResourceTypeValues.GATEWAY_API_GROUP
+                    and (gateway_namespace is None or parent_namespace == gateway_namespace)
+                ):
                     matching_parent = True
                     break
             if not matching_parent:
