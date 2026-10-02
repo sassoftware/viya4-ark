@@ -297,53 +297,56 @@ class ViyaDeploymentReport(object):
         # Determine ingress controller and unavailable resource types         #
         #######################################################################
         # default values in-case pods were not found
+        ingress_mode: Optional[Text] = None
         ingress_controller: Optional[Text] = None
         ingress_implementation: Optional[Text] = None
         ingress_version: Optional[Text] = None
         ingress_gateway_ref: Optional[Tuple[Text, Text]] = None
-        ingress_config: Dict = dict()
+        ingress_config: Dict = ingress_util.get_ingress_config(resource_cache)
+        ingress_api: Text = ingress_util.get_ingress_api(ingress_config)
         unavailable_resources: List = list()
 
         # evaluate resources that would be gathered if pods were found
         if pods_found:
             # determine the ingress controller for the deployment
             # this will help to evaluate which resources should be considered "unavailable"
-            ingress_controller = ingress_util.determine_ingress_controller(resource_cache)
+            ingress_mode = ingress_util.determine_ingress_controller(resource_cache)
+            ingress_controller = ingress_mode
 
-            if ingress_controller == SupportedIngress.Controllers.GATEWAY_API:
-                ingress_config = ingress_util.get_ingress_config(resource_cache)
+            if ingress_mode == SupportedIngress.Controllers.GATEWAY_API:
                 ingress_implementation, ingress_version, ingress_gateway_ref = \
                     ingress_util.determine_gateway_api_implementation(
                         kubectl=kubectl,
                         resource_cache=resource_cache,
                         ingress_config=ingress_config)
+                ingress_controller = ingress_implementation
             else:
                 if not kubectl.ingress_ns:
                     # Determine expected ingress namespace based on the controller
-                    kubectl.ingress_ns = ingress_util.get_namespace_for_ingress_controller(ingress_controller)
+                    kubectl.ingress_ns = ingress_util.get_namespace_for_ingress_controller(ingress_mode)
 
                 # Set ingress_version based on the determined controller and namespace
-                if kubectl.ingress_ns and ingress_controller != SupportedIngress.Controllers.UNKNOWN:
+                if kubectl.ingress_ns and ingress_mode != SupportedIngress.Controllers.UNKNOWN:
                     ingress_version = ingress_util.get_ingress_version(kubectl=kubectl,
-                                                                       ingress_controller=ingress_controller)
+                                                                       ingress_controller=ingress_mode)
                 else:
                     ingress_version = "N/A (No default ingress namespace was found)"
         else:
             # Gateway API mode is configured independently of whether Viya workloads are present.
-            if ingress_util.determine_ingress_controller(resource_cache) == \
-                    SupportedIngress.Controllers.GATEWAY_API:
-                ingress_controller = SupportedIngress.Controllers.GATEWAY_API
-                ingress_config = ingress_util.get_ingress_config(resource_cache)
+            detected_ingress_mode = ingress_util.determine_ingress_controller(resource_cache)
+            if detected_ingress_mode == SupportedIngress.Controllers.GATEWAY_API:
+                ingress_mode = detected_ingress_mode
                 ingress_implementation, ingress_version, ingress_gateway_ref = \
                     ingress_util.determine_gateway_api_implementation(
                         kubectl=kubectl,
                         resource_cache=resource_cache,
                         ingress_config=ingress_config)
+                ingress_controller = ingress_implementation
 
         # Determine whether resource listings were incomplete, regardless of whether Viya pods were present.
         for resource_type, resource_type_details in resource_cache.items():
             if not resource_type_details[Keys.ResourceTypeDetails.AVAILABLE] and \
-                    not ingress_util.ignorable_for_controller_if_unavailable(ingress_controller, resource_type):
+                    not ingress_util.ignorable_for_controller_if_unavailable(ingress_mode, resource_type):
                 unavailable_resources.append(resource_type)
 
         #######################################################################
@@ -359,8 +362,8 @@ class ViyaDeploymentReport(object):
 
             # define the relationship between Service and ingress controller resource types
             relationship_util.define_service_to_ingress_relationships(resource_cache=resource_cache,
-                                                                      ingress_controller=ingress_controller)
-            if ingress_controller == SupportedIngress.Controllers.GATEWAY_API and ingress_gateway_ref:
+                                                                      ingress_controller=ingress_mode)
+            if ingress_mode == SupportedIngress.Controllers.GATEWAY_API and ingress_gateway_ref:
                 relationship_util.define_service_to_http_route_relationships(
                     resource_cache=resource_cache,
                     namespace=kubectl.get_namespace(),
@@ -416,6 +419,9 @@ class ViyaDeploymentReport(object):
 
         # create a key to mark the determined ingress controller for the cluster: str|None
         k8s_details_dict[Keys.Kubernetes.INGRESS_CTRL]: Optional[Text] = ingress_controller
+
+        # create a key to hold the ingress kind and API version from the Viya configuration
+        k8s_details_dict[Keys.Kubernetes.INGRESS_API]: Text = ingress_api
 
         # create a key to mark the Gateway API implementation, if determined
         k8s_details_dict[Keys.Kubernetes.INGRESS_IMPLEMENTATION]: Optional[Text] = ingress_implementation
@@ -631,6 +637,20 @@ class ViyaDeploymentReport(object):
 
         try:
             return self._report_data[Keys.KUBERNETES_DICT][Keys.Kubernetes.INGRESS_CTRL]
+        except KeyError:
+            return None
+
+    def get_ingress_api(self) -> Optional[Text]:
+        """
+        Convenience method for getting the configured ingress API from the Kubernetes cluster details.
+
+        :return: The configured ingress API descriptor or None if details have not been gathered.
+        """
+        if self._report_data is None:
+            return None
+
+        try:
+            return self._report_data[Keys.KUBERNETES_DICT][Keys.Kubernetes.INGRESS_API]
         except KeyError:
             return None
 

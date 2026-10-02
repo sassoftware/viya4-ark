@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2022, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2022-2026, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -14,6 +14,8 @@ import os
 import pytest
 
 from typing import Dict, List, Text, Type
+
+from jinja2 import Environment, FileSystemLoader
 
 from deployment_report.model.viya_deployment_report import ViyaDeploymentReport
 from deployment_report.model.static.viya_deployment_report_keys import ITEMS_KEY
@@ -89,13 +91,14 @@ def test_get_kubernetes_details(report: ViyaDeploymentReport) -> None:
     kube_details: Dict = report.get_kubernetes_details()
 
     # check for all expected entries
-    assert len(kube_details) == 13
+    assert len(kube_details) == 14
     assert ReportKeys.Kubernetes.API_RESOURCES_DICT in kube_details
     assert ReportKeys.Kubernetes.API_VERSIONS_LIST in kube_details
     assert ReportKeys.Kubernetes.CADENCE_INFO in kube_details
     assert ReportKeys.Kubernetes.CONFIGMAPS_DICT in kube_details
     assert ReportKeys.Kubernetes.DB_INFO in kube_details
     assert ReportKeys.Kubernetes.DISCOVERED_RESOURCE_TYPES_DICT in kube_details
+    assert ReportKeys.Kubernetes.INGRESS_API in kube_details
     assert ReportKeys.Kubernetes.INGRESS_CTRL in kube_details
     assert ReportKeys.Kubernetes.INGRESS_IMPLEMENTATION in kube_details
     assert ReportKeys.Kubernetes.INGRESS_VER in kube_details
@@ -120,9 +123,11 @@ def test_gateway_api_envoy_implementation_and_workload_version():
     data = report.as_dict_json_encoded()
     kubernetes = data["kubernetes"]
 
-    assert kubernetes["ingressController"] == SupportedIngress.Controllers.GATEWAY_API
+    assert kubernetes["ingressController"] == "Envoy Gateway"
+    assert kubernetes["ingressApi"] == "HTTPRoute (gateway.networking.k8s.io/v1)"
     assert kubernetes["ingressImplementation"] == "Envoy Gateway"
-    assert kubernetes["ingressVersion"] == "v1.2.3"
+    assert kubernetes["ingressVersion"] == "v1.8.2"
+    assert report.get_ingress_controller() == "Envoy Gateway"
     assert kubernetes["apiResources"][ResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES]["namespaced"] is False
     ingress_config = data["kubernetes"]["configMaps"]["ingress-input-gateway"]
     assert ingress_config["INGRESS_APIVERSION"] == "gateway.networking.k8s.io/v1"
@@ -145,6 +150,35 @@ def test_gateway_api_envoy_implementation_and_workload_version():
                         ResourceTypeValues.OPENSHIFT_ROUTES,
                         ResourceTypeValues.ISTIO_VIRTUAL_SERVICES):
         assert legacy_type not in unavailable
+
+
+@pytest.mark.parametrize(("scenario", "expected_api", "expected_controller", "expected_version"), [
+    (KubectlTest.IngressSimulator.GATEWAY_API_ENVOY,
+     "HTTPRoute (gateway.networking.k8s.io/v1)", "Envoy Gateway", "v1.8.2"),
+    (KubectlTest.IngressSimulator.ALL_CONTOUR_USED,
+     "HTTPProxy (projectcontour.io/v1)", "Contour", "Not, Functional, In, Testing, Implementation"),
+])
+def test_ingress_html_always_renders_three_rows_in_order(
+        scenario, expected_api, expected_controller, expected_version):
+    report = ViyaDeploymentReport()
+    report.gather_details(KubectlTest(ingress_simulator=scenario))
+    template_dir = os.path.join(os.path.dirname(__file__), "..", "..", "templates")
+    common_template_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..",
+                                       "viya_ark_library", "templates")
+    template_loader = FileSystemLoader([template_dir, common_template_dir])
+    template = Environment(loader=template_loader).get_template("viya_deployment_report.html.j2")
+    rendered = template.render(report_data=report.as_dict_json_encoded())
+    ingress_table = rendered.split("<h7>Ingress</h7>", 1)[1].split("</table>", 1)[0]
+
+    assert ingress_table.count("<tr>") == 3
+    labels = ["<th>Ingress API</th>", "<th>Controller</th>", "<th>Version</th>"]
+    assert [ingress_table.index(label) for label in labels] == sorted(
+        ingress_table.index(label) for label in labels)
+    assert "<th>Implementation</th>" not in ingress_table
+    assert "<th>Implementation version</th>" not in ingress_table
+    assert expected_api in ingress_table
+    assert expected_controller in ingress_table
+    assert expected_version in ingress_table
 
 
 def test_direct_gateway_route_does_not_require_optional_listener_set_api(monkeypatch):
@@ -191,7 +225,7 @@ def test_gateway_api_listener_set_resolves_controller_and_service_backend(scenar
     kubernetes = data["kubernetes"]
 
     assert kubernetes["ingressImplementation"] == "Envoy Gateway"
-    assert kubernetes["ingressVersion"] == "v1.2.3"
+    assert kubernetes["ingressVersion"] == "v1.8.2"
     assert ResourceTypeValues.GATEWAY_API_LISTENER_SETS in kubernetes["discoveredResourceTypes"]
     relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
         "relationships"]
@@ -206,7 +240,7 @@ def test_gateway_api_listener_set_defaults_both_parent_namespaces():
     kubernetes = report.as_dict_json_encoded()["kubernetes"]
 
     assert kubernetes["ingressImplementation"] == "Envoy Gateway"
-    assert kubernetes["ingressVersion"] == "v1.2.3"
+    assert kubernetes["ingressVersion"] == "v1.8.2"
 
 
 def test_gateway_api_listener_set_host_mismatch_remains_unknown():
@@ -261,7 +295,8 @@ def test_gateway_api_ambiguous_gateway_namespace_does_not_create_service_relatio
     data = report.as_dict_json_encoded()
     kubernetes = data["kubernetes"]
 
-    assert kubernetes["ingressController"] == SupportedIngress.Controllers.GATEWAY_API
+    assert kubernetes["ingressController"] == "Unknown"
+    assert kubernetes["ingressApi"] == "HTTPRoute (gateway.networking.k8s.io/v1)"
     assert kubernetes["ingressImplementation"] == "Unknown"
     assert "ambiguous across namespaces" in kubernetes["ingressVersion"]
     route_relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
@@ -309,9 +344,10 @@ def test_gateway_api_mode_is_reported_without_viya_pods():
         ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_ENVOY))
     kubernetes = report.as_dict_json_encoded()["kubernetes"]
 
-    assert kubernetes["ingressController"] == SupportedIngress.Controllers.GATEWAY_API
+    assert kubernetes["ingressController"] == "Envoy Gateway"
+    assert kubernetes["ingressApi"] == "HTTPRoute (gateway.networking.k8s.io/v1)"
     assert kubernetes["ingressImplementation"] == "Envoy Gateway"
-    assert kubernetes["ingressVersion"] == "v1.2.3"
+    assert kubernetes["ingressVersion"] == "v1.8.2"
 
 
 @pytest.mark.parametrize("scenario, expected_implementation, version_text", [
@@ -329,7 +365,7 @@ def test_gateway_api_preserves_mode_when_implementation_or_version_is_unavailabl
     data = report.as_dict_json_encoded()
     kubernetes = data["kubernetes"]
 
-    assert kubernetes["ingressController"] == SupportedIngress.Controllers.GATEWAY_API
+    assert kubernetes["ingressController"] == expected_implementation
     assert kubernetes["ingressImplementation"] == expected_implementation
     assert version_text in kubernetes["ingressVersion"]
     if scenario == KubectlTest.IngressSimulator.GATEWAY_API_ACCESS_DENIED:
@@ -468,6 +504,39 @@ def test_get_ingress_controller(report: ViyaDeploymentReport) -> None:
     assert report.get_ingress_controller() == SupportedIngress.Controllers.NGINX
 
 
+@pytest.mark.parametrize(("scenario", "expected_api", "expected_controller", "expected_version"), [
+    (KubectlTest.IngressSimulator.ALL_CONTOUR_USED, "HTTPProxy (projectcontour.io/v1)", "Contour",
+     "Not, Functional, In, Testing, Implementation"),
+    (KubectlTest.IngressSimulator.ALL_NGINX_USED, "Ingress (networking.k8s.io/v1)", "NGINX", ""),
+    (KubectlTest.IngressSimulator.ALL_ISTIO_USED, "VirtualService (networking.istio.io/v1alpha3)", "Istio",
+     "Not functional in testing implementation"),
+    (KubectlTest.IngressSimulator.ALL_OPENSHIFT_USED, "Route (route.openshift.io/v1)", "OpenShift",
+     "Not functional in testing implementation"),
+])
+def test_legacy_ingress_api_controller_and_version_are_preserved(
+        scenario, expected_api, expected_controller, expected_version):
+    report = ViyaDeploymentReport()
+    report.gather_details(KubectlTest(ingress_simulator=scenario))
+    kubernetes = report.as_dict_json_encoded()["kubernetes"]
+
+    assert kubernetes["ingressApi"] == expected_api
+    assert kubernetes["ingressController"] == expected_controller
+    assert kubernetes["ingressVersion"] == expected_version
+    assert kubernetes["ingressImplementation"] is None
+    assert report.get_ingress_api() == expected_api
+
+
+@pytest.mark.parametrize(("ingress_config", "expected_api"), [
+    ({}, "Unavailable"),
+    ({"INGRESS_KIND": "HTTPRoute"}, "HTTPRoute"),
+    ({"INGRESS_APIVERSION": "gateway.networking.k8s.io/v1"}, "gateway.networking.k8s.io/v1"),
+])
+def test_ingress_api_descriptor_missing_fields(ingress_config, expected_api):
+    from deployment_report.model.utils.ingress_util import get_ingress_api
+
+    assert get_ingress_api(ingress_config) == expected_api
+
+
 def test_get_ingress_controller_none() -> None:
     """
     This test verifies that a None value is returned when both Ingress and VirtualService resources are unavailable.
@@ -486,6 +555,7 @@ def test_get_ingress_controller_unpopulated() -> None:
     """
     # make sure None is returned
     assert ViyaDeploymentReport().get_ingress_controller() is None
+    assert ViyaDeploymentReport().get_ingress_api() is None
 
 
 def test_get_namespace_provided(report: ViyaDeploymentReport) -> None:

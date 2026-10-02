@@ -754,7 +754,7 @@ class KubectlTest(KubectlInterface):
         if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_VERSION_UNAVAILABLE:
             raise CalledProcessError(1, f"kubectl get {type_version_group} --all-namespaces -o json")
         if self.ingress_simulator.value >= self.IngressSimulator.GATEWAY_API_ENVOY.value:
-            image = "docker.io/envoyproxy/gateway:v1.2.3"
+            image = "docker.io/envoyproxy/gateway:v1.8.2"
             if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_DIGEST_ONLY:
                 image = "docker.io/envoyproxy/gateway@sha256:0123456789abcdef"
             deployments = [KubernetesResource({
@@ -780,7 +780,7 @@ class KubectlTest(KubectlInterface):
                     "kind": "Deployment",
                     "metadata": {"name": "envoy-gateway-secondary", "namespace": "envoy-gateway-system"},
                     "spec": {"template": {"spec": {"containers": [
-                        {"name": "envoy-gateway", "image": "docker.io/envoyproxy/gateway:v1.2.3"}
+                        {"name": "envoy-gateway", "image": "docker.io/envoyproxy/gateway:v1.8.2"}
                     ]}}}
                 }))
             return deployments

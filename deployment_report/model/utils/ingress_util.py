@@ -87,6 +87,17 @@ def get_ingress_config(gathered_resources: Dict) -> Dict:
     return {}
 
 
+def get_ingress_api(ingress_config: Dict) -> Text:
+    """Format the ingress kind and API version declared in the Viya ingress ConfigMap."""
+    ingress_kind = ingress_config.get(KubernetesResourceKeys.GATEWAY_API_KIND)
+    ingress_api_version = ingress_config.get(KubernetesResourceKeys.GATEWAY_API_VERSION)
+    if ingress_kind and ingress_api_version:
+        return f"{ingress_kind} ({ingress_api_version})"
+    if ingress_kind or ingress_api_version:
+        return ingress_kind or ingress_api_version
+    return "Unavailable"
+
+
 def gateway_api_uses_listener_sets(resource_cache: Dict) -> bool:
     """Return whether any cached HTTPRoute explicitly references a Gateway API ListenerSet."""
     routes = resource_cache.get(ResourceTypeValues.GATEWAY_API_HTTP_ROUTES, {}).get(ITEMS_KEY, {})

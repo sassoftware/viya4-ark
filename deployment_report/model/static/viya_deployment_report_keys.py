@@ -48,6 +48,7 @@ class ViyaDeploymentReportKeys(object):
         CONFIGMAPS_DICT = "configMaps"
         DB_INFO = "dbInfo"
         DISCOVERED_RESOURCE_TYPES_DICT = "discoveredResourceTypes"
+        INGRESS_API = "ingressApi"
         INGRESS_CTRL = "ingressController"
         INGRESS_IMPLEMENTATION = "ingressImplementation"
         INGRESS_VER = "ingressVersion"

@@ -126,19 +126,15 @@
       <h7>Ingress</h7>
       <table>
         <tr>
-          <th>{% if report_data.kubernetes.ingressController == "Gateway API" %}Ingress API{% else %}Controller{% endif %}</th>
-          <td>{{ report_data.kubernetes.ingressController | default("<em>could not be determined</em>") }}</td>
+          <th>Ingress API</th>
+          <td>{{ report_data.kubernetes.ingressApi | default("Unavailable", true) }}</td>
         </tr>
-        {% if report_data.kubernetes.ingressController == "Gateway API" %}
         <tr>
-          <th>Implementation</th>
-          <td>{{ report_data.kubernetes.ingressImplementation | default("Unknown", true) }}</td>
+          <th>Controller</th>
+          <td>{{ report_data.kubernetes.ingressController | default("Unavailable", true) }}</td>
         </tr>
-        {% endif %}
         <tr>
-          <th>
-            {% if report_data.kubernetes.ingressController == "Gateway API" %}Implementation version{% else %}Version{% endif %}
-          </th>
+          <th>Version</th>
           {% if report_data.kubernetes.ingressVersion is not none and report_data.kubernetes.ingressVersion | length > 0 %}
             <td>{{ report_data.kubernetes.ingressVersion}}</td>
           {% else %}
