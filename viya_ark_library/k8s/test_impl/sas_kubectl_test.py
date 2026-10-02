@@ -77,6 +77,24 @@ class KubectlTest(KubectlInterface):
         # Only the OpenShift Route type will be included in the resources returned by api_resources()
         ONLY_OPENSHIFT = 8
 
+        GATEWAY_API_ENVOY = 9
+        GATEWAY_API_UNKNOWN = 10
+        GATEWAY_API_VERSION_UNAVAILABLE = 11
+        GATEWAY_API_ACCESS_DENIED = 12
+        GATEWAY_API_DIGEST_ONLY = 13
+        GATEWAY_API_GATEWAY_ACCESS_DENIED = 14
+        GATEWAY_API_CROSS_NAMESPACE_ROUTE = 15
+        GATEWAY_API_DISTRACTOR_ROUTE = 16
+        GATEWAY_API_AMBIGUOUS_GATEWAYS = 17
+        GATEWAY_API_STALE_PARENT = 18
+        GATEWAY_API_AMBIGUOUS_VERSION = 19
+        GATEWAY_API_LISTENER_SET = 20
+        GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE = 21
+        GATEWAY_API_LISTENER_SET_HOST_MISMATCH = 22
+        GATEWAY_API_LISTENER_SET_WILDCARD_HOST = 23
+        GATEWAY_API_LISTENER_SET_ACCESS_DENIED = 24
+        GATEWAY_API_LISTENER_SET_MISSING = 25
+
     ################################################################
     # ### CLASS: KubectlTest.Values
     ################################################################
@@ -475,6 +493,9 @@ class KubectlTest(KubectlInterface):
         elif 0 < self.ingress_simulator.value <= 4:
             api_resources_data = KubectlTest._load_response_data(_API_RESOURCES_All_INGRESSES_DATA_)
 
+        elif self.ingress_simulator.value >= self.IngressSimulator.GATEWAY_API_ENVOY.value:
+            api_resources_data = KubectlTest._load_response_data(_API_RESOURCES_All_INGRESSES_DATA_)
+
         # Contour
         elif self.ingress_simulator == self.IngressSimulator.ONLY_CONTOUR:
             api_resources_data = KubectlTest._load_response_data(_API_RESOURCES_CONTOUR_ONLY_DATA_)
@@ -491,6 +512,29 @@ class KubectlTest(KubectlInterface):
         elif self.ingress_simulator == self.IngressSimulator.ONLY_OPENSHIFT:
             api_resources_data = KubectlTest._load_response_data(_API_RESOURCES_OPENSHIFT_ONLY_DATA_)
 
+        if self.ingress_simulator.value >= self.IngressSimulator.GATEWAY_API_ENVOY.value:
+            api_resources_data.update({
+                KubernetesResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES: {
+                    "group": KubernetesResourceTypeValues.GATEWAY_API_GROUP,
+                    "kind": "GatewayClass", "name": "gatewayclasses", "namespaced": False,
+                    "shortname": "", "verbs": ["get", "list"], "version": "v1"
+                },
+                KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS: {
+                    "group": KubernetesResourceTypeValues.GATEWAY_API_GROUP,
+                    "kind": "Gateway", "name": "gateways", "namespaced": True,
+                    "shortname": "", "verbs": ["get", "list"], "version": "v1"
+                },
+                KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES: {
+                    "group": KubernetesResourceTypeValues.GATEWAY_API_GROUP,
+                    "kind": "HTTPRoute", "name": "httproutes", "namespaced": True,
+                    "shortname": "", "verbs": ["get", "list"], "version": "v1"
+                },
+                KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS: {
+                    "group": KubernetesResourceTypeValues.GATEWAY_API_GROUP,
+                    "kind": "ListenerSet", "name": "listenersets", "namespaced": True,
+                    "shortname": "", "verbs": ["get", "list"], "version": "v1"
+                }
+            })
         return KubernetesAvailableResourceTypes(api_resources_data)
 
     def api_versions(self, ignore_errors: bool = False) -> List:
@@ -522,6 +566,69 @@ class KubectlTest(KubectlInterface):
         # return an empty list if simulating an empty deployment
         if self.simulate_empty_deployment:
             return list()
+
+        gateway_types = (
+            KubernetesResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES,
+            KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS,
+            KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES,
+            KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS)
+        if type_version_group.lower() in gateway_types:
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_ACCESS_DENIED and \
+                    type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES:
+                raise CalledProcessError(1, f"kubectl get {type_version_group} -o json")
+            if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES:
+                routes = [self._gateway_api_route()]
+                if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_DISTRACTOR_ROUTE:
+                    routes.append(KubernetesResource({
+                        "apiVersion": "gateway.networking.k8s.io/v1",
+                        "kind": "HTTPRoute",
+                        "metadata": {"name": "sas-route-other", "namespace": "other-system"},
+                        "spec": {
+                            "hostnames": ["unrelated.example.com"],
+                            "parentRefs": [{
+                                "group": "gateway.networking.k8s.io",
+                                "kind": "Gateway",
+                                "name": "sas-gateway",
+                                "namespace": "other-gateway-system"
+                            }],
+                            "rules": [{"backendRefs": [{"kind": "Service", "name": "sas-annotations",
+                                                        "namespace": self.namespace, "port": 80}]}]
+                        }
+                    }))
+                elif self.ingress_simulator in (
+                        self.IngressSimulator.GATEWAY_API_AMBIGUOUS_GATEWAYS,
+                        self.IngressSimulator.GATEWAY_API_STALE_PARENT):
+                    routes.append(KubernetesResource({
+                        "apiVersion": "gateway.networking.k8s.io/v1",
+                        "kind": "HTTPRoute",
+                        "metadata": {"name": "sas-route-other", "namespace": "other-system"},
+                        "spec": {
+                            "hostnames": ["k8s-master-node.test.sas.com"],
+                            "parentRefs": [{
+                                "group": "gateway.networking.k8s.io",
+                                "kind": "Gateway",
+                                "name": "sas-gateway",
+                                "namespace": "other-gateway-system"
+                            }],
+                            "rules": [{"backendRefs": [{"kind": "Service", "name": "sas-annotations",
+                                                        "namespace": self.namespace, "port": 80}]}]
+                        }
+                    }))
+                return routes
+            if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS:
+                return []
+            if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES:
+                return [self._gateway_api_class()]
+            return list()
+
+        if self.ingress_simulator.value >= self.IngressSimulator.GATEWAY_API_ENVOY.value and \
+                type_version_group.lower() in (
+                    KubernetesResourceTypeValues.CONTOUR_HTTP_PROXIES,
+                    KubernetesResourceTypeValues.K8S_EXTENSIONS_INGRESSES,
+                    KubernetesResourceTypeValues.K8S_NETWORKING_INGRESSES,
+                    KubernetesResourceTypeValues.OPENSHIFT_ROUTES,
+                    KubernetesResourceTypeValues.ISTIO_VIRTUAL_SERVICES):
+            raise CalledProcessError(1, f"kubectl get {type_version_group} -o json")
 
         # handle any ingress simulation - this logic covers scenarios where no resources would be returned
         # Contour
@@ -581,6 +688,23 @@ class KubectlTest(KubectlInterface):
                 resources_data.extend(
                     KubectlTest._load_response_data(f"resources_{type_version_group.lower()}_ingress_openshift.json")
                 )
+            elif self.ingress_simulator.value >= self.IngressSimulator.GATEWAY_API_ENVOY.value:
+                resources_data.append({
+                    "apiVersion": "v1",
+                    "kind": "ConfigMap",
+                    "metadata": {
+                        "name": "ingress-input-gateway",
+                        "namespace": self.namespace,
+                        "labels": {"sas.com/deployment": "test"}
+                    },
+                    "data": {
+                        "INGRESS_APIVERSION": "gateway.networking.k8s.io/v1",
+                        "INGRESS_IMPLEMENTATION": "gateway.networking.k8s.io",
+                        "INGRESS_KIND": "HTTPRoute",
+                        "INGRESS_HOST": "k8s-master-node.test.sas.com",
+                        "GATEWAY_NAME": "sas-gateway"
+                    }
+                })
 
         # convert the raw JSON to KubernetesResource objects
         resources: List[KubernetesResource] = list()
@@ -588,6 +712,190 @@ class KubectlTest(KubectlInterface):
             resources.append(KubernetesResource(resource))
 
         return resources
+
+    def get_resources_all_namespaces(self, type_version_group: Text,
+                                     raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+        listener_set_scenarios = (
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING,
+        )
+        if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS:
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED:
+                raise CalledProcessError(1, f"kubectl get {type_version_group} --all-namespaces -o json")
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING:
+                return []
+            if self.ingress_simulator not in listener_set_scenarios:
+                return []
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE:
+                return [self._gateway_api_listener_set("test", gateway_namespace=None)]
+            listener_set = self._gateway_api_listener_set("listener-system")
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET:
+                return [listener_set, self._gateway_api_listener_set(
+                    "other-listener-system", hostname="other.example.com")]
+            return [listener_set]
+        if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS:
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_GATEWAY_ACCESS_DENIED:
+                raise CalledProcessError(1, f"kubectl get {type_version_group} --all-namespaces -o json")
+            if self.ingress_simulator in listener_set_scenarios:
+                gateway_namespace = "test" if \
+                    self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE \
+                    else "gw-system"
+                return [self._gateway_api_gateway(gateway_namespace, "k8s-gw")]
+            gateways = [self._gateway_api_gateway("gateway-system")]
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_AMBIGUOUS_GATEWAYS:
+                gateways.append(self._gateway_api_gateway("other-gateway-system"))
+            return gateways
+        if type_version_group.lower() != KubernetesResourceTypeValues.K8S_APPS_DEPLOYMENTS:
+            return self.get_resources(type_version_group, raw)
+        if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_VERSION_UNAVAILABLE:
+            raise CalledProcessError(1, f"kubectl get {type_version_group} --all-namespaces -o json")
+        if self.ingress_simulator.value >= self.IngressSimulator.GATEWAY_API_ENVOY.value:
+            image = "docker.io/envoyproxy/gateway:v1.8.2"
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_DIGEST_ONLY:
+                image = "docker.io/envoyproxy/gateway@sha256:0123456789abcdef"
+            deployments = [KubernetesResource({
+                "apiVersion": "apps/v1",
+                "kind": "Deployment",
+                "metadata": {"name": "envoy-gateway", "namespace": "gateway-system"},
+                "spec": {"template": {"spec": {"containers": [
+                    {"name": "envoy-gateway", "image": image}
+                ]}}}
+            })]
+            if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_AMBIGUOUS_VERSION:
+                deployments.append(KubernetesResource({
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {"name": "envoy-gateway-old", "namespace": "old-gateway-system"},
+                    "spec": {"template": {"spec": {"containers": [
+                        {"name": "envoy-gateway", "image": "docker.io/envoyproxy/gateway:v1.1.0"}
+                    ]}}}
+                }))
+            if self.ingress_simulator in listener_set_scenarios:
+                deployments.append(KubernetesResource({
+                    "apiVersion": "apps/v1",
+                    "kind": "Deployment",
+                    "metadata": {"name": "envoy-gateway-secondary", "namespace": "envoy-gateway-system"},
+                    "spec": {"template": {"spec": {"containers": [
+                        {"name": "envoy-gateway", "image": "docker.io/envoyproxy/gateway:v1.8.2"}
+                    ]}}}
+                }))
+            return deployments
+        return []
+
+    def get_resources_cluster_scoped(self, type_version_group: Text,
+                                     raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+        return self.get_resources(type_version_group, raw)
+
+    def get_resource_in_namespace(self, type_version_group: Text, resource_name: Text,
+                                  namespace: Text) -> KubernetesResource:
+        if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_GATEWAY_ACCESS_DENIED:
+            raise CalledProcessError(1, f"kubectl get {type_version_group} {resource_name} -n {namespace} -o json")
+        if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS and \
+                resource_name == "sas-gateway" and namespace == "gateway-system":
+            return self._gateway_api_gateway(namespace)
+        if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS and \
+                resource_name == "k8s-gw" and namespace in ("gw-system", "test"):
+            return self._gateway_api_gateway(namespace, resource_name)
+        raise CalledProcessError(1, f"kubectl get {type_version_group} {resource_name} -n {namespace} -o json")
+
+    @staticmethod
+    def _gateway_api_gateway(namespace: Text, name: Text = "sas-gateway") -> KubernetesResource:
+        return KubernetesResource({
+            "apiVersion": "gateway.networking.k8s.io/v1",
+            "kind": "Gateway",
+            "metadata": {"name": name, "namespace": namespace},
+            "spec": {"gatewayClassName": "envoy-gateway-class"}
+        })
+
+    def _gateway_api_class(self) -> KubernetesResource:
+        controller = "gateway.envoyproxy.io/gatewayclass-controller"
+        if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_UNKNOWN:
+            controller = "example.invalid/controller"
+        return KubernetesResource({
+            "apiVersion": "gateway.networking.k8s.io/v1",
+            "kind": "GatewayClass",
+            "metadata": {"name": "envoy-gateway-class"},
+            "spec": {"controllerName": controller}
+        })
+
+    def _gateway_api_route(self) -> KubernetesResource:
+        route_namespace = self.namespace
+        backend_namespace = None
+        if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_CROSS_NAMESPACE_ROUTE:
+            route_namespace = "route-system"
+            backend_namespace = self.namespace
+        listener_set_scenarios = (
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED,
+            self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING,
+        )
+        if self.ingress_simulator in listener_set_scenarios:
+            default_namespace_case = self.ingress_simulator == \
+                self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE
+            parent_ref = {"kind": "ListenerSet", "name": "sas-listenerset"}
+            if not default_namespace_case:
+                parent_ref["namespace"] = "listener-system"
+                route_namespace = "route-system"
+            else:
+                route_namespace = "test"
+            return KubernetesResource({
+                "apiVersion": "gateway.networking.k8s.io/v1",
+                "kind": "HTTPRoute",
+                "metadata": {"name": "sas-route", "namespace": route_namespace},
+                "spec": {
+                    "parentRefs": [parent_ref],
+                    "hostnames": [],
+                    "rules": [{"backendRefs": [{"kind": "Service", "name": "sas-annotations",
+                                                "namespace": self.namespace, "port": 80}]}]
+                }
+            })
+        backend_ref = {"kind": "Service", "name": "sas-annotations", "port": 80}
+        if backend_namespace:
+            backend_ref["namespace"] = backend_namespace
+        return KubernetesResource({
+            "apiVersion": "gateway.networking.k8s.io/v1",
+            "kind": "HTTPRoute",
+            "metadata": {"name": "sas-route", "namespace": route_namespace},
+            "spec": {
+                "parentRefs": [{
+                    "group": "gateway.networking.k8s.io",
+                    "kind": "Gateway",
+                    "name": "sas-gateway",
+                    "namespace": "gateway-system"
+                }],
+                "hostnames": ["k8s-master-node.test.sas.com"],
+                "rules": [{"backendRefs": [backend_ref]}]
+            }
+        })
+
+    def _gateway_api_listener_set(self, namespace: Text, gateway_namespace: Optional[Text] = "gw-system",
+                                  hostname: Optional[Text] = None) -> KubernetesResource:
+        if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH:
+            hostname = "unrelated.example.com"
+        elif self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST:
+            hostname = "*.test.sas.com"
+        else:
+            hostname = hostname or "k8s-master-node.test.sas.com"
+        parent_ref = {"group": "gateway.networking.k8s.io", "kind": "Gateway", "name": "k8s-gw"}
+        if gateway_namespace:
+            parent_ref["namespace"] = gateway_namespace
+        return KubernetesResource({
+            "apiVersion": "gateway.networking.k8s.io/v1",
+            "kind": "ListenerSet",
+            "metadata": {"name": "sas-listenerset", "namespace": namespace},
+            "spec": {
+                "parentRef": parent_ref,
+                "listeners": [{"name": "https", "hostname": hostname,
+                               "port": 443, "protocol": "HTTPS"}]
+            }
+        })
 
     def get_resource(self, type_version_group: Text, resource_name: Text, raw: bool = False,
                      ignore_errors: bool = False) -> Union[AnyStr, KubernetesResource]:
