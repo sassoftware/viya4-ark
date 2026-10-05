@@ -14,9 +14,7 @@ from typing import Dict, List, Optional, Text, Tuple
 from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
     ViyaDeploymentReportKeys as ReportKeys
-from deployment_report.model.utils.ingress_util import \
-    _route_parent_gateway_refs, \
-    route_matches_configured_host
+from deployment_report.model.utils.ingress_util import _route_parent_gateway_refs
 
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
@@ -172,7 +170,7 @@ def define_service_to_ingress_relationships(resource_cache: Dict, ingress_contro
 
 
 def define_service_to_http_route_relationships(resource_cache: Dict, namespace: Text,
-                                               gateway_ref: Optional[Tuple[Text, Text]] = None,
+                                               gateway_ref: Tuple[Text, Text],
                                                configured_host: Optional[Text] = None) -> None:
     """Connect Services to HTTPRoutes that reference them through spec.rules[].backendRefs."""
     services = resource_cache.get(ResourceTypeValues.K8S_CORE_SERVICES, {})
@@ -184,13 +182,10 @@ def define_service_to_http_route_relationships(resource_cache: Dict, namespace: 
         route: KubernetesResource = route_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
         route_namespace = route.get_metadata_value(KubernetesResourceKeys.NAMESPACE) or namespace
         spec = route.get_spec() or {}
-        if not route_matches_configured_host(route, configured_host):
+        gateway_refs, _ = _route_parent_gateway_refs(
+            resource_cache, route, route_namespace, configured_host, namespace)
+        if gateway_ref not in gateway_refs:
             continue
-        if gateway_ref:
-            gateway_refs, _ = _route_parent_gateway_refs(
-                resource_cache, route, route_namespace, configured_host, namespace)
-            if gateway_ref not in gateway_refs:
-                continue
         for rule in spec.get(KubernetesResourceKeys.RULES, []):
             for backend in rule.get(KubernetesResourceKeys.BACKEND_REFS, []):
                 if backend.get(KubernetesResourceKeys.KIND, "Service") != "Service" or \

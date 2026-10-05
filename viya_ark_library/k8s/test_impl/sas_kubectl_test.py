@@ -446,6 +446,15 @@ class KubectlTest(KubectlInterface):
         ]
         RESOURCE_STATEFUL_SET_COUNT: int = len(RESOURCE_STATEFUL_SET_LIST)
 
+    _GATEWAY_API_LISTENER_SET_SCENARIOS = (
+        IngressSimulator.GATEWAY_API_LISTENER_SET,
+        IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE,
+        IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH,
+        IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
+        IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED,
+        IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING,
+    )
+
     ################################################################
     # ### KubectlTest functions
     ################################################################
@@ -715,20 +724,12 @@ class KubectlTest(KubectlInterface):
 
     def get_resources_all_namespaces(self, type_version_group: Text,
                                      raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
-        listener_set_scenarios = (
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING,
-        )
         if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS:
             if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED:
                 raise CalledProcessError(1, f"kubectl get {type_version_group} --all-namespaces -o json")
             if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING:
                 return []
-            if self.ingress_simulator not in listener_set_scenarios:
+            if self.ingress_simulator not in self._GATEWAY_API_LISTENER_SET_SCENARIOS:
                 return []
             if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE:
                 return [self._gateway_api_listener_set("test", gateway_namespace=None)]
@@ -740,7 +741,7 @@ class KubectlTest(KubectlInterface):
         if type_version_group.lower() == KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS:
             if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_GATEWAY_ACCESS_DENIED:
                 raise CalledProcessError(1, f"kubectl get {type_version_group} --all-namespaces -o json")
-            if self.ingress_simulator in listener_set_scenarios:
+            if self.ingress_simulator in self._GATEWAY_API_LISTENER_SET_SCENARIOS:
                 gateway_namespace = "test" if \
                     self.ingress_simulator == self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE \
                     else "gw-system"
@@ -774,7 +775,7 @@ class KubectlTest(KubectlInterface):
                         {"name": "envoy-gateway", "image": "docker.io/envoyproxy/gateway:v1.1.0"}
                     ]}}}
                 }))
-            if self.ingress_simulator in listener_set_scenarios:
+            if self.ingress_simulator in self._GATEWAY_API_LISTENER_SET_SCENARIOS:
                 deployments.append(KubernetesResource({
                     "apiVersion": "apps/v1",
                     "kind": "Deployment",
@@ -828,15 +829,7 @@ class KubectlTest(KubectlInterface):
         if self.ingress_simulator == self.IngressSimulator.GATEWAY_API_CROSS_NAMESPACE_ROUTE:
             route_namespace = "route-system"
             backend_namespace = self.namespace
-        listener_set_scenarios = (
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED,
-            self.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING,
-        )
-        if self.ingress_simulator in listener_set_scenarios:
+        if self.ingress_simulator in self._GATEWAY_API_LISTENER_SET_SCENARIOS:
             default_namespace_case = self.ingress_simulator == \
                 self.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE
             parent_ref = {"kind": "ListenerSet", "name": "sas-listenerset"}

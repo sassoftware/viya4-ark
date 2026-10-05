@@ -214,11 +214,12 @@ def test_gateway_api_resolves_routes_and_backends_across_namespaces():
         in route_relationships
 
 
-@pytest.mark.parametrize("scenario", [
-    KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET,
-    KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST,
+@pytest.mark.parametrize(("scenario", "expected_route"), [
+    (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET, "route-system/sas-route"),
+    (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST, "route-system/sas-route"),
+    (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE, "test/sas-route"),
 ])
-def test_gateway_api_listener_set_resolves_controller_and_service_backend(scenario):
+def test_gateway_api_listener_set_resolves_controller_and_service_backend(scenario, expected_route):
     report = ViyaDeploymentReport()
     report.gather_details(KubectlTest(ingress_simulator=scenario))
     data = report.as_dict_json_encoded()
@@ -229,18 +230,7 @@ def test_gateway_api_listener_set_resolves_controller_and_service_backend(scenar
     assert ResourceTypeValues.GATEWAY_API_LISTENER_SETS in kubernetes["discoveredResourceTypes"]
     relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
         "relationships"]
-    assert {"resourceName": "route-system/sas-route", "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} \
-        in relationships
-
-
-def test_gateway_api_listener_set_defaults_both_parent_namespaces():
-    report = ViyaDeploymentReport()
-    report.gather_details(KubectlTest(
-        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE))
-    kubernetes = report.as_dict_json_encoded()["kubernetes"]
-
-    assert kubernetes["ingressImplementation"] == "Envoy Gateway"
-    assert kubernetes["ingressVersion"] == "v1.8.2"
+    assert {"resourceName": expected_route, "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} in relationships
 
 
 def test_gateway_api_listener_set_host_mismatch_remains_unknown():
@@ -271,10 +261,13 @@ def test_gateway_api_listener_set_resolution_failures_remain_explicit(scenario, 
     assert diagnostic in kubernetes["ingressVersion"]
 
 
-def test_gateway_api_ignores_unrelated_route_hosts_and_gateway_namespaces():
+@pytest.mark.parametrize("scenario", [
+    KubectlTest.IngressSimulator.GATEWAY_API_DISTRACTOR_ROUTE,
+    KubectlTest.IngressSimulator.GATEWAY_API_STALE_PARENT,
+])
+def test_gateway_api_ignores_unrelated_routes_and_parent_namespaces(scenario):
     report = ViyaDeploymentReport()
-    report.gather_details(KubectlTest(
-        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_DISTRACTOR_ROUTE))
+    report.gather_details(KubectlTest(ingress_simulator=scenario))
     data = report.as_dict_json_encoded()
     kubernetes = data["kubernetes"]
 
@@ -284,8 +277,7 @@ def test_gateway_api_ignores_unrelated_route_hosts_and_gateway_namespaces():
     assert {"resourceName": "test/sas-route", "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} \
         in route_relationships
     assert {"resourceName": "other-system/sas-route-other",
-            "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} \
-        not in route_relationships
+            "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} not in route_relationships
 
 
 def test_gateway_api_ambiguous_gateway_namespace_does_not_create_service_relationships():
@@ -303,23 +295,6 @@ def test_gateway_api_ambiguous_gateway_namespace_does_not_create_service_relatio
         "relationships"]
     assert not any(relationship["resourceType"] == ResourceTypeValues.GATEWAY_API_HTTP_ROUTES
                    for relationship in route_relationships)
-
-
-def test_gateway_api_ignores_stale_same_host_parent_reference():
-    report = ViyaDeploymentReport()
-    report.gather_details(KubectlTest(
-        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_STALE_PARENT))
-    data = report.as_dict_json_encoded()
-    kubernetes = data["kubernetes"]
-
-    assert kubernetes["ingressImplementation"] == "Envoy Gateway"
-    route_relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
-        "relationships"]
-    assert {"resourceName": "test/sas-route", "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} \
-        in route_relationships
-    assert {"resourceName": "other-system/sas-route-other",
-            "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} \
-        not in route_relationships
 
 
 def test_gateway_api_does_not_guess_between_controller_versions():

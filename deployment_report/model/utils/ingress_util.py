@@ -241,20 +241,12 @@ def determine_gateway_api_implementation(kubectl: KubectlInterface, resource_cac
         return unknown, f"{unavailable} (no matching HTTPRoute parent chain was found)", None
 
     gateway_type = resource_cache.get(ResourceTypeValues.GATEWAY_API_GATEWAYS, {})
-    cached_gateways = gateway_type.get(ITEMS_KEY, {})
-
-    def get_cached_gateway(gateway_ref: Tuple[Text, Text]) -> Optional[KubernetesResource]:
-        expected_name, expected_namespace = gateway_ref
-        for gateway_details in cached_gateways.values():
-            candidate = gateway_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
-            candidate_namespace = candidate.get_metadata_value(KubernetesResourceKeys.NAMESPACE) \
-                or kubectl.get_namespace()
-            if candidate.get_name() == expected_name and candidate_namespace == expected_namespace:
-                return candidate
-        return None
 
     if gateway_type.get(ReportKeys.ResourceTypeDetails.AVAILABLE):
-        matched_gateway_refs = {ref for ref in matched_gateway_refs if get_cached_gateway(ref) is not None}
+        matched_gateway_refs = {
+            ref for ref in matched_gateway_refs
+            if _get_cached_resource(gateway_type, ref[0], ref[1], kubectl.get_namespace()) is not None
+        }
         if not matched_gateway_refs:
             return unknown, f"{unavailable} (configured Gateway object was not found)", None
     elif len(matched_gateway_refs) > 1:
@@ -265,7 +257,7 @@ def determine_gateway_api_implementation(kubectl: KubectlInterface, resource_cac
 
     matched_gateway_ref = matched_gateway_refs.pop()
     gateway_name, gateway_namespace = matched_gateway_ref
-    gateway = get_cached_gateway(matched_gateway_ref)
+    gateway = _get_cached_resource(gateway_type, gateway_name, gateway_namespace, kubectl.get_namespace())
     if gateway is None:
         try:
             gateway = kubectl.get_resource_in_namespace(
@@ -308,26 +300,22 @@ def determine_gateway_api_implementation(kubectl: KubectlInterface, resource_cac
     except (CalledProcessError, AttributeError, NotImplementedError):
         return implementation, f"{unavailable} (controller workload access denied)", matched_gateway_ref
 
-    images = []
+    image_versions = set()
+    digest_only_images = set()
     for workload in workloads:
         spec = workload.get_spec_value(KubernetesResourceKeys.TEMPLATE) or {}
         pod_spec = spec.get(KubernetesResourceKeys.SPEC, {})
         for container in pod_spec.get(KubernetesResourceKeys.CONTAINERS, []):
             image = container.get(KubernetesResourceKeys.IMAGE, "")
-            image_name = image.split("@", 1)[0].rsplit("/", 1)[-1]
-            repository = image.split("@", 1)[0].rsplit("/", 1)[0].split("/")
-            if image_name.split(":", 1)[0] == "gateway" and \
-                    repository[-1:] == ["envoyproxy"]:
-                images.append(image)
-    image_versions = set()
-    digest_only_images = set()
-    for image in images:
-        image_ref = image.split("@", 1)[0]
-        image_leaf = image_ref.rsplit("/", 1)[-1]
-        if ":" in image_leaf:
-            image_versions.add(image_leaf.rsplit(":", 1)[1])
-        elif "@" in image:
-            digest_only_images.add(image.rsplit("@", 1)[1])
+            image_ref, _, digest = image.partition("@")
+            image_leaf = image_ref.rsplit("/", 1)[-1]
+            repository = image_ref.rsplit("/", 1)[0].split("/")
+            if image_leaf.split(":", 1)[0] != "gateway" or repository[-1:] != ["envoyproxy"]:
+                continue
+            if ":" in image_leaf:
+                image_versions.add(image_leaf.rsplit(":", 1)[1])
+            elif digest:
+                digest_only_images.add(digest)
 
     if len(image_versions) > 1 or (image_versions and digest_only_images):
         return implementation, f"{unavailable} (controller workload version is ambiguous)", matched_gateway_ref
