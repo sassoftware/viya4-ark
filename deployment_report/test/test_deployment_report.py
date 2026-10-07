@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2020, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2020-2026, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -64,4 +64,8 @@ def test_usage(capfd):
     # get output
     out, err = capfd.readouterr()
 
-    assert out == expected
+    # argparse changed "optional arguments:" to "options:" in Python 3.10+
+    normalized_out = out.replace("optional arguments:", "options:")
+    normalized_expected = expected.replace("optional arguments:", "options:")
+
+    assert normalized_out == normalized_expected

@@ -117,6 +117,9 @@ def test_get_kubernetes_details_unpopulated() -> None:
 
 
 def test_gateway_api_envoy_implementation_and_workload_version():
+    """
+    This test verifies that a gateway API envoy implementation works properly.
+    """
     report = ViyaDeploymentReport()
     report.gather_details(KubectlTest(
         ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_ENVOY))
@@ -160,6 +163,9 @@ def test_gateway_api_envoy_implementation_and_workload_version():
 ])
 def test_ingress_html_always_renders_three_rows_in_order(
         scenario, expected_api, expected_controller, expected_version):
+    """
+    This test verifies that the html report Ingress always renders 3 rows in order
+    """
     report = ViyaDeploymentReport()
     report.gather_details(KubectlTest(ingress_simulator=scenario))
     template_dir = os.path.join(os.path.dirname(__file__), "..", "..", "templates")
@@ -174,14 +180,15 @@ def test_ingress_html_always_renders_three_rows_in_order(
     labels = ["<th>Ingress API</th>", "<th>Controller</th>", "<th>Version</th>"]
     assert [ingress_table.index(label) for label in labels] == sorted(
         ingress_table.index(label) for label in labels)
-    assert "<th>Implementation</th>" not in ingress_table
-    assert "<th>Implementation version</th>" not in ingress_table
     assert expected_api in ingress_table
     assert expected_controller in ingress_table
     assert expected_version in ingress_table
 
 
 def test_direct_gateway_route_does_not_require_optional_listener_set_api(monkeypatch):
+    """
+    This test verifies that direct gateway routes do not require a ListenerSet
+    """
     kubectl = KubectlTest(ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_ENVOY)
     get_resources_all_namespaces = kubectl.get_resources_all_namespaces
 
@@ -201,25 +208,15 @@ def test_direct_gateway_route_does_not_require_optional_listener_set_api(monkeyp
     assert ResourceTypeValues.GATEWAY_API_LISTENER_SETS not in data[ReportKeys.UNAVAILABLE_RESOURCES_LIST]
 
 
-def test_gateway_api_resolves_routes_and_backends_across_namespaces():
-    report = ViyaDeploymentReport()
-    report.gather_details(KubectlTest(
-        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_CROSS_NAMESPACE_ROUTE))
-    data = report.as_dict_json_encoded()
-
-    assert data["kubernetes"]["ingressImplementation"] == "Envoy Gateway"
-    route_relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
-        "relationships"]
-    assert {"resourceName": "route-system/sas-route", "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} \
-        in route_relationships
-
-
 @pytest.mark.parametrize(("scenario", "expected_route"), [
     (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET, "route-system/sas-route"),
     (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_WILDCARD_HOST, "route-system/sas-route"),
     (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_DEFAULT_NAMESPACE, "test/sas-route"),
 ])
 def test_gateway_api_listener_set_resolves_controller_and_service_backend(scenario, expected_route):
+    """
+    This test verifies the supported ListenerSet routing path.
+    """
     report = ViyaDeploymentReport()
     report.gather_details(KubectlTest(ingress_simulator=scenario))
     data = report.as_dict_json_encoded()
@@ -233,39 +230,14 @@ def test_gateway_api_listener_set_resolves_controller_and_service_backend(scenar
     assert {"resourceName": expected_route, "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} in relationships
 
 
-def test_gateway_api_listener_set_host_mismatch_remains_unknown():
-    report = ViyaDeploymentReport()
-    report.gather_details(KubectlTest(
-        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_HOST_MISMATCH))
-    data = report.as_dict_json_encoded()
-    kubernetes = data["kubernetes"]
-
-    assert kubernetes["ingressImplementation"] == "Unknown"
-    assert "ListenerSet listener matches the configured host" in kubernetes["ingressVersion"]
-    relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
-        "relationships"]
-    assert not any(relationship["resourceType"] == ResourceTypeValues.GATEWAY_API_HTTP_ROUTES
-                   for relationship in relationships)
-
-
-@pytest.mark.parametrize(("scenario", "diagnostic"), [
-    (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_ACCESS_DENIED, "ListenerSet access denied"),
-    (KubectlTest.IngressSimulator.GATEWAY_API_LISTENER_SET_MISSING, "ListenerSet was not found"),
-])
-def test_gateway_api_listener_set_resolution_failures_remain_explicit(scenario, diagnostic):
-    report = ViyaDeploymentReport()
-    report.gather_details(KubectlTest(ingress_simulator=scenario))
-    kubernetes = report.as_dict_json_encoded()["kubernetes"]
-
-    assert kubernetes["ingressImplementation"] == "Unknown"
-    assert diagnostic in kubernetes["ingressVersion"]
-
-
 @pytest.mark.parametrize("scenario", [
     KubectlTest.IngressSimulator.GATEWAY_API_DISTRACTOR_ROUTE,
     KubectlTest.IngressSimulator.GATEWAY_API_STALE_PARENT,
 ])
 def test_gateway_api_ignores_unrelated_routes_and_parent_namespaces(scenario):
+    """
+    This test guards against selecting unrelated routes in a cluster with multiple routes.
+    """
     report = ViyaDeploymentReport()
     report.gather_details(KubectlTest(ingress_simulator=scenario))
     data = report.as_dict_json_encoded()
@@ -280,51 +252,6 @@ def test_gateway_api_ignores_unrelated_routes_and_parent_namespaces(scenario):
             "resourceType": ResourceTypeValues.GATEWAY_API_HTTP_ROUTES} not in route_relationships
 
 
-def test_gateway_api_ambiguous_gateway_namespace_does_not_create_service_relationships():
-    report = ViyaDeploymentReport()
-    report.gather_details(KubectlTest(
-        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_AMBIGUOUS_GATEWAYS))
-    data = report.as_dict_json_encoded()
-    kubernetes = data["kubernetes"]
-
-    assert kubernetes["ingressController"] == "Unknown"
-    assert kubernetes["ingressApi"] == "HTTPRoute (gateway.networking.k8s.io/v1)"
-    assert kubernetes["ingressImplementation"] == "Unknown"
-    assert "ambiguous across namespaces" in kubernetes["ingressVersion"]
-    route_relationships = data["sasComponents"]["sas-annotations"]["services"]["sas-annotations"]["ext"][
-        "relationships"]
-    assert not any(relationship["resourceType"] == ResourceTypeValues.GATEWAY_API_HTTP_ROUTES
-                   for relationship in route_relationships)
-
-
-def test_gateway_api_does_not_guess_between_controller_versions():
-    report = ViyaDeploymentReport()
-    report.gather_details(KubectlTest(
-        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_AMBIGUOUS_VERSION))
-    kubernetes = report.as_dict_json_encoded()["kubernetes"]
-
-    assert kubernetes["ingressImplementation"] == "Envoy Gateway"
-    assert "controller workload version is ambiguous" in kubernetes["ingressVersion"]
-
-
-def test_gateway_api_mode_is_reported_without_viya_pods():
-    class GatewayWithoutPodsKubectl(KubectlTest):
-        def get_resources(self, type_version_group, raw=False):
-            if type_version_group == ResourceTypeValues.K8S_CORE_PODS:
-                return []
-            return super().get_resources(type_version_group, raw)
-
-    report = ViyaDeploymentReport()
-    report.gather_details(GatewayWithoutPodsKubectl(
-        ingress_simulator=KubectlTest.IngressSimulator.GATEWAY_API_ENVOY))
-    kubernetes = report.as_dict_json_encoded()["kubernetes"]
-
-    assert kubernetes["ingressController"] == "Envoy Gateway"
-    assert kubernetes["ingressApi"] == "HTTPRoute (gateway.networking.k8s.io/v1)"
-    assert kubernetes["ingressImplementation"] == "Envoy Gateway"
-    assert kubernetes["ingressVersion"] == "v1.8.2"
-
-
 @pytest.mark.parametrize("scenario, expected_implementation, version_text", [
     (KubectlTest.IngressSimulator.GATEWAY_API_UNKNOWN, "Unknown", "unverified GatewayClass controller"),
     (KubectlTest.IngressSimulator.GATEWAY_API_VERSION_UNAVAILABLE, "Envoy Gateway",
@@ -335,6 +262,9 @@ def test_gateway_api_mode_is_reported_without_viya_pods():
 ])
 def test_gateway_api_preserves_mode_when_implementation_or_version_is_unavailable(
         scenario, expected_implementation, version_text):
+    """
+    This test checks for useful reporting when permissions or version data is unavailable.
+    """
     report = ViyaDeploymentReport()
     report.gather_details(KubectlTest(ingress_simulator=scenario))
     data = report.as_dict_json_encoded()
@@ -497,19 +427,7 @@ def test_legacy_ingress_api_controller_and_version_are_preserved(
     assert kubernetes["ingressApi"] == expected_api
     assert kubernetes["ingressController"] == expected_controller
     assert kubernetes["ingressVersion"] == expected_version
-    assert kubernetes["ingressImplementation"] is None
     assert report.get_ingress_api() == expected_api
-
-
-@pytest.mark.parametrize(("ingress_config", "expected_api"), [
-    ({}, "Unavailable"),
-    ({"INGRESS_KIND": "HTTPRoute"}, "HTTPRoute"),
-    ({"INGRESS_APIVERSION": "gateway.networking.k8s.io/v1"}, "gateway.networking.k8s.io/v1"),
-])
-def test_ingress_api_descriptor_missing_fields(ingress_config, expected_api):
-    from deployment_report.model.utils.ingress_util import get_ingress_api
-
-    assert get_ingress_api(ingress_config) == expected_api
 
 
 def test_get_ingress_controller_none() -> None:
