@@ -4,7 +4,7 @@
 # ### Author: SAS Institute Inc.                                 ###
 ####################################################################
 #                                                                ###
-# Copyright (c) 2021, SAS Institute Inc., Cary, NC, USA.         ###
+# Copyright (c) 2021-2026, SAS Institute Inc., Cary, NC, USA.    ###
 # All Rights Reserved.                                           ###
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
@@ -48,7 +48,9 @@ class ViyaDeploymentReportKeys(object):
         CONFIGMAPS_DICT = "configMaps"
         DB_INFO = "dbInfo"
         DISCOVERED_RESOURCE_TYPES_DICT = "discoveredResourceTypes"
+        INGRESS_API = "ingressApi"
         INGRESS_CTRL = "ingressController"
+        INGRESS_IMPLEMENTATION = "ingressImplementation"
         INGRESS_VER = "ingressVersion"
         NAMESPACE = "namespace"
         NODES_DICT = "nodes"

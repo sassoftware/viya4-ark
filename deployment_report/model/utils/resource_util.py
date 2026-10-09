@@ -50,7 +50,20 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
 
     try:
         # list the resources of the requested type
-        resources = kubectl.get_resources(resource_type)
+        if resource_type == KubernetesResourceTypeValues.GATEWAY_API_GATEWAY_CLASSES:
+            try:
+                resources = kubectl.get_resources_cluster_scoped(resource_type)
+            except NotImplementedError:
+                resources = kubectl.get_resources(resource_type)
+        elif resource_type in (KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES,
+                               KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS,
+                               KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS):
+            try:
+                resources = kubectl.get_resources_all_namespaces(resource_type)
+            except NotImplementedError:
+                resources = kubectl.get_resources(resource_type)
+        else:
+            resources = kubectl.get_resources(resource_type)
     except CalledProcessError as e:
         if resource_type == KubernetesResourceTypeValues.K8S_CORE_PODS:
             # if a CalledProcessError is raised for pods, surface the error
@@ -96,8 +109,15 @@ def cache_resources(resource_type: Text, kubectl: KubectlInterface, resource_cac
 
         # add the resource to its resource type dictionary
         # create a dict keyed by the name of the resource, under which all resource details will be stored: dict
-        resource_type_items[resource.get_name()]: Dict = dict()
-        resource_details: Dict = resource_type_items[resource.get_name()]
+        resource_key = resource.get_name()
+        if resource_type in (KubernetesResourceTypeValues.GATEWAY_API_GATEWAYS,
+                             KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES,
+                             KubernetesResourceTypeValues.GATEWAY_API_LISTENER_SETS):
+            resource_namespace = resource.get_metadata_value(KubernetesResourceKeys.NAMESPACE)
+            if resource_namespace:
+                resource_key = f"{resource_namespace}/{resource_key}"
+        resource_type_items[resource_key]: Dict = dict()
+        resource_details: Dict = resource_type_items[resource_key]
 
         # create a key to hold extended details about the resource not provided in the resource definition: dict
         resource_details[Keys.ResourceDetails.EXT_DICT]: Dict = dict()

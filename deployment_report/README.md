@@ -46,6 +46,7 @@ python3 viya-ark.py deployment-report --namespace sas --ingress-namespace ingres
 ```
 **Note**: This option can be helpful if there are issues detecting the correct ingress controller automatically.
 
+
 ### Including Log Snippets for All Pods
 
 Including the `-l` or `--include-pod-log-snips` option yields a report with a 10-line log snippet for each pod.

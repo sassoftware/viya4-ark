@@ -126,8 +126,12 @@
       <h7>Ingress</h7>
       <table>
         <tr>
+          <th>Ingress API</th>
+          <td>{{ report_data.kubernetes.ingressApi | default("Unavailable", true) }}</td>
+        </tr>
+        <tr>
           <th>Controller</th>
-          <td>{{ report_data.kubernetes.ingressController | default("<em>could not be determined</em>") }}</td>
+          <td>{{ report_data.kubernetes.ingressController | default("Unavailable", true) }}</td>
         </tr>
         <tr>
           <th>Version</th>

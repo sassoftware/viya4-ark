@@ -58,6 +58,13 @@ class KubernetesResourceTypeValues(object):
     K8S_GROUP_NETWORKING_K8S_IO = "networking.k8s.io"
     K8S_NETWORKING_INGRESSES = f"ingresses.{K8S_GROUP_NETWORKING_K8S_IO}"
 
+    # API: Gateway API
+    GATEWAY_API_GROUP = "gateway.networking.k8s.io"
+    GATEWAY_API_GATEWAY_CLASSES = f"gatewayclasses.{GATEWAY_API_GROUP}"
+    GATEWAY_API_GATEWAYS = f"gateways.{GATEWAY_API_GROUP}"
+    GATEWAY_API_HTTP_ROUTES = f"httproutes.{GATEWAY_API_GROUP}"
+    GATEWAY_API_LISTENER_SETS = f"listenersets.{GATEWAY_API_GROUP}"
+
     # API: storage.k8s.io
     K8S_GROUP_STORAGE_K8S_IO = "storage.k8s.io"
     K8S_STORAGE_STORAGE_CLASSES = f"storageclasses.{K8S_GROUP_STORAGE_K8S_IO}"
