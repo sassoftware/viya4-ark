@@ -338,32 +338,32 @@ def ignorable_for_controller_if_unavailable(ingress_controller: Text, resource_t
     ####################
     # Contour
     ####################
-    if ingress_controller == SupportedIngress.Controllers.CONTOUR and (
-            resource_type == ResourceTypeValues.K8S_EXTENSIONS_INGRESSES or
-            resource_type == ResourceTypeValues.K8S_NETWORKING_INGRESSES or
-            resource_type == ResourceTypeValues.OPENSHIFT_ROUTES or
-            resource_type == ResourceTypeValues.ISTIO_VIRTUAL_SERVICES
+    if ingress_controller == SupportedIngress.Controllers.CONTOUR and resource_type in (
+            ResourceTypeValues.K8S_EXTENSIONS_INGRESSES,
+            ResourceTypeValues.K8S_NETWORKING_INGRESSES,
+            ResourceTypeValues.OPENSHIFT_ROUTES,
+            ResourceTypeValues.ISTIO_VIRTUAL_SERVICES,
     ):
         # ignore Ingress, Route, and VirtualService if controller is Contour
         return True
 
-    elif ingress_controller == SupportedIngress.Controllers.GATEWAY_API and (
-            resource_type == ResourceTypeValues.CONTOUR_HTTP_PROXIES or
-            resource_type == ResourceTypeValues.K8S_EXTENSIONS_INGRESSES or
-            resource_type == ResourceTypeValues.K8S_NETWORKING_INGRESSES or
-            resource_type == ResourceTypeValues.OPENSHIFT_ROUTES or
-            resource_type == ResourceTypeValues.ISTIO_VIRTUAL_SERVICES
+    elif ingress_controller == SupportedIngress.Controllers.GATEWAY_API and resource_type in (
+            ResourceTypeValues.CONTOUR_HTTP_PROXIES,
+            ResourceTypeValues.K8S_EXTENSIONS_INGRESSES,
+            ResourceTypeValues.K8S_NETWORKING_INGRESSES,
+            ResourceTypeValues.OPENSHIFT_ROUTES,
+            ResourceTypeValues.ISTIO_VIRTUAL_SERVICES,
     ):
         return True
 
     ####################
     # Istio
     ####################
-    elif ingress_controller == SupportedIngress.Controllers.ISTIO and (
-            resource_type == ResourceTypeValues.CONTOUR_HTTP_PROXIES or
-            resource_type == ResourceTypeValues.K8S_EXTENSIONS_INGRESSES or
-            resource_type == ResourceTypeValues.K8S_NETWORKING_INGRESSES or
-            resource_type == ResourceTypeValues.OPENSHIFT_ROUTES
+    elif ingress_controller == SupportedIngress.Controllers.ISTIO and resource_type in (
+            ResourceTypeValues.CONTOUR_HTTP_PROXIES,
+            ResourceTypeValues.K8S_EXTENSIONS_INGRESSES,
+            ResourceTypeValues.K8S_NETWORKING_INGRESSES,
+            ResourceTypeValues.OPENSHIFT_ROUTES,
     ):
         # ignore HTTPProxy, Ingress, and Route if controller is Istio
         return True
@@ -371,11 +371,11 @@ def ignorable_for_controller_if_unavailable(ingress_controller: Text, resource_t
     ####################
     # NGINX
     ####################
-    elif ingress_controller == SupportedIngress.Controllers.NGINX and (
-            resource_type == ResourceTypeValues.CONTOUR_HTTP_PROXIES or
-            resource_type == ResourceTypeValues.K8S_EXTENSIONS_INGRESSES or
-            resource_type == ResourceTypeValues.OPENSHIFT_ROUTES or
-            resource_type == ResourceTypeValues.ISTIO_VIRTUAL_SERVICES
+    elif ingress_controller == SupportedIngress.Controllers.NGINX and resource_type in (
+            ResourceTypeValues.CONTOUR_HTTP_PROXIES,
+            ResourceTypeValues.K8S_EXTENSIONS_INGRESSES,
+            ResourceTypeValues.OPENSHIFT_ROUTES,
+            ResourceTypeValues.ISTIO_VIRTUAL_SERVICES,
     ):
         # ignore HTTPProxy, Route, and VirtualService if controller is NGINX
         return True
@@ -383,11 +383,11 @@ def ignorable_for_controller_if_unavailable(ingress_controller: Text, resource_t
     ####################
     # OpenShift
     ####################
-    elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT and (
-            resource_type == ResourceTypeValues.CONTOUR_HTTP_PROXIES or
-            resource_type == ResourceTypeValues.K8S_EXTENSIONS_INGRESSES or
-            resource_type == ResourceTypeValues.K8S_NETWORKING_INGRESSES or
-            resource_type == ResourceTypeValues.ISTIO_VIRTUAL_SERVICES
+    elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT and resource_type in (
+            ResourceTypeValues.CONTOUR_HTTP_PROXIES,
+            ResourceTypeValues.K8S_EXTENSIONS_INGRESSES,
+            ResourceTypeValues.K8S_NETWORKING_INGRESSES,
+            ResourceTypeValues.ISTIO_VIRTUAL_SERVICES,
     ):
         # ignore HTTPProxy, Ingress, and VirtualService if controller is OpenShift
         return True
