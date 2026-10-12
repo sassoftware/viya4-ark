@@ -10,6 +10,7 @@
 #                                                                ###
 ####################################################################
 import json
+import shlex
 
 from subprocess import CalledProcessError, Popen, PIPE
 from typing import AnyStr, Dict, List, Text, Union, Optional
@@ -135,6 +136,7 @@ class Kubectl(KubectlInterface):
                                              "namespace using the \"--namespace=\" option.")
 
         # reset the executable with the namespace
+        self._exec_without_namespace = f"{executable} {global_opts}".strip()
         self.exec = f"{executable} -n {namespace} {global_opts}"
         self.namespace: Text = namespace
 
@@ -257,7 +259,7 @@ class Kubectl(KubectlInterface):
                     break
 
             # make namespaced a bool
-            namespaced: bool = bool(namespaced_str)
+            namespaced: bool = namespaced_str.lower() == "true"
 
             # get the kind value
             for char in api_resource_line[kind_index:]:
@@ -415,6 +417,45 @@ class Kubectl(KubectlInterface):
 
         # return the list of KubernetesResource objects
         return resources
+
+    def get_resources_all_namespaces(self, type_version_group: Text,
+                                     raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+        original_exec = self.exec
+        try:
+            self.exec = self._exec_without_namespace
+            resource_json: AnyStr = self.do(
+                f"get {shlex.quote(type_version_group)} --all-namespaces -o json")
+        finally:
+            self.exec = original_exec
+        return self._parse_resources(resource_json, raw)
+
+    def get_resources_cluster_scoped(self, type_version_group: Text,
+                                     raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+        original_exec = self.exec
+        try:
+            self.exec = self._exec_without_namespace
+            return self.get_resources(type_version_group, raw)
+        finally:
+            self.exec = original_exec
+
+    def get_resource_in_namespace(self, type_version_group: Text, resource_name: Text,
+                                  namespace: Text) -> KubernetesResource:
+        original_exec = self.exec
+        try:
+            self.exec = self._exec_without_namespace
+            resource_json: AnyStr = self.do(
+                f"get {shlex.quote(type_version_group)} {shlex.quote(resource_name)} "
+                f"--namespace={shlex.quote(namespace)} -o json")
+        finally:
+            self.exec = original_exec
+        return KubernetesResource(resource_json.decode())
+
+    @staticmethod
+    def _parse_resources(resource_json: AnyStr, raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+        response: Dict = json.loads(resource_json.decode())
+        if raw:
+            return response
+        return [KubernetesResource(resource) for resource in response.get(KubernetesResourceKeys.ITEMS, [])]
 
     def get_resource(self, type_version_group: Text, resource_name: Text, raw: bool = False,
                      ignore_errors: bool = False) -> Union[AnyStr, KubernetesResource]:

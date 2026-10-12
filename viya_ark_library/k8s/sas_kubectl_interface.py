@@ -159,6 +159,21 @@ class KubectlInterface(ABC):
         """
         pass
 
+    def get_resources_all_namespaces(self, type_version_group: Text,
+                                     raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+        """List a resource type across namespaces."""
+        raise NotImplementedError
+
+    def get_resources_cluster_scoped(self, type_version_group: Text,
+                                     raw: bool = False) -> Union[Dict, List[KubernetesResource]]:
+        """List a cluster-scoped resource without applying the configured namespace."""
+        raise NotImplementedError
+
+    def get_resource_in_namespace(self, type_version_group: Text, resource_name: Text,
+                                  namespace: Text) -> KubernetesResource:
+        """Get a namespaced resource without relying on the configured namespace."""
+        raise NotImplementedError
+
     @abstractmethod
     def get_resource(self, type_version_group: Text, resource_name: Text, raw: bool = False,
                      ignore_errors: bool = False) -> Union[AnyStr, KubernetesResource]:
