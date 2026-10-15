@@ -17,6 +17,7 @@ from deployment_report.model.static.viya_deployment_report_keys import \
     ViyaDeploymentReportKeys as ReportKeys
 
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
+from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues
 from viya_ark_library.k8s.sas_k8s_objects import KubernetesResource
 
 
@@ -56,8 +57,13 @@ def aggregate_resources(resource_details: Dict, component: Dict, resource_cache:
     if resource_type not in component[ITEMS_KEY]:
         component[ITEMS_KEY][resource_type]: Dict = dict()
 
-    # add the resource details to its kind dictionary, keyed by its name
-    component[ITEMS_KEY][resource_type][resource.get_name()]: Dict = resource_details
+    # Gateway API routes span namespaces, so retain that scope in their aggregate key.
+    resource_name = resource.get_name()
+    if resource_type == KubernetesResourceTypeValues.GATEWAY_API_HTTP_ROUTES:
+        resource_namespace = resource.get_metadata_value(KubernetesResourceKeys.NAMESPACE)
+        if resource_namespace:
+            resource_name = f"{resource_namespace}/{resource_name}"
+    component[ITEMS_KEY][resource_type][resource_name]: Dict = resource_details
 
     # aggregate any resources defined in the relationships extension
     for relationship in resource_relationships:

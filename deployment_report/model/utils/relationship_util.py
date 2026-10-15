@@ -9,11 +9,12 @@
 # SPDX-License-Identifier: Apache-2.0                            ###
 #                                                                ###
 ####################################################################
-from typing import Dict, List, Optional, Text
+from typing import Dict, List, Optional, Text, Tuple
 
 from deployment_report.model.static.viya_deployment_report_keys import \
     ITEMS_KEY, \
     ViyaDeploymentReportKeys as ReportKeys
+from deployment_report.model.utils.ingress_util import _route_parent_gateway_refs
 
 from viya_ark_library.k8s.k8s_resource_keys import KubernetesResourceKeys
 from viya_ark_library.k8s.k8s_resource_type_values import KubernetesResourceTypeValues as ResourceTypeValues
@@ -166,6 +167,49 @@ def define_service_to_ingress_relationships(resource_cache: Dict, ingress_contro
                         ####################
                         elif ingress_controller == SupportedIngress.Controllers.OPENSHIFT:
                             _define_service_to_openshift_route_relationships(services, resources, resource_type)
+
+
+def define_service_to_http_route_relationships(resource_cache: Dict, namespace: Text,
+                                               gateway_ref: Tuple[Text, Text],
+                                               configured_host: Optional[Text] = None) -> None:
+    """Connect Services to HTTPRoutes that reference them through spec.rules[].backendRefs."""
+    services = resource_cache.get(ResourceTypeValues.K8S_CORE_SERVICES, {})
+    routes = resource_cache.get(ResourceTypeValues.GATEWAY_API_HTTP_ROUTES, {})
+    if not services.get(ITEMS_KEY) or not routes.get(ITEMS_KEY):
+        return
+
+    for route_details in routes[ITEMS_KEY].values():
+        route: KubernetesResource = route_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+        route_namespace = route.get_metadata_value(KubernetesResourceKeys.NAMESPACE) or namespace
+        spec = route.get_spec() or {}
+        gateway_refs, _ = _route_parent_gateway_refs(
+            resource_cache, route, route_namespace, configured_host, namespace)
+        if gateway_ref not in gateway_refs:
+            continue
+        for rule in spec.get(KubernetesResourceKeys.RULES, []):
+            for backend in rule.get(KubernetesResourceKeys.BACKEND_REFS, []):
+                if backend.get(KubernetesResourceKeys.KIND, "Service") != "Service" or \
+                        backend.get(KubernetesResourceKeys.API_GROUP, ""):
+                    continue
+                backend_namespace = backend.get(KubernetesResourceKeys.NAMESPACE) or route_namespace
+                if backend_namespace != namespace:
+                    continue
+                service_details = services[ITEMS_KEY].get(backend.get(KubernetesResourceKeys.NAME))
+                if not service_details:
+                    continue
+                service: KubernetesResource = service_details[ReportKeys.ResourceDetails.RESOURCE_DEFINITION]
+                if (service.get_metadata_value(KubernetesResourceKeys.NAMESPACE) or namespace) != backend_namespace:
+                    continue
+                service_relationships = service_details[ReportKeys.ResourceDetails.EXT_DICT][
+                    ReportKeys.ResourceDetails.Ext.RELATIONSHIPS_LIST]
+                route_resource_name = route.get_name()
+                if route.get_metadata_value(KubernetesResourceKeys.NAMESPACE):
+                    route_resource_name = f"{route_namespace}/{route_resource_name}"
+                relationship = create_relationship_dict(
+                    resource_name=route_resource_name,
+                    resource_type=ResourceTypeValues.GATEWAY_API_HTTP_ROUTES)
+                if relationship not in service_relationships:
+                    service_relationships.append(relationship)
 
 
 def _define_service_to_contour_httpproxy_relationships(services: Dict, httpproxies: Dict, httpproxies_type: Text) \
